@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<signers xmlns="http://ponfee.code/signer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://ponfee.code/signer signer.xsd">
+    <!-- <signers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="signer.xsd"> -->
+    <signer>
+        <signerId>99</signerId><!-- require -->
+        <keyStore><![CDATA[classpath:META-INF/sign/signers/1.pfx]]></keyStore><!--元素：require；规则：以（classpath:或classpath*:或file:或context:开头，默认以classpath开头 ）-->
+        <storePass>1234</storePass><!-- require -->
+        <keyPass>1234</keyPass><!-- require -->
+        <storeType>pfx</storeType><!-- optional[可选]，值：[pfx|jks] -->
+        <alias>45e4ea70a3589e96cd670c8e5c8c7be5_28766470-a40c-4c9e-b312-d7a5618db23b</alias><!-- optional[可选]，不填默认选第1个密钥对 -->
+        <stamp><![CDATA[classpath:META-INF/sign/signers/1.bmp]]></stamp><!--元素：require；规则：以（classpath:或classpath*:或file:或context:开头，默认以classpath开头 ）-->
+    </signer>
+    
+    <signer>
+        <signerId>1</signerId>
+        <keyStore><![CDATA[META-INF/sign/signers/1.pfx]]></keyStore>
+        <storePass>1234</storePass>
+        <keyPass>1234</keyPass>
+        <stamp><![CDATA[META-INF/sign/signers/1.jpg]]></stamp>
+    </signer>
+
+    <signer>
+        <signerId>2</signerId>
+        <keyStore><![CDATA[META-INF/sign/signers/2.pfx]]></keyStore>
+        <storePass>1234</storePass>
+        <keyPass>1234</keyPass>
+        <stamp><![CDATA[META-INF/sign/signers/2.jpg]]></stamp>
+    </signer>
+
+    <signer>
+        <signerId>3</signerId>
+        <keyStore><![CDATA[META-INF/sign/signers/3.pfx]]></keyStore>
+        <storePass>1234</storePass>
+        <keyPass>1234</keyPass>
+        <stamp><![CDATA[META-INF/sign/signers/3.jpg]]></stamp>
+    </signer>
+    
+    <signer>
+        <signerId>4</signerId>
+        <keyStore><![CDATA[META-INF/sign/signers/4.pfx]]></keyStore>
+        <storePass>1234</storePass>
+        <keyPass>1234</keyPass>
+        <stamp><![CDATA[META-INF/sign/signers/4.jpg]]></stamp>
+    </signer>
+    
+    <signer>
+        <signerId>5</signerId>
+        <keyStore><![CDATA[META-INF/sign/signers/5.pfx]]></keyStore>
+        <storePass>1234</storePass>
+        <keyPass>1234</keyPass>
+        <stamp><![CDATA[META-INF/sign/signers/5.jpg]]></stamp>
+    </signer>
+    
+    <signer>
+        <signerId>6</signerId>
+        <keyStore><![CDATA[META-INF/sign/signers/6.pfx]]></keyStore>
+        <storePass>1234</storePass>
+        <keyPass>1234</keyPass>
+        <stamp><![CDATA[META-INF/sign/signers/6.jpg]]></stamp>
+    </signer>
+    
+    <signer>
+        <signerId>7</signerId>
+        <keyStore><![CDATA[META-INF/sign/signers/7.pfx]]></keyStore>
+        <storePass>1234</storePass>
+        <keyPass>1234</keyPass>
+        <stamp><![CDATA[META-INF/sign/signers/7.jpg]]></stamp>
+    </signer>
+    
+    <signer>
+        <signerId>8</signerId>
+        <keyStore><![CDATA[META-INF/sign/signers/8.pfx]]></keyStore>
+        <storePass>1234</storePass>
+        <keyPass>1234</keyPass>
+        <stamp><![CDATA[META-INF/sign/signers/8.jpg]]></stamp>
+    </signer>
+    
+    <signer>
+        <signerId>9</signerId>
+        <keyStore><![CDATA[META-INF/sign/signers/9.pfx]]></keyStore>
+        <storePass>1234</storePass>
+        <keyPass>1234</keyPass>
+        <stamp><![CDATA[META-INF/sign/signers/9.jpg]]></stamp>
+    </signer>
+</signers>

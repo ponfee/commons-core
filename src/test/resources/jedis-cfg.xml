@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- <bean id="jedisClient" class="code.ponfee.commons.jedis.JedisClient" destroy-method="destroy">
+        <constructor-arg index="0">
+            <bean class="redis.clients.jedis.JedisPoolConfig">
+                <property name="maxTotal" value="200" />
+                <property name="maxIdle" value="10" />
+                <property name="minIdle" value="1" />
+                <property name="maxWaitMillis" value="10000" />
+                <property name="testOnBorrow" value="false" />
+                <property name="testOnReturn" value="false" />
+                <property name="testWhileIdle" value="false" />
+                <property name="numTestsPerEvictionRun" value="-1" />
+                <property name="minEvictableIdleTimeMillis" value="60000" />
+                <property name="timeBetweenEvictionRunsMillis" value="30000" />
+            </bean>
+        </constructor-arg>
+        <constructor-arg index="1" value="127.0.0.1:6379;127.0.0.1:6380;" />
+        <constructor-arg index="2" value="5000" type="int" />
+        <constructor-arg index="3">
+            <bean class="code.ponfee.commons.serial.FstSerializer" />
+        </constructor-arg>
+    </bean> -->
+
+    <bean id="jedisClient" class="code.ponfee.commons.jedis.JedisClient" destroy-method="destroy">
+        <constructor-arg index="0">
+            <bean class="redis.clients.jedis.JedisPoolConfig">
+                <property name="maxTotal" value="200" />
+                <property name="maxIdle" value="10" />
+                <property name="minIdle" value="1" />
+                <property name="maxWaitMillis" value="10000" />
+                <property name="testOnBorrow" value="false" />
+                <property name="testOnReturn" value="false" />
+                <property name="testWhileIdle" value="false" />
+                <property name="numTestsPerEvictionRun" value="-1" />
+                <property name="minEvictableIdleTimeMillis" value="60000" />
+                <property name="timeBetweenEvictionRunsMillis" value="30000" />
+            </bean>
+        </constructor-arg>
+        <!-- redis.sentinel.master=REDIS_SENTINEL
+        redis.sentinel.server=112.74.170.75:16379;112.74.170.75:16380
+        redis.sentinel.passwd= -->
+        <constructor-arg index="1" value="DDT_CORE_CNSZ22_REDIS_CACHE" />
+        <constructor-arg index="2" value="10.202.40.105:8001;10.202.40.105:8002;10.202.40.107:8001" />
+        <constructor-arg index="3" value="admin.123" />
+        <constructor-arg index="4">
+            <bean class="code.ponfee.commons.serial.FstSerializer" />
+        </constructor-arg>
+    </bean>
+
+  <!-- 
+    address1=172.16.23.27:6379
+    address2=172.16.23.27:6380
+    address3=172.16.23.27:6381
+    address4=172.16.23.27:6382
+    address5=172.16.23.27:6383
+    address6=172.16.23.27:6384
+   -->
+  <!-- <bean id="jedisCluster" class="code.ponfee.commons.jedis.JedisClusterFactory">
+    <property name="addressConfig" value="classpath:connect-redis.properties" />
+    <property name="addressKeyPrefix" value="address" />
+    <property name="timeout" value="300000" />
+    <property name="maxRedirections" value="6" />
+    <property name="genericObjectPoolConfig">
+      <bean name="genericObjectPoolConfig" class="org.apache.commons.pool2.impl.GenericObjectPoolConfig">
+        <property name="maxWaitMillis" value="-1" />
+        <property name="maxTotal" value="1000" />
+        <property name="minIdle" value="8" />
+        <property name="maxIdle" value="100" />
+      </bean>
+    </property>
+  </bean> -->
+</beans>

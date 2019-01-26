@@ -1,0 +1,30 @@
+log4j.rootLogger=warn,console,file
+
+log4j.logger.base=warn
+log4j.logger.org.apache.commons=warn
+log4j.logger.org.springframework=warn
+log4j.logger.org.apache.ibatis=warn
+log4j.logger.org.mybatis.spring=warn
+log4j.logger.java.sql=warn
+log4j.logger.java.sql.Connection=warn
+log4j.logger.java.sql.PreparedStatement=warn
+log4j.logger.java.sql.ResultSet=warn
+log4j.logger.java.sql.Statement=warn
+log4j.logger.org.quartz=warn
+
+# \u63a7\u5236\u53f0
+log4j.appender.console=org.apache.log4j.ConsoleAppender
+log4j.appender.console.target=System.out
+log4j.appender.console.Threshold=debug
+log4j.appender.console.layout=org.apache.log4j.PatternLayout
+log4j.appender.console.layout.ConversionPattern=%-4r %-5p [%t] %37c %3x - %m%n
+
+# \u6587\u4ef6
+log4j.appender.file=org.apache.log4j.RollingFileAppender
+log4j.appender.file.File=../commons-code.log
+log4j.appender.file.MaxFileSize=100KB
+log4j.appender.file.MaxBackupIndex=5
+log4j.appender.file.Threshold=warn
+log4j.appender.file.layout=org.apache.log4j.PatternLayout
+log4j.appender.file.layout.ConversionPattern=[%-5p] %d{yyyy-MM-dd HH:mm:ss} %l%n%m%n
+log4j.appender.file.Encoding=UTF-8

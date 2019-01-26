@@ -1,0 +1,5 @@
+# * text eol=lf
+
+# eclise£ºWindows -> Preference -> General -> workspace -> Unix
+# git config --global core.autocrlf false
+# git config --global core.safecrlf true

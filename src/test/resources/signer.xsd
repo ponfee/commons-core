@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://ponfee.code/signer"
+    xmlns:tns="http://ponfee.code/signer" elementFormDefault="qualified"
+    attributeFormDefault="unqualified">
+    <element name="signers">
+        <complexType>
+            <sequence>
+                <element name="signer" type="tns:signerType"
+                    maxOccurs="unbounded" />
+            </sequence>
+        </complexType>
+    </element>
+
+    <complexType name="signerType">
+        <sequence>
+            <element name="signerId" type="string" />
+            <element name="keyStore" type="tns:resourceType" />
+            <element name="storePass" type="string" />
+            <element name="keyPass" type="string" />
+            <element name="storeType" type="tns:storeTypeType"
+                minOccurs="0" />
+            <element name="alias" type="string" minOccurs="0" />
+            <element name="stamp" type="tns:resourceType" />
+        </sequence>
+    </complexType>
+
+    <simpleType name="storeTypeType">
+        <restriction base="string">
+            <enumeration value="jks" />
+            <enumeration value="pfx" />
+        </restriction>
+    </simpleType>
+
+    <simpleType name="resourceType">
+        <restriction base="string">
+            <pattern value="(classpath:|classpath\*:|file:(([c-zC-Z]:)(/|\\\\)){0,1}|webapp:){0,1}[^:\?\|\*]*"></pattern>
+        </restriction>
+    </simpleType>
+    
+    <!-- 
+    <complexType name="stampType">
+        <simpleContent>
+            <extension base="string">
+                <attribute name="stampClasspath" type="tns:classpathType"
+                    use="optional" />
+            </extension>
+        </simpleContent>
+    </complexType>
+     -->
+</schema>

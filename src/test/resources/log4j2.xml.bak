@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/2002/xmlspec/dtd/2.10/xmlspec.dtd">
+
+<!-- status : 这个用于设置log4j2自身内部的信息输出,可以不设置,当设置成trace时,会看到log4j2内部各种详细输出 monitorInterval 
+    : Log4j能够自动检测修改配置文件和重新配置本身, 设置间隔秒数。 注：本配置文件的目标是将不同级别的日志输出到不同文件，最大2MB一个文件， 
+    文件数据达到最大值时，旧数据会被压缩并放进指定文件夹 -->
+<Configuration status="WARN" monitorInterval="600">
+
+    <Properties> <!-- 配置日志文件输出目录，此配置将日志输出到tomcat根目录下的指定文件夹 -->
+        <Property name="LOG_HOME">${sys:catalina.home}/WebAppLogs/HHServices
+        </Property>
+    </Properties>
+
+    <Appenders>
+
+        <!-- 优先级从高到低分别是 OFF、FATAL、ERROR、WARN、INFO、DEBUG、ALL -->
+        <!-- 单词解释： Match：匹配 DENY：拒绝 Mismatch：不匹配 ACCEPT：接受 -->
+        <!-- DENY，日志将立即被抛弃不再经过其他过滤器； NEUTRAL，有序列表里的下个过滤器过接着处理日志； ACCEPT，日志会被立即处理，不再经过剩余过滤器。 -->
+        <!--输出日志的格式
+         %d{yyyy-MM-dd HH:mm:ss, SSS} : 日志生产时间
+         %p : 日志输出格式
+         %c : logger的名称 
+         %m : 日志内容，即 logger.info("message") 
+         %n : 换行符 
+         %C : Java类名
+         %L : 日志输出所在行数 
+         %M : 日志输出所在方法名 
+         hostName : 本地机器名 
+         hostAddress : 本地ip地址 -->
+
+        <!--这个输出控制台的配置，这里输出除了warn和error级别的信息到System.out -->
+        <Console name="console_out_appender" target="SYSTEM_OUT">
+            <!-- 控制台只输出level及以上级别的信息(onMatch),其他的直接拒绝(onMismatch) . -->
+            <ThresholdFilter level="DEBUG" onMatch="ACCEPT"
+                onMismatch="DENY" />
+            <!-- 输出日志的格式 -->
+            <PatternLayout pattern="%5p [%t] %d{yyyy-MM-dd HH:mm:ss} (%F:%L) %m%n" />
+        </Console>
+        <!-- 这个输出控制台的配置，这里输出error级别的信息到System.err，在eclipse控制台上看到的是红色文字 -->
+        <Console name="console_err_appender" target="SYSTEM_ERR">
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT"
+                onMismatch="DENY" />
+            <PatternLayout pattern="%5p [%t] %d{yyyy-MM-dd HH:mm:ss} (%F:%L) %m%n" />
+        </Console>
+
+
+        <!-- TRACE级别日志 ; 设置日志格式并配置日志压缩格式，压缩文件独立放在一个文件夹内， 日期格式不能为冒号，否则无法生成，因为文件名不允许有冒号，此appender只输出trace级别的数据到trace.log -->
+        <RollingFile name="trace_appender" immediateFlush="true"
+            fileName="${LOG_HOME}/trace.log" filePattern="${LOG_HOME}/trace/trace - %d{yyyy-MM-dd HH_mm_ss}.log.gz">
+            <PatternLayout>
+                <pattern>%5p [%t] %d{yyyy-MM-dd HH:mm:ss} (%F:%L) %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <!-- 每个日志文件最大2MB -->
+                <SizeBasedTriggeringPolicy size="2MB" />
+
+            </Policies>
+            <Filters>
+                <!-- 此Filter意思是，只输出TRACE级别的数据 DENY，日志将立即被抛弃不再经过其他过滤器； NEUTRAL，有序列表里的下个过滤器过接着处理日志； 
+                    ACCEPT，日志会被立即处理，不再经过剩余过滤器。 -->
+                <ThresholdFilter level="debug" onMatch="DENY"
+                    onMismatch="NEUTRAL" />
+                <ThresholdFilter level="trace" onMatch="ACCEPT"
+                    onMismatch="DENY" />
+            </Filters>
+        </RollingFile>
+
+        <!-- DEBUG级别日志 设置日志格式并配置日志压缩格式，压缩文件独立放在一个文件夹内， 日期格式不能为冒号，否则无法生成，因为文件名不允许有冒号，此appender只输出debug级别的数据到debug.log; -->
+        <RollingFile name="debug_appender" immediateFlush="true"
+            fileName="${LOG_HOME}/debug.log" filePattern="${LOG_HOME}/debug/debug - %d{yyyy-MM-dd HH_mm_ss}.log.gz">
+            <PatternLayout>
+                <pattern>%5p [%t] %d{yyyy-MM-dd HH:mm:ss} (%F:%L) %m%n</pattern>
+            </PatternLayout>
+            <Policies><!-- 每个日志文件最大2MB ; -->
+                <SizeBasedTriggeringPolicy size="2MB" />
+
+                <!-- 如果启用此配置，则日志会按文件名生成新压缩文件， 即如果filePattern配置的日期格式为 %d{yyyy-MM-dd HH} 
+                    ，则每小时生成一个压缩文件， 如果filePattern配置的日期格式为 %d{yyyy-MM-dd} ，则天生成一个压缩文件 -->
+                <TimeBasedTriggeringPolicy interval="1"
+                    modulate="true" />
+
+            </Policies>
+            <Filters><!-- 此Filter意思是，只输出debug级别的数据 -->
+                <ThresholdFilter level="info" onMatch="DENY"
+                    onMismatch="NEUTRAL" />
+                <ThresholdFilter level="debug" onMatch="ACCEPT"
+                    onMismatch="DENY" />
+            </Filters>
+        </RollingFile>
+
+        <!-- INFO级别日志 -->
+        <RollingFile name="info_appender" immediateFlush="true"
+            fileName="${LOG_HOME}/info.log" filePattern="${LOG_HOME}/info/info - %d{yyyy-MM-dd HH_mm_ss}.log.gz">
+            <PatternLayout>
+                <pattern>%5p [%t] %d{yyyy-MM-dd HH:mm:ss} (%F:%L) %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="2MB" />
+            </Policies>
+            <Filters>
+                <ThresholdFilter level="warn" onMatch="DENY"
+                    onMismatch="NEUTRAL" />
+                <ThresholdFilter level="info" onMatch="ACCEPT"
+                    onMismatch="DENY" />
+            </Filters>
+        </RollingFile>
+
+        <!-- WARN级别日志 -->
+        <RollingFile name="warn_appender" immediateFlush="true"
+            fileName="${LOG_HOME}/warn.log" filePattern="${LOG_HOME}/warn/warn - %d{yyyy-MM-dd HH_mm_ss}.log.gz">
+            <PatternLayout>
+                <pattern>%5p [%t] %d{yyyy-MM-dd HH:mm:ss} (%F:%L) %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="2MB" />
+            </Policies>
+            <Filters>
+                <ThresholdFilter level="error" onMatch="DENY"
+                    onMismatch="NEUTRAL" />
+                <ThresholdFilter level="warn" onMatch="ACCEPT"
+                    onMismatch="DENY" />
+            </Filters>
+        </RollingFile>
+
+        <!-- ERROR级别日志 -->
+        <RollingFile name="error_appender" immediateFlush="true"
+            fileName="${LOG_HOME}/error.log" filePattern="${LOG_HOME}/error/error - %d{yyyy-MM-dd HH_mm_ss}.log.gz">
+            <PatternLayout>
+                <pattern>%5p [%t] %d{yyyy-MM-dd HH:mm:ss} (%F:%L) %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="2MB" />
+            </Policies>
+            <Filters>
+                <ThresholdFilter level="error" onMatch="ACCEPT"
+                    onMismatch="DENY" />
+            </Filters>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- 配置日志的根节点 -->
+        <!-- 定义logger，只有定义了logger并引入了appender，appender才会生效 -->
+        <root level="trace">
+            <appender-ref ref="console_out_appender" />
+            <appender-ref ref="console_err_appender" />
+            <appender-ref ref="trace_appender" />
+            <appender-ref ref="debug_appender" />
+            <appender-ref ref="info_appender" />
+            <appender-ref ref="warn_appender" />
+            <appender-ref ref="error_appender" />
+        </root>
+
+        <!-- 第三方日志系统 -->
+        <logger name="org.springframework.core" level="info" />
+        <logger name="org.springframework.beans" level="info" />
+        <logger name="org.springframework.context" level="info" />
+        <logger name="org.springframework.web" level="info" />
+        <logger name="org.jboss.netty" level="warn" />
+        <logger name="org.apache.http" level="warn" />
+
+    </Loggers>
+
+</Configuration>
