@@ -1,7 +1,5 @@
 package code.ponfee.commons.jce.implementation.rsa;
 
-import static org.apache.commons.lang3.math.NumberUtils.min;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,7 +62,7 @@ public abstract class AbstractRSACryptor extends Cryptor {
 
         try {
             for (int offset = 0, len = input.length, to; offset < len; offset += originBlockSize) {
-                to = min(len, offset + originBlockSize);
+                to = Math.min(len, offset + originBlockSize);
                 if (isPadding) {
                     // 切割并填充原文数据块
                     origin = encodeBlock(input, offset, to, cipherBlockSize, rsaKey);
@@ -99,7 +97,7 @@ public abstract class AbstractRSACryptor extends Cryptor {
         try {
             for (int offset = 0, len = input.length; offset < len; offset += cipherBlockSize) {
                 // 切割密文数据块
-                encrypted = Arrays.copyOfRange(input, offset, min(len, offset + cipherBlockSize));
+                encrypted = Arrays.copyOfRange(input, offset, Math.min(len, offset + cipherBlockSize));
 
                 // 解密：origin = encrypted^d mod n
                 origin = new BigInteger(1, encrypted).modPow(exponent, rsaKey.n).toByteArray();

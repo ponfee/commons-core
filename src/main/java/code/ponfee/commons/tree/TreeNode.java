@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -281,8 +280,7 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A>
 
                 // 3、统计子叶子节点数量及整棵树节点的数量
                 sumChildLeafCount += child.childLeafCount;
-                maxChildTreeDepth = NumberUtils.max(maxChildTreeDepth, 
-                                                    child.treeMaxDepth);
+                maxChildTreeDepth = Math.max(maxChildTreeDepth, child.treeMaxDepth);
                 sumTreeNodeCount += child.treeNodeCount;
             }
             this.childLeafCount = sumChildLeafCount;     // 子节点的叶子节点之和

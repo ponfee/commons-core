@@ -18,8 +18,6 @@ import java.security.interfaces.RSAPublicKey;
 
 import javax.crypto.Cipher;
 
-import org.apache.commons.lang3.math.NumberUtils;
-
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.jce.Providers;
 import code.ponfee.commons.jce.RSASignAlgorithms;
@@ -238,7 +236,7 @@ public final class RSACryptor {
             ByteArrayOutputStream out = new ByteArrayOutputStream(data.length);
             byte[] block;
             for (int offSet = 0, len = data.length; offSet < len; offSet += blockSize) {
-                block = cipher.doFinal(data, offSet, NumberUtils.min(blockSize, len - offSet));
+                block = cipher.doFinal(data, offSet, Math.min(blockSize, len - offSet));
                 out.write(block, 0, block.length);
             }
             out.flush();
