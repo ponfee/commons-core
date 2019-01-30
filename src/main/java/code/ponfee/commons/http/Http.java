@@ -53,6 +53,12 @@ import java.util.Map;
  * Restful：https://www.cnblogs.com/pixy/p/4838268.html<p>
  * 
  * http工具类<p>
+ * 
+ * Spring RestTemplate<p>
+ * Fluent Api<p>
+ * HttpClient Api<p>
+ * OK Http Api<p>
+ * 
  * @author Ponfee
  */
 public final class Http {

@@ -103,11 +103,11 @@ public final class PageHandler {
     }
 
     public static int computeTotalPages(long totalRecords, int pageSize) {
-        return (int) ((totalRecords + pageSize - 1) / pageSize);
+        return pageSize == 0 ? 0 : (int) ((totalRecords + pageSize - 1) / pageSize);
     }
 
     public static int computePageNum(long offset, int limit) {
-        return (int) offset / limit + 1;
+        return limit == 0 ? 0 : (int) offset / limit + 1;
     }
 
     public static int computeOffset(long pageNum, int pageSize) {

@@ -317,27 +317,6 @@
         <!-- ====================excel poi==================== -->
 
 
-        <!-- ====================邮件相关==================== -->
-        <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>javax.mail</artifactId>
-            <version>1.6.2</version>
-        </dependency>
-
-        <!-- dns邮箱验证 -->
-        <dependency>
-            <groupId>dnsjava</groupId>
-            <artifactId>dnsjava</artifactId>
-            <version>2.1.8</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-net</groupId>
-            <artifactId>commons-net</artifactId>
-            <version>3.6</version>
-        </dependency>
-        <!-- ====================邮件相关==================== -->
-
-
         <!-- ====================序列化==================== -->
         <dependency><!-- kryo -->
             <groupId>com.esotericsoftware</groupId>

@@ -27,7 +27,7 @@ public class ProtostuffRedisSerializer<T> implements RedisSerializer<T> {
             protostuff = this.protostuffPool.borrowObject();
             return protostuff.serialize(obj);
         } catch (Exception e) {
-            throw new SerializationException("", e);
+            throw new SerializationException(e.getMessage(), e);
         } finally {
             if (protostuff != null) {
                 this.protostuffPool.returnObject(protostuff);
@@ -43,7 +43,7 @@ public class ProtostuffRedisSerializer<T> implements RedisSerializer<T> {
             protostuff = this.protostuffPool.borrowObject();
             return (T) protostuff.deserialize(bytes);
         } catch (Exception e) {
-            throw new SerializationException("", e);
+            throw new SerializationException(e.getMessage(), e);
         } finally {
             if (protostuff != null) {
                 this.protostuffPool.returnObject(protostuff);
