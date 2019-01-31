@@ -116,12 +116,6 @@ public class StreamingExcelExtractor<T> extends ExcelExtractor<T> {
      * @param cell
      * @return
      */
-    /**
-     * 获取单元格的值
-     * 
-     * @param cell
-     * @return
-     */
     @Override
     protected String getStringCellValue(Cell cell) {
         if (cell == null) {

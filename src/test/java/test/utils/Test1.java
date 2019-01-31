@@ -3,7 +3,6 @@ package test.utils;
 import code.ponfee.commons.util.SecureRandoms;
 import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.codec.binary.Hex;
-import org.xbill.DNS.utils.base16;
 
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
@@ -35,7 +34,6 @@ public class Test1 {
         System.out.println(new Double((double)Long.MIN_VALUE).longValue() == Long.MIN_VALUE);
         byte[] b = SecureRandoms.nextBytes(11);
         System.out.println(new Base32().encodeToString(b));
-        System.out.println(base16.toString(b));
         System.out.println(Hex.encodeHexString(b));
         System.out.println(Integer.toBinaryString(tableSizeFor(1 << 30)));
         for (int i = 0; i < 1; i++) {

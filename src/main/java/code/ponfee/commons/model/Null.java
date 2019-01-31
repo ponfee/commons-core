@@ -17,7 +17,7 @@ package code.ponfee.commons.model;
 public final class Null {
 
     private Null() {
-        throw new AssertionError("Null cannot new instance.");
+        throw new AssertionError("Null cannot create instance.");
     }
 
 }

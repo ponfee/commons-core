@@ -25,6 +25,7 @@ import com.google.common.collect.Sets;
 
 import code.ponfee.commons.collect.Collects;
 import code.ponfee.commons.reflect.Fields;
+import code.ponfee.commons.util.Strings;
 
 /**
  * 节点树形结构
@@ -194,7 +195,7 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A>
         for (Iterator<E> iter = nodes.iterator(); iter.hasNext();) {
             BaseNode<T, A> node = iter.next();
 
-            if (!ignoreOrphan && super.isEmpty(node.getPid())) { // effect condition that pid is null
+            if (!ignoreOrphan && !Strings.isBlank(node.getPid())) { // effect condition that pid is null
                 // 不忽略孤儿节点且节点的父节点为空，则其父节点视为根节点（将其挂载到根节点下）
                 Fields.put(node, "pid", mountPidIfNull); // pid is final modify
             }

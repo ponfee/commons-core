@@ -11,9 +11,10 @@ package code.ponfee.commons.tree;
 import java.util.List;
 
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Preconditions;
+
+import code.ponfee.commons.util.Strings;
 
 /**
  * 基于树形结构节点的基类
@@ -36,9 +37,9 @@ public class BaseNode<T extends java.io.Serializable & Comparable<T>, A>
     protected List<T> path; // 节点路径list<nid>（父节点在前，末尾元素是节点本身的nid）
 
     protected int childLeafCount; // 子叶子节点数量（若为叶子节点则为1）
-    protected int leftLeafCount; // 左叶子节点数量（在其左边的所有叶子节点数量）
-    protected int treeNodeCount; // 整棵树的节点数量（包括根节点）
-    protected int treeMaxDepth; // 节点树的最大深度（包括自身层级）
+    protected int leftLeafCount;  // 左叶子节点数量（在其左边的所有叶子节点数量）
+    protected int treeNodeCount;  // 整棵树的节点数量（包括根节点）
+    protected int treeMaxDepth;   // 节点树的最大深度（包括自身层级）
 
     public BaseNode(T nid, T pid, int orders, A attach) {
         this(nid, pid, orders, true, attach);
@@ -46,7 +47,7 @@ public class BaseNode<T extends java.io.Serializable & Comparable<T>, A>
 
     public BaseNode(T nid, T pid, int orders, 
                     boolean enabled, A attach) {
-        Preconditions.checkArgument(isNotEmpty(nid), "节点编号不能为空");
+        Preconditions.checkArgument(!Strings.isBlank(nid), "节点编号不能为空");
         this.nid = nid;
         this.pid = pid;
         this.orders = orders;
@@ -57,17 +58,6 @@ public class BaseNode<T extends java.io.Serializable & Comparable<T>, A>
 
     public @Override BaseNode<T, A> clone() {
         return SerializationUtils.clone(this);
-    }
-
-    public boolean isEmpty(T id) {
-        if (id instanceof CharSequence) {
-            return StringUtils.isBlank((CharSequence) id);
-        }
-        return id == null;
-    }
-
-    public boolean isNotEmpty(T id) {
-        return !isEmpty(id);
     }
 
     // -----------------------------------------------getter/setter
