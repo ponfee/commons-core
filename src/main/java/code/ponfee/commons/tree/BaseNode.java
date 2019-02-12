@@ -8,6 +8,7 @@
 
 package code.ponfee.commons.tree;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -21,8 +22,8 @@ import code.ponfee.commons.util.Strings;
  * 
  * @author Ponfee
  */
-public class BaseNode<T extends java.io.Serializable & Comparable<T>, A>
-    implements java.io.Serializable {
+public class BaseNode<T extends Serializable & Comparable<T>, A>
+    implements Serializable {
 
     private static final long serialVersionUID = -4116799955526185765L;
 
@@ -32,7 +33,7 @@ public class BaseNode<T extends java.io.Serializable & Comparable<T>, A>
     protected final boolean enabled; // 状态（业务相关）：false无效；true有效；
     protected final A attach; // 附加节点（附加信息，与业务相关）
 
-    protected boolean available; // 是否可用（parent.available && this.enabled）
+    protected boolean available; // 是否可用（parent.available & this.enabled）
     protected int level; // 节点层级（以根节点为1开始，往下逐级加1）
     protected List<T> path; // 节点路径list<nid>（父节点在前，末尾元素是节点本身的nid）
 

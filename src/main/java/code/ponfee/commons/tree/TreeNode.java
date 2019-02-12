@@ -9,6 +9,7 @@
 package code.ponfee.commons.tree;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -20,10 +21,10 @@ import javax.annotation.Nonnull;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import code.ponfee.commons.collect.Collects;
 import code.ponfee.commons.reflect.Fields;
 import code.ponfee.commons.util.Strings;
 
@@ -61,19 +62,19 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A>
      */
     private TreeNode(BaseNode<T, A> node) {
         super(node.getNid(), node.getPid(), node.getOrders(), 
-              node.isEnabled(), node.attach); // self as attach
+              node.isEnabled(), node.attach);
         super.available = node.isAvailable();
     }
 
     // ---------------------------------------------------create root node
     public static <T extends Serializable & Comparable<T>, A> TreeNode<T, A> 
         createRoot(T nid) {
-        return new TreeNode<>(nid, null, 0, true);
+        return createRoot(nid, null, 0, true);
     }
 
     public static <T extends Serializable & Comparable<T>, A> TreeNode<T, A> 
         createRoot(T nid, T pid, int orders) {
-        return new TreeNode<>(nid, pid, orders, true);
+        return createRoot(nid, pid, orders, true);
     }
 
     public static <T extends Serializable & Comparable<T>, A> TreeNode<T, A> 
@@ -215,7 +216,7 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A>
                 child.available = this.available && child.isEnabled();
 
                 // 子节点路径=节点路径+自身节点
-                child.path = Collects.add(this.path, this.nid);
+                child.path = plus(this.path, this.nid);
                 child.level = this.level + 1;
                 this.children.add(child); // 挂载子节点
 
@@ -233,7 +234,7 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A>
             }
         }
 
-        this.path = Collects.add(this.path, this.nid); // 节点路径追加自身的ID
+        this.path = plus(this.path, this.nid); // 节点路径追加自身的ID
     }
 
     private void inherit(List<FlatNode<T, A>> collect) {
@@ -285,7 +286,7 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A>
                 sumTreeNodeCount += child.treeNodeCount;
             }
             this.childLeafCount = sumChildLeafCount;     // 子节点的叶子节点之和
-            this.treeMaxDepth   = maxChildTreeDepth + 1; // 为子节点的上一层级
+            this.treeMaxDepth   = maxChildTreeDepth + 1; // 加上父（自身）节点层级
             this.treeNodeCount  = sumTreeNodeCount + 1;  // 要包含节点本身
         } else { // 叶子节点
             this.treeNodeCount = 1;
@@ -299,4 +300,19 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A>
         return children;
     }
 
+    /**
+     * Returns the ImmutableList of merged collection and object
+     * 
+     * @param coll
+     * @param obj
+     * @return
+     */
+    private static <E> List<E> plus(Collection<E> coll, E obj) {
+        ImmutableList.Builder<E> builder = ImmutableList.builder();
+        if (coll != null) {
+            builder.addAll(coll);
+        }
+        builder.add(obj);
+        return builder.build();
+    }
 }

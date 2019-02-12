@@ -1,6 +1,7 @@
 package test.http;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -86,12 +87,18 @@ public class HttpTester {
         System.out.println(resp);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         //System.out.println(Bytes.hexDump(Http.get("http://www.apachelounge.com/download/VC14/binaries/httpd-2.4.25-win64-VC14.zip").download()));
-        //Http.get("https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.5.1.zip").download(new FileOutputStream("d:/elasticsearch-5.5.1.zip"));
+        
+        //Http http = Http.get("http://www.baidu.com");
+        //http.download(new FileOutputStream("d:/baidu.com.txt"));
+        //System.out.println(http.getStatus());
+        
         Http http = Http.get("http://www.stockstar.com");
         System.out.println(Bytes.hexDump(http.download()));
         System.out.println(http.getRespHeaders());
+        System.out.println(http.getStatus());
+        
         //Http.get("http://www.baidu.com").download("d:/baidu.html");
         //System.out.println(Http.get("http://localhost:8081/audit/getImg").data(ImmutableMap.of("imgPath", "imgPath")).request());
         //String[] params = new String[]{"{\"analyze_type\":\"mine_all_cust\",\"date_type\":4,\"class_name\":\"\"}", "{\"analyze_type\":\"mine_all_cust\",\"date_type\":4,\"class_name\":\"衬衫\"}"};

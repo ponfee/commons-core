@@ -222,7 +222,4 @@ public final class PaginationHtmlBuilder {
         return MessageFormat.format(PAGE_ARROW, url, pageNum, pageSize, params);
     }
 
-    public static void main(String[] args) {
-        System.out.println(PAGINATION_HTML);
-    }
 }

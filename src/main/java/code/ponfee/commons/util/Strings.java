@@ -339,7 +339,9 @@ public class Strings {
      * @param camelCaseName 驼峰名
      * @return the underscore name
      * @see CaseFormat#to(CaseFormat, String)
+     * @deprecated instead of CaseFormat#to(CaseFormat, String)
      */
+    @Deprecated
     public static String underscoreName(String camelCaseName) {
         if (StringUtils.isEmpty(camelCaseName)) {
             return camelCaseName;
@@ -369,7 +371,9 @@ public class Strings {
      * @param underscoreName 下划线名
      * @return the camel case name
      * @see CaseFormat#to(CaseFormat, String)
+     * @deprecated instead of CaseFormat#to(CaseFormat, String)
      */
+    @Deprecated
     public static String camelCaseName(String underscoreName) {
         if (StringUtils.isEmpty(underscoreName)) {
             return underscoreName;

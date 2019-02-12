@@ -19,6 +19,8 @@ import io.protostuff.runtime.RuntimeSchema;
 /**
  * Non thread safe, should be use with pool
  * 
+ * @see ProtostuffPool
+ * 
  * @author Ponfee
  */
 public class Protostuff {
@@ -39,20 +41,19 @@ public class Protostuff {
         }
 
         wrapper.data = obj;
-        try {
-            return ProtostuffIOUtil.toByteArray(wrapper, schema, buffer);
-        } finally {
-            buffer.clear();
-        }
+        byte[] bytes = ProtostuffIOUtil.toByteArray(wrapper, schema, buffer);
+        buffer.clear();
+        return bytes;
     }
 
-    public Object deserialize(byte[] bytes) {
+    @SuppressWarnings("unchecked")
+    public <T> T deserialize(byte[] bytes) {
         if (ArrayUtils.isEmpty(bytes)) {
             return null;
         }
         ProtostuffWrapper wrapper = schema.newMessage();
         ProtostuffIOUtil.mergeFrom(bytes, wrapper, schema);
-        return wrapper.data;
+        return (T) wrapper.data;
     }
 
     private static final class ProtostuffWrapper implements Serializable {

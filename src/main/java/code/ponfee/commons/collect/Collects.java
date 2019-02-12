@@ -19,12 +19,12 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.poi.ss.formula.functions.T;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import code.ponfee.commons.model.Page;
+import code.ponfee.commons.model.PageHandler;
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.reflect.Fields;
 import code.ponfee.commons.util.ObjectUtils;
@@ -36,6 +36,18 @@ import code.ponfee.commons.util.ObjectUtils;
 public final class Collects {
     private Collects() {}
 
+    /**
+     * Returns a map contains key specified key 
+     * 
+     * @param map the map
+     * @param key the string of key
+     * @return {@code true} means constains
+     */
+    public static boolean hasKey(Map<?, ?> map, String key) {
+        return map != null && map.containsKey(key);
+    }
+
+    // ----------------------------------------------------------------map to array
     /**
      * map转数组
      * @param map
@@ -114,6 +126,7 @@ public final class Collects {
         return source.copy(source.getData().transform(map -> map2array(map, fields)));
     }
 
+    // ----------------------------------------------------------------flat map
     /**
      * 指定对象字段keyField的值作为key，字段valueField的值作为value
      * 
@@ -141,6 +154,7 @@ public final class Collects {
         ));
     }
 
+    // ----------------------------------------------------------------flat list
     /**
      * 获取对象指定字段的值
      * 
@@ -168,6 +182,7 @@ public final class Collects {
         ).collect(Collectors.toList());
     }
 
+    // ----------------------------------------------------------------of ...
     /**
      * 将对象指定字段转为map
      * 
@@ -192,7 +207,7 @@ public final class Collects {
      * @param fields
      * @return
      */
-    public static <E> Object[] toArray(E bean, String... fields) {
+    public static <E> Object[] ofArray(E bean, String... fields) {
         if (bean == null || fields == null) {
             return null;
         }
@@ -341,6 +356,8 @@ public final class Collects {
                 result.add(Array.get(obj, i));
             }
             return result;
+        } else if (obj instanceof Collection) {
+            return new ArrayList<>((Collection<?>) obj);
         } else {
             return Collections.singletonList(obj);
         }
@@ -373,22 +390,6 @@ public final class Collects {
     }
 
     /**
-     * Returns the ImmutableList of merged collection and object
-     * 
-     * @param coll
-     * @param obj
-     * @return
-     */
-    public static <E> List<E> add(Collection<E> coll, E obj) {
-        ImmutableList.Builder<E> builder = ImmutableList.builder();
-        if (coll != null) {
-            builder.addAll(coll);
-        }
-        builder.add(obj);
-        return builder.build();
-    }
-
-    /**
      * Splinter the collection to batch
      * 
      * @param coll the collection
@@ -396,7 +397,7 @@ public final class Collects {
      * @return batch collection
      */
     public static List<List<T>> splinter(Collection<T> coll, int batchSize) {
-        List<List<T>> result = new ArrayList<>((coll.size() + batchSize - 1) / batchSize);
+        List<List<T>> result = new ArrayList<>(PageHandler.computeTotalPages(coll.size(), batchSize));
         List<T> batch = new ArrayList<>(batchSize);
         for (T item : coll) {
             batch.add(item);

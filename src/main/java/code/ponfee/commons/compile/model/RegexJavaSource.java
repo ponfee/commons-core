@@ -12,9 +12,13 @@ public class RegexJavaSource extends JavaSource {
 
     private static final long serialVersionUID = -9205215223349262114L;
 
+    public static final String VALID_NAME = "[a-zA-Z_$][a-zA-Z0-9_$]*";
+    public static final String VALID_PKGE = "(" + VALID_NAME + "(\\." + VALID_NAME + ")*)*";
+    public static final Pattern QUALIFIER_PATTERN = Pattern.compile("^" + VALID_PKGE + VALID_NAME + "$");
+
     /** 正则提取：(?m)启用多行 */
     private static final Pattern PACKAGE_NAME = Pattern.compile("(?m)^\\s*package\\s+([^;]+);");
-    private static final Pattern PUBLIC_CLASS = Pattern.compile("(?m)^\\s*public(((\\s+strictfp)?(\\s+(final|abstract))?)|((\\s+(final|abstract))?(\\s+strictfp)?))\\s+class\\s+\\b([a-zA-Z_$][a-zA-Z0-9_$]*)\\b(\\s+extends\\s+\\b([a-zA-Z_$][a-zA-Z0-9_$]*)\\b)?(\\s+implements\\s+\\b([a-zA-Z_$][a-zA-Z0-9_$]*)\\b(\\s*,\\s*\\b([a-zA-Z_$][a-zA-Z0-9_$]*)\\b\\s*)*)?\\s*\\{");
+    private static final Pattern PUBLIC_CLASS = Pattern.compile("(?m)^\\s*public(((\\s+strictfp)?(\\s+(final|abstract))?)|((\\s+(final|abstract))?(\\s+strictfp)?))\\s+class\\s+\\b(" + VALID_NAME + ")\\b(\\s+extends\\s+\\b(" + VALID_NAME + ")\\b)?(\\s+implements\\s+\\b(" + VALID_NAME + ")\\b(\\s*,\\s*\\b(" + VALID_NAME + ")\\b\\s*)*)?\\s*\\{");
 
     public RegexJavaSource(String sourceCode) {
         super(sourceCode);

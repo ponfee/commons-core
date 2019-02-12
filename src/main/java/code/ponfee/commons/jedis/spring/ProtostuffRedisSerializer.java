@@ -35,13 +35,12 @@ public class ProtostuffRedisSerializer<T> implements RedisSerializer<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public T deserialize(byte[] bytes) throws SerializationException {
         Protostuff protostuff = null;
         try {
             protostuff = this.protostuffPool.borrowObject();
-            return (T) protostuff.deserialize(bytes);
+            return protostuff.deserialize(bytes);
         } catch (Exception e) {
             throw new SerializationException(e.getMessage(), e);
         } finally {
