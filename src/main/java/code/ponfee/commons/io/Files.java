@@ -65,7 +65,8 @@ public final class Files {
     public static final String SYSTEM_LINE_SEPARATOR; // system file line separator
     static {
         /*String separator = java.security.AccessController.doPrivileged(
-                               new sun.security.action.GetPropertyAction("line.separator"));
+            new sun.security.action.GetPropertyAction("line.separator")
+        );
         if (separator == null || separator.length() == 0) {
             separator = System.getProperty("line.separator", "\n");
         }
@@ -97,7 +98,7 @@ public final class Files {
                 file.setLastModified(System.currentTimeMillis());
             }
         } else if (file.isFile()) {
-            throw new IllegalStateException("file [" + file.getAbsolutePath() + "] not a dir");
+            throw new IllegalStateException(file.getAbsolutePath() + " is a directory.");
         }
         return file;
     }
@@ -130,8 +131,9 @@ public final class Files {
                 throw new IllegalStateException(e);
             }
         } else if (file.isDirectory()) {
-            throw new IllegalStateException("dir [" + file.getAbsolutePath() + "] not a file");
+            throw new IllegalStateException(file.getAbsolutePath() + " is a directory.");
         }
+
         return file;
     }
 

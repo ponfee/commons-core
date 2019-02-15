@@ -1,16 +1,5 @@
 package code.ponfee.commons.http;
 
-import code.ponfee.commons.io.Files;
-import code.ponfee.commons.json.Jsons;
-import com.fasterxml.jackson.databind.JavaType;
-import com.google.common.base.Preconditions;
-
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,6 +14,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import com.fasterxml.jackson.databind.JavaType;
+import com.google.common.base.Preconditions;
+
+import code.ponfee.commons.io.Files;
+import code.ponfee.commons.json.Jsons;
+import code.ponfee.commons.util.Enums;
 
 /**
  * <pre>
@@ -79,7 +82,9 @@ public final class Http {
     private String accept; // 接收类型
     private SSLSocketFactory sslSocketFactory; // 走SSL/TSL通道
 
+    // ----------------------------------------------------------response
     private Map<String, List<String>> respHeaders;
+    private HttpStatus status;
 
     private Http(String url, HttpMethod method) {
         this.url = url;
@@ -113,6 +118,14 @@ public final class Http {
 
     public static Http options(String url) {
         return new Http(url, HttpMethod.OPTIONS);
+    }
+
+    public static Http of(String url, String method) {
+        return of(url, Enums.ofIgnoreCase(HttpMethod.class, method, HttpMethod.GET));
+    }
+
+    public static Http of(String url, HttpMethod method) {
+        return new Http(url, method);
     }
 
     // ----------------------------header--------------------------
@@ -337,7 +350,7 @@ public final class Http {
         BufferedOutputStream bos = null;
         HttpRequest request = request0();
         try {
-            if (request.ok() || request.created()) {
+            if (status == HttpStatus.OK || status == HttpStatus.CREATED) {
                 /*// 获取文件名
                 String disposition = UrlCoder.decodeURIComponent(request.header("content-Disposition"));
                 Matcher matcher = FILENAME_PATTERN.matcher(disposition);
@@ -388,6 +401,10 @@ public final class Http {
         List<String> values = respHeaders.get(name);
         return (values == null || values.isEmpty())
                ? null : values.get(0);
+    }
+
+    public HttpStatus getStatus() {
+        return status;
     }
 
     // ------------------------------------------------------private methods
@@ -445,6 +462,7 @@ public final class Http {
             request.part(part.formName, part.fileName, part.partType, part.stream);
         }
 
+        status = request.status();
         return request;
     }
 
@@ -462,7 +480,7 @@ public final class Http {
     /**
      * Http method
      */
-    private enum HttpMethod {
+    public static enum HttpMethod {
         GET, POST, PUT, DELETE, HEAD, TRACE, OPTIONS
     }
 

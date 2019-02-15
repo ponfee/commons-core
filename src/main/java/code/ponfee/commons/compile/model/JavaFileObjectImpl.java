@@ -42,7 +42,6 @@ public final class JavaFileObjectImpl extends SimpleJavaFileObject {
         if (source == null) {
             throw new UnsupportedOperationException();
         }
-
         return source;
     }
 

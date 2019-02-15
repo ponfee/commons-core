@@ -28,7 +28,7 @@ public class JdkCompiler implements JavaSourceCompiler {
     public JdkCompiler() {
         options = new ArrayList<>();
         //options.add("-target");
-        //options.add("1.6");
+        //options.add("1.8");
     }
 
     @Override

@@ -19,7 +19,6 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.poi.ss.formula.functions.T;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -388,22 +387,6 @@ public final class Collects {
                      .filter(Objects::nonNull)
                      .flatMap(Arrays::stream)
                      .toArray(generator);
-    }
-
-    /**
-     * Returns the ImmutableList of merged collection and object
-     * 
-     * @param coll
-     * @param obj
-     * @return
-     */
-    public static <E> List<E> add(Collection<E> coll, E obj) {
-        ImmutableList.Builder<E> builder = ImmutableList.builder();
-        if (coll != null) {
-            builder.addAll(coll);
-        }
-        builder.add(obj);
-        return builder.build();
     }
 
     /**
