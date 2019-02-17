@@ -8,6 +8,7 @@
 
 package code.ponfee.commons.tree;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -21,8 +22,8 @@ import code.ponfee.commons.util.Strings;
  * 
  * @author Ponfee
  */
-public class BaseNode<T extends java.io.Serializable & Comparable<T>, A>
-    implements java.io.Serializable, Cloneable {
+public class BaseNode<T extends Serializable & Comparable<T>, A>
+    implements Serializable {
 
     private static final long serialVersionUID = -4116799955526185765L;
 

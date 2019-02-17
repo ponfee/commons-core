@@ -1,6 +1,5 @@
 package code.ponfee.commons.jedis.spring;
 
-import java.security.DigestException;
 import java.security.MessageDigest;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
@@ -12,7 +11,7 @@ import code.ponfee.commons.jce.digest.DigestUtils;
 import code.ponfee.commons.math.Maths;
 
 /**
- * Bloom filter for redis
+ * Bloom filter based redis
  * 
  * @author Ponfee
  */
@@ -140,25 +139,20 @@ public class RedisBloomFilter {
     public static int[] createHashes(byte[] element, int hashes) {
         int[] result = new int[hashes];
         byte salt = 0;
-        byte[] output = new byte[DIGEST.byteSize()];
-        try {
-            MessageDigest md = DigestUtils.getMessageDigest(DIGEST, null);
-            for (int k = 0, n = output.length / 4; k < hashes;) {
-                md.update(salt++);
-                md.update(element);
-                md.digest(output, 0, output.length);
-                for (int i = 0, h; i < n && k < hashes; i++) {
-                    h = 0;
-                    for (int j = i << 2, m = (i << 2) + 4; j < m; j++) {
-                        h <<= 8;
-                        h |= ((int) output[j]) & 0xFF;
-                    }
-                    result[k] = h;
-                    k++;
+        byte[] output;
+        MessageDigest md = DigestUtils.getMessageDigest(DIGEST, null);
+        for (int k = 0, n = DIGEST.byteSize() / 4; k < hashes;) {
+            md.update(salt++);
+            output = md.digest(element);
+            for (int i = 0, h; i < n && k < hashes; i++) {
+                h = 0;
+                for (int j = i << 2, m = (i << 2) + 4; j < m; j++) {
+                    h <<= 8;
+                    h |= ((int) output[j]) & 0xFF;
                 }
+                result[k] = h;
+                k++;
             }
-        } catch (DigestException e) {
-            throw new RuntimeException(e);
         }
         return result;
     }

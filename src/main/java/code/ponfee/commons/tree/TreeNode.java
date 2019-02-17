@@ -62,19 +62,19 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A>
      */
     private TreeNode(BaseNode<T, A> node) {
         super(node.getNid(), node.getPid(), node.getOrders(), 
-              node.isEnabled(), node.attach); // self as attach
+              node.isEnabled(), node.attach);
         super.available = node.isAvailable();
     }
 
     // ---------------------------------------------------create root node
     public static <T extends Serializable & Comparable<T>, A> TreeNode<T, A> 
         createRoot(T nid) {
-        return new TreeNode<>(nid, null, 0, true);
+        return createRoot(nid, null, 0, true);
     }
 
     public static <T extends Serializable & Comparable<T>, A> TreeNode<T, A> 
         createRoot(T nid, T pid, int orders) {
-        return new TreeNode<>(nid, pid, orders, true);
+        return createRoot(nid, pid, orders, true);
     }
 
     public static <T extends Serializable & Comparable<T>, A> TreeNode<T, A> 

@@ -31,15 +31,16 @@ public class CglibUtils {
     public static void copyProperties(Object source, Object target) {
         /*Long beanKey = ((long) System.identityHashCode(source.getClass()) << 32) 
                        | System.identityHashCode(target.getClass());*/
+        Class<?> sclass = source.getClass(), tclass = target.getClass();
         ObjectArrayWrapper<Class<?>> beanKey = ObjectArrayWrapper.create(
-            source.getClass(), target.getClass()
+            sclass, tclass
         );
         BeanCopier copier = COPIER_CACHE.get(beanKey);
         if (copier == null) {
             synchronized (COPIER_CACHE) {
                 copier = COPIER_CACHE.get(beanKey);
                 if (copier == null) {
-                    copier = BeanCopier.create(source.getClass(), target.getClass(), false);
+                    copier = BeanCopier.create(sclass, tclass, false);
                     COPIER_CACHE.put(beanKey, copier);
                 }
             }
