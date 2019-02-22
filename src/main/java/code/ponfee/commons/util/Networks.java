@@ -188,15 +188,23 @@ public final class Networks {
      * @return if -1 then not find available port
      *         else returns available port
      */
-    public static int getAvailablePort(int startPort) {
+    public static int findAvailablePort(int startPort) {
         if (startPort < 0 || startPort > 65535) {
             return -1;
         }
-        for (; startPort < 65535; startPort++) {
-            if (isAvailablePort(startPort)) {
-                return startPort;
+
+        for (int port = startPort; port <= 65535; port++) {
+            if (isAvailablePort(port)) {
+                return port;
             }
         }
+
+        for (int port = startPort - 1; port >= 0; port--) {
+            if (isAvailablePort(port)) {
+                return port;
+            }
+        }
+
         return -1;
     }
 
