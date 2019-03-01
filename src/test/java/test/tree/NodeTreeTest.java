@@ -56,8 +56,8 @@ public class NodeTreeTest {
         System.out.println(Jsons.toJson(root));
         root.mount(list);
         System.out.println(Jsons.toJson(root));
-        System.out.println(Jsons.toJson(root.flatInherit()));
-        System.out.println(Jsons.toJson(root.flatHierarchy()));
+        System.out.println(Jsons.toJson(root.dfsFlat()));
+        System.out.println(Jsons.toJson(root.bfsFlat()));
     }
 
     @Test

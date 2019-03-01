@@ -11,13 +11,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.poi.ss.formula.functions.T;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -162,7 +162,7 @@ public final class Collects {
      * @param field
      * @return
      */
-    @SuppressWarnings({ "unchecked", "hiding" })
+    @SuppressWarnings({ "unchecked" })
     public static <T, E> List<T> flatList(List<E> beans, String field) {
         if (beans == null) {
             return null;
@@ -225,7 +225,6 @@ public final class Collects {
      * @param coll2 the collection 2
      * @return a list of the two collection intersect 
      */
-    @SuppressWarnings("hiding")
     public static <T> List<T> intersect(Collection<T> coll1, Collection<T> coll2) {
         return coll1.stream().filter(coll2::contains).collect(Collectors.toList());
     }
@@ -236,7 +235,7 @@ public final class Collects {
      * @param array2
      * @return
      */
-    @SuppressWarnings({ "unchecked", "hiding" })
+    @SuppressWarnings({ "unchecked" })
     public static <T> T[] intersect(T[] array1, T[] array2) {
         List<T> list = Stream.of(array1).filter(
             t -> ArrayUtils.contains(array2, t)
@@ -253,7 +252,6 @@ public final class Collects {
      * @param list2
      * @return
      */
-    @SuppressWarnings({ "hiding" })
     public static <T> List<T> union(Collection<T> list1, Collection<T> list2) {
         Set<T> sets = Sets.newHashSet(list1);
         sets.addAll(list2);
@@ -268,7 +266,6 @@ public final class Collects {
      * @param list2
      * @return
      */
-    @SuppressWarnings({ "hiding" })
     public static <T> List<T> different(Collection<T> list1, Collection<T> list2) {
         List<T> list = list1.stream().filter(ObjectUtils.not(list2::contains))
                                      .collect(Collectors.toList());
@@ -286,7 +283,6 @@ public final class Collects {
      * @param set2
      * @return
      */
-    @SuppressWarnings("hiding")
     public static <T> Set<T> different(Set<T> set1, Set<T> set2) {
         Set<T> diffSet = Sets.newHashSet(Sets.difference(set1, set2));
         diffSet.addAll(Sets.difference(set2, set1));
@@ -337,7 +333,8 @@ public final class Collects {
      * @param args
      * @return
      */
-    public static T[] toArray(T... args) {
+    @SuppressWarnings("unchecked")
+    public static <T> T[] toArray(T... args) {
         return args;
     }
 
@@ -371,7 +368,7 @@ public final class Collects {
      * @param arrays the multiple generic object array
      * @return a new array of merged
      */
-    @SuppressWarnings({ "unchecked", "hiding" })
+    @SuppressWarnings({ "unchecked" })
     public static <T> T[] concat(IntFunction<T[]> generator, T[]... arrays) {
         //Class<?> type = arrays[0].getClass().getComponentType();
         //return list.toArray((T[]) Array.newInstance(type, list.size()));
@@ -396,7 +393,7 @@ public final class Collects {
      * @param batchSize the batch size
      * @return batch collection
      */
-    public static List<List<T>> splinter(Collection<T> coll, int batchSize) {
+    public static <T> List<List<T>> splinter(Collection<T> coll, int batchSize) {
         List<List<T>> result = new ArrayList<>(PageHandler.computeTotalPages(coll.size(), batchSize));
         List<T> batch = new ArrayList<>(batchSize);
         for (T item : coll) {
@@ -413,13 +410,27 @@ public final class Collects {
     }
 
     /**
+     * Splinter the List to batch
+     * 
+     * @param list the collection
+     * @param batchSize the batch size
+     * @return batch collection
+     */
+    public static <T> List<List<T>> splinter(List<T> list, int batchSize) {
+        List<List<T>> result = new ArrayList<>(PageHandler.computeTotalPages(list.size(), batchSize));
+        for (int i = 0, n = list.size(); i < n; i += batchSize) {
+            result.add(list.subList(i, Math.min(i + batchSize, n)));
+        }
+        return result;
+    }
+
+    /**
      * Puts the element to list specified index
      * 
      * @param list a list
      * @param index spec index
      * @param obj the element
      */
-    @SuppressWarnings("hiding")
     public static <T> void set(List<T> list, int index, T obj) {
         int size;
         if (index == (size = list.size())) {
@@ -432,6 +443,24 @@ public final class Collects {
             }
             list.add(obj);
         }
+    }
+
+    /**
+     * Compute cartesian product
+     * 
+     * @param list1 the list of type A
+     * @param list2 the list of type B
+     * @param funcs convert A and B to T
+     * @return a list of type T
+     */
+    public static <A, B, T> List<T> cartesian(List<A> list1, List<B> list2, BiFunction<A, B, T> funcs) {
+        List<T> product = new ArrayList<>(list1.size() * list2.size());
+        for (A a : list1) {
+            for (B b : list2) {
+                product.add(funcs.apply(a, b));
+            }
+        }
+        return product;
     }
 
 }

@@ -11,7 +11,6 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -297,10 +296,8 @@ public class SqlMapper {
          */
         private void newUpdateMappedStatement(String msId, SqlSource sqlSource, 
                                               SqlCommandType sqlCommandType) {
-            List<ResultMap> list = Arrays.asList(
-                new ResultMap.Builder(
-                    configuration, "defaultResultMap", int.class, new ArrayList<>(0)
-                ).build()
+            List<ResultMap> list = Collections.singletonList(
+                new ResultMap.Builder(configuration, "defaultResultMap", int.class, new ArrayList<>(0)).build()
             );
             MappedStatement ms = new MappedStatement.Builder(
                 configuration, msId, sqlSource, sqlCommandType

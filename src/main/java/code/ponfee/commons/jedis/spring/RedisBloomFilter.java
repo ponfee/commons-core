@@ -190,10 +190,7 @@ public class RedisBloomFilter {
         if (this.expectedInsertions != other.expectedInsertions) {
             return false;
         }
-        if (this.numberOfHashFunctions != other.numberOfHashFunctions) {
-            return false;
-        }
-        return true;
+        return this.numberOfHashFunctions == other.numberOfHashFunctions;
     }
 
     /**

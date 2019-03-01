@@ -15,16 +15,16 @@
     <properties>
         <project.encoding>UTF-8</project.encoding>
         <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
-        <spring.version>4.3.21.RELEASE</spring.version>
-        <poi.version>4.0.0</poi.version>
+        <spring.version>4.3.22.RELEASE</spring.version>
+        <poi.version>4.0.1</poi.version>
         <!-- log4j2用2.11.0版本jetty报错（用2.8.2版本解决此问题）：Error scanning entry 
              META-INF/versions/9/org/apache/logging/log4j/util/ProcessIdUtil.class from jar 
         -->
         <!-- <log4j2.version>2.8.2</log4j2.version> -->
-        <log4j2.version>2.11.0</log4j2.version>
-        <slf4j.version>1.7.25</slf4j.version>
+        <log4j2.version>2.11.2</log4j2.version>
+        <slf4j.version>1.7.26</slf4j.version>
         <java.version>1.8</java.version>
-        <bouncycastle.version>1.60</bouncycastle.version>
+        <bouncycastle.version>1.61</bouncycastle.version>
     </properties>
 
     <profiles>
@@ -38,13 +38,13 @@
                 <repository>
                     <!-- <servers>
                         <server>
-                            <id>sf-nexus-snapshots</id>
+                            <id>nexus-snapshots</id>
                             <username>username</username>
                             <password>password</password>
                         </server>
                     </servers> -->
-                    <id>sf-nexus-snapshots</id>
-                    <url>http://nexus.sf-express.com/nexus/content/repositories/snapshots/</url>
+                    <id>aliyun-nexus-snapshots</id>
+                    <url>http://maven.aliyun.com/nexus/content/repositories/snapshots/</url>
                 </repository>
             </distributionManagement>
             <properties>
@@ -59,13 +59,13 @@
                 <repository>
                     <!-- <servers>
                         <server>
-                            <id>sf-nexus-releases</id>
+                            <id>nexus-releases</id>
                             <username>username</username>
                             <password>password</password>
                         </server>
                     </servers> -->
-                    <id>sf-nexus-releases</id>
-                    <url>http://nexus.sf-express.com/nexus/content/repositories/releases/</url>
+                    <id>aliyun-nexus-releases</id>
+                    <url>http://maven.aliyun.com/nexus/content/repositories/releases/</url>
                 </repository>
             </distributionManagement>
             <properties>
@@ -179,7 +179,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
-            <version>4.2</version>
+            <version>4.3</version>
         </dependency>
 
         <!-- servlet -->
@@ -207,7 +207,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>27.0.1-jre</version>
+            <version>27.1-jre</version>
         </dependency>
 
         <!-- joda-time -->
@@ -407,7 +407,7 @@
         <dependency>
             <groupId>aspose</groupId>
             <artifactId>words-jdk16</artifactId>
-            <version>1.0.0</version>
+            <version>1.0</version>
             <!-- <scope>system</scope>
             <systemPath>${pom.basedir}/lib/aspose.words.jdk16.jar</systemPath> -->
         </dependency>
@@ -531,7 +531,7 @@
         <dependency>
             <groupId>third-jce</groupId>
             <artifactId>third-jce</artifactId>
-            <version>1.0.0</version>
+            <version>1.0</version>
             <!-- <scope>system</scope>
             <systemPath>${pom.basedir}/lib/third-jce-1.0.0.jar</systemPath> -->
         </dependency>
@@ -541,20 +541,6 @@
             <version>1.11</version>
         </dependency>
         <!-- ====================加解密==================== -->
-
-        <!-- jdk源码动态编译 -->
-        <dependency>
-            <groupId>com.sun</groupId>
-            <artifactId>tools</artifactId>
-            <version>${java.version}</version>
-            <scope>system</scope>
-            <systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy</artifactId>
-            <version>2.5.6</version>
-        </dependency>
 
         <!-- zip压缩 -->
         <dependency>

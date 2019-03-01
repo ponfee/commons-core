@@ -60,11 +60,8 @@ public class LiteDevice {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("[LiteDevice ");
-        builder.append("type").append("=").append(this.deviceType);
-        builder.append("]");
-        return builder.toString();
+        return new StringBuilder().append("[LiteDevice type=")
+             .append(this.deviceType).append("]").toString();
     }
 
     private final DeviceType deviceType;

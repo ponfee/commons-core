@@ -87,6 +87,63 @@ public class HttpTester {
         System.out.println(resp);
     }
 
+    @Test // 创建个性大屏
+    public void test11() throws IOException {
+        String url = "http://10.118.40.20:8080/customizedScreen/addScreenInfo";
+        String resp = Http.post(url)
+            .addParam("activityId", "")
+            .addParam("screenId", "7")
+            .addParam("activityName", "test_ponfee4")
+            .addParam("activityStartDate", "2019-03-08")
+            .addParam("activityEndDate", "2019-03-13")
+            .addParam("showTop", "3")
+            .addParam("monthlyCard", "2017112915,9999999999")
+            .addParam("expressProductsStr", "SE0004,顺丰特惠")
+            .addParam("keyword", "kw")
+            .addParam("expressAddress", "北京市_北京市")
+            .addParam("page_src", "2019-03-08\\4b480f74-6752-495a-ae76-04ef0e2d436f-1061493_7.jpg")
+            .addParam("edit_src", "edit_src")
+            .addHeader("Cookie", "JSESSIONID=1j8qfy7sh1jf61n5fgc25zwjo4")
+            .request();
+        System.out.println(resp);
+    }
+    
+    @Test // 创建仓储大屏
+    public void test12() throws IOException {
+        String url = "http://10.118.40.20:8080/battleRoom/saveActiveInfo2";
+        String resp = Http.post(url)
+            .addParam("activeName", "test3423432")
+            .addParam("activeReady", "2019-02-24")
+            .addParam("activeDate", "2019-02-28")
+            .addParam("activeDay", "2")
+            .addParam("activeNum", "12")
+            .addParam("act_warehouseCode", "DV1,DV2")
+            .addParam("active_warahouseName", "监视器仓库1,监视器仓库2")
+            .addParam("active_sku", "67445276542155002,77445276542155003")
+            .addParam("warehouseCodes", "DV1,DV2")
+            .addParam("skus", "67445276542155002,77445276542155003")
+            .addHeader("Cookie", "JSESSIONID=1j8qfy7sh1jf61n5fgc25zwjo4")
+            .request();
+        System.out.println(resp);
+    }
+    
+    @Test // 创建快递大屏
+    public void test13() throws IOException {
+        String url = "http://10.118.40.20:8080/battleRoomExpress/saveActiveInfo";
+        String resp = Http.post(url)
+            .addParam("activeName", "test3423432")
+            .addParam("activeReady", "2019-02-24")
+            .addParam("activeDate", "2019-02-28")
+            .addParam("activeDay", "2")
+            .addParam("activeState", "0")
+            .addParam("activeNum", "12")
+            .addParam("id", "0")
+            .addParam("customerCodes", "2017112815,2017112915,9999999999,3333333333,5555555555,0203002395")
+            .addHeader("Cookie", "JSESSIONID=1j8qfy7sh1jf61n5fgc25zwjo4")
+            .request();
+        System.out.println(resp);
+    }
+    
     public static void main(String[] args) throws FileNotFoundException {
         //System.out.println(Bytes.hexDump(Http.get("http://www.apachelounge.com/download/VC14/binaries/httpd-2.4.25-win64-VC14.zip").download()));
         

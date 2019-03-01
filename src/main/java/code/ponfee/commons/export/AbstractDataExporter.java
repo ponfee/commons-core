@@ -2,6 +2,8 @@ package code.ponfee.commons.export;
 
 import java.lang.reflect.Array;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -10,10 +12,11 @@ import code.ponfee.commons.reflect.Fields;
 import code.ponfee.commons.tree.FlatNode;
 
 /**
- * 导出
+ * Exports abstract class
+ * 
  * @author fupf
  */
-public abstract class AbstractExporter<T> implements DataExporter<T> {
+public abstract class AbstractDataExporter<T> implements DataExporter<T> {
 
     public static final int AWAIT_TIME_MILLIS = 7;
 
@@ -29,7 +32,7 @@ public abstract class AbstractExporter<T> implements DataExporter<T> {
         this.empty = false;
     }
 
-    public final AbstractExporter<T> setName(String name) {
+    public final AbstractDataExporter<T> setName(String name) {
         this.name = name;
         return this;
     }
@@ -38,10 +41,10 @@ public abstract class AbstractExporter<T> implements DataExporter<T> {
         return name;
     }
 
-    protected final void rollingTbody(Table table,
+    protected final <E> void rollingTbody(Table<E> table,
         BiConsumer<Object[], Integer> action) {
         try {
-            Object data; Function<Object, Object[]> converter;
+            E data; Function<E, Object[]> converter;
             if ((converter = table.getConverter()) != null) {
                 for (int i = 0; table.isNotEnd();) {
                     if ((data = table.poll()) != null) {
@@ -64,9 +67,11 @@ public abstract class AbstractExporter<T> implements DataExporter<T> {
                         if (data instanceof Object[]) {
                             array = (Object[]) data;
                         } else if (data.getClass().isArray()) {
-                            array = toArray(data);
+                            array = array2array(data);
+                        } else if (data instanceof Map<?, ?>) {
+                            array = map2array((Map<?, ?>) data);
                         } else {
-                            array = toArray(data, fields);
+                            array = bean2array(data, fields);
                         }
                         action.accept(array, i++);
                     } else {
@@ -87,7 +92,7 @@ public abstract class AbstractExporter<T> implements DataExporter<T> {
                     .collect(Collectors.toList());
     }
 
-    private static Object[] toArray(Object array0) {
+    private static Object[] array2array(Object array0) {
         int size = Array.getLength(array0);
         Object[] array = new Object[size];
         for (int i = 0; i < size; i++) {
@@ -96,7 +101,11 @@ public abstract class AbstractExporter<T> implements DataExporter<T> {
         return array;
     }
 
-    private static Object[] toArray(Object bean, String[] fields) {
+    private static Object[] map2array(Map<?, ?> map) {
+        return map.entrySet().stream().map(Entry::getValue).toArray();
+    }
+
+    private static Object[] bean2array(Object bean, String[] fields) {
         int size = fields.length;
         Object[] array = new Object[size];
         for (int i = 0; i < size; i++) {

@@ -7,21 +7,21 @@ import java.nio.charset.Charset;
 import code.ponfee.commons.io.WrappedBufferedWriter;
 
 /**
- * csv导出
+ * Exports csv string
  * 
  * @author fupf
  */
-public class CsvExporter extends AbstractCsvExporter<String> {
+public class CsvStringExporter extends AbstractCsvExporter<String> {
 
-    public CsvExporter() {
+    public CsvStringExporter() {
         this(0x2000);
     }
 
-    public CsvExporter(int capacity) {
+    public CsvStringExporter(int capacity) {
         super(new StringBuilder(capacity));
     }
 
-    public CsvExporter(int capacity, char csvSeparator) {
+    public CsvStringExporter(int capacity, char csvSeparator) {
         super(new StringBuilder(capacity), csvSeparator);
     }
 

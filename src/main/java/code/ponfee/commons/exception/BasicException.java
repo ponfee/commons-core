@@ -1,7 +1,8 @@
 package code.ponfee.commons.exception;
 
 /**
- * 异常基类
+ * 异常基础类
+ * 
  * @author fupf
  */
 public class BasicException extends RuntimeException {

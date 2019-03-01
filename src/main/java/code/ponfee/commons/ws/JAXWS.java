@@ -13,7 +13,9 @@ import javax.xml.ws.Service;
  * 错误：java.lang.NoSuchMethodError: javax.wsdl.xml.WSDLReader.readWSDL
  *     (Ljavax/wsdl/xml/WSDLLocator;Lorg/w3c/dom/Element;)Ljavax/wsdl/Definition
  * 
- * 原因：jar包冲突问题，环境用了axis-wsdl4j-1.5.1.jar，而这个jar包引入了低版本的wsdl4j-x.x.x.jar
+ * 原因：jar包冲突问题
+ *     [axis:axis:1.4]依赖[axis:axis-wsdl4j:1.5.1]               axis-wsdl4j-1.5.1.jar
+ *     [org.apache.cxf:cxf-api:2.7.15]依赖[wsdl4j:wsdl4j:1.6.3]  wsdl4j-1.6.3.jar
  * 
  * 解决：排除依赖axis:axis-wsdl4j
  *     <dependency>
@@ -28,7 +30,7 @@ import javax.xml.ws.Service;
  *       </exclusions>
  *     </dependency>
  * 
- * @author fupf
+ * @author Ponfee
  */
 public class JAXWS {
 

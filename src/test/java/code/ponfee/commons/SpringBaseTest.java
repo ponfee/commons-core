@@ -20,6 +20,15 @@ import code.ponfee.commons.util.SpringContextHolder;
 public abstract class SpringBaseTest<T> {
 
     private T bean;
+    private final String beanName;
+
+    public SpringBaseTest() {
+        this(null);
+    }
+
+    public SpringBaseTest(String beanName) {
+        this.beanName = beanName;
+    }
 
     protected final T getBean() {
         return bean;
@@ -29,7 +38,11 @@ public abstract class SpringBaseTest<T> {
     public final void setUp() {
         Class<T> type = GenericUtils.getActualTypeArgument(this.getClass());
         if (Object.class != type) {
-            bean = SpringContextHolder.getBean(type);
+            if (beanName != null && beanName.length() > 0) {
+                bean = SpringContextHolder.getBean(beanName, type);
+            } else {
+                bean = SpringContextHolder.getBean(type);
+            }
         }
         initialize();
     }

@@ -6,15 +6,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.tree.FlatNode;
 
 /**
- * csv导出
+ * Exports csv
+ * 
  * @author fupf
  */
-public abstract class AbstractCsvExporter<T> extends AbstractExporter<T> {
+public abstract class AbstractCsvExporter<T> extends AbstractDataExporter<T> {
 
     static final byte[] WINDOWS_BOM = {
         (byte) 0xEF, (byte) 0xBB, (byte) 0xBF
@@ -34,7 +36,7 @@ public abstract class AbstractCsvExporter<T> extends AbstractExporter<T> {
     }
 
     @Override
-    public final void build(Table table) {
+    public final <E> void build(Table<E> table) {
         if (hasBuild.getAndSet(true)) {
             throw new UnsupportedOperationException("Only support signle table.");
         }
@@ -51,6 +53,7 @@ public abstract class AbstractCsvExporter<T> extends AbstractExporter<T> {
         rollingTbody(table, (data, i) -> {
             try {
                 for (int m = data.length - 1, j = 0; j <= m; j++) {
+                    // escapeCsv(String.valueOf(data[j]), csvSeparator);
                     csv.append(String.valueOf(data[j]));
                     if (j < m) {
                         csv.append(csvSeparator);
@@ -87,6 +90,7 @@ public abstract class AbstractCsvExporter<T> extends AbstractExporter<T> {
                     csv.append(csvSeparator);
                 }
                 for (int i = mergeNum; i < n; i++) {
+                    // escapeCsv(String.valueOf((table.getTfoot()[i - mergeNum])), csvSeparator);
                     csv.append(String.valueOf(table.getTfoot()[i - mergeNum]));
                     if (i != n - 1) {
                         csv.append(csvSeparator);
@@ -125,4 +129,25 @@ public abstract class AbstractCsvExporter<T> extends AbstractExporter<T> {
         csv.deleteCharAt(csv.length() - 1);
         csv.append(Files.LINE_SEPARATOR);
     }*/
+
+    public static String escapeCsv(String text) {
+        return escapeCsv(text, ',');
+    }
+
+    public static String escapeCsv(String text, char separator) {
+        if (StringUtils.isEmpty(text)) {
+            return text;
+        }
+
+        if (text.contains("\"")) {
+            text = text.replace("\"", "\"\"");
+        }
+        if (StringUtils.contains(text, separator)) {
+            //String.format("\"%s\"", text)
+            text = new StringBuilder(text.length() + 2)
+                .append('"').append(text).append('"').toString();
+        }
+        return text;
+    }
+
 }

@@ -18,24 +18,24 @@ import code.ponfee.commons.tree.TreeNode;
  * 表格
  * @author fupf
  */
-public class Table implements Serializable {
+public class Table<E> implements Serializable {
     private static final long serialVersionUID = 1600567917100486004L;
 
     private static final int ROOT_PID = 0;
 
     private final List<FlatNode<Integer, Thead>> thead; // 表头
-    private final Function<Object, Object[]> converter; // 数据转换
+    private final Function<E, Object[]> converter; // 数据转换
     private String caption; // 标题
     private Object[] tfoot; // 表尾
     private String comment; // 注释说明
     private Map<CellStyleOptions, Object> options; // 其它特殊配置项，如：{HIGHLIGHT:{\"cells\":[[2,15],[2,16]],\"color\":\"#f00\"}}
 
-    private final Queue<Object> tbody = new LinkedBlockingQueue<>(); // 表体
+    private final Queue<E> tbody = new LinkedBlockingQueue<>(); // 表体
     private volatile boolean empty = true;
     private volatile boolean end = false;
 
     public Table(List<FlatNode<Integer, Thead>> thead, 
-                 Function<Object, Object[]> converter,
+                 Function<E, Object[]> converter,
                  String caption, Object[] tfoot, String comment, 
                  Map<CellStyleOptions, Object> options) {
         this.thead = thead;
@@ -51,9 +51,9 @@ public class Table implements Serializable {
     }
 
     public Table(List<BaseNode<Integer, Thead>> list, 
-                 Function<Object, Object[]> converter) {
+                 Function<E, Object[]> converter) {
         this.thead = TreeNode.<Integer, Thead>createRoot(ROOT_PID, null, 0)
-                             .mount(list).flatHierarchy();
+                             .mount(list).bfsFlat();
         this.converter = converter;
     }
 
@@ -61,25 +61,29 @@ public class Table implements Serializable {
         this(names, null);
     }
 
-    public Table(String[] names, Function<Object, Object[]> converter) {
+    public Table(String[] names, Function<E, Object[]> converter) {
         List<BaseNode<Integer, Thead>> list = new ArrayList<>(names.length);
         for (int i = 0, j = 1; i < names.length; i++, j++) {
             list.add(new BaseNode<>(j, ROOT_PID, j, true, new Thead(names[i])));
         }
         this.thead = TreeNode.<Integer, Thead>createRoot(ROOT_PID, null, 0)
-                             .mount(list).flatHierarchy();
+                             .mount(list).bfsFlat();
         this.converter = converter;
     }
 
-    public Table copyOfWithoutTbody() {
-        return new Table(thead, converter, caption, tfoot, comment, options);
+    public Table<E> copyOfWithoutTbody() {
+        return new Table<>(thead, converter, caption, tfoot, comment, options);
+    }
+
+    public <H> Table<H> copyOfWithoutTbody(Function<H, Object[]> converter) {
+        return new Table<>(thead, converter, caption, tfoot, comment, options);
     }
 
     public List<FlatNode<Integer, Thead>> getThead() {
         return thead;
     }
 
-    public Function<Object, Object[]> getConverter() {
+    public Function<E, Object[]> getConverter() {
         return converter;
     }
 
@@ -116,27 +120,27 @@ public class Table implements Serializable {
     }
 
     // -----------------------------------------------add row data
-    public void addRowsAndEnd(List<?> rows) {
+    public void addRowsAndEnd(List<E> rows) {
         addRows(rows);
         end();
     }
 
-    public void addRows(List<?> rows) {
+    public void addRows(List<E> rows) {
         if (CollectionUtils.isEmpty(rows)) {
             return;
         }
-        for (Object row : rows) {
+        for (E row : rows) {
             tbody.offer(row);
         }
         empty = false;
     }
 
-    public void addRowAndEnd(Object row) {
+    public void addRowAndEnd(E row) {
         addRow(row);
         end();
     }
 
-    public void addRow(Object row) {
+    public void addRow(E row) {
         if (row == null) {
             return;
         }
@@ -145,7 +149,7 @@ public class Table implements Serializable {
     }
 
     // -----------------------------------------------to end operation
-    public synchronized Table end() {
+    public synchronized Table<E> end() {
         this.end = true;
         return this;
     }
@@ -163,7 +167,7 @@ public class Table implements Serializable {
         return empty && isEnd();
     }
 
-    Object poll() {
+    E poll() {
         return tbody.poll();
     }
 

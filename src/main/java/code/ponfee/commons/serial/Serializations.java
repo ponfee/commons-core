@@ -21,10 +21,13 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public final class Serializations {
 
+    public static final byte BYTE_TRUE = (byte) 0xFF;
+    public static final byte BYTE_FALSE = 0x00;
+
     private static final Serializer SERIALIZER = new KryoSerializer();
 
     public static byte[] serialize(boolean value) {
-        return new byte[] { value ? (byte) 0x01 : (byte) 0x00 };
+        return new byte[] { value ? BYTE_TRUE : BYTE_FALSE };
     }
 
     public static byte[] serialize(byte value) {
@@ -95,7 +98,7 @@ public final class Serializations {
                 throw new RuntimeException(e);
             }
         } else if (value instanceof Boolean) {
-            return new byte[] { (Boolean) value ? (byte) 0xFF : (byte) 0x00 };
+            return new byte[] { (Boolean) value ? BYTE_TRUE : BYTE_FALSE };
         } else if (value instanceof Byte) {
             return new byte[] { (Byte) value };
         } else if (value instanceof Short) {
@@ -167,7 +170,7 @@ public final class Serializations {
         } else if (InputStream.class == type) {
             return (T) new ByteArrayInputStream(value);
         } else if (boolean.class == type || Boolean.class == type) {
-            return (T) (Boolean) (value[0] != 0x00);
+            return (T) (Boolean) (value[0] != BYTE_FALSE);
         } else if (byte.class == type || Byte.class == type) {
             return (T) (Byte) value[0];
         } else if (short.class == type || Short.class == type) {

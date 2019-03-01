@@ -4,6 +4,7 @@ import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 import com.google.common.base.Preconditions;
 
@@ -15,7 +16,7 @@ import code.ponfee.commons.util.Holder;
  *
  * @author fupf
  */
-public abstract class AbstractSplitExporter extends AbstractExporter<Void> {
+public abstract class AbstractSplitExporter extends AbstractDataExporter<Void> {
 
     private final int batchSize;
     private final String savingFilePathPrefix;
@@ -31,33 +32,34 @@ public abstract class AbstractSplitExporter extends AbstractExporter<Void> {
         this.executor = executor;
     }
 
-    public @Override final void build(Table table) {
-        CompletionService<Void> cs = new ExecutorCompletionService<>(executor);
+    @Override
+    public final <E> void build(Table<E> table) {
+        CompletionService<Void> service = new ExecutorCompletionService<>(executor);
         AtomicInteger count = new AtomicInteger(0);
         AtomicInteger split = new AtomicInteger(0);
-        Holder<Table> subTable = Holder.of(table.copyOfWithoutTbody());
+        Holder<Table<Object[]>> subTable = Holder.of(table.copyOfWithoutTbody(Function.identity()));
         rollingTbody(table, (data, i) -> {
             subTable.get().addRow(data);
             if (count.incrementAndGet() == batchSize) {
                 super.nonEmpty();
                 // sets a new table and return the last
-                Table last = subTable.getAndSet(table.copyOfWithoutTbody());
+                Table<Object[]> last = subTable.getAndSet(table.copyOfWithoutTbody(Function.identity()));
                 String path = buildFilePath(split.incrementAndGet());
-                cs.submit(splitExporter(last, path), null);
+                service.submit(splitExporter(last, path), null);
                 count.set(0); // reset count and sub table
             }
         });
         if (!subTable.get().isEmptyTbody()) {
             super.nonEmpty();
             String path = buildFilePath(split.incrementAndGet());
-            cs.submit(splitExporter(subTable.get(), path), null);
+            service.submit(splitExporter(subTable.get(), path), null);
         }
 
-        MultithreadExecutor.joinDiscard(cs, split.get());
+        MultithreadExecutor.joinDiscard(service, split.get());
     }
 
     protected abstract AsnycSplitExporter splitExporter(
-        Table subTable, String savingFilePath);
+        Table<Object[]> subTable, String savingFilePath);
 
     public @Override final Void export() {
         throw new UnsupportedOperationException();
@@ -66,14 +68,14 @@ public abstract class AbstractSplitExporter extends AbstractExporter<Void> {
     public @Override final void close() {}
 
     private String buildFilePath(int fileNo) {
-        return savingFilePathPrefix + fileNo + fileSuffix;
+        return savingFilePathPrefix + String.format("%04d", fileNo) + fileSuffix;
     }
 
     public static abstract class AsnycSplitExporter implements Runnable {
-        private final Table subTable;
+        private final Table<Object[]> subTable;
         protected final String savingFilePath;
 
-        public AsnycSplitExporter(Table subTable, String savingFilePath) {
+        public AsnycSplitExporter(Table<Object[]> subTable, String savingFilePath) {
             this.subTable = subTable;
             this.savingFilePath = savingFilePath;
         }
@@ -81,15 +83,15 @@ public abstract class AbstractSplitExporter extends AbstractExporter<Void> {
         @Override
         public final void run()  {
             subTable.end();
-            try (AbstractExporter<?> exporter = createExporter()) {
+            try (AbstractDataExporter<?> exporter = createExporter()) {
                 exporter.build(subTable);
                 complete(exporter);
             }
         }
 
-        protected abstract AbstractExporter<?> createExporter();
+        protected abstract AbstractDataExporter<?> createExporter();
 
-        protected void complete(AbstractExporter<?> exporter) {}
+        protected void complete(AbstractDataExporter<?> exporter) {}
     }
 
 }

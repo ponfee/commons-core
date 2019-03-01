@@ -350,7 +350,7 @@ public final class Http {
         BufferedOutputStream bos = null;
         HttpRequest request = request0();
         try {
-            if (status == HttpStatus.OK || status == HttpStatus.CREATED) {
+            if (HttpStatus.Series.valueOf(status) == HttpStatus.Series.SUCCESSFUL) {
                 /*// 获取文件名
                 String disposition = UrlCoder.decodeURIComponent(request.header("content-Disposition"));
                 Matcher matcher = FILENAME_PATTERN.matcher(disposition);
@@ -480,7 +480,7 @@ public final class Http {
     /**
      * Http method
      */
-    public static enum HttpMethod {
+    public enum HttpMethod {
         GET, POST, PUT, DELETE, HEAD, TRACE, OPTIONS
     }
 

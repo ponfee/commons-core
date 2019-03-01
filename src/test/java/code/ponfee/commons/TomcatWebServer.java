@@ -11,10 +11,7 @@ import org.apache.tomcat.util.descriptor.web.ErrorPage;
 public class TomcatWebServer {
 
     public static void main(String[] args) throws Exception {
-        int port = 8080;
-        if (args.length >= 1) {
-            port = Integer.parseInt(args[0]);
-        }
+        int port = args.length > 0 ? Integer.parseInt(args[0]) : 8080;
 
         String webBase = new File("src/main/webapp").getAbsolutePath();
         Tomcat tomcat = new Tomcat();
@@ -27,15 +24,20 @@ public class TomcatWebServer {
         server.addLifecycleListener(listener);
 
         Context webContext = tomcat.addWebapp("/", webBase);
-        ErrorPage notFound = new ErrorPage();
-        notFound.setErrorCode(404);
-        notFound.setLocation("/main.html");
-        webContext.addErrorPage(notFound);
+        webContext.addErrorPage(createErrorPage(404, "404.html"));
+        webContext.addErrorPage(createErrorPage(500, "50x.html"));
         webContext.addWelcomeFile("main.html");
 
         // tomcat start
         tomcat.start();
         tomcat.getServer().await();
+    }
+
+    private static ErrorPage createErrorPage(int code, String location) {
+        ErrorPage errPage = new ErrorPage();
+        errPage.setErrorCode(code);
+        errPage.setLocation(location);
+        return errPage;
     }
 
 }
