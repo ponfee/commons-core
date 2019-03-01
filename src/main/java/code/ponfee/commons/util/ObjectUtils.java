@@ -320,7 +320,7 @@ public final class ObjectUtils {
     public static String shortid(int len, char[] chars) {
         int size = chars.length;
         StringBuilder builder = new StringBuilder(len);
-        for (String str : Strings.slice(uuid32(), len)) {
+        for (String str : Strings.slice(uuid32(), len)) { // 分成len段
             if (StringUtils.isNotEmpty(str)) {
                 builder.append(chars[(int) (Long.parseLong(str, 16) % size)]);
             }
@@ -354,7 +354,7 @@ public final class ObjectUtils {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T copy(T source, String... fields) {
+    public static <T> T copyFrom(T source, String... fields) {
         T target;
         try {
             target = (T) source.getClass().newInstance();
@@ -364,4 +364,5 @@ public final class ObjectUtils {
         copy(source, target, fields);
         return target;
     }
+
 }

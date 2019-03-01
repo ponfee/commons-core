@@ -56,9 +56,7 @@ public class ByteArrayWrapper implements
             return 1;
         }
         return ByteArrayComparator.compareTo(array, o.array);
-        /*return new CompareToBuilder().append(array, o.array)
-                                     .toComparison();
-        return Bytes.toBigInteger(array).compareTo(
+        /*return Bytes.toBigInteger(array).compareTo(
             Bytes.toBigInteger(o.array)
         );*/
     }

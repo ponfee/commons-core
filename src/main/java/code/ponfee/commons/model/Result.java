@@ -1,6 +1,7 @@
 package code.ponfee.commons.model;
 
 import java.beans.Transient;
+import java.util.function.Function;
 
 import com.google.common.base.Preconditions;
 
@@ -60,11 +61,15 @@ public class Result<T> implements java.io.Serializable {
 
     @SuppressWarnings("unchecked")
     public <E> Result<E> copy() {
-        return copy((E) getData());
+        return copy((E) data);
     }
 
     public <E> Result<E> copy(E data) {
-        return new Result<>(getCode(), getMsg(), data);
+        return new Result<>(code, msg, data);
+    }
+
+    public <E> Result<E> transform(Function<T, E> transformer) {
+        return new Result<>(code, msg, transformer.apply(data));
     }
 
     // ---------------------------------static methods/failure methods

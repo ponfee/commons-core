@@ -37,15 +37,11 @@ public class ObjectArrayWrapper<T> implements
             return false;
         }
         return Arrays.equals(array, ((ObjectArrayWrapper<?>) other).array);
-
-        //return new EqualsBuilder().append(array, ((ObjectArrayWrapper<?>) other).array).isEquals();
     }
 
     @Override
     public int hashCode() {
         return Arrays.hashCode(array);
-
-        //return new HashCodeBuilder().append(array).toHashCode();
         /*int result = array[0].hashCode();
         for (int i = 1, n = array.length; i < n; i++) {
             result ^= array[i].hashCode();

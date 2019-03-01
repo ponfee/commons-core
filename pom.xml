@@ -44,7 +44,7 @@
                         </server>
                     </servers> -->
                     <id>sf-nexus-snapshots</id>
-                    <url>http://nexus.sf-express.com/nexus/content/repositories/snapshots/</url>
+                    <url>http://xxxxx.com/nexus/content/repositories/snapshots/</url>
                 </repository>
             </distributionManagement>
             <properties>
@@ -65,7 +65,7 @@
                         </server>
                     </servers> -->
                     <id>sf-nexus-releases</id>
-                    <url>http://nexus.sf-express.com/nexus/content/repositories/releases/</url>
+                    <url>http://xxx.com/nexus/content/repositories/releases/</url>
                 </repository>
             </distributionManagement>
             <properties>

@@ -217,10 +217,13 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
         return throwOrReturn(ex, null);
     }
 
+    // -----------------------------------------------------------------------
     /**
      * Auto injects the field from spring container for object
      * 
      * @param object the object
+     * 
+     * @see #autowireBean(Object)
      */
     public static void autoInject(Object object) {
         Assert.state(HOLDER.size() > 0, "Must be defined SpringContextHolder within spring config file.");
@@ -253,6 +256,19 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
             if (fieldBean != null && field.getType().isInstance(fieldBean)) {
                 Fields.put(object, field, fieldBean);
             }
+        }
+    }
+
+    /**
+     * Autowired bean the field from spring container for object
+     * 
+     * @param object the object instance
+     * 
+     * @see #autoInject(Object)
+     */
+    public static void autowireBean(Object object) {
+        for (ApplicationContext context : HOLDER) {
+            context.getAutowireCapableBeanFactory().autowireBean(object);
         }
     }
 

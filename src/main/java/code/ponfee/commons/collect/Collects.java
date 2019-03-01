@@ -11,13 +11,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.poi.ss.formula.functions.T;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -337,7 +337,8 @@ public final class Collects {
      * @param args
      * @return
      */
-    public static T[] toArray(T... args) {
+    @SuppressWarnings("unchecked")
+    public static <T> T[] toArray(T... args) {
         return args;
     }
 
@@ -396,7 +397,7 @@ public final class Collects {
      * @param batchSize the batch size
      * @return batch collection
      */
-    public static List<List<T>> splinter(Collection<T> coll, int batchSize) {
+    public static <T> List<List<T>> splinter(Collection<T> coll, int batchSize) {
         List<List<T>> result = new ArrayList<>(PageHandler.computeTotalPages(coll.size(), batchSize));
         List<T> batch = new ArrayList<>(batchSize);
         for (T item : coll) {
@@ -419,7 +420,6 @@ public final class Collects {
      * @param index spec index
      * @param obj the element
      */
-    @SuppressWarnings("hiding")
     public static <T> void set(List<T> list, int index, T obj) {
         int size;
         if (index == (size = list.size())) {
@@ -432,6 +432,24 @@ public final class Collects {
             }
             list.add(obj);
         }
+    }
+
+    /**
+     * Compute cartesian product
+     * 
+     * @param list1 the list of type A
+     * @param list2 the list of type B
+     * @param funcs convert A and B to T
+     * @return a list of type T
+     */
+    public static <A, B, T> List<T> cartesian(List<A> list1, List<B> list2, BiFunction<A, B, T> funcs) {
+        List<T> product = new ArrayList<>(list1.size() * list2.size());
+        for (A a : list1) {
+            for (B b : list2) {
+                product.add(funcs.apply(a, b));
+            }
+        }
+        return product;
     }
 
 }
