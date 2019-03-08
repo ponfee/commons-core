@@ -74,7 +74,7 @@ import code.ponfee.commons.util.Strings;
  * 
  * @author fupf
  */
-public class ExcelExporter extends AbstractExporter<byte[]> {
+public class ExcelExporter extends AbstractDataExporter<byte[]> {
 
     // 内存最大存放100行数据 超过100自动刷新到硬盘中
     // SXSSFSheet.flushRows(100); retain 100 last rows and flush all others
@@ -174,7 +174,7 @@ public class ExcelExporter extends AbstractExporter<byte[]> {
      * 构建excel
      */
     @Override
-    public void build(Table table) {
+    public <E> void build(Table<E> table) {
         // 1、校验表头是否为空
         List<FlatNode<Integer, Thead>> flats = table.getThead();
         if (CollectionUtils.isEmpty(flats)) {
@@ -355,7 +355,7 @@ public class ExcelExporter extends AbstractExporter<byte[]> {
 
         try (SXSSFWorkbook wb = workbook) {
             // nothing to do
-            wb.dispose();
+            wb.dispose(); // dispose of temporary files backing this workbook on disk
             workbook = null;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -405,7 +405,7 @@ public class ExcelExporter extends AbstractExporter<byte[]> {
     }*/
 
     // 复合表头
-    private void buildComplexThead(Table table, SXSSFSheet sheet, CursorRowNumber cursorRow) {
+    private <E> void buildComplexThead(Table<E> table, SXSSFSheet sheet, CursorRowNumber cursorRow) {
         List<FlatNode<Integer, Thead>> flats = table.getThead();
         FlatNode<Integer, Thead> root = flats.get(0);
         int totalLeafCount = root.getChildLeafCount();
@@ -740,5 +740,14 @@ public class ExcelExporter extends AbstractExporter<byte[]> {
             freeze = false;
         }
     }
+
+    /*public void deleteTempFiles() {
+        for (int i = 0, n = workbook.getNumberOfSheets(); i <= n; i++) {
+            SXSSFSheet sheet = workbook.getSheetAt(i); // only support in SXSSFSheet
+            // delete only if the sheet is written by stream
+            SheetDataWriter sdw = (SheetDataWriter) Fields.get(sheet, "_writer");
+            FileUtils.deleteQuietly((File) Fields.get(sdw, "_fd"));
+        }
+    }*/
 
 }

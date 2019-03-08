@@ -5,7 +5,9 @@ import java.io.Closeable;
 /**
  * {@link Closeable#close()} 要求幂等
  * {@link AutoCloseable#close()} 不要求幂等
+ * 
  * 数据导出
+ * 
  * @author fupf
  */
 public interface DataExporter<T> extends Closeable {
@@ -16,7 +18,7 @@ public interface DataExporter<T> extends Closeable {
     /**
      * 构建表格
      */
-    void build(Table table);
+    <E> void build(Table<E> table);
 
     /**
      * 获取表格

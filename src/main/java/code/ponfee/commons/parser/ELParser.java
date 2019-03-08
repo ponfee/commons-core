@@ -27,12 +27,13 @@ public class ELParser {
         return parseDatetm(text);
     }
 
-    public static String parse(String text, Map<String, Object> params) {
+    public static String parse(String text, Map<String, ?> params) {
         text = parseParams(text, params);
         text = parseDatetm(text);
         return text;
     }
 
+    // ----------------------------------------------------------------------------- private methods
     private static String parseParams(String text, Map<String, ?> params) {
         if (MapUtils.isEmpty(params)) {
             return text;

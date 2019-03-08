@@ -24,6 +24,7 @@ import code.ponfee.commons.reflect.Fields;
  * 
  * @see org.springframework.web.method.support.HandlerMethodArgumentResolverComposite
  * @see org.springframework.web.method.annotation.RequestParamMapMethodArgumentResolver
+ * @see org.springframework.web.method.annotation.RequestParamMethodArgumentResolver
  * 
  * 被注入到RequestMappingHandlerAdapter中的argumentResolvers字段
  * 

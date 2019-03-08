@@ -2,7 +2,6 @@ package test.utils;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.ImmutableMap;
-import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.EnumMemberMode;
 
 import code.ponfee.commons.jce.DigestAlgorithms;
 import code.ponfee.commons.util.ObjectUtils;

@@ -18,82 +18,86 @@ public final class DateFuncs {
 
     // -------------------------------------------------now
     public static String now(String format) {
-        return format(new Date(), format);
+        return format(now(), format);
     }
 
     public static String now(String format, String offset) {
-        return format(compute(new Date(), offset), format);
+        return format(compute(now(), offset), format);
     }
 
     // -------------------------------------------------day
     public static String startDay(String format) {
-        return format(Dates.startOfDay(new Date()), format);
+        return format(Dates.startOfDay(now()), format);
     }
 
     public static String startDay(String format, String offset) {
-        return format(Dates.startOfDay(compute(new Date(), offset)), format);
+        return format(Dates.startOfDay(compute(now(), offset)), format);
     }
 
     public static String endDay(String format) {
-        return format(Dates.endOfDay(new Date()), format);
+        return format(Dates.endOfDay(now()), format);
     }
 
     public static String endDay(String format, String offset) {
-        return format(Dates.endOfDay(compute(new Date(), offset)), format);
+        return format(Dates.endOfDay(compute(now(), offset)), format);
     }
 
     // -------------------------------------------------week
     public static String startWeek(String format) {
-        return format(Dates.startOfWeek(new Date()), format);
+        return format(Dates.startOfWeek(now()), format);
     }
 
     public static String startWeek(String format, String offset) {
-        return format(Dates.startOfWeek(compute(new Date(), offset)), format);
+        return format(Dates.startOfWeek(compute(now(), offset)), format);
     }
 
     public static String endWeek(String format) {
-        return format(Dates.endOfWeek(new Date()), format);
+        return format(Dates.endOfWeek(now()), format);
     }
 
     public static String endWeek(String format, String offset) {
-        return format(Dates.endOfWeek(compute(new Date(), offset)), format);
+        return format(Dates.endOfWeek(compute(now(), offset)), format);
     }
 
     // -------------------------------------------------month
     public static String startMonth(String format) {
-        return format(Dates.startOfMonth(new Date()), format);
+        return format(Dates.startOfMonth(now()), format);
     }
 
     public static String startMonth(String format, String offset) {
-        return format(Dates.startOfMonth(compute(new Date(), offset)), format);
+        return format(Dates.startOfMonth(compute(now(), offset)), format);
     }
 
     public static String endMonth(String format) {
-        return format(Dates.endOfMonth(new Date()), format);
+        return format(Dates.endOfMonth(now()), format);
     }
 
     public static String endMonth(String format, String offset) {
-        return format(Dates.endOfMonth(compute(new Date(), offset)), format);
+        return format(Dates.endOfMonth(compute(now(), offset)), format);
     }
 
     // -------------------------------------------------year
     public static String startYear(String format) {
-        return format(Dates.startOfYear(new Date()), format);
+        return format(Dates.startOfYear(now()), format);
     }
 
     public static String startYear(String format, String offset) {
-        return format(Dates.startOfYear(compute(new Date(), offset)), format);
+        return format(Dates.startOfYear(compute(now(), offset)), format);
     }
 
     public static String endYear(String format) {
-        return format(Dates.endOfYear(new Date()), format);
+        return format(Dates.endOfYear(now()), format);
     }
 
     public static String endYear(String format, String offset) {
-        return format(Dates.endOfYear(compute(new Date(), offset)), format);
+        return format(Dates.endOfYear(compute(now(), offset)), format);
     }
 
     // -------------------------------------------------private methods
+    private static Date now() {
+        return new Date();
+    }
+
     private static String format(Date date, String format) {
         if (date == null) {
             return null;

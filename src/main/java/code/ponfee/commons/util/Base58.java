@@ -9,12 +9,12 @@ import org.apache.commons.lang3.ArrayUtils;
 import code.ponfee.commons.jce.digest.DigestUtils;
 
 /**
+ * <pre>
  * https://www.jianshu.com/p/ffc97c4d2306
  * 在计算机系统中数值使用补码来表示和存储
- *  原码：正数的原码为其二进制；负数的原码为对应的正数值在高位补1；True form
- *  反码：正数的反码与原码相同；负数的反码为其原码除符号位以外各位取反；1's complement
- *  补码：正数的补码与原码相同；负数的补码为其反码（最低位）加1；2's complement
- * <p>
+ *  原码（True form）               ：正数的原码为其二进制；负数的原码为对应的正数值在高位补1；
+ *  反码（1's complement）：正数的反码与原码相同；负数的反码为其原码除符号位以外各位取反；
+ *  补码（2's complement）：正数的补码与原码相同；负数的补码为其反码（最低位）加1；
  * 
  * 补码系统的最大优点是可以在加法或减法处理中，不需因为数字的正负而使用不同的计算方式
  * 计算机中只有加法，用两数补码相加，结果仍是补码表示
@@ -23,11 +23,12 @@ import code.ponfee.commons.jce.digest.DigestUtils;
  * byte b = a byte number;
  * int i = b & 0xff; // 使得i与b的二进制补码一致
  * 
- * 0xff is the bit length mask, calc bit length mask can use 
- * (1<<bits)-1 or -1L^(-1L<<bits)
+ * 0xff is the bit length mask, calc bit length mask can use: (1&lt;&lt;bits)-1 or -1L^(-1L&lt;&lt;bits)
  * 
  * Base58 code：except number 0, uppercase letter I and O, lowercase latter l
  * Reference from internet
+ * </pre>
+ * 
  * @author Ponfee
  */
 public class Base58 {

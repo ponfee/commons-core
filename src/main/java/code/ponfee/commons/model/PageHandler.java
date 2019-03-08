@@ -125,7 +125,7 @@ public final class PageHandler {
             Object value;
             if (Map.class.isInstance(params) || Dictionary.class.isInstance(params)) {
                 Method get = params.getClass().getMethod("get", Object.class);
-                get.setAccessible(true); // ImmutableMap must be set accessible true
+                get.setAccessible(true); // Guava ImmutableMap must be set accessible true
                 value = get.invoke(params, name);
             } else {
                 value = Fields.get(params, name);

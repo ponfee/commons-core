@@ -13,7 +13,7 @@ import org.junit.Test;
 import com.google.common.base.Stopwatch;
 
 import code.ponfee.commons.concurrent.ThreadPoolExecutors;
-import code.ponfee.commons.export.AbstractExporter;
+import code.ponfee.commons.export.AbstractDataExporter;
 import code.ponfee.commons.export.CsvFileExporter;
 import code.ponfee.commons.export.ExcelExporter;
 import code.ponfee.commons.export.SplitCsvFileExporter;
@@ -27,7 +27,7 @@ public class ExportTester2 {
 
     @Test
     public void testExcel1() throws IOException {
-        AbstractExporter excel = new ExcelExporter();
+        AbstractDataExporter excel = new ExcelExporter();
 
         Table table = new Table("a,b,c,d,e".split(","));
         table.setCaption("title");
@@ -58,7 +58,7 @@ public class ExportTester2 {
     
     @Test
     public void testExcel2() throws IOException {
-        AbstractExporter excel = new ExcelExporter();
+        AbstractDataExporter excel = new ExcelExporter();
 
         Table table = new Table("a,b,c,d,e".split(","));
         table.setCaption("title");

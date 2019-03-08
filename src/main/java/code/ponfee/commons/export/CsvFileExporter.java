@@ -8,7 +8,8 @@ import java.nio.charset.StandardCharsets;
 import code.ponfee.commons.io.WrappedBufferedWriter;
 
 /**
- * csv导出
+ * Exports csv file
+ * 
  * @author fupf
  */
 public class CsvFileExporter extends AbstractCsvExporter<Void> {

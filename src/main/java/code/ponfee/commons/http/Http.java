@@ -480,7 +480,7 @@ public final class Http {
     /**
      * Http method
      */
-    public static enum HttpMethod {
+    public enum HttpMethod {
         GET, POST, PUT, DELETE, HEAD, TRACE, OPTIONS
     }
 

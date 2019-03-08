@@ -21,6 +21,9 @@ import code.ponfee.commons.util.Strings;
  * 基于树形结构节点的基类
  * 
  * @author Ponfee
+ * 
+ * @param <T> the node id type
+ * @param <A> the attachment biz object type
  */
 public class BaseNode<T extends Serializable & Comparable<T>, A>
     implements Serializable {

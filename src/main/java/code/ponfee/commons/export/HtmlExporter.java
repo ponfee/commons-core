@@ -16,7 +16,7 @@ import code.ponfee.commons.tree.FlatNode;
  * html导出
  * @author fupf
  */
-public class HtmlExporter extends AbstractExporter<String> {
+public class HtmlExporter extends AbstractDataExporter<String> {
 
     //private static final Pattern PATTERN_NEGATIVE = Pattern.compile("^(-(([0-9]+\\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\\.[0-9]+)|([0-9]*[1-9][0-9]*)))(%)?$");
 
@@ -75,7 +75,7 @@ public class HtmlExporter extends AbstractExporter<String> {
      * 构建html
      */
     @Override
-    public void build(Table table) {
+    public <E> void build(Table<E> table) {
         List<FlatNode<Integer, Thead>> flats = table.getThead();
         if (flats == null || flats.isEmpty()) {
             throw new IllegalArgumentException("thead can't be null");

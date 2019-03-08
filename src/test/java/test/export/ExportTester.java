@@ -18,19 +18,18 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
-import code.ponfee.commons.export.AbstractExporter;
+import code.ponfee.commons.export.AbstractDataExporter;
 import code.ponfee.commons.export.CellStyleOptions;
-import code.ponfee.commons.export.CsvExporter;
+import code.ponfee.commons.export.CsvStringExporter;
 import code.ponfee.commons.export.ExcelExporter;
 import code.ponfee.commons.export.HtmlExporter;
 import code.ponfee.commons.export.Table;
 import code.ponfee.commons.export.Thead;
-import code.ponfee.commons.export.Tmeta;
-import code.ponfee.commons.export.Tmeta.Align;
-import code.ponfee.commons.export.Tmeta.Type;
 import code.ponfee.commons.io.FileTransformer;
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.json.Jsons;
+import code.ponfee.commons.model.Result;
+import code.ponfee.commons.model.ResultCode;
 import code.ponfee.commons.tree.BaseNode;
 import code.ponfee.commons.util.Captchas;
 
@@ -39,8 +38,8 @@ public class ExportTester {
     private int multiple = 20;
 
     public @Test void testHtml1() throws IOException {
-        AbstractExporter html = new HtmlExporter();
-        AbstractExporter csv = new CsvExporter();
+        AbstractDataExporter html = new HtmlExporter();
+        AbstractDataExporter csv = new CsvStringExporter();
         List<BaseNode<Integer, Thead>> list = new ArrayList<>();
 
         list.add(new BaseNode<>(1, 0, 1, new Thead("区域")));
@@ -137,7 +136,7 @@ public class ExportTester {
 
     @Test
     public void testHtml2() throws FileNotFoundException, IOException {
-        AbstractExporter html = new HtmlExporter();
+        AbstractDataExporter html = new HtmlExporter();
         html.build(new Table("a,b,c,d,e".split(",")).end());
         IOUtils.write((String) html.export(), new FileOutputStream("d://testHtml2.html"), "UTF-8");
         Files.addBOM("d:/testHtml2.html");
@@ -212,7 +211,7 @@ public class ExportTester {
         long start = System.currentTimeMillis();
         System.out.println("========================================start");
 
-        Table table1 = new Table(list);
+        Table<Object[]> table1 = new Table<>(list);
         table1.setCaption("test1");
         table1.addRowsAndEnd(data1);
         table1.setTfoot(tfoot);
@@ -252,8 +251,8 @@ public class ExportTester {
 
         start = System.currentTimeMillis();
         // -------------------------csv
-        CsvExporter csv = new CsvExporter();
-        table1 = new Table(list);
+        CsvStringExporter csv = new CsvStringExporter();
+        table1 = new Table<>(list);
         table1.setCaption("test1");
         table1.addRowsAndEnd(data1);
         table1.setTfoot(tfoot);
@@ -281,7 +280,7 @@ public class ExportTester {
 
     @Test
     public void testExcel2() throws IOException {
-        AbstractExporter excel = new ExcelExporter();
+        AbstractDataExporter excel = new ExcelExporter();
 
         Table table = new Table("a,b,c,d,e".split(","));
         table.setCaption("title");
@@ -293,6 +292,26 @@ public class ExportTester {
         IOUtils.write((byte[]) excel.export(), new FileOutputStream("d:/testExcel2.xlsx"));
         excel.close();
     }
+    
+    @Test
+    public void testExcel5() throws IOException {
+        AbstractDataExporter<byte[]> excel = new ExcelExporter();
+
+        Table<Result<Void>> table = new Table<>(
+            "a,b".split(","), 
+            o -> new Object[] { o.getCode(), o.getMsg() }
+        );
+        table.setCaption("title");
+        table.addRow(Result.SUCCESS);
+        table.addRow(Result.failure(ResultCode.BAD_REQUEST));
+        table.end();
+
+        excel.setName("21321");
+        excel.build(table);
+        IOUtils.write((byte[]) excel.export(), new FileOutputStream("d:/11111xxxx.xlsx"));
+        excel.close();
+    }
+    
     
     @Test
     public void testExcel3() throws IOException {
