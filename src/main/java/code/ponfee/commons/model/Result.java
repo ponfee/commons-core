@@ -145,7 +145,7 @@ public class Result<T> implements java.io.Serializable {
         private static final long serialVersionUID = 6740650053476768729L;
 
         SuccessResult() {
-            super(ResultCode.OK.getCode(), ResultCode.OK.getMsg());
+            super(ResultCode.OK);
         }
 
         @Override
