@@ -10,6 +10,9 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 /**
  * EL parser utility.
@@ -22,6 +25,7 @@ public class ELParser {
 
     private static final Pattern PARAMS_PATTERN = Pattern.compile("\\$\\{\\s*([a-zA-Z0-9_\\-\\.]+)\\s*\\}");
     private static final Pattern DATETM_PATTERN = Pattern.compile("\\$\\[\\s*([a-zA-Z0-9_,\\-\\+\\.\\(\\)\\s]+)\\s*\\]");
+    private static final Pattern SPEL_PATTERN   = Pattern.compile("\\{\\{(.+)\\}\\}");
 
     public static String parse(String text) {
         return parseDatetm(text);
@@ -30,6 +34,7 @@ public class ELParser {
     public static String parse(String text, Map<String, ?> params) {
         text = parseParams(text, params);
         text = parseDatetm(text);
+        text = parseSpel(text, params);
         return text;
     }
 
@@ -43,6 +48,7 @@ public class ELParser {
         while (matcher.find()) {
             String name = matcher.group(1);
             if (params.containsKey(name)) {
+                // matcher.group() -> matcher.group(0)
                 result = StringUtils.replace(result, matcher.group(), String.valueOf(params.get(name)));
             }
         }
@@ -57,6 +63,28 @@ public class ELParser {
             if (val != null) {
                 result = StringUtils.replace(result, matcher.group(), val);
             }
+        }
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static String parseSpel(String text, Map<String, ?> params) {
+        if (MapUtils.isEmpty(params)) {
+            return text;
+        }
+
+        StandardEvaluationContext context = new StandardEvaluationContext(params);
+        context.setVariables((Map<String, Object>) params); // #key
+        //context.setVariables("name", (Map<String, Object>) params); // #name[key]
+        //context.setRootObject(params);
+        ExpressionParser parser = new SpelExpressionParser();
+        String result = text;
+        Matcher matcher = SPEL_PATTERN.matcher(text);
+        while (matcher.find()) {
+            result = StringUtils.replace(
+                result, matcher.group(), 
+                String.valueOf(parser.parseExpression(matcher.group(1)).getValue(context))
+            );
         }
         return result;
     }

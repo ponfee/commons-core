@@ -53,7 +53,7 @@ public class Table<E> implements Serializable {
     public Table(List<BaseNode<Integer, Thead>> list, 
                  Function<E, Object[]> converter) {
         this.thead = TreeNode.<Integer, Thead>createRoot(ROOT_PID, null, 0)
-                             .mount(list).flatHierarchy();
+                             .mount(list).bfsFlat();
         this.converter = converter;
     }
 
@@ -67,7 +67,7 @@ public class Table<E> implements Serializable {
             list.add(new BaseNode<>(j, ROOT_PID, j, true, new Thead(names[i])));
         }
         this.thead = TreeNode.<Integer, Thead>createRoot(ROOT_PID, null, 0)
-                             .mount(list).flatHierarchy();
+                             .mount(list).bfsFlat();
         this.converter = converter;
     }
 

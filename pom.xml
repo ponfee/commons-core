@@ -15,8 +15,8 @@
     <properties>
         <project.encoding>UTF-8</project.encoding>
         <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
-        <spring.version>4.3.21.RELEASE</spring.version>
-        <poi.version>4.0.0</poi.version>
+        <spring.version>4.3.22.RELEASE</spring.version>
+        <poi.version>4.0.1</poi.version>
         <!-- log4j2用2.11.0版本jetty报错（用2.8.2版本解决此问题）：Error scanning entry 
              META-INF/versions/9/org/apache/logging/log4j/util/ProcessIdUtil.class from jar 
         -->
@@ -38,7 +38,7 @@
                 <repository>
                     <!-- <servers>
                         <server>
-                            <id>sf-nexus-snapshots</id>
+                            <id>nexus-snapshots</id>
                             <username>username</username>
                             <password>password</password>
                         </server>
@@ -59,7 +59,7 @@
                 <repository>
                     <!-- <servers>
                         <server>
-                            <id>sf-nexus-releases</id>
+                            <id>nexus-releases</id>
                             <username>username</username>
                             <password>password</password>
                         </server>
@@ -179,7 +179,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
-            <version>4.2</version>
+            <version>4.3</version>
         </dependency>
 
         <!-- servlet -->
@@ -207,7 +207,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>27.0.1-jre</version>
+            <version>27.1-jre</version>
         </dependency>
 
         <!-- joda-time -->

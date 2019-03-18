@@ -142,26 +142,30 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A>
     }
 
     /**
-     * 按继承方式展开节点：父子节点相邻 
+     * 按继承方式展开节点：父子节点相邻 ，Inherit
+     * 
+     * 深度优先搜索DFS：（Depth-First Search）
      * 
      * should be before invoke {@link #mount(List)}
      * 
-     * @return
+     * @return a list nodes for dfs tree node
      */
-    public List<FlatNode<T, A>> flatInherit() {
+    public List<FlatNode<T, A>> dfsFlat() {
         List<FlatNode<T, A>> collect = Lists.newArrayList();
-        inherit(collect);
+        dfs(collect);
         return collect;
     }
 
     /**
-     * 按层级展开节点：兄弟节点相邻
+     * 按层级方式展开节点：兄弟节点相邻，Hierarchy
      * 
-     * @return
+     * 广度优先搜索BFS：（Breadth-First Search）
+     * 
+     * @return a list nodes for bfs tree node
      */
-    public List<FlatNode<T, A>> flatHierarchy() {
+    public List<FlatNode<T, A>> bfsFlat() {
         List<FlatNode<T, A>> collect = Lists.newArrayList(new FlatNode<>(this));
-        hierarchy(collect);
+        bfs(collect);
         return collect;
     }
 
@@ -172,7 +176,7 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A>
         // nodes list
         for (BaseNode<T, A> node : nodes) {
             if (node instanceof TreeNode) {
-                list.addAll(((TreeNode<T, A>) node).flatInherit());
+                list.addAll(((TreeNode<T, A>) node).dfsFlat());
             } else {
                 list.add(node); // node.clone()
             }
@@ -180,7 +184,7 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A>
 
         // the root node children
         if (CollectionUtils.isNotEmpty(this.children)) {
-            List<FlatNode<T, A>> flat = this.flatInherit();
+            List<FlatNode<T, A>> flat = this.dfsFlat();
             list.addAll(flat.subList(1, flat.size()));
             this.children.clear();
         }
@@ -216,7 +220,7 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A>
                 child.available = this.available && child.isEnabled();
 
                 // 子节点路径=节点路径+自身节点
-                child.path = plus(this.path, this.nid);
+                child.path = concat(this.path, this.nid);
                 child.level = this.level + 1;
                 this.children.add(child); // 挂载子节点
 
@@ -234,25 +238,25 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A>
             }
         }
 
-        this.path = plus(this.path, this.nid); // 节点路径追加自身的ID
+        this.path = concat(this.path, this.nid); // 节点路径追加自身的ID
     }
 
-    private void inherit(List<FlatNode<T, A>> collect) {
+    private void dfs(List<FlatNode<T, A>> collect) {
         collect.add(new FlatNode<>(this));
         if (CollectionUtils.isNotEmpty(this.children)) {
             for (TreeNode<T, A> nt : this.children) {
-                nt.inherit(collect);
+                nt.dfs(collect);
             }
         }
     }
 
-    private void hierarchy(List<FlatNode<T, A>> collect) {
+    private void bfs(List<FlatNode<T, A>> collect) {
         if (CollectionUtils.isNotEmpty(this.children)) {
             for (TreeNode<T, A> nt : this.children) {
                 collect.add(new FlatNode<>(nt));
             }
             for (TreeNode<T, A> nt : this.children) {
-                nt.hierarchy(collect);
+                nt.bfs(collect);
             }
         }
     }
@@ -300,14 +304,15 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A>
         return children;
     }
 
+    // -----------------------------------------------private methods
     /**
      * Returns the ImmutableList of merged collection and object
      * 
      * @param coll
      * @param obj
-     * @return
+     * @return a new ImmutableList appended an element
      */
-    private static <E> List<E> plus(Collection<E> coll, E obj) {
+    private static <E> List<E> concat(Collection<E> coll, E obj) {
         ImmutableList.Builder<E> builder = ImmutableList.builder();
         if (coll != null) {
             builder.addAll(coll);
