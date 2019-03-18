@@ -407,7 +407,7 @@
         <dependency>
             <groupId>aspose</groupId>
             <artifactId>words-jdk16</artifactId>
-            <version>1.0.0</version>
+            <version>1.0</version>
             <!-- <scope>system</scope>
             <systemPath>${pom.basedir}/lib/aspose.words.jdk16.jar</systemPath> -->
         </dependency>
@@ -531,7 +531,7 @@
         <dependency>
             <groupId>third-jce</groupId>
             <artifactId>third-jce</artifactId>
-            <version>1.0.0</version>
+            <version>1.0</version>
             <!-- <scope>system</scope>
             <systemPath>${pom.basedir}/lib/third-jce-1.0.0.jar</systemPath> -->
         </dependency>

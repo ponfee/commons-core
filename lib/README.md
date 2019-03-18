@@ -4,6 +4,6 @@
 
 ### mvn install:install-file -Dfile=cpdetector-1.0.10.jar -DgroupId=cpdetector -DartifactId=cpdetector -Dversion=1.0.10 -Dpackaging=jar
 
-### mvn install:install-file -Dfile=third.jce-1.0.jar -DgroupId=third.jce -DartifactId=third.jce -Dversion=1.0 -Dpackaging=jar
+### mvn install:install-file -Dfile=third-jce-1.0.jar -DgroupId=third-jce -DartifactId=third-jce -Dversion=1.0 -Dpackaging=jar
 
 ### mvn install:install-file -Dfile=chardet-1.0.jar -DgroupId=org.mozilla.intl -DartifactId=chardet -Dversion=1.0 -Dpackaging=jar
