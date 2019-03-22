@@ -13,6 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * The request limiter based ConcurrentHashMap
  * 
+ * multiple server nodes maybe occur problem
+ * 
  * @author Ponfee
  */
 @SuppressWarnings("unchecked")

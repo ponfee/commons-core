@@ -62,13 +62,15 @@ import redis.clients.jedis.Transaction;
  * 
  * 基于redis的分布式锁
  * 使用redis transaction功能实现
+ * 
+ * http://www.54tianzhisheng.cn/2018/04/24/Distributed_lock/
+ * 
  * @author fupf
  */
 public class JedisLock implements Lock, java.io.Serializable {
 
     private static final byte[] EX_BYTES = ValueOperations.EX.getBytes();
     private static final byte[] NX_BYTES = ValueOperations.NX.getBytes();
-    //private static final byte[] XX_BYTES = ValueOperations.XX.getBytes();
 
     private static final long serialVersionUID = -6209919116306827731L;
     private static Logger logger = LoggerFactory.getLogger(JedisLock.class);
@@ -172,7 +174,7 @@ public class JedisLock implements Lock, java.io.Serializable {
                 return tryLock(); // 锁被释放，重新获取
             } else if (System.currentTimeMillis() <= parseValue(value)) {
                 jedis.unwatch();
-                return false; // 锁未超时
+                return Arrays.equals(LOCK_VALUE.get(), value); // 锁未超时则判断是否当前线程持有（可重入锁）
             } else {
                 // 锁已超时，争抢锁（事务控制）
                 lockValue = generateValue();

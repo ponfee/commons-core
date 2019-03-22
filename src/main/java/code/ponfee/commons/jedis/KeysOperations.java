@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import code.ponfee.commons.math.Numbers;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.ShardedJedisPipeline;
 
@@ -76,6 +77,12 @@ public class KeysOperations extends JedisOperations {
         }, false, key, seconds);
     }
 
+    public boolean expireAt(String key, long unixTime) {
+        return call(shardedJedis -> {
+            return Numbers.equals(shardedJedis.expireAt(key, unixTime), 1L);
+        }, false, key, unixTime);
+    }
+
     /**
      * 设置失效时间
      * @param key
@@ -86,6 +93,12 @@ public class KeysOperations extends JedisOperations {
         return call(shardedJedis -> {
             return JedisOperations.pexpire(shardedJedis, key, milliseconds);
         }, false, key, milliseconds);
+    }
+
+    public boolean pexpireAt(String key, long millisTimestamp) {
+        return call(shardedJedis -> {
+            return Numbers.equals(shardedJedis.pexpireAt(key, millisTimestamp), 1L);
+        }, false, key, millisTimestamp);
     }
 
     /**

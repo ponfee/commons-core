@@ -154,6 +154,7 @@ public class SpringRedisLock implements Lock, java.io.Serializable {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public @Override boolean tryLock() {
         BoundValueOperations<String, byte[]> valueOps = redis.boundValueOps(lockKey);
+
         byte[] lockValue = generateValue();
         Boolean result = valueOps.setIfAbsent(lockValue); // 竞争锁
         // 仅当lockKey不存在才能设置成功并返回true，否则setnx不做任何动作返回false
@@ -173,7 +174,7 @@ public class SpringRedisLock implements Lock, java.io.Serializable {
                 return tryLock(); // 锁被释放，重新获取
             } else if (System.currentTimeMillis() <= parseValue(value)) {
                 redisOps.unwatch();
-                return false; // 锁未超时
+                return Arrays.equals(LOCK_VALUE.get(), value); // 锁未超时则判断是否当前线程持有（可重入锁）
             } else {
                 byte[] lockVal = generateValue();
                 redisOps.multi();
