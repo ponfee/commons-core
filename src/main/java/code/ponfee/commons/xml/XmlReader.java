@@ -1,7 +1,6 @@
 package code.ponfee.commons.xml;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -15,6 +14,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import code.ponfee.commons.io.Closeables;
 
 /**
  * xml读取
@@ -57,11 +58,7 @@ public final class XmlReader {
         } catch (Exception e) {
             throw new XmlException("Xmls create fail", e);
         } finally {
-            if (inputStream != null) try {
-                inputStream.close();
-            } catch (IOException ignored) {
-                ignored.printStackTrace();
-            }
+            Closeables.closeConsole(inputStream);
         }
     }
 

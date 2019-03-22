@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.caucho.hessian.io.HessianSerializerInput;
 import com.caucho.hessian.io.HessianSerializerOutput;
 
+import code.ponfee.commons.io.Closeables;
 import code.ponfee.commons.io.ExtendedGZIPOutputStream;
 import code.ponfee.commons.reflect.ClassUtils;
 
@@ -46,12 +47,14 @@ public class HessianSerializer extends Serializer {
         } catch (IOException e) {
             throw new SerializationException(e);
         } finally {
-            if (hessian != null) try {
-                hessian.close();
-            } catch (IOException e) {
-                logger.error("close hessian exception", e);
+            if (hessian != null) {
+                try {
+                    hessian.close();
+                } catch (IOException e) {
+                    logger.error("close hessian exception", e);
+                }
             }
-            close(gzout, "close GZIPOutputStream exception");
+            Closeables.closeLog(gzout, "close GZIPOutputStream exception");
         }
     }
 
@@ -77,12 +80,14 @@ public class HessianSerializer extends Serializer {
         } catch (IOException e) {
             throw new SerializationException(e);
         } finally {
-            if (hessian != null) try {
-                hessian.close();
-            } catch (Exception e) {
-                logger.error("close hessian exception", e);
+            if (hessian != null) {
+                try {
+                    hessian.close();
+                } catch (Exception e) {
+                    logger.error("close hessian exception", e);
+                }
             }
-            close(gzin, "close GZIPInputStream exception");
+            Closeables.closeLog(gzin, "close GZIPInputStream exception");
         }
     }
 

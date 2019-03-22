@@ -1,10 +1,5 @@
 package code.ponfee.commons.serial;
 
-import java.io.Closeable;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * 序例化抽象类
  * 
@@ -15,8 +10,6 @@ import org.slf4j.LoggerFactory;
 public abstract class Serializer {
 
     static final int BYTE_SIZE = 512;
-
-    private static Logger logger = LoggerFactory.getLogger(Serializer.class);
 
     /**
      * 对象序例化为流数据
@@ -57,20 +50,6 @@ public abstract class Serializer {
 
     public final <T> T deserialize(byte[] bytes, Class<T> clazz) {
         return this.deserialize(bytes, clazz, false);
-    }
-
-    /**
-     * 关闭流
-     * 
-     * @param closeable the Closeable
-     * @param error the error message
-     */
-    public static void close(Closeable closeable, String error) {
-        if (closeable != null) try {
-            closeable.close();
-        } catch (Exception e) {
-            logger.error(error, e);
-        }
     }
 
 }

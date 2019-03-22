@@ -78,7 +78,6 @@ public class RedisCurrentLimiter implements CurrentLimiter {
                     // Long.toString(IdWorker.LOCAL_WORKER.nextId(), Character.MAX_RADIX)
                     batch.put(Bytes.fromLong(IdWorker.LOCAL_WORKER.nextId()), trace.timeMillis);
                 }
-                //Stopwatch watch = Stopwatch.createStarted();
 
                 /*for (Entry<String, Map<byte[], Double>> entry : groups.entrySet()) {
                     if (entry.getValue().isEmpty()) {
@@ -105,7 +104,6 @@ public class RedisCurrentLimiter implements CurrentLimiter {
                     pipeline.sync();
                 });
 
-                //System.out.println("count:"+traces.size()+", cost:"+watch.stop());
                 groups.clear();
                 traces.clear();
             };

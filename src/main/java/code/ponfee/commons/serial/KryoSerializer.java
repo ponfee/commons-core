@@ -16,6 +16,7 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.pool.KryoPool;
 
+import code.ponfee.commons.io.Closeables;
 import code.ponfee.commons.io.ExtendedGZIPOutputStream;
 import code.ponfee.commons.io.Files;
 
@@ -57,8 +58,8 @@ public class KryoSerializer extends Serializer {
             throw new SerializationException(e);
         } finally {
             this.releaseKryo(kryo);
-            close(output, "close Output exception");
-            close(gzout, "close GZIPOutputStream exception");
+            Closeables.closeLog(output, "close Output exception");
+            Closeables.closeLog(gzout, "close GZIPOutputStream exception");
         }
     }
 
@@ -79,8 +80,8 @@ public class KryoSerializer extends Serializer {
             throw new SerializationException(e);
         } finally {
             this.releaseKryo(kryo);
-            close(input, "close Input exception");
-            close(gzin, "close GZIPInputStream exception");
+            Closeables.closeLog(input, "close Input exception");
+            Closeables.closeLog(gzin, "close GZIPInputStream exception");
         }
     }
 
@@ -89,10 +90,12 @@ public class KryoSerializer extends Serializer {
     }
 
     private void releaseKryo(Kryo kryo) {
-        if (kryo != null) try {
-            this.kryoPool.release(kryo);
-        } catch (Throwable t) {
-            logger.error("release kryo occur error", t);
+        if (kryo != null) {
+            try {
+                this.kryoPool.release(kryo);
+            } catch (Throwable t) {
+                logger.error("release kryo occur error", t);
+            }
         }
     }
 }

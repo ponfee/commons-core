@@ -89,7 +89,9 @@ public class SM2KeyExchanger implements Serializable {
         ECPoint aPublicKey = ecParam.curve.decodePoint(entity1.K).normalize();
         ECPoint temp = aPublicKey.add(RA.multiply(x1).normalize()).normalize();
         ECPoint V = temp.multiply(ecParam.bcSpec.getH().multiply(tB)).normalize();
-        if (V.isInfinity()) throw new IllegalStateException();
+        if (V.isInfinity()) {
+            throw new IllegalStateException();
+        }
         this.V = V;
 
         byte[] xV = V.getXCoord().toBigInteger().toByteArray();
@@ -125,7 +127,9 @@ public class SM2KeyExchanger implements Serializable {
         ECPoint bPublicKey = ecParam.curve.decodePoint(entity2.K).normalize();
         ECPoint temp = bPublicKey.add(RB.multiply(x2).normalize()).normalize();
         ECPoint U = temp.multiply(ecParam.bcSpec.getH().multiply(tA)).normalize();
-        if (U.isInfinity()) throw new IllegalStateException();
+        if (U.isInfinity()) {
+            throw new IllegalStateException();
+        }
         this.V = U;
 
         byte[] xU = U.getXCoord().toBigInteger().toByteArray();

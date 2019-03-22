@@ -15,6 +15,8 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 import javax.swing.ImageIcon;
 
+import code.ponfee.commons.io.Closeables;
+
 /**
  * 图片工具类
  * @author fupf
@@ -33,11 +35,7 @@ public class ImageUtils {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            if (input != null) try {
-                input.close();
-            } catch (IOException ignored) {
-                // ignored
-            }
+            Closeables.closeConsole(input);
         }
     }
 
@@ -125,11 +123,11 @@ public class ImageUtils {
      * @return
      */
     public static byte[] transparent(byte[] bytes, int refer, int normal) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             ImageIcon icon = new ImageIcon(ImageIO.read(new ByteArrayInputStream(bytes)));
-            BufferedImage img = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(),
-                                                   BufferedImage.TYPE_4BYTE_ABGR);
+            BufferedImage img = new BufferedImage(
+                icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_4BYTE_ABGR
+            );
             Graphics2D g2D = (Graphics2D) img.getGraphics();
             g2D.drawImage(icon.getImage(), 0, 0, icon.getImageObserver());
             for (int alpha, rgb, j, i = img.getMinX(); i < img.getWidth(); i++) {
@@ -147,16 +145,11 @@ public class ImageUtils {
                 }
             }
             //g2D.drawImage(bufferedImage, 0, 0, imageIcon.getImageObserver());
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ImageIO.write(img, "png", bos);
             return bos.toByteArray();
         } catch (Exception e) {
             throw new RuntimeException(e);
-        } finally {
-            if (bos != null) try {
-                bos.close();
-            } catch (IOException e) {
-                // ignore
-            }
         }
     }
 

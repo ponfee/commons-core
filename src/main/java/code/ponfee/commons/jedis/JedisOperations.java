@@ -84,7 +84,6 @@ public abstract class JedisOperations {
     public static boolean expire(ShardedJedis shardedJedis, byte[] key, Integer seconds) {
         return seconds != null
             && Numbers.equals(shardedJedis.expire(key, getActualExpire(seconds)), 1);
-
     }
 
     /**

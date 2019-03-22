@@ -24,6 +24,8 @@ import org.dom4j.io.SAXValidator;
 import org.dom4j.util.XMLErrorHandler;
 import org.xml.sax.SAXException;
 
+import code.ponfee.commons.io.Closeables;
+
 /**
  * xml工具类
  * @author fupf
@@ -126,11 +128,7 @@ public class SimpleXmlHandler {
         } catch (DocumentException e) {
             throw new IllegalArgumentException("invalid xml data", e);
         } finally {
-            if (xml != null) try {
-                xml.close();
-            } catch (IOException ignored) {
-                ignored.printStackTrace();
-            }
+            Closeables.closeConsole(xml);
         }
     }
 

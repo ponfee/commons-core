@@ -6,7 +6,7 @@ import java.util.BitSet;
 
 import code.ponfee.commons.jce.digest.DigestUtils;
 
-public class BloomFilter2 implements VisitedFrontier {
+public class JdkBloomFilter implements VisitedFrontier {
 
     private static final int DEFAULT_SIZE = 2 << 24;
     private static final int[] seeds = new int[] { 7, 11, 13, 19, 23, 31, 37, 61 };
@@ -15,7 +15,7 @@ public class BloomFilter2 implements VisitedFrontier {
 
     private static int size = 0;//保存已经插入的元素个数
 
-    public BloomFilter2() {
+    public JdkBloomFilter() {
         for (int i = 0; i < seeds.length; i++)
             func[i] = new Hash(DEFAULT_SIZE, seeds[i]);
     }
@@ -83,7 +83,7 @@ public class BloomFilter2 implements VisitedFrontier {
         System.out.println(33554430 >> 6); // % 64
         System.out.println(((33554430 - 1) >> 6) + 1); // % 64
         String value = new String("http://www.baidu.com");
-        BloomFilter2 filter = new BloomFilter2();
+        JdkBloomFilter filter = new JdkBloomFilter();
         System.out.println(filter.contains(value));
         filter.put(value);
         System.out.println(filter.contains(value));

@@ -90,7 +90,9 @@ public final class ObjectUtils {
      * @param bean the java bean object
      * 
      * @see code.ponfee.commons.reflect.CglibUtils#map2bean(Map, Object)
+     * @Deprecated will be instead of code.ponfee.commons.reflect.CglibUtils#map2bean(Map, Object)
      */
+    @Deprecated
     public static <T> void map2bean(Map<String, ?> map, T bean) {
         String name; Object value; Class<?> type;
         try {
@@ -129,7 +131,9 @@ public final class ObjectUtils {
      * @return a java bean object
      * 
      * @see code.ponfee.commons.reflect.CglibUtils#map2bean(Map, Class)
+     * @Deprecated will be instead of code.ponfee.commons.reflect.CglibUtils#map2bean(Map, Class)
      */
+    @Deprecated
     public static <T> T map2bean(Map<String, ?> map, Class<T> type) {
         T bean;
         try {
@@ -148,7 +152,6 @@ public final class ObjectUtils {
      * @return a HashMap object
      * 
      * @see code.ponfee.commons.reflect.CglibUtils#bean2map(Object)
-     * 
      * @Deprecated will be instead of code.ponfee.commons.reflect.CglibUtils#bean2map(Object)
      */
     @Deprecated

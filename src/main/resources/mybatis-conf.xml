@@ -5,6 +5,10 @@
     <settings>
         <!-- 指定MyBatis所用日志的具体实现，未指定时将自动查找。 -->
         <setting name="logImpl" value="SLF4J" />
+        <!-- 
+            dao.中的字符“.”是必须的，log4j、log4j2、logback，log4j2.xml中配置：
+            <Logger name="dao" level="DEBUG" additivity="false"><AppenderRef ref="Console"/></Logger>
+         -->
         <setting name="logPrefix" value="dao." />
 
         <!-- 使全局的映射器启用或禁用缓存。 -->

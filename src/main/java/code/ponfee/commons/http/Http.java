@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.databind.JavaType;
 import com.google.common.base.Preconditions;
 
+import code.ponfee.commons.io.Closeables;
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.util.Enums;
@@ -364,11 +365,7 @@ public final class Http {
             }
         } finally {
             disconnect(request);
-            if (bos != null) try {
-                bos.close();
-            } catch (IOException ignored) {
-                ignored.printStackTrace();
-            }
+            Closeables.closeConsole(bos);
         }
     }
 

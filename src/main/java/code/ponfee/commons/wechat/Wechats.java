@@ -120,19 +120,38 @@ public class Wechats {
      * 
      * 通过OAuth2.0方式弹出授权页面获得用户基本信息（因scope=snsapi_userinfo会弹出授权页面）
      * 
-     * @param token  the access token, {@link #getOAuth2(String, String, String)}
+     * @param accessToken  the access token, {@link #getOAuth2(String, String, String)}
      * @param openid the openid, {@link #getOAuth2(String, String, String)}
      * 
      * @return wechat user info
      * 
      * @see Wechats#buildAuthorizeUrl(String, String, String, String, String) set scope=snsapi_userinfo
      */
-    public static Map<String, Object> getUserInfoByOAuth2(String token, String openid) {
+    public static Map<String, Object> getUserInfoByOAuth2(String accessToken, String openid) {
         Map<String, String> params = new LinkedHashMap<>();
-        params.put("access_token", token);
+        params.put("access_token", accessToken);
         params.put("openid", openid);
         params.put("lang", "zh_CN"); // this param can be unset
         Map<String, Object> result = Http.post("https://api.weixin.qq.com/sns/userinfo")
+                                         .data(params).request(Map.class);
+
+        checkError(result);
+        return result;
+    }
+
+    /**
+     * Refresh the access token by refresh_token
+     * 
+     * @param appid the appid
+     * @param refreshToken the refresh_token
+     * @return refresed a new access_token by refresh_token
+     */
+    public static Map<String, Object> refreshAccessToken(String appid, String refreshToken) {
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("grant_type", "refresh_token");
+        params.put("appid", appid);
+        params.put("refresh_token", refreshToken);
+        Map<String, Object> result = Http.post("https://api.weixin.qq.com/sns/oauth2/refresh_token")
                                          .data(params).request(Map.class);
 
         checkError(result);
@@ -191,14 +210,14 @@ public class Wechats {
      * 
      * 通过全局Access Token获取用户基本信息
      * 
-     * @param token  the global access token, {@link #getAccessToken(String, String)}
+     * @param accessToken  the global access token, {@link #getAccessToken(String, String)}
      * @param openid the openid, 用户关注以及回复消息时可获取此openid
      * 
      * @return wechat user info
      */
-    public static Map<String, Object> getUserInfoByGlobal(String token, String openid) {
+    public static Map<String, Object> getUserInfoByGlobal(String accessToken, String openid) {
         Map<String, String> params = new LinkedHashMap<>();
-        params.put("access_token", token);
+        params.put("access_token", accessToken);
         params.put("openid", openid);
         Map<String, Object> result = Http.post("https://api.weixin.qq.com/cgi-bin/user/info")
                                          .data(params).request(Map.class);
@@ -256,7 +275,7 @@ public class Wechats {
     private static void checkError(Map<String, ?> result) {
         Object errcode = result.get("errcode");
         if (errcode != null && !"0".equals(errcode.toString())) {
-            throw new RuntimeException(Jsons.toJson(result));
+            throw new RuntimeException("Wechat server response error:" + Jsons.toJson(result));
         }
     }
 

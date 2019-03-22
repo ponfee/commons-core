@@ -5,7 +5,7 @@
                strict="true" name="commons-log">
 
     <properties>
-        <property name="LOG_HOME">../logs</property>
+        <property name="LOG_HOME">${log4j2.home:-..}/logs</property>
         <property name="LOG_FILE_NAME">commons-code</property>
     </properties>
 

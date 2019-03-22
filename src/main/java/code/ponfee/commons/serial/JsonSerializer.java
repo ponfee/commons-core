@@ -1,5 +1,6 @@
 package code.ponfee.commons.serial;
 
+import code.ponfee.commons.io.Closeables;
 import code.ponfee.commons.io.ExtendedGZIPOutputStream;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -42,7 +43,7 @@ public class JsonSerializer extends Serializer {
         } catch (IOException e) {
             throw new SerializationException(e);
         } finally {
-            close(gzout, "close GZIPOutputStream exception");
+            Closeables.closeLog(gzout, "close GZIPOutputStream exception");
         }
     }
 
@@ -58,7 +59,7 @@ public class JsonSerializer extends Serializer {
         } catch (IOException e) {
             throw new SerializationException(e);
         } finally {
-            close(gzin, "close GZIPInputStream exception");
+            Closeables.closeLog(gzin, "close GZIPInputStream exception");
         }
     }
 

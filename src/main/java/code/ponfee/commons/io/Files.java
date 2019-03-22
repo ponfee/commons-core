@@ -407,16 +407,8 @@ public final class Files {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            if (bos != null) try {
-                bos.close();
-            } catch (IOException ignored) {
-                ignored.printStackTrace();
-            }
-            if (output != null) try {
-                output.close();
-            } catch (IOException ignored) {
-                ignored.printStackTrace();
-            }
+            Closeables.closeConsole(bos);
+            Closeables.closeConsole(output);
         }
     }
 
@@ -452,16 +444,8 @@ public final class Files {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            if (bos != null) try {
-                bos.close();
-            } catch (IOException ignored) {
-                ignored.printStackTrace();
-            }
-            if (output != null) try {
-                output.close();
-            } catch (IOException ignored) {
-                ignored.printStackTrace();
-            }
+            Closeables.closeConsole(bos);
+            Closeables.closeConsole(output);
         }
     }
 

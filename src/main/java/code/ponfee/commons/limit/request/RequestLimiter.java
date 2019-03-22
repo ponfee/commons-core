@@ -1,7 +1,6 @@
 package code.ponfee.commons.limit.request;
 
 import java.io.Serializable;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.crypto.Mac;
@@ -11,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import code.ponfee.commons.jce.HmacAlgorithms;
 import code.ponfee.commons.jce.digest.HmacUtils;
-import code.ponfee.commons.util.Bytes;
 
 /**
  * Request limiter, like as send sms and so on
@@ -166,8 +164,8 @@ public abstract class RequestLimiter {
      * @return a check code
      */
     public static String buildNonce(String code, String salt) {
-        byte[] key = Bytes.fromLong(new Random(code.hashCode()).nextLong()); // 第一个nextLong值是固定的
-        //byte[] key = code.getBytes();
+        //byte[] key = Bytes.fromLong(new Random(code.hashCode()).nextLong()); // 第一个nextLong值是固定的
+        byte[] key = code.getBytes();
         Mac mac = HmacUtils.getInitializedMac(HmacAlgorithms.HmacMD5, key);
         mac.update(SALT_PREFIX);
         return Hex.encodeHexString(mac.doFinal(salt.getBytes()));

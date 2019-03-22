@@ -1524,13 +1524,15 @@ public class HttpRequest {
             }
         } else {
             stream = getConnection().getErrorStream();
-            if (stream == null) try {
-                stream = getConnection().getInputStream();
-            } catch (IOException e) {
-                if (contentLength() > 0) {
-                    throw new HttpException(e);
-                } else {
-                    stream = new ByteArrayInputStream(new byte[0]);
+            if (stream == null) {
+                try {
+                    stream = getConnection().getInputStream();
+                } catch (IOException e) {
+                    if (contentLength() > 0) {
+                        throw new HttpException(e);
+                    } else {
+                        stream = new ByteArrayInputStream(new byte[0]);
+                    }
                 }
             }
         }

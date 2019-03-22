@@ -25,8 +25,8 @@ public class ValueOperations extends JedisOperations {
 
     public static final String EX = "EX";
     public static final String PX = "PX";
-    public static final String NX = "NX";
-    public static final String XX = "XX";
+    public static final String NX = "NX"; // 只有键key不存在的时候才会设置key的值
+    public static final String XX = "XX"; // 只有键key存在的时候才会设置key的值
 
     ValueOperations(JedisClient jedisClient) {
         super(jedisClient);
@@ -209,7 +209,7 @@ public class ValueOperations extends JedisOperations {
      * # EX 和 PX 可以同时出现，但后面给出的选项会覆盖前面给出的选项：ttl 5000
      * SET key "value" EX 1000 PX 5000000
      * 
-     * # NX 或 XX 可以和 EX 或者 PX 组合使用
+     * # NX或XX 可以和  EX或PX 组合使用
      * SET key-with-expire-and-NX "hello" EX 10086 NX
      * 
      * @param key

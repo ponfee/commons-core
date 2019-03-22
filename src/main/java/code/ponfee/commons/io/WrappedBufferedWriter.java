@@ -87,25 +87,11 @@ public class WrappedBufferedWriter extends Writer {
 
     @Override
     public void close() {
-        if (buffer != null) try {
-            buffer.close();
-        } catch (IOException ignored) {
-            ignored.printStackTrace();
-        }
+        Closeables.closeConsole(buffer);
+        Closeables.closeConsole(writer);
+        Closeables.closeConsole(output);
         buffer = null;
-
-        if (writer != null) try {
-            writer.close();
-        } catch (IOException ignored) {
-            ignored.printStackTrace();
-        }
         writer = null;
-
-        if (output != null) try {
-            output.close();
-        } catch (IOException ignored) {
-            ignored.printStackTrace();
-        }
         output = null;
     }
 

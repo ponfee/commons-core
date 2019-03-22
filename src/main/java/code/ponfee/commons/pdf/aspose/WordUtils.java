@@ -24,6 +24,7 @@ import com.aspose.words.NodeType;
 import com.aspose.words.PdfSaveOptions;
 import com.aspose.words.Table;
 
+import code.ponfee.commons.io.Closeables;
 import code.ponfee.commons.resource.Resource;
 
 /**
@@ -83,11 +84,7 @@ public final class WordUtils {
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
-            if (words != null) try {
-                words.close();
-            } catch (IOException ignored) {
-                ignored.printStackTrace();
-            }
+            Closeables.closeConsole(words);
         }
     }
 

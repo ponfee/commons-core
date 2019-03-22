@@ -78,15 +78,19 @@ public class PdfSignature {
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
-            if (reader != null) try {
-                reader.close();
-            } catch (Exception ignored) {
-                ignored.printStackTrace();
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (Exception ignored) {
+                    ignored.printStackTrace();
+                }
             }
-            if (stamper != null) try {
-                stamper.close();
-            } catch (Exception ignored) {
-                ignored.printStackTrace();
+            if (stamper != null) {
+                try {
+                    stamper.close();
+                } catch (Exception ignored) {
+                    ignored.printStackTrace();
+                }
             }
         }
     }

@@ -1,8 +1,9 @@
 package code.ponfee.commons.resource;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.io.InputStream;
+
+import code.ponfee.commons.io.Closeables;
 
 /**
  * 资源类
@@ -34,18 +35,13 @@ public class Resource implements Closeable {
 
     @Override
     public String toString() {
-        return "Resource [filePath=" + filePath
-            + ", fileName=" + fileName + ", stream=" + stream + "]";
+        return "Resource [filePath=" + filePath + ", fileName=" + fileName + ", stream=" + stream + "]";
     }
 
     @Override
     public void close() {
-        if (stream != null) try {
-            stream.close();
-            stream = null;
-        } catch (IOException ignored) {
-            ignored.printStackTrace();
-        }
+        Closeables.closeConsole(stream);
+        stream = null;
     }
 
 }
