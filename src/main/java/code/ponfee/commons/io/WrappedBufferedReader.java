@@ -42,25 +42,11 @@ public class WrappedBufferedReader extends Reader {
 
     @Override
     public void close() {
-        if (buffer != null) try {
-            buffer.close();
-        } catch (IOException ignored) {
-            ignored.printStackTrace();
-        }
+        Closeables.closeConsole(buffer);
+        Closeables.closeConsole(reader);
+        Closeables.closeConsole(input);
         buffer = null;
-
-        if (reader != null) try {
-            reader.close();
-        } catch (IOException ignored) {
-            ignored.printStackTrace();
-        }
         reader = null;
-
-        if (input != null) try {
-            input.close();
-        } catch (IOException ignored) {
-            ignored.printStackTrace();
-        }
         input = null;
     }
 

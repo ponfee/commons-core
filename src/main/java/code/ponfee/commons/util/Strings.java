@@ -526,7 +526,9 @@ public class Strings {
      * @return list containing the parsed list values
      */
     public static List<String> csvSplit(List<String> list, String s, int off, int len) {
-        if (list == null) list = new ArrayList<>();
+        if (list == null) {
+            list = new ArrayList<>();
+        }
         CsvSplitState state = CsvSplitState.PRE_DATA;
         StringBuilder out = new StringBuilder();
         int last = -1;
@@ -536,7 +538,9 @@ public class Strings {
 
             switch (state) {
                 case PRE_DATA:
-                    if (Character.isWhitespace(ch)) continue;
+                    if (Character.isWhitespace(ch)) {
+                        continue;
+                    }
 
                     if ('"' == ch) {
                         state = CsvSplitState.QUOTE;

@@ -38,6 +38,7 @@ import org.bouncycastle.jce.provider.X509CertificateObject;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.util.Store;
 
+import code.ponfee.commons.io.Closeables;
 import code.ponfee.commons.io.Files;
 
 /**
@@ -97,11 +98,7 @@ public class X509CertUtils {
                 se.setStackTrace(ArrayUtils.addAll(e.getStackTrace(), ex.getStackTrace()));
                 throw se;
             } finally {
-                if (input != null) try {
-                    input.close();
-                } catch (IOException ignored) {
-                    ignored.printStackTrace();
-                }
+                Closeables.closeConsole(input);
             }
         }
     }
@@ -390,11 +387,7 @@ public class X509CertUtils {
                 return false;
             }
         } finally {
-            if (inputstream != null) try {
-                inputstream.close();
-            } catch (IOException ignored) {
-                ignored.printStackTrace();
-            }
+            Closeables.closeConsole(inputstream);
         }
     }
 
@@ -435,11 +428,7 @@ public class X509CertUtils {
                 return Base64.getDecoder().decode(builder.toString());
             }
         } finally {
-            if (inputstream != null) try {
-                inputstream.close();
-            } catch (IOException ignored) {
-                ignored.printStackTrace();
-            }
+            Closeables.closeConsole(inputstream);
         }
     }
 

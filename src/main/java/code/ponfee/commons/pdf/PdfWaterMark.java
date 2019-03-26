@@ -46,10 +46,12 @@ public class PdfWaterMark {
         } catch (DocumentException | IOException e) {
             throw new RuntimeException(e);
         } finally {
-            if (stamper != null) try {
-                stamper.close();
-            } catch (DocumentException | IOException ignored) {
-                ignored.printStackTrace();
+            if (stamper != null) {
+                try {
+                    stamper.close();
+                } catch (DocumentException | IOException ignored) {
+                    ignored.printStackTrace();
+                }
             }
             if (reader != null) {
                 reader.close();
@@ -96,10 +98,12 @@ public class PdfWaterMark {
         } catch (DocumentException | IOException e) {
             throw new RuntimeException(e);
         } finally {
-            if (stamper != null) try {
-                stamper.close();
-            } catch (DocumentException | IOException ignored) {
-                ignored.printStackTrace();
+            if (stamper != null) {
+                try {
+                    stamper.close();
+                } catch (DocumentException | IOException ignored) {
+                    ignored.printStackTrace();
+                }
             }
             if (reader != null) {
                 reader.close();

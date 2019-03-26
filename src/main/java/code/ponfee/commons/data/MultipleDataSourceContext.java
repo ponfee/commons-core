@@ -3,6 +3,8 @@ package code.ponfee.commons.data;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.collect.ImmutableList;
+
 /**
  * Multiple DataSource Context
  * 
@@ -10,7 +12,7 @@ import java.util.List;
  */
 public final class MultipleDataSourceContext {
 
-    static List<String> dataSourceKeys;
+    static ImmutableList<String> dataSourceKeys;
 
     private MultipleDataSourceContext() {}
 

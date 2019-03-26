@@ -1,7 +1,6 @@
 package code.ponfee.commons.jce.pkcs;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 
@@ -31,6 +30,7 @@ import org.bjca.jce.fastparser.RecipientInfo;
 import org.bouncycastle.jce.X509Principal;
 import org.bouncycastle.util.Arrays;
 
+import code.ponfee.commons.io.Closeables;
 import code.ponfee.commons.util.SecureRandoms;
 
 /**
@@ -116,11 +116,7 @@ public final class PKCS7Envelope {
         } catch (Exception e) {
             throw new SecurityException(e);
         } finally {
-            if (dout != null) try {
-                dout.close();
-            } catch (IOException ignored) {
-                // ignore
-            }
+            Closeables.closeConsole(dout);
         }
     }
 
@@ -191,11 +187,7 @@ public final class PKCS7Envelope {
         } catch (Exception e) {
             throw new SecurityException(e);
         } finally {
-            if (input != null) try {
-                input.close();
-            } catch (IOException ignored) {
-                ignored.printStackTrace();
-            }
+            Closeables.closeConsole(input);
         }
     }
 

@@ -27,6 +27,8 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import code.ponfee.commons.io.Closeables;
+
 /**
  * 类资源加载器
  * @author fupf
@@ -132,16 +134,8 @@ final class ClassPathResourceLoader {
             logger.error("load resource from jar file occur error", e);
             return null;
         } finally {
-            if (jar != null) try {
-                jar.close();
-            } catch (IOException ignored) {
-                ignored.printStackTrace();
-            }
-            if (zip != null) try {
-                zip.close();
-            } catch (IOException ignored) {
-                ignored.printStackTrace();
-            }
+            Closeables.closeConsole(jar);
+            Closeables.closeConsole(zip);
         }
     }
 
@@ -248,16 +242,8 @@ final class ClassPathResourceLoader {
             logger.error("load resource from jar file occur error", e);
             return list;
         } finally {
-            if (jar != null) try {
-                jar.close();
-            } catch (IOException ignored) {
-                ignored.printStackTrace();
-            }
-            if (zip != null) try {
-                zip.close();
-            } catch (IOException ignored) {
-                ignored.printStackTrace();
-            }
+            Closeables.closeConsole(jar);
+            Closeables.closeConsole(zip);
         }
     }
 
@@ -293,11 +279,7 @@ final class ClassPathResourceLoader {
         try {
             return new ByteArrayInputStream(IOUtils.toByteArray(input));
         } finally {
-            if (input != null) try {
-                input.close();
-            } catch (Exception ignored) {
-                ignored.printStackTrace();
-            }
+            Closeables.closeConsole(input);
         }
     }
 

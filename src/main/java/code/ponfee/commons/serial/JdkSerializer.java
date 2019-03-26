@@ -1,5 +1,6 @@
 package code.ponfee.commons.serial;
 
+import code.ponfee.commons.io.Closeables;
 import code.ponfee.commons.io.ExtendedGZIPOutputStream;
 import code.ponfee.commons.reflect.ClassUtils;
 
@@ -43,8 +44,8 @@ public class JdkSerializer extends Serializer {
             // 先打开的后关闭，后打开的先关闭
             // 看依赖关系，如果流a依赖流b，应该先关闭流a，再关闭流b
             // 处理流a依赖节点流b，应该先关闭处理流a，再关闭节点流b
-            close(oos, "close ObjectOutputStream exception");
-            close(gzout, "close GZIPOutputStream exception");
+            Closeables.closeLog(oos, "close ObjectOutputStream exception");
+            Closeables.closeLog(gzout, "close GZIPOutputStream exception");
         }
     }
 
@@ -71,8 +72,8 @@ public class JdkSerializer extends Serializer {
         } catch (IOException | ClassNotFoundException e) {
             throw new SerializationException(e);
         } finally {
-            close(ois, "close ObjectInputStream exception");
-            close(gzin, "close GZIPInputStream exception");
+            Closeables.closeLog(ois, "close ObjectInputStream exception");
+            Closeables.closeLog(gzin, "close GZIPInputStream exception");
         }
     }
 

@@ -4,7 +4,6 @@ import static code.ponfee.commons.jce.RSACipherPaddings.ECB_PKCS1PADDING;
 import static code.ponfee.commons.jce.RSACipherPaddings.NONE_NOPADDING;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -18,6 +17,7 @@ import java.security.interfaces.RSAPublicKey;
 
 import javax.crypto.Cipher;
 
+import code.ponfee.commons.io.Closeables;
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.jce.Providers;
 import code.ponfee.commons.jce.RSASignAlgorithms;
@@ -202,11 +202,7 @@ public final class RSACryptor {
         } catch (Exception e) {
             throw new SecurityException(e);
         } finally {
-            if (input != null) try {
-                input.close();
-            } catch (IOException ignored) {
-                ignored.printStackTrace();
-            }
+            Closeables.closeConsole(input);
         }
     }
 

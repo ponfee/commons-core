@@ -269,10 +269,12 @@ public class Cache<T> {
      */
     public void destroy() {
         isDestroy = true;
-        if (scheduler != null) try {
-            scheduler.shutdown();
-        } catch (Exception ignored) {
-            ignored.printStackTrace();
+        if (scheduler != null) {
+            try {
+                scheduler.shutdown();
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
+            }
         }
         cache.clear();
     }

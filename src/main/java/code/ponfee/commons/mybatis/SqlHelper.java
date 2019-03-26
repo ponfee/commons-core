@@ -196,7 +196,9 @@ public class SqlHelper {
                         value = metaObject.getValue(propertyName);
                     }
                     JdbcType jdbcType = parameterMapping.getJdbcType();
-                    if (value == null && jdbcType == null) jdbcType = configuration.getJdbcTypeForNull();
+                    if (value == null && jdbcType == null) {
+                        jdbcType = configuration.getJdbcTypeForNull();
+                    }
                     sql = replaceParameter(sql, value, jdbcType, parameterMapping.getJavaType());
                 }
             }

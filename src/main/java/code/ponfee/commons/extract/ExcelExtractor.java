@@ -16,6 +16,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
+import code.ponfee.commons.io.Closeables;
 import code.ponfee.commons.util.Dates;
 
 /**
@@ -50,15 +51,9 @@ public class ExcelExtractor<T> extends DataExtractor<T> {
         try {
             extract(workbook = createWorkbook(), processor);
         } finally {
-            if (workbook != null) try {
-                workbook.close();
-            } catch (Exception ignored) {
-                ignored.printStackTrace();
-            }
-            if (dataSource instanceof InputStream) try {
-                ((InputStream) dataSource).close();
-            } catch (Exception ignored) {
-                ignored.printStackTrace();
+            Closeables.closeConsole(workbook);
+            if (dataSource instanceof InputStream) {
+                Closeables.closeConsole((InputStream) dataSource);
             }
         }
     }

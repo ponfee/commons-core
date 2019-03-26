@@ -35,8 +35,10 @@ public final class ClassUtils {
      * getMethodParamNames()                         -> []
      * getMethodSignature(Method method)             -> [method]
      * getClassGenricType(Class<?> clazz, int index) -> [clazz,index]
+     * 
      * @param method
      * @return
+     * @see org.springframework.core.LocalVariableTableParameterNameDiscoverer#getParameterNames(Method)
      */
     public static String[] getMethodParamNames(final Method method) {
         ClassReader classReader;
