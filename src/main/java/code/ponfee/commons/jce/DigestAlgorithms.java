@@ -14,7 +14,14 @@ public enum DigestAlgorithms {
     SHA1("SHA-1", 160), SHA224("SHA-224", 224), SHA256("SHA-256", 256), // 
     SHA384("SHA-384", 384), SHA512("SHA-512", 512), // 
 
+    /**
+     * @see org.bouncycastle.crypto.digests.SM3Digest
+     * @see org.bouncycastle.jcajce.provider.digest.SM3
+     */
     SM3(256), // 
+
+    // SHAKE128 algorithm only support use in org.bouncycastle.crypto.digests.SHAKEDigest
+    //SHAKE128(128), SHAKE256(256),
 
     // -----------------------SHA-3 Finalists: BLAKE, Grstl, JH, Keccak and Skein
     /**
@@ -46,9 +53,6 @@ public enum DigestAlgorithms {
     SKEIN_256_128("Skein-256-128", 128), SKEIN_256_256("Skein-256-256", 256), // 
     SKEIN_512_256("Skein-512-256", 256), SKEIN_512_512("Skein-512-512", 512), // 
     SKEIN_1024_512("Skein-1024-512", 512), SKEIN_1024_1024("Skein-1024-1024", 1024), // 
-
-    /* @see org.bouncycastle.crypto.digests.SHAKEDigest */
-    //SHAKE128(128), SHAKE256(256), // 
 
     /**
      * @see org.bouncycastle.crypto.digests.SHA3Digest

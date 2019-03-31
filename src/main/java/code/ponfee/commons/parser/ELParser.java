@@ -93,33 +93,35 @@ public class ELParser {
         try {
             text = text.trim();
             int argsStart = text.indexOf('(');
-            if (argsStart > 0) {
-                if (!text.endsWith(")")) {
-                    return null;
-                }
-                String methodName = LOWER_UNDERSCORE.to(
-                    LOWER_CAMEL, text.substring(0, argsStart).trim().toLowerCase()
-                );
-                String[] params = text.substring(argsStart + 1, text.lastIndexOf(')')).split(",");
-                Method method;
-                if (params.length == 1) {
-                    if (StringUtils.isBlank(params[0])) {
-                        method = DateFuncs.class.getMethod(methodName);
-                        return (String) method.invoke(null);
-                    } else {
-                        method = DateFuncs.class.getMethod(methodName, String.class);
-                        return (String) method.invoke(null, params[0].trim());
-                    }
-                } else if (params.length == 2) {
-                    method = DateFuncs.class.getMethod(methodName, String.class, String.class);
-                    return (String) method.invoke(null, params[0].trim(), params[1].trim());
-                } else {
-                    throw new UnsupportedOperationException();
-                }
-            } else {
+
+            if (argsStart <= 0) {
                 return DateFuncs.now(text);
             }
-        } catch (Exception e) {
+
+            if (!text.endsWith(")")) {
+                return null;
+            }
+
+            String methodName = LOWER_UNDERSCORE.to(
+                LOWER_CAMEL, text.substring(0, argsStart).trim().toLowerCase()
+            );
+            String[] params = text.substring(argsStart + 1, text.lastIndexOf(')')).split(",");
+            Method method;
+            if (params.length == 1) {
+                if (StringUtils.isBlank(params[0])) {
+                    method = DateFuncs.class.getMethod(methodName);
+                    return (String) method.invoke(null);
+                } else {
+                    method = DateFuncs.class.getMethod(methodName, String.class);
+                    return (String) method.invoke(null, params[0].trim());
+                }
+            } else if (params.length == 2) {
+                method = DateFuncs.class.getMethod(methodName, String.class, String.class);
+                return (String) method.invoke(null, params[0].trim(), params[1].trim());
+            } else {
+                return null;
+            }
+        } catch (Exception ignored) {
             return null;
         }
     }

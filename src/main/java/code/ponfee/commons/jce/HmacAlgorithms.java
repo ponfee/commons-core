@@ -17,7 +17,11 @@ public enum HmacAlgorithms {
     HmacSHA256(256), HmacSHA384(384), // 
     HmacSHA512(512), // 
 
-    //HmacSM3(256), // 
+    // org.bouncycastle.crypto.digests.SM3Digest cannot support hmac algorithm
+    //HmacSM3(256), 
+
+    // org.bouncycastle.crypto.digests.SHAKEDigest cannot support hmac algorithm
+    //HmacSHAKE128(128), HmacSHAKE256(256), 
 
     /**
      * @see org.bouncycastle.crypto.digests.KeccakDigest
@@ -33,9 +37,6 @@ public enum HmacAlgorithms {
     HmacSKEIN_512_512("Skein-MAC-512-512", 512), // 
     HmacSKEIN_1024_512("Skein-MAC-1024-512", 512), // 
     HmacSKEIN_1024_1024("Skein-MAC-1024-1024", 1024), // 
-
-    /* @see org.bouncycastle.crypto.digests.SHAKEDigest */
-    //HmacSHAKE128(128), HmacSHAKE256(256), // 
 
     /**
      * @see org.bouncycastle.crypto.digests.SHA3Digest

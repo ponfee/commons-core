@@ -26,7 +26,7 @@ import code.ponfee.commons.util.Strings;
  * @param <A> the attachment biz object type
  */
 public class BaseNode<T extends Serializable & Comparable<T>, A>
-    implements Serializable {
+    implements Serializable, Cloneable {
 
     private static final long serialVersionUID = -4116799955526185765L;
 
@@ -60,7 +60,8 @@ public class BaseNode<T extends Serializable & Comparable<T>, A>
         this.attach = attach;
     }
 
-    public @Override BaseNode<T, A> clone() {
+    @Override
+    public BaseNode<T, A> clone() {
         return SerializationUtils.clone(this);
     }
 

@@ -9,6 +9,10 @@ import code.ponfee.commons.util.Bytes;
  * http://blog.csdn.net/yezhubenyue/article/details/7436624
  * http://blog.csdn.net/xieyihua1994/article/details/51659379
  * http://blog.csdn.net/gaoshuang5678/article/details/50554131
+ * https://blog.csdn.net/K346K346/article/details/50487127
+ * 
+ * 规格化的浮点数是上述的第一种情况,对于单精度来说,也就是阶码位不为0且不为255的这种情况.
+ * 
  * 
  *  整数部分除2取余，直到商为0停止，从最后的余数读起，一直到最前面的余数
  *  小数部分乘2取整，然后从前往后读
@@ -64,6 +68,7 @@ import code.ponfee.commons.util.Bytes;
  * 
  * Double:
  *   SEEE EEEE EEEE [1]MMMM MMMM MMMM MMMM MMMM MMMM MMMM MMMM MMMM MMMM MMMM MMMM MMMM
+ *   1+11+52
  *   e = E-1023
  * 
  * 
@@ -80,6 +85,11 @@ import code.ponfee.commons.util.Bytes;
 public class FloatContent {
 
     public static void main(String[] args) {
+        System.out.println(Bytes.toBinary(Bytes.fromFloat(Float.MAX_VALUE)));
+        System.out.println(Bytes.toBinary(Bytes.fromDouble(Double.MAX_VALUE)));
+        System.out.println(Bytes.toFloat(new byte[] {127, (byte)0xff, (byte)0xff, (byte)0xff}));
+        
+        
         System.out.println(Bytes.toBinary(Bytes.fromFloat(-12.5f)));
         System.out.println(Bytes.toBinary(ByteBuffer.allocate(4).putFloat(-12.5f).array()));
 

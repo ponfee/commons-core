@@ -18,11 +18,11 @@ public final class Closeables {
     private static Logger logger = LoggerFactory.getLogger(Closeables.class);
 
     /**
-     * Close and ignored
+     * Close and ignore
      * 
      * @param closeable the Closeable
      */
-    public static void closeIgnored(@Nullable AutoCloseable closeable) {
+    public static void closeIgnore(@Nullable AutoCloseable closeable) {
         if (closeable != null) {
             try {
                 closeable.close();
