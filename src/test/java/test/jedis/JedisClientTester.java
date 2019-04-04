@@ -70,6 +70,14 @@ public class JedisClientTester {
         TestBean bean = new TestBean(123, 4324L, "5435fds");
         System.out.println(jedisClient.valueOps().setObject("abcdefg".getBytes(), bean));
         System.out.println(jedisClient.valueOps().getObject("abcdefg".getBytes(), TestBean.class));
+        
+        String key = "abc:xxxxx";
+        long ttl = 60;
+        
+        String script = "local val=redis.call('INCR', KEYS[1]); if val==1 then redis.call('EXPIRE', KEYS[1], ARGV[1]) end; return val;";
+        long obj = (Long)jedisClient.scriptOps().eval(script, Arrays.asList(key), Arrays.asList(String.valueOf(ttl)));
+        System.out.println(jedisClient.keysOps().ttl(key));
+        System.out.println(obj);
     }
     
     @Test

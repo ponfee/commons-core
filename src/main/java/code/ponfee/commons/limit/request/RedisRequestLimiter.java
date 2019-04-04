@@ -1,5 +1,6 @@
 package code.ponfee.commons.limit.request;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -12,6 +13,9 @@ import code.ponfee.commons.jedis.JedisClient;
  * @author Ponfee
  */
 public class RedisRequestLimiter extends RequestLimiter{
+
+    private static final String SCRIPT =
+        "local val=redis.call('INCR', KEYS[1]); if val==1 then redis.call('EXPIRE', KEYS[1], ARGV[1]) end; return val;";
 
     private final JedisClient client;
 
@@ -115,10 +119,7 @@ public class RedisRequestLimiter extends RequestLimiter{
     // -----------------------------------------------------------------------private methods
     private void checkLimit(String key, int ttl, int limit, String message)
         throws RequestLimitException {
-        long times = client.valueOps().incrBy(key);
-        if (times == 1) {
-            client.keysOps().expire(key, ttl); // 第一次缓存，则设置失效时间
-        }
+        long times = (Long) client.scriptOps().eval(SCRIPT, Arrays.asList(key), Arrays.asList(String.valueOf(ttl)));
         if (times > limit) {
             throw new RequestLimitException(message);
         }
