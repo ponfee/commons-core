@@ -165,6 +165,8 @@ public final class Jsons {
      * Deserialize the json string to java object
      * {@code new TypeReference<Map<String, Object>>(){} }
      * 
+     * fast json: JSON.parseObject(json, new TypeReference<Map<String,String>>(){})
+     * 
      * @param json the json byte array
      * @param type the TypeReference specified java type
      * @return a java object

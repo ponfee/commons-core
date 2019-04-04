@@ -46,7 +46,7 @@ public class PageRequestParams implements java.io.Serializable {
         this.params.putAll(params);
     }
 
-    public PageRequestParams allOf() {
+    public PageRequestParams searchAll() {
         this.setPageNum(1);
         this.setPageSize(0);
         this.setLimit(0);
@@ -103,6 +103,7 @@ public class PageRequestParams implements java.io.Serializable {
         return params;
     }
 
+    // ----------------------------------------------map operators
     public void put(String key, Object value) {
         this.params.put(key, value);
     }
@@ -126,4 +127,13 @@ public class PageRequestParams implements java.io.Serializable {
     public Long getLong(String key) {
         return Numbers.toWrapLong(get(key));
     }
+
+    public Float getFloat(String key) {
+        return Numbers.toWrapFloat(get(key));
+    }
+
+    public Boolean getBoolean(String key) {
+        return Numbers.toWrapBoolean(get(key));
+    }
+
 }

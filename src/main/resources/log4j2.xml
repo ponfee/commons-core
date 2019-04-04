@@ -42,8 +42,30 @@
     </Appenders>
 
     <Loggers>
-        <!-- 数据库操作日志 -->
-        <Logger name="dao" level="DEBUG" additivity="false">
+        <!-- 
+          Mybatis: <setting name="logImpl" value="SLF4J" />
+                   <setting name="logPrefix" value="dao." />
+          Instead by log4jdbc: jdbc.sqltiming
+        <Logger name="dao" additivity="false" level="DEBUG" >
+            <AppenderRef ref="Console"/>
+        </Logger> -->
+        <!-- net.sf.log4jdbc.Slf4jSpyLogDelegator -->
+        <Logger name="jdbc.audit" additivity="false" level="OFF">
+            <AppenderRef ref="Console" />
+        </Logger>
+        <Logger name="jdbc.resultset" additivity="false" level="OFF">
+            <AppenderRef ref="Console" />
+        </Logger>
+        <Logger name="jdbc.connection" additivity="false" level="OFF">
+            <AppenderRef ref="Console" />
+        </Logger>
+        <Logger name="jdbc.sqlonly" additivity="false" level="OFF">
+            <AppenderRef ref="Console" />
+        </Logger>
+        <Logger name="log4jdbc.debug" additivity="false" level="OFF">
+            <AppenderRef ref="Console" />
+        </Logger>
+        <Logger name="jdbc.sqltiming" additivity="false" level="DEBUG">
             <AppenderRef ref="Console" />
         </Logger>
 

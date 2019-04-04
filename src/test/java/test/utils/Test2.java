@@ -52,4 +52,30 @@ public class Test2 {
         System.out.println(Arrays.asList("word", "count").stream().map(w -> w.split("")).collect(Collectors.toList()));
         System.out.println(Arrays.asList("word", "count").stream().flatMap(w -> Stream.of(w.split(""))).collect(Collectors.toList()));
     }
+    
+    
+    public static int leastFire(int num, int shotDegrade, int remDegrade, int health) {
+        assert shotDegrade >= remDegrade;
+
+        int[] healths = new int[num];
+        Arrays.fill(healths, health);
+        return fire(healths, shotDegrade, remDegrade);
+    }
+
+    private static int fire(int[] healths, int shotDegrade, int remDegrade) {
+        Arrays.sort(healths);
+        if (healths[healths.length - 1] == 0) {
+            return 0;
+        }
+
+        for (int i = 0; i < healths.length; i++) {
+            if (i == healths.length - 1) {
+                healths[i] = Math.max(0, healths[i] - shotDegrade);
+            } else {
+                healths[i] = Math.max(0, healths[i] - remDegrade);
+            }
+        }
+        return 1 + fire(healths, shotDegrade, remDegrade);
+    }
+
 }

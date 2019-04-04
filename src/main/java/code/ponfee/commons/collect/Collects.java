@@ -463,4 +463,13 @@ public final class Collects {
         return product;
     }
 
+    /**
+     * Swaps x[a] with x[b].
+     */
+    public static void swap(Object[] x, int a, int b) {
+        Object t = x[a];
+        x[a] = x[b];
+        x[b] = t;
+    }
+
 }
