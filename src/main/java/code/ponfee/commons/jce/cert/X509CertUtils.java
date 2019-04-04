@@ -40,6 +40,7 @@ import org.bouncycastle.util.Store;
 
 import code.ponfee.commons.io.Closeables;
 import code.ponfee.commons.io.Files;
+import code.ponfee.commons.jce.Providers;
 
 /**
  * 证书工具类
@@ -68,9 +69,9 @@ public class X509CertUtils {
      * @return
      */
     public static X509Certificate loadX509Cert(byte[] bytes) {
+        CertificateFactory cf = Providers.getCertificateFactory(X509);
         try {
             // RSA证书
-            CertificateFactory cf = CertificateFactory.getInstance(X509);
             return (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(bytes));
         } catch (Exception e) {
             // SM2证书
@@ -155,10 +156,10 @@ public class X509CertUtils {
      */
     public static X509CRL loadX509Crl(byte[] bytes) {
         ByteArrayInputStream bais;
+        CertificateFactory cf = Providers.getCertificateFactory(X509);
         try {
             bais = new ByteArrayInputStream(bytes);
             //构建X509工厂
-            CertificateFactory cf = CertificateFactory.getInstance(X509);
             //生成X509格式的CRL对象并返回
             return (X509CRL) cf.generateCRL(bais);
         } catch (Exception e) {

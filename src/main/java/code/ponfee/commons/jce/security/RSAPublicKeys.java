@@ -5,7 +5,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.math.BigInteger;
 import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -19,6 +18,7 @@ import org.bouncycastle.crypto.params.RSAKeyParameters;
 import org.bouncycastle.crypto.util.PublicKeyFactory;
 import org.bouncycastle.openssl.PEMParser;
 
+import code.ponfee.commons.jce.Providers;
 import code.ponfee.commons.jce.cert.X509CertUtils;
 
 /**
@@ -39,7 +39,7 @@ public final class RSAPublicKeys {
      */
     public static RSAPublicKey toRSAPublicKey(BigInteger modulus, BigInteger publicExponent) {
         try {
-            return (RSAPublicKey) KeyFactory.getInstance(RSACryptor.ALG_RSA).generatePublic(
+            return (RSAPublicKey) Providers.getKeyFactory(RSACryptor.ALG_RSA).generatePublic(
                 new RSAPublicKeySpec(modulus, publicExponent)
             );
         } catch (Exception ex) {
@@ -98,8 +98,8 @@ public final class RSAPublicKeys {
         try {
             org.bouncycastle.asn1.pkcs.RSAPublicKey pk = org.bouncycastle.asn1.pkcs.RSAPublicKey.getInstance(bytes);
             RSAPublicKeySpec keySpec = new RSAPublicKeySpec(pk.getModulus(), pk.getPublicExponent());
-            return (RSAPublicKey) KeyFactory.getInstance(RSACryptor.ALG_RSA).generatePublic(keySpec);
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            return (RSAPublicKey) Providers.getKeyFactory(RSACryptor.ALG_RSA).generatePublic(keySpec);
+        } catch (InvalidKeySpecException e) {
             throw new SecurityException(e);
         }
     }
@@ -126,10 +126,10 @@ public final class RSAPublicKeys {
     public static RSAPublicKey fromPkcs8(String pkcs8PublicKey) {
         byte[] keyBytes = Base64.getDecoder().decode(pkcs8PublicKey);
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
+        KeyFactory keyFactory = Providers.getKeyFactory(RSACryptor.ALG_RSA);
         try {
-            KeyFactory keyFactory = KeyFactory.getInstance(RSACryptor.ALG_RSA);
             return (RSAPublicKey) keyFactory.generatePublic(x509KeySpec);
-        } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
+        } catch (InvalidKeySpecException e) {
             throw new SecurityException(e);
         }
     }
@@ -166,8 +166,8 @@ public final class RSAPublicKeys {
             SubjectPublicKeyInfo subPkInfo = (SubjectPublicKeyInfo) pemParser.readObject();
             RSAKeyParameters param = (RSAKeyParameters) PublicKeyFactory.createKey(subPkInfo);
             RSAPublicKeySpec keySpec = new RSAPublicKeySpec(param.getModulus(), param.getExponent());
-            return (RSAPublicKey) KeyFactory.getInstance(RSACryptor.ALG_RSA).generatePublic(keySpec);
-        } catch (IOException | InvalidKeySpecException | NoSuchAlgorithmException e) {
+            return (RSAPublicKey) Providers.getKeyFactory(RSACryptor.ALG_RSA).generatePublic(keySpec);
+        } catch (IOException | InvalidKeySpecException e) {
             throw new SecurityException(e);
         }
     }

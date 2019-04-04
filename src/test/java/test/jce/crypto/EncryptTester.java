@@ -42,8 +42,8 @@ public class EncryptTester {
         //coder = SymmetricCryptorBuilder.newBuilder(Algorithm.GOST, 32).mode(Mode.CBC).padding(Padding.X9_23Padding).parameter(nextBytes(8)).provider(bc).build();
         //coder = SymmetricCryptorBuilder.newBuilder(Algorithm.GOST, 32).mode(Mode.CBC).padding(Padding.TBCPadding).parameter(nextBytes(8)).provider(bc).build();
         
-        //coder = SymmetricCryptorBuilder.newBuilder(Algorithm.GOST, 32).mode(Mode.CBC).padding(Padding.CS3Padding).parameter(nextBytes(8)).provider(bc).build();
-        coder = SymmetricCryptorBuilder.newBuilder(Algorithm.GOST, 32).mode(Mode.CBC).padding(Padding.CS2Padding).parameter(nextBytes(8)).provider(bc).build();
+        coder = SymmetricCryptorBuilder.newBuilder(Algorithm.GOST, 32, bc).mode(Mode.CBC).padding(Padding.CS3Padding).parameter(nextBytes(8)).build();
+        //coder = SymmetricCryptorBuilder.newBuilder(Algorithm.GOST, 32, bc).mode(Mode.CBC).padding(Padding.CS2Padding).parameter(nextBytes(8)).build();
 
         byte[] encrypted = coder.encrypt("12345678".getBytes()); // 加密
         byte[] origin = coder.decrypt(encrypted); // 解密

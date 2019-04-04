@@ -7,10 +7,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.Signature;
+import java.security.SignatureException;
 import java.security.interfaces.RSAKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -44,16 +46,12 @@ public final class RSACryptor {
      * @return RSAKeyPair
      */
     public static RSAKeyPair generateKeyPair(int keySize) {
-        KeyPairGenerator keyPairGen;
-        try {
-            keyPairGen = KeyPairGenerator.getInstance(ALG_RSA);
-        } catch (Exception e) {
-            throw new SecurityException(e);
-        }
+        KeyPairGenerator keyPairGen = Providers.getKeyPairGenerator(ALG_RSA);
         keyPairGen.initialize(keySize);
         KeyPair pair = keyPairGen.generateKeyPair();
-        return new RSAKeyPair((RSAPrivateKey) pair.getPrivate(), 
-                              (RSAPublicKey) pair.getPublic());
+        return new RSAKeyPair(
+            (RSAPrivateKey) pair.getPrivate(), (RSAPublicKey) pair.getPublic()
+        );
     }
 
     // ---------------------------------------sign/verify---------------------------------------
@@ -189,10 +187,11 @@ public final class RSACryptor {
 
     private static <T extends Key & RSAKey> void docrypt(InputStream input, T key, OutputStream out, 
                                                          int cryptMode, boolean isPadding) {
+        // Cipher.getInstance(key.getAlgorithm())
+        Cipher cipher = Providers.getCipher(
+            key.getAlgorithm() + (isPadding ? ECB_PKCS1PADDING.transform() : NONE_NOPADDING.transform())
+        );
         try {
-            Cipher cipher = isPadding 
-                ? Cipher.getInstance(key.getAlgorithm() + ECB_PKCS1PADDING.transform()) // Cipher.getInstance(key.getAlgorithm())
-                : Cipher.getInstance(key.getAlgorithm() + NONE_NOPADDING.transform(), Providers.BC);
             cipher.init(cryptMode, key);
             byte[] buffer = new byte[getBlockSize(cryptMode, key)];
             for (int len; (len = input.read(buffer)) != Files.EOF;) {
@@ -223,11 +222,11 @@ public final class RSACryptor {
     private static <T extends Key & RSAKey> byte[] docrypt(byte[] data, T key, 
                                                            int cryptMode, boolean isPadding) {
         int blockSize = getBlockSize(cryptMode, key);
+        // Cipher.getInstance(key.getAlgorithm())
+        Cipher cipher = Providers.getCipher(
+            key.getAlgorithm() + (isPadding ? ECB_PKCS1PADDING.transform() : NONE_NOPADDING.transform())
+        );
         try {
-            Cipher cipher = isPadding 
-                ? Cipher.getInstance(key.getAlgorithm() + ECB_PKCS1PADDING.transform()) // Cipher.getInstance(key.getAlgorithm())
-                : Cipher.getInstance(key.getAlgorithm() + NONE_NOPADDING.transform(), Providers.BC);
-
             cipher.init(cryptMode, key);
             ByteArrayOutputStream out = new ByteArrayOutputStream(data.length);
             byte[] block;
@@ -250,12 +249,12 @@ public final class RSACryptor {
      * @return
      */
     private static byte[] sign(byte[] data, RSAPrivateKey privateKey, RSASignAlgorithms alg) {
+        Signature signature = Providers.getSignature(alg.name());
         try {
-            Signature signature = Signature.getInstance(alg.name());
             signature.initSign(privateKey);
             signature.update(data);
             return signature.sign();
-        } catch (Exception e) {
+        } catch (SignatureException | InvalidKeyException e) {
             throw new SecurityException(e);
         }
     }
@@ -270,12 +269,13 @@ public final class RSACryptor {
      */
     private static boolean verify(byte[] data, RSAPublicKey publicKey, 
                                   byte[] signed, RSASignAlgorithms alg) {
+
+        Signature signature = Providers.getSignature(alg.name());
         try {
-            Signature signature = Signature.getInstance(alg.name());
             signature.initVerify(publicKey);
             signature.update(data);
             return signature.verify(signed);
-        } catch (Exception e) {
+        } catch (InvalidKeyException | SignatureException e) {
             throw new SecurityException(e);
         }
     }
@@ -301,19 +301,19 @@ public final class RSACryptor {
             return publicKey;
         }
 
-        public String getPkcs8PrivateKey() {
+        public String toPkcs8PrivateKey() {
             return RSAPrivateKeys.toPkcs8(privateKey);
         }
 
-        public String getPkcs1PrivateKey() {
+        public String toPkcs1PrivateKey() {
             return RSAPrivateKeys.toPkcs1(privateKey);
         }
 
-        public String getPkcs8PublicKey() {
+        public String toPkcs8PublicKey() {
             return RSAPublicKeys.toPkcs8(publicKey);
         }
 
-        public String getPkcs1PublicKey() {
+        public String toPkcs1PublicKey() {
             return RSAPublicKeys.toPkcs1(publicKey);
         }
     }

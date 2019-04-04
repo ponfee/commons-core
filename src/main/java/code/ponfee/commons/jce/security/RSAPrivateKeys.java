@@ -6,7 +6,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigInteger;
 import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -83,7 +82,7 @@ public final class RSAPrivateKeys {
      */
     public static RSAPrivateKey toRSAPrivateKey(BigInteger modulus, BigInteger privateExponent) {
         try {
-            return (RSAPrivateKey) KeyFactory.getInstance(RSACryptor.ALG_RSA).generatePrivate(
+            return (RSAPrivateKey) Providers.getKeyFactory(RSACryptor.ALG_RSA).generatePrivate(
                 new RSAPrivateKeySpec(modulus, privateExponent) // RSAPrivateCrtKeySpec
             );
         } catch (Exception ex) {
@@ -225,10 +224,10 @@ public final class RSAPrivateKeys {
      */
     public static RSAPrivateKey fromPkcs8(String pkcs8PrivateKey) {
         byte[] bytes = Base64.getDecoder().decode(pkcs8PrivateKey);
+        KeyFactory keyFactory = Providers.getKeyFactory(RSACryptor.ALG_RSA);
         try {
-            KeyFactory keyFactory = KeyFactory.getInstance(RSACryptor.ALG_RSA);
             return (RSAPrivateKey) keyFactory.generatePrivate(new PKCS8EncodedKeySpec(bytes));
-        } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
+        } catch (InvalidKeySpecException e) {
             throw new SecurityException(e);
         }
     }

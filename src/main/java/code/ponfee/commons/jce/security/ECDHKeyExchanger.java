@@ -11,17 +11,16 @@ import java.security.interfaces.ECPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Map;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyAgreement;
 import javax.crypto.SecretKey;
 
-import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
+import code.ponfee.commons.jce.Providers;
 import code.ponfee.commons.jce.symmetric.Algorithm;
-
-import static  code.ponfee.commons.jce.Providers.*;
 
 /**
  * ECDH Key Exchange
@@ -31,10 +30,8 @@ import static  code.ponfee.commons.jce.Providers.*;
 public final class ECDHKeyExchanger {
 
     private static final String ALGORITHM = "ECDH"; // ECDH算法名称
-    private static final String PUBLIC_KEY = "ECDHPublicKey";
-    private static final String PRIVATE_KEY = "ECDHPrivateKey";
 
-    public static Map<String, byte[]> initPartAKey() {
+    public static Pair<ECPublicKey, ECPrivateKey> initPartAKey() {
         return initPartAKey(256);
     }
 
@@ -44,21 +41,18 @@ public final class ECDHKeyExchanger {
      * @param keySize the key size: 192/224/256/384/521
      * @return the key map
      */
-    public static Map<String, byte[]> initPartAKey(int keySize) {
-        KeyPairGenerator keyPairGenerator;
-        try {
-            keyPairGenerator = KeyPairGenerator.getInstance(ALGORITHM, BC);
-        } catch (NoSuchAlgorithmException e) {
-            throw new SecurityException(e);
-        }
+    public static Pair<ECPublicKey, ECPrivateKey> initPartAKey(int keySize) {
+        KeyPairGenerator keyPairGenerator = Providers.getKeyPairGenerator(ALGORITHM);
         keyPairGenerator.initialize(keySize); // must be 256
         KeyPair pair = keyPairGenerator.generateKeyPair();
-        return ImmutableMap.of(PUBLIC_KEY, pair.getPublic().getEncoded(), // 甲方公钥
-                               PRIVATE_KEY, pair.getPrivate().getEncoded()); // 甲方私钥
+        return ImmutablePair.of(
+           (ECPublicKey) pair.getPublic(), // 甲方公钥
+           (ECPrivateKey) pair.getPrivate() // 甲方私钥
+       );
     }
 
-    public static Map<String, byte[]> initPartBKey(byte[] partAPubKey) {
-        return initPartBKey(getPublicKey(partAPubKey));
+    public static Pair<ECPublicKey, ECPrivateKey> initPartBKey(byte[] partAPubKey) {
+        return initPartBKey(decodePublicKey(partAPubKey));
     }
 
     /**
@@ -66,19 +60,20 @@ public final class ECDHKeyExchanger {
      * @param partAPublicKey 甲方公钥
      * @return
      */
-    public static Map<String, byte[]> initPartBKey(ECPublicKey partAPublicKey) {
+    public static Pair<ECPublicKey, ECPrivateKey> initPartBKey(ECPublicKey partAPublicKey) {
         // 由甲方公钥构建乙方密钥
-        KeyPairGenerator keyPairGen;
+        KeyPairGenerator keyPairGen = Providers.getKeyPairGenerator(partAPublicKey.getAlgorithm());
         try {
-            keyPairGen = KeyPairGenerator.getInstance(partAPublicKey.getAlgorithm(), BC);
             keyPairGen.initialize(partAPublicKey.getParams());
-        } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
+        } catch (InvalidAlgorithmParameterException e) {
             throw new SecurityException(e);
         }
 
         KeyPair keyPair = keyPairGen.generateKeyPair();
-        return ImmutableMap.of(PUBLIC_KEY, keyPair.getPublic().getEncoded(),  // 乙方公钥
-                               PRIVATE_KEY, keyPair.getPrivate().getEncoded());  // 乙方私钥
+        return ImmutablePair.of(
+            (ECPublicKey) keyPair.getPublic(), // 乙方公钥
+            (ECPrivateKey) keyPair.getPrivate() // 乙方私钥
+        );
     }
 
     /**
@@ -101,33 +96,15 @@ public final class ECDHKeyExchanger {
 
     /**
      * 取得私钥
-     * @param keyMap
-     * @return
-     */
-    public static byte[] getPrivateKey(Map<String, byte[]> keyMap) {
-        return keyMap.get(PRIVATE_KEY);
-    }
-
-    /**
-     * 取得公钥
-     * @param keyMap
-     * @return
-     */
-    public static byte[] getPublicKey(Map<String, byte[]> keyMap) {
-        return keyMap.get(PUBLIC_KEY);
-    }
-
-    /**
-     * 取得私钥
      * @param privateKey
      * @return
      */
-    public static ECPrivateKey getPrivateKey(byte[] privateKey) {
+    public static ECPrivateKey decodePrivateKey(byte[] privateKey) {
+        KeyFactory keyFactory = Providers.getKeyFactory(ALGORITHM);
         try {
-            KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM, BC);
             PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(privateKey);
             return (ECPrivateKey) keyFactory.generatePrivate(pkcs8KeySpec);
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+        } catch (InvalidKeySpecException e) {
             throw new SecurityException(e);
         }
     }
@@ -137,12 +114,12 @@ public final class ECDHKeyExchanger {
      * @param publicKey
      * @return
      */
-    public static ECPublicKey getPublicKey(byte[] publicKey) {
+    public static ECPublicKey decodePublicKey(byte[] publicKey) {
+        KeyFactory keyFactory = Providers.getKeyFactory(ALGORITHM);
         try {
-            KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM, BC);
             X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(publicKey);
             return (ECPublicKey) keyFactory.generatePublic(x509KeySpec);
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+        } catch (InvalidKeySpecException e) {
             throw new SecurityException(e);
         }
     }
@@ -154,7 +131,7 @@ public final class ECDHKeyExchanger {
      * @return
      */
     public static SecretKey genSecretKey(byte[] bPriKey, byte[] aPubKey) {
-        return genSecretKey(getPrivateKey(bPriKey), getPublicKey(aPubKey));
+        return genSecretKey(decodePrivateKey(bPriKey), decodePublicKey(aPubKey));
     }
 
     /**
@@ -164,8 +141,8 @@ public final class ECDHKeyExchanger {
      * @return
      */
     public static SecretKey genSecretKey(ECPrivateKey bPriKey, ECPublicKey aPubKey) {
+        KeyAgreement keyAgree = Providers.getKeyAgreement(aPubKey.getAlgorithm());
         try {
-            KeyAgreement keyAgree = KeyAgreement.getInstance(aPubKey.getAlgorithm(), BC);
             keyAgree.init(bPriKey);
             keyAgree.doPhase(aPubKey, true);
             // 生成对称密钥，使用3DES对称加密，192位的AES被限制出口
@@ -182,8 +159,8 @@ public final class ECDHKeyExchanger {
      * @return
      */
     public static byte[] encrypt(byte[] data, SecretKey secretKey) {
+        Cipher cipher = Providers.getCipher(secretKey.getAlgorithm());
         try {
-            Cipher cipher = Cipher.getInstance(secretKey.getAlgorithm(), BC);
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             return cipher.doFinal(data);
         } catch (Exception e) {
@@ -198,8 +175,8 @@ public final class ECDHKeyExchanger {
      * @return
      */
     public static byte[] decrypt(byte[] data, SecretKey secretKey) {
+        Cipher cipher = Providers.getCipher(secretKey.getAlgorithm());
         try {
-            Cipher cipher = Cipher.getInstance(secretKey.getAlgorithm(), BC);
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             return cipher.doFinal(data);
         } catch (Exception e) {

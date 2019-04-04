@@ -52,9 +52,11 @@ import java.util.Map;
  *   sqlSession, 
  *   "com.github.pagehelper.mapper.CountryMapper.listAll"
  * )
- * 
+ *             ||
+ *             \/
  * SELECT * FROM t_sched_job
  * </code>
+ *
  *
  * <code>
  * sqlHelper.getMapperSql(
@@ -64,7 +66,8 @@ import java.util.Map;
  *   Arrays.asList(3, 4),
  *   "id"
  * )
- * 
+ *             ||
+ *             \/
  * SELECT * FROM t_sched_log 
  * WHERE status IN (1,2) AND id NOT IN (3,4)
  * ORDER BY id

@@ -25,16 +25,19 @@ public class PBECryptorBuilder {
         new RandomStringGenerator.Builder().withinRange('!', '~').build();
 
     private final SecretKey secretKey; // 密钥
+    private final Provider provider;
     private Mode mode; // 分组加密模式
     private Padding padding; // 填充
     private AlgorithmParameterSpec parameter; // 填充向量
-    private Provider provider;
 
-    private PBECryptorBuilder(PBEAlgorithm algorithm, char[] pass) {
+    private PBECryptorBuilder(PBEAlgorithm algorithm, char[] pass, Provider provider) {
         try {
             // new SecretKeySpec(new String(pass).getBytes(), algName); // 也可用此方法来构造具体的密钥
-            this.secretKey = SecretKeyFactory.getInstance(algorithm.name())
-                                      .generateSecret(new PBEKeySpec(pass));
+            SecretKeyFactory factory = (provider == null) 
+                                     ? SecretKeyFactory.getInstance(algorithm.name())
+                                     : SecretKeyFactory.getInstance(algorithm.name(), provider);
+            this.secretKey = factory.generateSecret(new PBEKeySpec(pass));
+            this.provider = provider;
         } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
             throw new SecurityException(e);
         }
@@ -49,7 +52,11 @@ public class PBECryptorBuilder {
     }
 
     public static PBECryptorBuilder newBuilder(PBEAlgorithm algorithm, char[] pass) {
-        return new PBECryptorBuilder(algorithm, pass);
+        return newBuilder(algorithm, pass, null);
+    }
+
+    public static PBECryptorBuilder newBuilder(PBEAlgorithm algorithm, char[] pass, Provider provider) {
+        return new PBECryptorBuilder(algorithm, pass, provider);
     }
 
     public PBECryptorBuilder mode(Mode mode) {
@@ -65,11 +72,6 @@ public class PBECryptorBuilder {
     public PBECryptorBuilder parameter(byte[] salt,
                                        int iterations) {
         this.parameter = new PBEParameterSpec(salt, iterations);
-        return this;
-    }
-
-    public PBECryptorBuilder provider(Provider provider) {
-        this.provider = provider;
         return this;
     }
 

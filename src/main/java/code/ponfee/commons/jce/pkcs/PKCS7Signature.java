@@ -10,6 +10,7 @@ import java.security.cert.X509Certificate;
 
 import org.apache.commons.codec.binary.Hex;
 
+import code.ponfee.commons.jce.Providers;
 import sun.security.pkcs.ContentInfo;
 import sun.security.pkcs.PKCS7;
 import sun.security.pkcs.ParsingException;
@@ -159,7 +160,7 @@ public class PKCS7Signature {
                 digestAlgorithmIds[i] = digAlg;
                 X500Name name = new X500Name(cert.getIssuerX500Principal().getEncoded());
 
-                Signature signer = Signature.getInstance(cert.getSigAlgName());
+                Signature signer = Providers.getSignature(cert.getSigAlgName());
                 signer.initSign(privKey);
                 signer.update(data); // signer.update(data, 0, data.length);
                 signs[i] = new SignerInfo(name, cert.getSerialNumber(), digAlg, encAlg, signer.sign());

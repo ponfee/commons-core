@@ -364,7 +364,7 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-redis</artifactId>
-            <version>1.8.18.RELEASE</version>
+            <version>1.8.20.RELEASE</version>
         </dependency>
         <!-- ====================redis==================== -->
 
@@ -552,7 +552,7 @@
       <dependency>
         <groupId>org.redisson</groupId>
         <artifactId>redisson</artifactId>
-        <version>3.7.3</version>
+        <version>3.10.5</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -583,7 +583,7 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.5.6</version>
+        <version>4.5.8</version>
         <scope>test</scope>
       </dependency>
 
