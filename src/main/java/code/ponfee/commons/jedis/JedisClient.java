@@ -28,7 +28,7 @@ import redis.clients.util.Pool;
  */
 public class JedisClient implements DisposableBean {
 
-    private final static String SEPARATOR = ";";
+    private final static String SEPARATOR = ",";
     private final static int DEFAULT_TIMEOUT_MILLIS = 2000; // default 2000 millis timeout
     private static final int MAX_BYTE_LEN = 30; // max bytes length
     private static final int MAX_LEN = 40; // max str length
@@ -61,9 +61,9 @@ public class JedisClient implements DisposableBean {
     /**
      * <pre>
      *  ShardedJedis注入格式：
-     *   host1:port1;host2:port2;host3:port3
-     *   name1:host1:port1;name2:host2:port2;name3:host3:port3
-     *   name1:host1:port1:password1;name2:host2:port2:password2;name3:host3:port3:password3
+     *   host1:port1,host2:port2,host3:port3
+     *   name1:host1:port1,name2:host2:port2,name3:host3:port3
+     *   name1:host1:port1:password1,name2:host2:port2:password2,name3:host3:port3:password3
      * </pre>
      * @param poolCfg
      * @param hosts
@@ -139,8 +139,8 @@ public class JedisClient implements DisposableBean {
 
     /**
      * @param poolCfg    连接池
-     * @param masters    哨兵mastername名称，多个以“;”分隔，如：sen_redis_master1;sen_redis_master2
-     * @param sentinels  哨兵服务器ip及端口，多个以“;”分隔，如：127.0.0.1:16379;127.0.0.1:16380;
+     * @param masters    哨兵mastername名称，多个以“,”分隔，如：sen_redis_master1,sen_redis_master2
+     * @param sentinels  哨兵服务器ip及端口，多个以“,”分隔，如：127.0.0.1:16379,127.0.0.1:16380
      * @param password   密码
      * @param timeout    超时时间
      * @param serializer 序列化对象
@@ -218,22 +218,21 @@ public class JedisClient implements DisposableBean {
      * 回调函数：有返回值
      * @param call              回调对象
      * @param occurErrorRtnVal  出现异常时的返回值
-     * @param args              参数
      * @return a result
      */
-    public final <T> T call(JedisCallback<T> call, T occurErrorRtnVal, Object... args) {
-        return call.call(this, occurErrorRtnVal, args);
+    public final <T> T call(JedisCallback<T> call, T occurErrorRtnVal) {
+        return call.call(this, occurErrorRtnVal);
     }
 
     /**
      * 勾子函数：无返回值
      * @param hook 调用勾子函数
-     * @param args 参数列表
      */
-    public final void hook(JedisHook hook, Object... args) {
-        hook.hook(this, args);
+    public final void hook(JedisHook hook) {
+        hook.hook(this);
     }
 
+    // --------------------------------------------------------package modify methods
     /**
      * 异常处理
      * @param e    the exception
@@ -272,6 +271,27 @@ public class JedisClient implements DisposableBean {
         logger.error(builder.append(")").toString(), e);
     }
 
+    ShardedJedis getShardedJedis() throws JedisException {
+        return this.shardedJedisPool.getResource();
+    }
+
+    final <T> byte[] serialize(T t, boolean isCompress) {
+        return serializer.serialize(t, isCompress);
+    }
+
+    final <T> byte[] serialize(T t) {
+        return this.serialize(t, false);
+    }
+
+    final <T> T deserialize(byte[] data, Class<T> clazz, boolean isCompress) {
+        return serializer.deserialize(data, clazz, isCompress);
+    }
+
+    final <T> T deserialize(byte[] data, Class<T> clazz) {
+        return this.deserialize(data, clazz, false);
+    }
+
+    // --------------------------------------------------------private methods
     private static String toString(byte[] bytes) {
         if (bytes.length > MAX_BYTE_LEN) {
             bytes = Arrays.copyOf(bytes, MAX_BYTE_LEN);
@@ -334,44 +354,6 @@ public class JedisClient implements DisposableBean {
             }
         }
         return list;
-    }
-
-    ShardedJedis getShardedJedis() throws JedisException {
-        return this.shardedJedisPool.getResource();
-    }
-
-    /*void closeShardedJedis(ShardedJedis shardedJedis) {
-        if (shardedJedis != null) try {
-            shardedJedis.close();
-            //shardedJedis.disconnect();
-        } catch (Throwable e) {
-            logger.error("redis close occur error", e);
-        }
-    }
-    
-    Jedis getJedis(String key) {
-        return this.getShardedJedis().getShard(key);
-    }
-    
-    void closeJedis(Jedis jedis) {
-        jedis.close();
-        //jedis.disconnect();
-    }*/
-
-    final <T> byte[] serialize(T t, boolean isCompress) {
-        return serializer.serialize(t, isCompress);
-    }
-
-    final <T> byte[] serialize(T t) {
-        return this.serialize(t, false);
-    }
-
-    final <T> T deserialize(byte[] data, Class<T> clazz, boolean isCompress) {
-        return serializer.deserialize(data, clazz, isCompress);
-    }
-
-    final <T> T deserialize(byte[] data, Class<T> clazz) {
-        return this.deserialize(data, clazz, false);
     }
 
 }

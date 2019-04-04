@@ -4,18 +4,18 @@ import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
 import java.security.Signature;
 import java.security.SignatureException;
-import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Map;
 
-import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
+import code.ponfee.commons.jce.Providers;
 
 /**
  * ECDSA签名算法工具类
@@ -32,10 +32,7 @@ public final class ECDSASigner {
 
     private static final String ALGORITHM = "EC";
 
-    public static final String PRIVATE_KEY = "ECPrivateKey";
-    public static final String PUBLIC_KEY = "ECPublicKey";
-
-    public static Map<String, ECKey> generateKeyPair() {
+    public static Pair<ECPublicKey, ECPrivateKey> generateKeyPair() {
         return generateKeyPair(256);
     }
 
@@ -44,17 +41,13 @@ public final class ECDSASigner {
      * @param keySize  the key size: 192/224/256/384/521/571
      * @return ec key map
      */
-    public static Map<String, ECKey> generateKeyPair(int keySize) {
-        KeyPairGenerator keyPairGen;
-        try {
-            keyPairGen = KeyPairGenerator.getInstance(ALGORITHM);
-        } catch (Exception e) {
-            throw new SecurityException(e);
-        }
+    public static Pair<ECPublicKey, ECPrivateKey> generateKeyPair(int keySize) {
+        KeyPairGenerator keyPairGen = Providers.getKeyPairGenerator(ALGORITHM);
         keyPairGen.initialize(keySize);
         KeyPair keyPair = keyPairGen.generateKeyPair();
-        return ImmutableMap.of(PRIVATE_KEY, (ECPrivateKey) keyPair.getPrivate(), 
-                               PUBLIC_KEY, (ECPublicKey) keyPair.getPublic());
+        return ImmutablePair.of(
+            (ECPublicKey) keyPair.getPublic(), (ECPrivateKey) keyPair.getPrivate()
+        );
     }
 
     /**
@@ -76,35 +69,15 @@ public final class ECDSASigner {
     }
 
     /**
-     * get the ECPublicKey from generate key map
-     * {@link #generateKeyPair(int)}
-     * @param keyMap
-     * @return ECPublicKey
-     */
-    public static ECPublicKey getPublicKey(Map<String, ECKey> keyMap) {
-        return (ECPublicKey) keyMap.get(PUBLIC_KEY);
-    }
-
-    /**
-     * get the ECPrivateKey from generate key map
-     * {@link #generateKeyPair(int)}
-     * @param keyMap
-     * @return ECPrivateKey
-     */
-    public static ECPrivateKey getPrivateKey(Map<String, ECKey> keyMap) {
-        return (ECPrivateKey) keyMap.get(PRIVATE_KEY);
-    }
-
-    /**
      * get ECPublicKey from byte array
      * @param publicKey
      * @return
      */
-    public static ECPublicKey getPublicKey(byte[] publicKey) {
+    public static ECPublicKey decodePublicKey(byte[] publicKey) {
+        KeyFactory keyFactory = Providers.getKeyFactory(ALGORITHM);
         try {
-            KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
             return (ECPublicKey) keyFactory.generatePublic(new X509EncodedKeySpec(publicKey));
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+        } catch (InvalidKeySpecException e) {
             throw new SecurityException(e);
         }
     }
@@ -114,11 +87,11 @@ public final class ECDSASigner {
      * @param privateKey
      * @return
      */
-    public static ECPrivateKey getPrivateKey(byte[] privateKey) {
+    public static ECPrivateKey decodePrivateKey(byte[] privateKey) {
+        KeyFactory keyFactory = Providers.getKeyFactory(ALGORITHM);
         try {
-            KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
             return (ECPrivateKey) keyFactory.generatePrivate(new PKCS8EncodedKeySpec(privateKey));
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+        } catch (InvalidKeySpecException e) {
             throw new SecurityException(e);
         }
     }
@@ -149,24 +122,24 @@ public final class ECDSASigner {
 
     private static byte[] sign(byte[] data, ECPrivateKey privateKey, 
                                ECDSASignAlgorithms algorithm) {
+        Signature signature = Providers.getSignature(algorithm.name());
         try {
-            Signature signature = Signature.getInstance(algorithm.name());
             signature.initSign(privateKey);
             signature.update(data);
             return signature.sign();
-        } catch (InvalidKeyException | NoSuchAlgorithmException | SignatureException e) {
+        } catch (InvalidKeyException | SignatureException e) {
             throw new SecurityException(e);
         }
     }
 
     private static boolean verify(byte[] data, byte[] signed, ECPublicKey publicKey, 
                                   ECDSASignAlgorithms algorithm) {
+        Signature signature = Providers.getSignature(algorithm.name());
         try {
-            Signature signature = Signature.getInstance(algorithm.name());
             signature.initVerify(publicKey);
             signature.update(data);
             return signature.verify(signed);
-        } catch (InvalidKeyException | NoSuchAlgorithmException | SignatureException e) {
+        } catch (InvalidKeyException | SignatureException e) {
             throw new SecurityException(e);
         }
     }

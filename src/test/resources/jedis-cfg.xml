@@ -19,7 +19,7 @@
                 <property name="timeBetweenEvictionRunsMillis" value="30000" />
             </bean>
         </constructor-arg>
-        <constructor-arg index="1" value="127.0.0.1:6379;127.0.0.1:6380;" />
+        <constructor-arg index="1" value="127.0.0.1:6379,127.0.0.1:6380," />
         <constructor-arg index="2" value="5000" type="int" />
         <constructor-arg index="3">
             <bean class="code.ponfee.commons.serial.FstSerializer" />
@@ -29,10 +29,10 @@
     <bean id="jedisClient" class="code.ponfee.commons.jedis.JedisClient" destroy-method="destroy">
         <constructor-arg index="0">
             <bean class="redis.clients.jedis.JedisPoolConfig">
-                <property name="maxTotal" value="200" />
+                <property name="maxTotal" value="100" />
                 <property name="maxIdle" value="10" />
                 <property name="minIdle" value="1" />
-                <property name="maxWaitMillis" value="10000" />
+                <property name="maxWaitMillis" value="5000" />
                 <property name="testOnBorrow" value="false" />
                 <property name="testOnReturn" value="false" />
                 <property name="testWhileIdle" value="false" />
@@ -42,11 +42,11 @@
             </bean>
         </constructor-arg>
         <!-- redis.sentinel.master=REDIS_SENTINEL
-        redis.sentinel.server=112.74.170.75:16379;112.74.170.75:16380
+        redis.sentinel.server=112.74.170.75:16379,112.74.170.75:16380
         redis.sentinel.passwd= -->
-        <constructor-arg index="1" value="DDT_CORE_CNSZ22_REDIS_CACHE" />
-        <constructor-arg index="2" value="10.202.40.105:8001;10.202.40.105:8002;10.202.40.107:8001" />
-        <constructor-arg index="3" value="admin.123" />
+        <constructor-arg index="1" value="REDIS_SENTINEL" />
+        <constructor-arg index="2" value="112.74.170.75:16379,112.74.170.75:16380" />
+        <constructor-arg index="3" value="mnWcasH5zN5bncE57pBz" />
         <constructor-arg index="4">
             <bean class="code.ponfee.commons.serial.FstSerializer" />
         </constructor-arg>

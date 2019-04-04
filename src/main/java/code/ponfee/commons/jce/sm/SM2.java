@@ -226,6 +226,7 @@ public final class SM2 {
         return c2;
     }
 
+    // ----------------------------------------------------------------signature sign
     public static byte[] sign(byte[] data, byte[] publicKey, 
                               byte[] privateKey) {
         return sign(data, null, publicKey, privateKey);
@@ -245,7 +246,7 @@ public final class SM2 {
      * sm2 sign
      * @param ecParam the ec parameter
      * @param data 签名信息
-     * @param ida  签名方唯一标识
+     * @param ida  签名方唯一标识，如：Alice@gmail.com
      * @param publicKey 公钥
      * @param privateKey 私钥
      * @return 签名信息
@@ -273,6 +274,7 @@ public final class SM2 {
         return new Signature(r, s, ecParam.n).toByteArray();
     }
 
+    // ----------------------------------------------------------------signature verify
     public static boolean verify(byte[] data, byte[] signed, byte[] publicKey) {
         return verify(data, null, signed, publicKey);
     }
@@ -383,6 +385,7 @@ public final class SM2 {
         return sm3.doFinal();
     }
 
+    // -------------------------------------------------------------------private methods
     /**
      * check the number is not between min(inclusion) and max(exclusion)
      * @param number the value

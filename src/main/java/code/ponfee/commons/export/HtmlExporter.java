@@ -303,7 +303,8 @@ public class HtmlExporter extends AbstractDataExporter<String> {
             html.append(" style=\"").append(style.toString()).append("\"");
         }
         if (clazz.length() > 0) {
-            html.append(" class=\"").append(clazz.deleteCharAt(clazz.length() - 1)).append("\"");
+            clazz.setLength(clazz.length() - 1);
+            html.append(" class=\"").append(clazz).append("\"");
         }
     }
 

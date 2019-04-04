@@ -96,6 +96,7 @@ import javax.net.ssl.X509TrustManager;
 
 import code.ponfee.commons.collect.Collects;
 import code.ponfee.commons.io.Files;
+import code.ponfee.commons.jce.Providers;
 import code.ponfee.commons.util.ObjectUtils;
 
 /**
@@ -261,7 +262,7 @@ public class HttpRequest {
     private static final SSLSocketFactory TRUSTED_FACTORY;
     static {
         try {
-            SSLContext context = SSLContext.getInstance("TLS");
+            SSLContext context = Providers.getSSLContext("TLS");
 
             context.init(null, new TrustManager[] {
                 new X509TrustManager() {

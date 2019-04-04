@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -21,6 +22,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
+import code.ponfee.commons.jce.Providers;
 import code.ponfee.commons.jce.cert.X509CertUtils;
 import code.ponfee.commons.jce.digest.DigestUtils;
 import code.ponfee.commons.util.SecureRandoms;
@@ -59,8 +61,8 @@ public class KeyStoreResolver {
      * @param storePassword  用于解锁密钥库
      */
     public KeyStoreResolver(KeyStoreType type, InputStream input, String storePassword) {
+        this.keyStore = Providers.getKeyStore(type.name());
         try (InputStream inputStream = input) {
-            this.keyStore = KeyStore.getInstance(type.name());
             this.keyStore.load(inputStream, toCharArray(storePassword));
         } catch (Exception e) {
             throw new SecurityException(e);
@@ -255,18 +257,18 @@ public class KeyStoreResolver {
         try {
             TrustManager[] trusts = null;
             if (trustStore != null) {
-                TrustManagerFactory tmf = TrustManagerFactory.getInstance(algorithm);
+                TrustManagerFactory tmf = Providers.getTrustManagerFactory(algorithm);
                 tmf.init(trustStore);
                 trusts = tmf.getTrustManagers();
             }
 
-            KeyManagerFactory kmf = KeyManagerFactory.getInstance(algorithm);
+            KeyManagerFactory kmf = Providers.getKeyManagerFactory(algorithm);
             kmf.init(this.keyStore, toCharArray(keyPassword));
 
-            SSLContext context = SSLContext.getInstance("TLS");
+            SSLContext context = Providers.getSSLContext("TLS");
             context.init(kmf.getKeyManagers(), trusts, SECURE_RANDOM);
             return context;
-        } catch (Exception e) {
+        } catch (KeyStoreException | UnrecoverableKeyException | NoSuchAlgorithmException | KeyManagementException e) {
             throw new SecurityException(e);
         }
     }

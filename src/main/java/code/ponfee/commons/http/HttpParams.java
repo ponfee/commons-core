@@ -109,7 +109,7 @@ public class HttpParams {
         }
 
         if (builder.length() > 0) {
-            builder.deleteCharAt(builder.length() - 1);
+            builder.setLength(builder.length() - 1);
         }
         return builder.toString();
     }
@@ -171,7 +171,7 @@ public class HttpParams {
                    .append(entry.getValue()).append(wrapChar).append('&');
         }
         if (signing.length() > 0) {
-            signing.deleteCharAt(signing.length() - 1); // 删除未位的'&'
+            signing.setLength(signing.length() - 1); // 删除未位的'&'
         }
         return signing.toString();
     }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 
 import org.apache.poi.ss.usermodel.AutoFilter;
 import org.apache.poi.ss.usermodel.Cell;
@@ -52,12 +53,12 @@ public class HSSFStreamingSheet implements Sheet {
         if (discard) {
             this.iterator = null;
             this.rows = null;
-            end();
+            toEnd();
         } else {
             this.iterator = new RowsIterator(this);
             this.rows = rowCacheSize > 0
                         ? new LinkedBlockingQueue<>(rowCacheSize)
-                        : new LinkedBlockingQueue<>();
+                        : new SynchronousQueue<>(); // new LinkedBlockingQueue<>();
         }
     }
 
@@ -88,7 +89,7 @@ public class HSSFStreamingSheet implements Sheet {
         return rows == null ? 0 : rows.size();
     }
 
-    void end() {
+    void toEnd() {
         end = true;
     }
 

@@ -5,7 +5,6 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -31,6 +30,7 @@ import org.bouncycastle.jce.X509Principal;
 import org.bouncycastle.util.Arrays;
 
 import code.ponfee.commons.io.Closeables;
+import code.ponfee.commons.jce.Providers;
 import code.ponfee.commons.util.SecureRandoms;
 
 /**
@@ -60,10 +60,10 @@ public final class PKCS7Envelope {
         DEROutputStream dout = null;
         try {
             // 生成对称密钥
-            SecretKey key = KeyGenerator.getInstance(alg.name).generateKey();
+            SecretKey key = Providers.getKeyGenerator(alg.name).generateKey();
 
             // 公钥对对称密钥加密
-            Cipher cipher = Cipher.getInstance(TRANSFORM);
+            Cipher cipher = Providers.getCipher(TRANSFORM);
             cipher.init(Cipher.ENCRYPT_MODE, cert.getPublicKey());
             byte[] encKey = cipher.doFinal(key.getEncoded());
 
@@ -71,7 +71,7 @@ public final class PKCS7Envelope {
             DERObject iv = alg.ivLen > 0 ? new DEROctetString(SecureRandoms.nextBytes(alg.ivLen)) : null;
             AlgorithmIdentifier derAlg = new AlgorithmIdentifier(new DERObjectIdentifier(alg.oid), iv);
             DEROctetString derParam = (DEROctetString) derAlg.getParameters();
-            cipher = Cipher.getInstance(alg.transform);
+            cipher = Providers.getCipher(alg.transform);
             if (derParam != null) {
                 cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(derParam.getOctets()));
             } else {
@@ -154,7 +154,7 @@ public final class PKCS7Envelope {
         try {
             // 解密被加密的对称密钥
             byte[] encKey = recipientInfo.getEncKey();
-            Cipher c = Cipher.getInstance(TRANSFORM);
+            Cipher c = Providers.getCipher(TRANSFORM);
             c.init(2, privateKey);
             byte[] key = c.doFinal(encKey);
 
@@ -166,7 +166,7 @@ public final class PKCS7Envelope {
             AlgorithmIdentifier alg = AlgorithmIdentifier.getInstance(input.readObject());
             String algoid = alg.getObjectId().getId();
             AlgorithmMapping algorithm = getAlgByOid(algoid);
-            Cipher cipher = Cipher.getInstance(algorithm.transform);
+            Cipher cipher = Providers.getCipher(algorithm.transform);
 
             // 对称加密向量参数
             item = eci.getIvParameter();

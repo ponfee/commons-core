@@ -2,7 +2,6 @@ package code.ponfee.commons.jce.passwd;
 
 import static code.ponfee.commons.jce.HmacAlgorithms.ALGORITHM_MAPPING;
 
-import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 
@@ -140,11 +139,9 @@ public final class PBKDF2 {
                                  int iterationCount, int dkLen) {
         PBEKeySpec spec = new PBEKeySpec(password, salt, iterationCount, dkLen << 3);
         try {
-            SecretKeyFactory skf = SecretKeyFactory.getInstance(
-                "PBKDF2With" + alg.algorithm(), Providers.BC
-            );
+            SecretKeyFactory skf = Providers.getSecretKeyFactory("PBKDF2With" + alg.algorithm());
             return skf.generateSecret(spec).getEncoded();
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+        } catch (InvalidKeySpecException e) {
             throw new SecurityException(e);
         }
     }

@@ -23,8 +23,7 @@ public class TestHSSFStreaming {
     @Test
     public void test1() throws InterruptedException {
         //String file = "e:/data_expert.xls";
-        String file = "e:/writeTest2.xls";
-        HSSFStreamingWorkbook wb = HSSFStreamingReader.create(/*40, 0*/).open(file, exec);
+        HSSFStreamingWorkbook wb = HSSFStreamingReader.create(40, 0).open("src/test/java/test/extract/writeTest2.xls", exec);
         HSSFStreamingSheet sheet = (HSSFStreamingSheet) wb.getSheetAt(0);
         for (Row row : sheet) {
             System.out.print(row.getRowNum() + ", " + ((HSSFStreamingRow) row).getRowOrder() + ":  ");

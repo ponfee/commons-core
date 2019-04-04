@@ -113,7 +113,7 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A>
         Set<T> nodeNids = Sets.newHashSet(this.nid);
 
         // 1、预处理
-        List<BaseNode<T, A>> nodes = before(list);
+        List<BaseNode<T, A>> nodes = prepare(list);
 
         // 2、检查是否存在重复节点
         for (BaseNode<T, A> n : nodes) {
@@ -168,7 +168,7 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A>
     }
 
     // -----------------------------------------------------------private methods
-    private <E extends BaseNode<T, A>> List<BaseNode<T, A>> before(List<E> nodes) {
+    private <E extends BaseNode<T, A>> List<BaseNode<T, A>> prepare(List<E> nodes) {
         List<BaseNode<T, A>> list = Lists.newArrayListWithCapacity(nodes.size());
 
         // nodes list

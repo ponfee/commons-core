@@ -26,8 +26,8 @@ public class MQOperations extends JedisOperations {
      * @return 接收到信息message的订阅者数量
      */
     public Long publish(String channel, String message) {
-        return call(shardedJedis -> {
-            return getShard(shardedJedis, JEDIS_MQ_OPS_BYTES).publish(channel, message);
+        return call(sj -> {
+            return sj.getShard(JEDIS_MQ_OPS_BYTES).publish(channel, message);
         }, null, channel, message);
     }
 
@@ -38,8 +38,8 @@ public class MQOperations extends JedisOperations {
      * @return  接收到信息message的订阅者数量
      */
     public Long publish(byte[] channel, byte[] message) {
-        return call(shardedJedis -> {
-            return getShard(shardedJedis, JEDIS_MQ_OPS_BYTES).publish(channel, message);
+        return call(sj -> {
+            return sj.getShard(JEDIS_MQ_OPS_BYTES).publish(channel, message);
         }, null, channel, message);
     }
 
@@ -49,45 +49,35 @@ public class MQOperations extends JedisOperations {
      * @param channels
      */
     public void subscribe(JedisPubSub jedisPubSub, String... channels) {
-        hook(shardedJedis -> {
-            getShard(shardedJedis, JEDIS_MQ_OPS_BYTES).subscribe(jedisPubSub, channels);
-        });
+        hook(sj -> sj.getShard(JEDIS_MQ_OPS_BYTES).subscribe(jedisPubSub, channels));
     }
 
     public void psubscribe(JedisPubSub jedisPubSub, String... patterns) {
-        hook(shardedJedis -> {
-            getShard(shardedJedis, JEDIS_MQ_OPS_BYTES).psubscribe(jedisPubSub, patterns);
-        });
+        hook(sj -> sj.getShard(JEDIS_MQ_OPS_BYTES).psubscribe(jedisPubSub, patterns));
     }
 
     public void subscribe(BinaryJedisPubSub jedisPubSub, byte[]... channels) {
-        hook(shardedJedis -> {
-            getShard(shardedJedis, JEDIS_MQ_OPS_BYTES).subscribe(jedisPubSub, channels);
-        });
+        hook(sj -> sj.getShard(JEDIS_MQ_OPS_BYTES).subscribe(jedisPubSub, channels));
     }
 
     public void psubscribe(BinaryJedisPubSub jedisPubSub, byte[]... patterns) {
-        hook(shardedJedis -> {
-            getShard(shardedJedis, JEDIS_MQ_OPS_BYTES).psubscribe(jedisPubSub, patterns);
-        });
+        hook(sj -> sj.getShard(JEDIS_MQ_OPS_BYTES).psubscribe(jedisPubSub, patterns));
     }
 
     public List<String> pubsubChannels(String patterns) {
-        return call(shardedJedis -> {
-            return getShard(shardedJedis, JEDIS_MQ_OPS_BYTES).pubsubChannels(patterns);
+        return call(sj -> {
+            return sj.getShard(JEDIS_MQ_OPS_BYTES).pubsubChannels(patterns);
         }, null, patterns);
     }
 
     public Map<String, String> pubsubNumSub(String... channels) {
-        return call(shardedJedis -> {
-            return getShard(shardedJedis, JEDIS_MQ_OPS_BYTES).pubsubNumSub(channels);
+        return call(sj -> {
+            return sj.getShard(JEDIS_MQ_OPS_BYTES).pubsubNumSub(channels);
         }, null, String.valueOf(channels));
     }
 
     public Long pubsubNumPat() {
-        return call(shardedJedis -> {
-            return getShard(shardedJedis, JEDIS_MQ_OPS_BYTES).pubsubNumPat();
-        }, null);
+        return call(sj -> sj.getShard(JEDIS_MQ_OPS_BYTES).pubsubNumPat(), null);
     }
 
 }

@@ -46,19 +46,6 @@ public class Result<T> implements java.io.Serializable {
         this(code.getCode(), code.getMsg(), null);
     }
 
-    // ---------------------------------static methods/success methods
-    public static Result<Void> success() {
-        return SUCCESS;
-    }
-
-    public static <T> Result<T> success(T data) {
-        return success("OK", data);
-    }
-
-    public static <T> Result<T> success(String msg, T data) {
-        return new Result<>(SUCCESS.getCode(), msg, data);
-    }
-
     @SuppressWarnings("unchecked")
     public <E> Result<E> copy() {
         return copy((E) data);
@@ -70,6 +57,19 @@ public class Result<T> implements java.io.Serializable {
 
     public <E> Result<E> transform(Function<T, E> transformer) {
         return new Result<>(code, msg, transformer.apply(data));
+    }
+
+    // ---------------------------------static methods/success methods
+    public static Result<Void> success() {
+        return SUCCESS;
+    }
+
+    public static <T> Result<T> success(T data) {
+        return success("OK", data);
+    }
+
+    public static <T> Result<T> success(String msg, T data) {
+        return new Result<>(SUCCESS.getCode(), msg, data);
     }
 
     // ---------------------------------static methods/failure methods
@@ -96,7 +96,25 @@ public class Result<T> implements java.io.Serializable {
         return new Result<>(code, msg, data);
     }
 
-    // -----------------------------getter/setter methods----------------------------- //
+    // ----------------------------------------------of operations
+    public static Result<Void> of(boolean condition, ResultCode resultCode) {
+        return condition ? SUCCESS : failure(resultCode);
+    }
+
+    public static <T> Result<T> of(boolean condition, ResultCode resultCode, T data) {
+        return condition ? success(data) : failure(resultCode);
+    }
+
+    // -----------------------------------------------database update or delete affected rows
+    public static Result<Void> assertAffectedOne(int actualAffectedRows) {
+        return assertAffectedRows(actualAffectedRows, 1);
+    }
+
+    public static Result<Void> assertAffectedRows(int actualAffectedRows, int exceptAffectedRows) {
+        return of(actualAffectedRows == exceptAffectedRows, ResultCode.OPS_CONFLICT);
+    }
+
+    // -------------------------------------------------getter/setter
     public int getCode() {
         return code;
     }

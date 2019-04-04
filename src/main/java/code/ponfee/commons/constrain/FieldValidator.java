@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Dictionary;
@@ -303,7 +304,7 @@ public class FieldValidator {
         long[] seqs = c.series();
         if ((seqs != null && seqs.length > 0)
             && (v == null || !ArrayUtils.contains(seqs, Long.parseLong(v.toString())))) {
-            return n + "{" + v + "}：不属于数列" + ObjectUtils.toString(seqs) + ";";
+            return n + "{" + v + "}：不属于数列" + Arrays.toString(seqs) + ";";
         }
 
         // 浮点数限制

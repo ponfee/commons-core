@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -164,8 +165,13 @@ public class Cache<T> {
             return null;
         }
 
-        CacheValue<T> cacheValue = cache.remove(getEffectiveKey(key));
-        return cacheValue == null ? null : cacheValue.getValue();
+        return Optional.ofNullable(
+            cache.remove(getEffectiveKey(key))
+        ).filter(
+            v -> v.isAlive(now())
+        ).map(
+            CacheValue::getValue
+        ).orElse(null);
     }
 
     /**

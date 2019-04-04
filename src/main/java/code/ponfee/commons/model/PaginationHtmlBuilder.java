@@ -195,7 +195,7 @@ public final class PaginationHtmlBuilder {
         .append("            <a href=\"javascript:void(0)\">{6}</a>                                \n")
         .append("            {7}                                                                   \n")
         .append("          </ul>                                                                   \n")
-        .append("          (共【{8}】条，【{9}】页，每页【{10}】条)                                  \n")
+        .append("          ([ <b>{8}</b> ]records, [ <b>{9}</b> ]pages, [{10}]records/page)        \n")
         .append("        </div>                                                                    \n")
         .append("      </div>                                                                      \n")
         .append("    </form>                                                                       \n")
@@ -206,7 +206,7 @@ public final class PaginationHtmlBuilder {
 
     // -------------------------------------------------------------------------------
     private static final String INPUT_BOX = 
-        "<input type=\"text\" name=\"{0}\" value=\"{1}\" style=\"width:40px;height:32px;text-align:center;margin:5px;\"/>";
+        "<input type=\"text\" name=\"{0}\" value=\"{1}\" style=\"width:40px;height:32px;text-align:center;margin:5px;font-weight:bold;\"/>";
     private static String buildInputBox(String name, Object value) {
         return MessageFormat.format(INPUT_BOX, name, value);
     }

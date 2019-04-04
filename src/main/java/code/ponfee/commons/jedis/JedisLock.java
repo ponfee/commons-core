@@ -1,12 +1,12 @@
 package code.ponfee.commons.jedis;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
-import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -71,6 +71,8 @@ public class JedisLock implements Lock, java.io.Serializable {
 
     private static final byte[] EX_BYTES = ValueOperations.EX.getBytes();
     private static final byte[] NX_BYTES = ValueOperations.NX.getBytes();
+    private static final byte[] SCRIPT =
+        "if redis.call('get', KEYS[1])==ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end;".getBytes();
 
     private static final long serialVersionUID = -6209919116306827731L;
     private static Logger logger = LoggerFactory.getLogger(JedisLock.class);
@@ -123,7 +125,8 @@ public class JedisLock implements Lock, java.io.Serializable {
     /**
      * 等待锁直到获取
      */
-    public @Override void lock() {
+    @Override
+    public void lock() {
         while (!tryLock()) {
             try {
                 TimeUnit.MILLISECONDS.sleep(sleepMillis);
@@ -136,7 +139,8 @@ public class JedisLock implements Lock, java.io.Serializable {
     /**
      * 等待锁直到获取成功或抛出InterruptedException异常
      */
-    public @Override void lockInterruptibly() throws InterruptedException {
+    @Override
+    public void lockInterruptibly() throws InterruptedException {
         for (;;) {
             if (Thread.interrupted()) {
                 throw new InterruptedException();
@@ -151,12 +155,17 @@ public class JedisLock implements Lock, java.io.Serializable {
     /**
      * 尝试获取锁，成功返回true，失败返回false
      */
-    public @Override boolean tryLock() {
+    @Override
+    public boolean tryLock() {
+        /*byte[] lockValue = generateValue();
+        boolean result = jedisClient.valueOps().setnx(
+            lockKey, lockValue, JedisOperations.getActualExpire(timeoutSeconds)
+        );
+        LOCK_VALUE.set(lockValue);
+        return result;*/
+
         return jedisClient.call(shardedJedis -> {
             Jedis jedis = shardedJedis.getShard(lockKey);
-
-            //String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
-            //Object result = jedis.eval(script.getBytes(), Collections.singletonList(lockKey), Collections.singletonList(LOCK_VALUE.get()));
 
             // 仅当lockKey不存在才能设置成功并返回1，否则setnx不做任何动作返回0
             byte[] lockValue = generateValue();
@@ -198,7 +207,8 @@ public class JedisLock implements Lock, java.io.Serializable {
      * 尝试获取锁，成功返回true，失败返回false
      * 线程中断则抛出interrupted异常
      */
-    public @Override boolean tryLock(long timeout, TimeUnit unit) 
+    @Override
+    public boolean tryLock(long timeout, TimeUnit unit) 
         throws InterruptedException {
         timeout = unit.toNanos(timeout);
         long startTime = System.nanoTime();
@@ -220,11 +230,17 @@ public class JedisLock implements Lock, java.io.Serializable {
     /**
      * 释放锁
      */
-    public @Override void unlock() {
-        doIfHoldLock(tx -> tx.del(lockKey));
+    @Override
+    public void unlock() {
+        byte[] lockValue = LOCK_VALUE.get();
+        if (lockValue != null) {
+            jedisClient.scriptOps().eval(lockKey, SCRIPT, Collections.singletonList(lockValue));
+            LOCK_VALUE.remove();
+        }
     }
 
-    public @Override Condition newCondition() {
+    @Override
+    public Condition newCondition() {
         throw new UnsupportedOperationException();
     }
 
@@ -260,16 +276,7 @@ public class JedisLock implements Lock, java.io.Serializable {
      */
     public boolean isLocked() {
         byte[] value = jedisClient.valueOps().get(lockKey);
-        return value != null 
-            && System.currentTimeMillis() <= parseValue(value);
-    }
-
-    /**
-     * 让锁失效
-     * @param seconds
-     */
-    public void expireLock(int seconds) {
-        doIfHoldLock(tx -> tx.expire(lockKey, seconds));
+        return value != null && System.currentTimeMillis() <= parseValue(value);
     }
 
     public void forceUnlock(int seconds) {
@@ -277,26 +284,6 @@ public class JedisLock implements Lock, java.io.Serializable {
     }
 
     // ---------------------------------------------------------------------private methods
-    private void doIfHoldLock(Consumer<Transaction> action) {
-        jedisClient.hook(shardedJedis -> {
-            // 根据分片获取jedis
-            Jedis jedis = shardedJedis.getShard(lockKey);
-            jedis.watch(lockKey);
-            byte[] value = LOCK_VALUE.get(); // 获取当前线程保存的锁值
-            if (value == null || !Arrays.equals(value, jedis.get(lockKey))) {
-                // 当前线程未获取过锁或锁已被其它线程获取
-                jedis.unwatch();
-            } else {
-                // 当前线程持有锁，需要释放锁
-                Transaction tx = jedis.multi();
-                action.accept(tx);
-                tx.exec(); // 自动unwatch
-            }
-
-            LOCK_VALUE.remove(); // 删除
-        });
-    }
-
     /**
      * 解析值数据
      * @param value
@@ -312,13 +299,6 @@ public class JedisLock implements Lock, java.io.Serializable {
      */
     private byte[] generateValue() {
         UUID uuid = UUID.randomUUID();
-        //byte[] value = ByteBuffer
-        //    .allocate(24)
-        //    .putLong(uuid.getMostSignificantBits()) // 8 byte most bits of uuid
-        //    .putLong(uuid.getLeastSignificantBits()) // 8 byte least bits of uuid
-        //    .putLong(System.currentTimeMillis() + timeoutMillis) // 8 byte time stamp
-        //    .array();
-
         long most  = uuid.getMostSignificantBits(), 
              least = uuid.getLeastSignificantBits(),
              time  = System.currentTimeMillis() + timeoutMillis;

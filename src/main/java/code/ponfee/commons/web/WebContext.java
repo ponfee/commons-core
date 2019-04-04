@@ -1,6 +1,7 @@
 package code.ponfee.commons.web;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +17,10 @@ import javax.servlet.annotation.WebInitParam;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
+
+import code.ponfee.commons.io.Files;
 
 /**
  * 本地线程级的web上下文持有类
@@ -88,6 +92,25 @@ public final class WebContext {
             return request.getParameterValues(name);
         } else {
             return CUST_PARAMS.get().get(name);
+        }
+    }
+
+    public String getText() {
+        return getText(Files.UTF_8);
+    }
+
+    /**
+     * Gets the text string from request input stream
+     * 
+     * @param request the HttpServletRequest
+     * @param charset the string encoding
+     * @return string
+     */
+    public String getText(String charset) {
+        try (InputStream input = getRequest().getInputStream()) {
+            return IOUtils.toString(input, charset);
+        } catch (Exception e) {
+            throw new RuntimeException("read request input stream error", e);
         }
     }
 

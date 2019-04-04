@@ -1,0 +1,29 @@
+// protoc --proto_path=E:/commons-code/commons-core/src/test/java/code/ponfee/commons/serial --java_out=E:/commons-code/commons-core/src/test/java E:/commons-code/commons-core/src/test/java/code/ponfee/commons/serial/person.proto
+
+syntax = "proto3";
+option java_package = "code.ponfee.commons.serial";
+option java_outer_classname = "PersonProtobuf";
+
+message Person {
+  int32  id   = 1;
+  string name = 2;
+  int32  age  = 3;
+  Addr   addr = 4;
+  repeated Phone phone = 5;
+}
+
+message Addr {
+  string contry = 1;
+  string city = 2;
+}
+
+enum PhoneType {
+  MOBILE = 0;
+  HOME = 1;
+  WORK = 2;
+}
+
+message Phone {
+  string number = 1;
+  PhoneType type = 2;
+}

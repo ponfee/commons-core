@@ -1,11 +1,12 @@
 package code.ponfee.commons.jce.cert;
 
 import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
+
+import code.ponfee.commons.jce.Providers;
 
 /**
  * pkcs1 signature verifier
@@ -30,9 +31,9 @@ public class CertPKCS1Verifier extends CertSignedVerifier {
 
     public @Override void verifySigned() {
         String subjectCN = null;
+        Signature sign = Providers.getSignature(this.subjects[0].getSigAlgName());
         try {
             subjectCN = X509CertUtils.getCertInfo(this.subjects[0], X509CertInfo.SUBJECT_CN);
-            Signature sign = Signature.getInstance(this.subjects[0].getSigAlgName());
             sign.initVerify(this.subjects[0].getPublicKey());
             sign.update(this.info);
 
@@ -41,7 +42,7 @@ public class CertPKCS1Verifier extends CertSignedVerifier {
             }
         } catch (SignatureException e) {
             throw new SecurityException("[" + subjectCN + "]证书签名信息错误", e);
-        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+        } catch (InvalidKeyException e) {
             throw new SecurityException("证书验签出错", e);
         }
     }

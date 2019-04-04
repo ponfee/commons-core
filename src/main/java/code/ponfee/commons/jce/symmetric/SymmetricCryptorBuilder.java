@@ -18,36 +18,53 @@ import code.ponfee.commons.util.SecureRandoms;
 public final class SymmetricCryptorBuilder {
 
     private final SecretKey secretKey; // 密钥
+
+    /**加密服务提供方 {@link code.ponfee.commons.jce.Providers} */
+    private final Provider provider;
+
     private Mode mode; // 分组加密模式
     private Padding padding; // 填充
     private IvParameterSpec parameter; // 填充向量
 
-    /**加密服务提供方 {@link code.ponfee.commons.jce.Providers} */
-    private Provider provider;
 
-    private SymmetricCryptorBuilder(Algorithm alg, byte[] key) {
+    private SymmetricCryptorBuilder(Algorithm alg, byte[] key, Provider provider) {
         if (key == null) {
             try {
-                this.secretKey = KeyGenerator.getInstance(alg.name())
-                                             .generateKey();
+                KeyGenerator keyGenerator = (provider == null) 
+                                          ? KeyGenerator.getInstance(alg.name()) 
+                                          : KeyGenerator.getInstance(alg.name(), provider);
+                this.secretKey = keyGenerator.generateKey();
             } catch (GeneralSecurityException e) {
                 throw new SecurityException(e);
             }
         } else {
             this.secretKey = new SecretKeySpec(key, alg.name());
         }
+        this.provider = provider;
     }
 
     public static SymmetricCryptorBuilder newBuilder(Algorithm algorithm) {
-        return new SymmetricCryptorBuilder(algorithm, null);
+        return newBuilder(algorithm, null, null);
+    }
+
+    public static SymmetricCryptorBuilder newBuilder(Algorithm algorithm, Provider provider) {
+        return newBuilder(algorithm, null, provider);
     }
 
     public static SymmetricCryptorBuilder newBuilder(Algorithm algorithm, int keySize) {
-        return new SymmetricCryptorBuilder(algorithm, SecureRandoms.nextBytes(keySize));
+        return newBuilder(algorithm, SecureRandoms.nextBytes(keySize), null);
+    }
+
+    public static SymmetricCryptorBuilder newBuilder(Algorithm algorithm, int keySize, Provider provider) {
+        return newBuilder(algorithm, SecureRandoms.nextBytes(keySize), provider);
     }
 
     public static SymmetricCryptorBuilder newBuilder(Algorithm algorithm, byte[] key) {
-        return new SymmetricCryptorBuilder(algorithm, key);
+        return newBuilder(algorithm, key, null);
+    }
+
+    public static SymmetricCryptorBuilder newBuilder(Algorithm algorithm, byte[] key, Provider provider) {
+        return new SymmetricCryptorBuilder(algorithm, key, null);
     }
 
     public SymmetricCryptorBuilder mode(Mode mode) {
@@ -62,11 +79,6 @@ public final class SymmetricCryptorBuilder {
 
     public SymmetricCryptorBuilder parameter(byte[] parameter) {
         this.parameter = new IvParameterSpec(parameter);
-        return this;
-    }
-
-    public SymmetricCryptorBuilder provider(Provider provider) {
-        this.provider = provider;
         return this;
     }
 

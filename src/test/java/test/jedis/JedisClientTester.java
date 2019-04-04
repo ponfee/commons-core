@@ -26,7 +26,6 @@ import com.google.common.collect.Lists;
 import bean.TestBean;
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.jedis.JedisClient;
-import code.ponfee.commons.jedis.ScriptOperations;
 import code.ponfee.commons.jedis.ShardedJedisSentinelPool;
 import code.ponfee.commons.util.Bytes;
 import code.ponfee.commons.util.MavenProjects;
@@ -72,6 +71,32 @@ public class JedisClientTester {
         System.out.println(jedisClient.valueOps().getObject("abcdefg".getBytes(), TestBean.class));
     }
     
+    @Test
+    public void testScript1() {
+        String key = "abc:xxxxx";
+        long ttl = 60;
+        String script = "local val=redis.call('INCR', KEYS[1]); if val==1 then redis.call('EXPIRE', KEYS[1], ARGV[1]) end; return val;";
+        System.out.println((Long)jedisClient.scriptOps().eval(script, Arrays.asList(key), Arrays.asList(String.valueOf(ttl))));
+        System.out.println(jedisClient.keysOps().ttl(key));
+    }
+    
+    @Test
+    public void testScript2() {
+        String key = "abc:xxxxx";
+        long ttl = 60;
+        String script = "local val=redis.call('INCR', KEYS[1]); if val==1 then redis.call('EXPIRE', KEYS[1], ARGV[1]) end; return val;";
+        System.out.println((Long)jedisClient.scriptOps().eval(key, script, Arrays.asList(String.valueOf(ttl))));
+        System.out.println(jedisClient.keysOps().ttl(key));
+    }
+    
+    @Test
+    public void testScript3() {
+        String key = "abc:xxxxx";
+        int ttl = 30;
+        System.out.println(jedisClient.valueOps().incrByEX(key, 1, ttl));
+        System.out.println(jedisClient.keysOps().ttl(key));
+    }
+
     @Test
     public void test2() {
         System.out.println(jedisClient.valueOps().set("123456".getBytes(), "11".getBytes(), 99999));
@@ -244,7 +269,7 @@ public class JedisClientTester {
         String lua = IOUtils.toString(JedisTester.class.getResourceAsStream("/redis-script-node.lua"), "UTF-8");
         String sha1 = jedisClient.scriptOps().scriptLoad(lua);
         System.out.println(sha1);
-        System.out.println(jedisClient.scriptOps().evalsha(sha1, Lists.newArrayList("myname", "1"), Lists.newArrayList()));
+        System.out.println(jedisClient.scriptOps().evalsha(lua, sha1, Lists.newArrayList("myname", "1"), Lists.newArrayList()));
     }
 
     @Test
@@ -252,7 +277,7 @@ public class JedisClientTester {
         String lua = "return {KEYS[1],KEYS[2],ARGV[1],ARGV[2],'bar'}";
         String sha1 = jedisClient.scriptOps().scriptLoad(lua);
         System.out.println(sha1);
-        System.out.println(jedisClient.scriptOps().evalsha(sha1, Lists.newArrayList("myname", "test"), Lists.newArrayList("a", "b")));
+        System.out.println(jedisClient.scriptOps().evalsha(lua, sha1, Lists.newArrayList("myname", "test"), Lists.newArrayList("a", "b")));
     }
 
     @Test
@@ -260,9 +285,7 @@ public class JedisClientTester {
         System.out.println(jedisClient.scriptOps().eval("return 10", Lists.newArrayList(), Lists.newArrayList()));
         System.out.println(jedisClient.scriptOps().eval("return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}", Lists.newArrayList("myname", "test"), Lists.newArrayList("a", "b")));
         System.out.println(jedisClient.scriptOps().eval("return redis.call('set',KEYS[1],'bar11')", Lists.newArrayList("myname"), Lists.newArrayList()));
-        System.out.println((String)jedisClient.call(shardedJedis -> {
-            return shardedJedis.getShard(ScriptOperations.JEDIS_SCRIPT_OPS).get("myname");
-        }, null, "myname"));
+        System.out.println((String)jedisClient.call(sj ->  sj.getShard("myname").get("myname"), null));
     }
 
     @Test
@@ -271,7 +294,7 @@ public class JedisClientTester {
             System.out.println(shardedJedis.set("aaa", "111"));
             System.out.println(shardedJedis.get("aaa"));
             return 1;
-        }, true, 1, 2, 3);
+        }, true);
 
         jedisClient.hook(shardedJedis -> {
             System.out.println(shardedJedis.set("aaa", "111"));

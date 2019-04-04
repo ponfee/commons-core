@@ -124,9 +124,9 @@ public class X509CertGenerator {
      */
     public static PKCS10 createPkcs10(String subject, PrivateKey privateKey,
                                       PublicKey publicKey, RSASignAlgorithms sigAlg) {
+        Signature signature = Providers.getSignature(sigAlg.name());
         try {
             PKCS10 pkcs10 = new PKCS10(publicKey);
-            Signature signature = Signature.getInstance(sigAlg.name());
             signature.initSign(privateKey);
             pkcs10.encodeAndSign(new X500Name(subject), signature);
             return pkcs10;

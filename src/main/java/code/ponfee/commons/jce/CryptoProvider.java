@@ -332,7 +332,7 @@ public abstract class CryptoProvider {
     // -----------------------------------------------------------------------ECDSASinger
     public static CryptoProvider ecdsaPublicKeyProvider(byte[] publicKey) {
         return new CryptoProvider() {
-            final ECPublicKey publicKey0 = ECDSASigner.getPublicKey(publicKey);
+            final ECPublicKey publicKey0 = ECDSASigner.decodePublicKey(publicKey);
 
             @Override
             public byte[] encrypt(byte[] original) {
@@ -353,8 +353,8 @@ public abstract class CryptoProvider {
 
     public static CryptoProvider ecdsaPrivateKeyProvider(byte[] publicKey, byte[] privateKey) {
         return new CryptoProvider() {
-            final ECPublicKey publicKey0 = ECDSASigner.getPublicKey(publicKey);
-            final ECPrivateKey privateKey0 = ECDSASigner.getPrivateKey(privateKey);
+            final ECPublicKey publicKey0 = ECDSASigner.decodePublicKey(publicKey);
+            final ECPrivateKey privateKey0 = ECDSASigner.decodePrivateKey(privateKey);
 
             @Override
             public byte[] encrypt(byte[] original) {

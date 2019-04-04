@@ -1,27 +1,31 @@
 package code.ponfee.commons.jedis;
 
-import code.ponfee.commons.io.GzipProcessor;
-import org.apache.commons.collections4.CollectionUtils;
-import redis.clients.jedis.Jedis;
-
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+
+import code.ponfee.commons.io.GzipProcessor;
+import redis.clients.jedis.Jedis;
 
 /**
  * redis string（字符串）操作类
  * @author fupf
  */
 public class ValueOperations extends JedisOperations {
+
+    private static final byte[] INCRBY_SCRIPT =
+        "local val=redis.call('INCRBY', KEYS[1], ARGV[1]); if val==tonumber(ARGV[1]) then redis.call('EXPIRE', KEYS[1], ARGV[2]) end; return val;".getBytes();
 
     public static final String EX = "EX";
     public static final String PX = "PX";
@@ -219,7 +223,14 @@ public class ValueOperations extends JedisOperations {
      */
     public boolean setnx(String key, String value, int seconds) {
         return call(shardedJedis -> {
-            String result = shardedJedis.set(key, value, NX, EX, seconds);
+            String result = shardedJedis.set(key, value, NX, EX, getActualExpire(seconds));
+            return SUCCESS_MSG.equals(result);
+        }, false, key, value, seconds);
+    }
+
+    public boolean setnx(byte[] key, byte[] value, int seconds) {
+        return call(shardedJedis -> {
+            String result = shardedJedis.set(key, value, NX.getBytes(), EX.getBytes(), getActualExpire(seconds));
             return SUCCESS_MSG.equals(result);
         }, false, key, value, seconds);
     }
@@ -242,6 +253,25 @@ public class ValueOperations extends JedisOperations {
             Long rtn = shardedJedis.incrBy(key, step);
             expireForce(shardedJedis, key, seconds);
             return rtn;
+        }, null, key, step, seconds);
+    }
+
+    /**
+     * Increment by step and set expire
+     * 
+     * @param key  the key
+     * @param step the step
+     * @param seconds the expire seconds
+     * @return incry by result
+     */
+    public Long incrByEX(String key, int step, int seconds) {
+        return call(sj -> {
+            byte[] _key     = key.getBytes(), 
+                   _step    = Integer.toString(step).getBytes(), 
+                   _seconds = Integer.toString(getActualExpire(seconds)).getBytes();
+            return (Long) sj.getShard(_key).eval(
+                INCRBY_SCRIPT, 1, _key, _step, _seconds
+            );
         }, null, key, step, seconds);
     }
 

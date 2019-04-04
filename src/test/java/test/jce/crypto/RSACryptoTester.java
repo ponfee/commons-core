@@ -9,10 +9,13 @@ import java.util.Base64;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.ArrayUtils;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.common.io.Files;
 
+import code.ponfee.commons.jce.Providers;
 import code.ponfee.commons.jce.digest.DigestUtils;
 import code.ponfee.commons.jce.security.RSACryptor;
 import code.ponfee.commons.jce.security.RSACryptor.RSAKeyPair;
@@ -22,6 +25,16 @@ import code.ponfee.commons.util.Bytes;
 import code.ponfee.commons.util.MavenProjects;
 
 public class RSACryptoTester {
+
+    @BeforeClass
+    public static void beforeClass() {
+        Providers.set(Providers.BC);
+    }
+
+    @Before
+    public void before() {
+        Providers.set(Providers.BC);
+    }
 
     @Test
     public void test1() throws Exception {
@@ -35,18 +48,18 @@ public class RSACryptoTester {
         System.out.println(Hex.encodeHexString(decrypted)); // 3021300906052b0e03021a050004147c4a8d09ca3762af61e59520943dc26494f8941b
         // -------------
         
-        System.out.println(keyPair.getPkcs8PrivateKey());
-        System.out.println(keyPair.getPkcs8PublicKey());
+        System.out.println(keyPair.toPkcs8PrivateKey());
+        System.out.println(keyPair.toPkcs8PublicKey());
         test(keyPair.getPrivateKey(), RSAPrivateKeys.extractPublicKey(keyPair.getPrivateKey()));
         
-        test(RSAPrivateKeys.fromPkcs1Pem(RSAPrivateKeys.toPkcs1Pem(RSAPrivateKeys.fromPkcs1(keyPair.getPkcs1PrivateKey()))),
-             RSAPublicKeys.fromPkcs8Pem(RSAPublicKeys.toPkcs8Pem(RSAPublicKeys.fromPkcs1(keyPair.getPkcs1PublicKey()))));
+        test(RSAPrivateKeys.fromPkcs1Pem(RSAPrivateKeys.toPkcs1Pem(RSAPrivateKeys.fromPkcs1(keyPair.toPkcs1PrivateKey()))),
+             RSAPublicKeys.fromPkcs8Pem(RSAPublicKeys.toPkcs8Pem(RSAPublicKeys.fromPkcs1(keyPair.toPkcs1PublicKey()))));
         
         test(RSAPrivateKeys.fromPkcs1(RSAPrivateKeys.toPkcs1(keyPair.getPrivateKey())),
-             RSAPublicKeys.fromPkcs1(keyPair.getPkcs1PublicKey()));
+             RSAPublicKeys.fromPkcs1(keyPair.toPkcs1PublicKey()));
 
-        test(RSAPrivateKeys.fromPkcs8(keyPair.getPkcs8PrivateKey()),
-             RSAPublicKeys.fromPkcs8(keyPair.getPkcs8PublicKey()));
+        test(RSAPrivateKeys.fromPkcs8(keyPair.toPkcs8PrivateKey()),
+             RSAPublicKeys.fromPkcs8(keyPair.toPkcs8PublicKey()));
 
         System.out.println(RSAPrivateKeys.fromEncryptedPkcs8Pem(RSAPrivateKeys.toEncryptedPkcs8Pem(keyPair.getPrivateKey(),"123"), "123"));
 
