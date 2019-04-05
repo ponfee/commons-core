@@ -1,6 +1,5 @@
 package code.ponfee.commons.limit.request;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -14,9 +13,6 @@ import code.ponfee.commons.jedis.JedisClient;
  */
 public class RedisRequestLimiter extends RequestLimiter{
 
-    private static final String SCRIPT =
-        "local val=redis.call('INCR', KEYS[1]); if val==1 then redis.call('EXPIRE', KEYS[1], ARGV[1]) end; return val;";
-
     private final JedisClient client;
 
     private RedisRequestLimiter(JedisClient client) {
@@ -28,25 +24,29 @@ public class RedisRequestLimiter extends RequestLimiter{
     }
 
 
-    @Override public RedisRequestLimiter limitFrequency(String key, int period, String message)
+    @Override 
+    public RedisRequestLimiter limitFrequency(String key, int period, String message)
         throws RequestLimitException {
         checkLimit(CHECK_FREQ_KEY + key, period, 1, message);
         return this;
     }
 
-    @Override public RedisRequestLimiter limitThreshold(String key, int period, 
-                                                        int limit, String message) 
+    @Override 
+    public RedisRequestLimiter limitThreshold(String key, int period, 
+                                              int limit, String message) 
         throws RequestLimitException {
         checkLimit(CHECK_THRE_KEY + key, period, limit, message);
         return this;
     }
 
-    @Override public void cacheCode(String key, String code, int ttl) {
+    @Override 
+    public void cacheCode(String key, String code, int ttl) {
         client.valueOps().set(CACHE_CODE_KEY + key, code, ttl);
         client.keysOps().del(CHECK_CODE_KEY + key);
     }
 
-    @Override public RedisRequestLimiter checkCode(String key, String code, int limit)
+    @Override 
+    public RedisRequestLimiter checkCode(String key, String code, int limit)
         throws RequestLimitException {
         if (StringUtils.isEmpty(code)) {
             throw new RequestLimitException("验证码不能为空！");
@@ -82,11 +82,13 @@ public class RedisRequestLimiter extends RequestLimiter{
         return this;
     }
 
-    @Override public void cacheCaptcha(String key, String captcha, int expire) {
+    @Override 
+    public void cacheCaptcha(String key, String captcha, int expire) {
         client.valueOps().set(CACHE_CAPTCHA_KEY + key, captcha, expire);
     }
 
-    @Override public boolean checkCaptcha(String key, String captcha, boolean caseSensitive) {
+    @Override 
+    public boolean checkCaptcha(String key, String captcha, boolean caseSensitive) {
         String value = client.valueOps().getAndDel(CACHE_CAPTCHA_KEY + key);
 
         if (value == null) {
@@ -100,26 +102,28 @@ public class RedisRequestLimiter extends RequestLimiter{
         }
     }
 
-    @Override public void recordAction(String key, int period) {
-        key = TRACE_ACTION_KEY + key;
-        long times = client.valueOps().incrBy(key);
-        if (times == 1) {
-            client.keysOps().expire(key, period); // 第一次缓存，设置失效时间
-        }
+    // ---------------------------------------------------------action
+    @Override
+    public void recordAction(String key, int period) {
+        client.valueOps().incrByEX(TRACE_ACTION_KEY + key, 1, period);
     }
 
-    @Override public long countAction(String key) {
-        return Optional.ofNullable(client.valueOps().getLong(TRACE_ACTION_KEY + key)).orElse(0L);
+    @Override
+    public long countAction(String key) {
+        return Optional.ofNullable(
+            client.valueOps().getLong(TRACE_ACTION_KEY + key)
+        ).orElse(0L);
     }
 
-    @Override public void resetAction(String key) {
+    @Override
+    public void resetAction(String key) {
         client.keysOps().del(TRACE_ACTION_KEY + key);
     }
 
     // -----------------------------------------------------------------------private methods
     private void checkLimit(String key, int ttl, int limit, String message)
         throws RequestLimitException {
-        long times = (Long) client.scriptOps().eval(SCRIPT, Arrays.asList(key), Arrays.asList(String.valueOf(ttl)));
+        long times = (Long) client.valueOps().incrByEX(key, 1, ttl);
         if (times > limit) {
             throw new RequestLimitException(message);
         }

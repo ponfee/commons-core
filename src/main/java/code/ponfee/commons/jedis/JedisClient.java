@@ -218,22 +218,21 @@ public class JedisClient implements DisposableBean {
      * 回调函数：有返回值
      * @param call              回调对象
      * @param occurErrorRtnVal  出现异常时的返回值
-     * @param args              参数
      * @return a result
      */
-    public final <T> T call(JedisCallback<T> call, T occurErrorRtnVal, Object... args) {
-        return call.call(this, occurErrorRtnVal, args);
+    public final <T> T call(JedisCallback<T> call, T occurErrorRtnVal) {
+        return call.call(this, occurErrorRtnVal);
     }
 
     /**
      * 勾子函数：无返回值
      * @param hook 调用勾子函数
-     * @param args 参数列表
      */
-    public final void hook(JedisHook hook, Object... args) {
-        hook.hook(this, args);
+    public final void hook(JedisHook hook) {
+        hook.hook(this);
     }
 
+    // --------------------------------------------------------package modify methods
     /**
      * 异常处理
      * @param e    the exception
@@ -272,6 +271,27 @@ public class JedisClient implements DisposableBean {
         logger.error(builder.append(")").toString(), e);
     }
 
+    ShardedJedis getShardedJedis() throws JedisException {
+        return this.shardedJedisPool.getResource();
+    }
+
+    final <T> byte[] serialize(T t, boolean isCompress) {
+        return serializer.serialize(t, isCompress);
+    }
+
+    final <T> byte[] serialize(T t) {
+        return this.serialize(t, false);
+    }
+
+    final <T> T deserialize(byte[] data, Class<T> clazz, boolean isCompress) {
+        return serializer.deserialize(data, clazz, isCompress);
+    }
+
+    final <T> T deserialize(byte[] data, Class<T> clazz) {
+        return this.deserialize(data, clazz, false);
+    }
+
+    // --------------------------------------------------------private methods
     private static String toString(byte[] bytes) {
         if (bytes.length > MAX_BYTE_LEN) {
             bytes = Arrays.copyOf(bytes, MAX_BYTE_LEN);
@@ -334,44 +354,6 @@ public class JedisClient implements DisposableBean {
             }
         }
         return list;
-    }
-
-    ShardedJedis getShardedJedis() throws JedisException {
-        return this.shardedJedisPool.getResource();
-    }
-
-    /*void closeShardedJedis(ShardedJedis shardedJedis) {
-        if (shardedJedis != null) try {
-            shardedJedis.close();
-            //shardedJedis.disconnect();
-        } catch (Throwable e) {
-            logger.error("redis close occur error", e);
-        }
-    }
-    
-    Jedis getJedis(String key) {
-        return this.getShardedJedis().getShard(key);
-    }
-    
-    void closeJedis(Jedis jedis) {
-        jedis.close();
-        //jedis.disconnect();
-    }*/
-
-    final <T> byte[] serialize(T t, boolean isCompress) {
-        return serializer.serialize(t, isCompress);
-    }
-
-    final <T> byte[] serialize(T t) {
-        return this.serialize(t, false);
-    }
-
-    final <T> T deserialize(byte[] data, Class<T> clazz, boolean isCompress) {
-        return serializer.deserialize(data, clazz, isCompress);
-    }
-
-    final <T> T deserialize(byte[] data, Class<T> clazz) {
-        return this.deserialize(data, clazz, false);
     }
 
 }

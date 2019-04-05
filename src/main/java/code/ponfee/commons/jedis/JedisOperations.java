@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit;
 
 import code.ponfee.commons.concurrent.ThreadPoolExecutors;
 import code.ponfee.commons.math.Numbers;
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.ShardedJedis;
 
 /**
@@ -47,21 +46,6 @@ public abstract class JedisOperations {
      */
     final void hook(JedisHook hook, Object... args) {
         hook.hook(jedisClient, args);
-    }
-
-    // --------------------------------------------------------------static methods
-    /**
-     * 获取分片的Jedis
-     * @param shardedJedis
-     * @param key
-     * @return 具体哈希片的Jedis
-     */
-    public static Jedis getShard(ShardedJedis shardedJedis, String key) {
-        return shardedJedis.getShard(key);
-    }
-
-    public static Jedis getShard(ShardedJedis shardedJedis, byte[] key) {
-        return shardedJedis.getShard(key);
     }
 
     // --------------------------------------------------------------expire
