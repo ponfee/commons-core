@@ -17,10 +17,13 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.commons.lang3.time.DateUtils;
+
+import com.google.common.base.Preconditions;
 
 import code.ponfee.commons.math.Numbers;
 import code.ponfee.commons.reflect.ClassUtils;
@@ -351,6 +354,7 @@ public final class ObjectUtils {
     }
 
     public static <T> void copy(T source, T target, String... fields) {
+        Preconditions.checkState(ArrayUtils.isNotEmpty(fields));
         for (String field : fields) {
             Fields.put(target, field, Fields.get(source, field));
         }
@@ -358,6 +362,7 @@ public final class ObjectUtils {
 
     @SuppressWarnings("unchecked")
     public static <T> T copyFrom(T source, String... fields) {
+        Preconditions.checkState(ArrayUtils.isNotEmpty(fields));
         T target;
         try {
             target = (T) source.getClass().newInstance();
