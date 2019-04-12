@@ -42,7 +42,7 @@ public class ExportTester2 {
                 }
                 table.addRows(data);
                 if (count.incrementAndGet() == n) {
-                    table.end();
+                    table.toEnd();
                 }
             });
         }
@@ -71,7 +71,7 @@ public class ExportTester2 {
                     table.addRow(new Object[] { "1", "2", "3", "4", "5" });
                 }
                 if (count.incrementAndGet() == n) {
-                    table.end();
+                    table.toEnd();
                 }
             });
         }
@@ -99,7 +99,7 @@ public class ExportTester2 {
                     table.addRow(new Object[] { "1", "2", "3", "4", "5" });
                 }
                 if (count.incrementAndGet() == n) {
-                    table.end();
+                    table.toEnd();
                 }
             });
         }
@@ -124,7 +124,7 @@ public class ExportTester2 {
                     table.addRow(new Object[] { "1111111111111111111111111111", "2", "3", "4", "5" });
                 }
                 if (count.incrementAndGet() == n) {
-                    table.end();
+                    table.toEnd();
                 }
             });
         }
@@ -151,7 +151,7 @@ public class ExportTester2 {
                     table.addRow(new Object[] { "1", "2", "3", "4", "5" });
                 }
                 if (count.incrementAndGet() == n) {
-                    table.end();
+                    table.toEnd();
                 }
             });
         }

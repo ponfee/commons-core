@@ -126,7 +126,7 @@ public abstract class AbstractCsvExporter<T> extends AbstractDataExporter<T> {
         for (String th : theadName) {
             csv.append(th).append(csvSeparator);
         }
-        csv.deleteCharAt(csv.length() - 1);
+        csv.setLength(csv.length() - 1);
         csv.append(Files.LINE_SEPARATOR);
     }*/
 

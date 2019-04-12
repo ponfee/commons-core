@@ -7,6 +7,12 @@ import code.ponfee.commons.io.Files;
 /**
  * maven标准的项目文件工具类
  * only use in test case
+ * 
+ * new File("src/test/resources/test.txt");
+ * new File("src/test/java/test/test1.java");
+ * new File("src/main/resources/log4j2.xml");
+ * new File("src/main/java/code/ponfee/commons/util/Asserts.java");
+ * 
  * @author fupf
  */
 public class MavenProjects {

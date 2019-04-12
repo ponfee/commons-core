@@ -20,7 +20,7 @@ import com.google.common.base.Preconditions;
  */
 public class HSSFStreamingReader {
 
-    private int rowCacheableSize = 0; // if less or equals 0 then infinity
+    private int rowCacheableSize = 0; // if less 0 then 0(SynchronousQueue)
     private int[] sheetIndexs;
     private String[] sheetNames;
 

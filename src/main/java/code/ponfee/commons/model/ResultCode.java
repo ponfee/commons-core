@@ -110,12 +110,12 @@ public final class ResultCode implements Serializable {
     public static final ResultCode REDIRECT           = create0(302, "重定向");
 
     public static final ResultCode BAD_REQUEST        = create0(400, "参数错误");
-    public static final ResultCode UNAUTHORIZED       = create0(401, "未授权");
-    public static final ResultCode FORBIDDEN          = create0(403, "拒绝访问");
+    public static final ResultCode UNAUTHORIZED       = create0(401, "未授权"); // 
+    public static final ResultCode FORBIDDEN          = create0(403, "拒绝访问"); // BACKLIST
     public static final ResultCode NOT_FOUND          = create0(404, "资源未找到"); // GET return null
     public static final ResultCode NOT_ALLOWED        = create0(405, "方法不允许");
     public static final ResultCode REQUEST_TIMEOUT    = create0(408, "请求超时");
-    public static final ResultCode OPS_CONFLICT       = create0(409, "操作冲突");
+    public static final ResultCode OPS_CONFLICT       = create0(409, "操作冲突"); // DATABSE UPDATE DELETE FAIL
     public static final ResultCode UNSUPPORT_MEDIA    = create0(415, "Unsupported Media Type");
 
     public static final ResultCode SERVER_ERROR       = create0(500, "服务器错误");

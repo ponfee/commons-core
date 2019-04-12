@@ -122,7 +122,7 @@ public class Table<E> implements Serializable {
     // -----------------------------------------------add row data
     public void addRowsAndEnd(List<E> rows) {
         addRows(rows);
-        end();
+        toEnd();
     }
 
     public void addRows(List<E> rows) {
@@ -137,7 +137,7 @@ public class Table<E> implements Serializable {
 
     public void addRowAndEnd(E row) {
         addRow(row);
-        end();
+        toEnd();
     }
 
     public void addRow(E row) {
@@ -149,7 +149,7 @@ public class Table<E> implements Serializable {
     }
 
     // -----------------------------------------------to end operation
-    public synchronized Table<E> end() {
+    public synchronized Table<E> toEnd() {
         this.end = true;
         return this;
     }

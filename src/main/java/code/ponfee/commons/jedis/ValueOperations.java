@@ -223,14 +223,14 @@ public class ValueOperations extends JedisOperations {
      */
     public boolean setnx(String key, String value, int seconds) {
         return call(shardedJedis -> {
-            String result = shardedJedis.set(key, value, NX, EX, seconds);
+            String result = shardedJedis.set(key, value, NX, EX, getActualExpire(seconds));
             return SUCCESS_MSG.equals(result);
         }, false, key, value, seconds);
     }
 
     public boolean setnx(byte[] key, byte[] value, int seconds) {
         return call(shardedJedis -> {
-            String result = shardedJedis.set(key, value, NX.getBytes(), EX.getBytes(), seconds);
+            String result = shardedJedis.set(key, value, NX.getBytes(), EX.getBytes(), getActualExpire(seconds));
             return SUCCESS_MSG.equals(result);
         }, false, key, value, seconds);
     }
@@ -268,7 +268,7 @@ public class ValueOperations extends JedisOperations {
         return call(sj -> {
             byte[] _key     = key.getBytes(), 
                    _step    = Integer.toString(step).getBytes(), 
-                   _seconds = Integer.toString(seconds).getBytes();
+                   _seconds = Integer.toString(getActualExpire(seconds)).getBytes();
             return (Long) sj.getShard(_key).eval(
                 INCRBY_SCRIPT, 1, _key, _step, _seconds
             );

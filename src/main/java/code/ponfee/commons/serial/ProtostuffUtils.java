@@ -1,7 +1,7 @@
 package code.ponfee.commons.serial;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.objenesis.Objenesis;
 import org.springframework.objenesis.ObjenesisStd;
@@ -18,7 +18,7 @@ import io.protostuff.runtime.RuntimeSchema;
  */
 public final class ProtostuffUtils {
 
-    private static final ConcurrentMap<Class<?>, Schema<?>> SCHEMA_CACHE = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, Schema<?>> SCHEMA_CACHE = new HashMap<>();
     private static final Objenesis OBJENESIS = new ObjenesisStd(true);
 
     private ProtostuffUtils() {}
@@ -50,8 +50,12 @@ public final class ProtostuffUtils {
     private static <T> Schema<T> getSchema(Class<T> type) {
         Schema<T> schema = (Schema<T>) SCHEMA_CACHE.get(type);
         if (schema == null) {
-            schema = RuntimeSchema.createFrom(type);
-            SCHEMA_CACHE.put(type, schema);
+            synchronized (SCHEMA_CACHE) {
+                schema = (Schema<T>) SCHEMA_CACHE.get(type);
+                if (schema == null) {
+                    SCHEMA_CACHE.put(type, schema = RuntimeSchema.createFrom(type));
+                }
+            }
         }
         return schema;
     }

@@ -102,7 +102,7 @@ public class ExcelExtractorTest {
     
     @Test
     public void test3() throws FileNotFoundException, IOException {
-        DataExtractor<?> et = DataExtractorBuilder.newBuilder("E:\\advices_export.xls")
+        DataExtractor<?> et = DataExtractorBuilder.newBuilder("src/test/java/test/extract/advices_export.xls")
             .headers(new String[] { "a", "b", "c", "d"}).build();
         et.extract((n, d) -> {
             System.out.println(String.join("|",(String[])d));

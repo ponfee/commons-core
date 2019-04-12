@@ -146,24 +146,24 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
      * Runs in alone thread
      */
     private class AsyncHSSFReader implements HSSFListener, Runnable {
-        final InputStream input;
-        final int rowCacheSize;
-        final int[] sheetIndexs;
-        final String[] sheetNames;
+        private final InputStream input;
+        private final int rowCacheSize;
+        private final int[] sheetIndexs;
+        private final String[] sheetNames;
 
-        int currentSheetIndex = -1; // start with 0
-        HSSFStreamingSheet currentSheet;
+        private int currentSheetIndex = -1; // start with 0
+        private HSSFStreamingSheet currentSheet;
 
-        int currentRowNumber = -1; // start with 0
-        int currentRowOrder = -1; // start with 0
-        HSSFStreamingRow currentRow;
+        private int currentRowNumber = -1; // start with 0
+        private int currentRowOrder = -1; // start with 0
+        private HSSFStreamingRow currentRow;
 
 
-        SSTRecord sstrec;
-        FormatTrackingHSSFListener formatListener;
+        private SSTRecord sstrec;
+        private FormatTrackingHSSFListener formatListener;
 
-        AsyncHSSFReader(int rowCacheSize, int[] sheetIndexs, 
-                        String[] sheetNames, InputStream input) {
+        private AsyncHSSFReader(int rowCacheSize, int[] sheetIndexs, 
+                                String[] sheetNames, InputStream input) {
             this.rowCacheSize = rowCacheSize;
             this.sheetIndexs = sheetIndexs;
             this.sheetNames = sheetNames;
@@ -185,7 +185,7 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } finally {
-                this.endRead();
+                this.endRead(); // read end of xls file
             }
         }
 
@@ -201,7 +201,7 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
                     allSheetReadied = true;
                     if (currentSheet != null) {
                         putRow(currentRow);
-                        currentSheet.end();
+                        currentSheet.toEnd();
                     }
                     currentRow = null; currentRowNumber = -1; currentRowOrder = -1; // reset current row
                     currentSheet = (HSSFStreamingSheet) sheets.get(++currentSheetIndex);
@@ -233,15 +233,15 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
             }
         }
 
-        void endRead() {
+        private void endRead() {
             allSheetReadied = true;
             if (currentSheet != null) {
                 putRow(currentRow); // last row
             }
-            sheets.forEach(s -> ((HSSFStreamingSheet) s).end());
+            sheets.forEach(s -> ((HSSFStreamingSheet) s).toEnd());
         }
 
-        void putRow(HSSFStreamingRow row) {
+        private void putRow(HSSFStreamingRow row) {
             if (   this.currentSheet.isDiscard() 
                 || row == null || row.isEmpty()
             ) {
@@ -254,7 +254,7 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
             }
         }
 
-        boolean isDiscard(int sstIdx, String sstName) {
+        private boolean isDiscard(int sstIdx, String sstName) {
             if (   ArrayUtils.isEmpty(sheetIndexs)
                 && ArrayUtils.isEmpty(sheetNames)) {
                 return false;
@@ -263,7 +263,7 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
                 && !ArrayUtils.contains(sheetNames, sstName);
         }
 
-        String getString(CellRecord record) {
+        private String getString(CellRecord record) {
             switch (record.getSid()) {
                 case BlankRecord.sid: 
                     return null;

@@ -82,7 +82,7 @@ public abstract class AbstractSplitExporter extends AbstractDataExporter<Void> {
 
         @Override
         public final void run()  {
-            subTable.end();
+            subTable.toEnd();
             try (AbstractDataExporter<?> exporter = createExporter()) {
                 exporter.build(subTable);
                 complete(exporter);

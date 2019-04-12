@@ -117,11 +117,11 @@ public class ExportTester {
 
         table = new Table(list);
         table.setCaption("123");
-        table.end();
+        table.toEnd();
         html.build(table);
         
         table = new Table(list);
-        table.end();
+        table.toEnd();
         table.setCaption("bnm");
         html.build(table);
 
@@ -137,7 +137,7 @@ public class ExportTester {
     @Test
     public void testHtml2() throws FileNotFoundException, IOException {
         AbstractDataExporter html = new HtmlExporter();
-        html.build(new Table("a,b,c,d,e".split(",")).end());
+        html.build(new Table("a,b,c,d,e".split(",")).toEnd());
         IOUtils.write((String) html.export(), new FileOutputStream("d://testHtml2.html"), "UTF-8");
         Files.addBOM("d:/testHtml2.html");
         html.close();
@@ -304,7 +304,7 @@ public class ExportTester {
         table.setCaption("title");
         table.addRow(Result.SUCCESS);
         table.addRow(Result.failure(ResultCode.BAD_REQUEST));
-        table.end();
+        table.toEnd();
 
         excel.setName("21321");
         excel.build(table);

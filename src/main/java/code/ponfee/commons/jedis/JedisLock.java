@@ -158,9 +158,12 @@ public class JedisLock implements Lock, java.io.Serializable {
     @Override
     public boolean tryLock() {
         /*byte[] lockValue = generateValue();
-        boolean result = jedisClient.valueOps().setnx(lockKey, lockValue, JedisOperations.getActualExpire(timeoutSeconds));
+        boolean result = jedisClient.valueOps().setnx(
+            lockKey, lockValue, JedisOperations.getActualExpire(timeoutSeconds)
+        );
         LOCK_VALUE.set(lockValue);
         return result;*/
+
         return jedisClient.call(shardedJedis -> {
             Jedis jedis = shardedJedis.getShard(lockKey);
 
@@ -229,8 +232,11 @@ public class JedisLock implements Lock, java.io.Serializable {
      */
     @Override
     public void unlock() {
-        jedisClient.scriptOps().eval(lockKey, SCRIPT, Collections.singletonList(LOCK_VALUE.get()));
-        LOCK_VALUE.remove();
+        byte[] lockValue = LOCK_VALUE.get();
+        if (lockValue != null) {
+            jedisClient.scriptOps().eval(lockKey, SCRIPT, Collections.singletonList(lockValue));
+            LOCK_VALUE.remove();
+        }
     }
 
     @Override
@@ -270,8 +276,7 @@ public class JedisLock implements Lock, java.io.Serializable {
      */
     public boolean isLocked() {
         byte[] value = jedisClient.valueOps().get(lockKey);
-        return value != null 
-            && System.currentTimeMillis() <= parseValue(value);
+        return value != null && System.currentTimeMillis() <= parseValue(value);
     }
 
     public void forceUnlock(int seconds) {
@@ -294,13 +299,6 @@ public class JedisLock implements Lock, java.io.Serializable {
      */
     private byte[] generateValue() {
         UUID uuid = UUID.randomUUID();
-        //byte[] value = ByteBuffer
-        //    .allocate(24)
-        //    .putLong(uuid.getMostSignificantBits()) // 8 byte most bits of uuid
-        //    .putLong(uuid.getLeastSignificantBits()) // 8 byte least bits of uuid
-        //    .putLong(System.currentTimeMillis() + timeoutMillis) // 8 byte time stamp
-        //    .array();
-
         long most  = uuid.getMostSignificantBits(), 
              least = uuid.getLeastSignificantBits(),
              time  = System.currentTimeMillis() + timeoutMillis;

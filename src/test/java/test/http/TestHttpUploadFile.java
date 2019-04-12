@@ -19,7 +19,7 @@ import code.ponfee.commons.http.Http;
 import code.ponfee.commons.io.Files;
 
 @SuppressWarnings("unchecked")
-public class TestDDTWarehouse {
+public class TestHttpUploadFile {
 
     @Test
     public void test0() {

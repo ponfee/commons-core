@@ -97,7 +97,7 @@ public class XLSEventTest
     public static void main(String[] args) throws IOException {
         // create a new file input stream with the input file specified
         // at the command line
-        FileInputStream fin = new FileInputStream("e:/advices_export.xls");
+        FileInputStream fin = new FileInputStream("src/test/java/test/extract/advices_export.xls");
         // create a new org.apache.poi.poifs.filesystem.Filesystem
         POIFSFileSystem poifs = new POIFSFileSystem(fin);
         // get the Workbook (excel part) stream in a InputStream
