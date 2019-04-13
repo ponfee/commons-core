@@ -28,7 +28,7 @@ import redis.clients.util.Pool;
  */
 public class JedisClient implements DisposableBean {
 
-    private final static String SEPARATOR = ";";
+    private final static String SEPARATOR = ",";
     private final static int DEFAULT_TIMEOUT_MILLIS = 2000; // default 2000 millis timeout
     private static final int MAX_BYTE_LEN = 30; // max bytes length
     private static final int MAX_LEN = 40; // max str length
@@ -61,9 +61,9 @@ public class JedisClient implements DisposableBean {
     /**
      * <pre>
      *  ShardedJedis注入格式：
-     *   host1:port1;host2:port2;host3:port3
-     *   name1:host1:port1;name2:host2:port2;name3:host3:port3
-     *   name1:host1:port1:password1;name2:host2:port2:password2;name3:host3:port3:password3
+     *   host1:port1,host2:port2,host3:port3
+     *   name1:host1:port1,name2:host2:port2,name3:host3:port3
+     *   name1:host1:port1:password1,name2:host2:port2:password2,name3:host3:port3:password3
      * </pre>
      * @param poolCfg
      * @param hosts
@@ -139,8 +139,8 @@ public class JedisClient implements DisposableBean {
 
     /**
      * @param poolCfg    连接池
-     * @param masters    哨兵mastername名称，多个以“;”分隔，如：sen_redis_master1;sen_redis_master2
-     * @param sentinels  哨兵服务器ip及端口，多个以“;”分隔，如：127.0.0.1:16379;127.0.0.1:16380;
+     * @param masters    哨兵mastername名称，多个以“,”分隔，如：sen_redis_master1,sen_redis_master2
+     * @param sentinels  哨兵服务器ip及端口，多个以“,”分隔，如：127.0.0.1:16379,127.0.0.1:16380
      * @param password   密码
      * @param timeout    超时时间
      * @param serializer 序列化对象
