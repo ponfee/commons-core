@@ -32,7 +32,7 @@ import code.ponfee.commons.ws.JAXWS;
  * @param <T>
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(locations = { "classpath:spring/application-config.xml" })
+@ContextConfiguration(locations = { "classpath:spring-context.xml" })
 public abstract class WebServiceTest<T> {
 
     private static final Set<String> PUBLISHED = new HashSet<>();
@@ -95,8 +95,23 @@ public abstract class WebServiceTest<T> {
         // do no thing
     }
 
-    public static void consloe(Object obj) {
-        System.out.println(Jsons.toJson(obj));
+    public static void consoleJson(Object obj) {
+        try {
+            Thread.sleep(100);
+            System.err.println(Jsons.toJson(obj));
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
+    public static void console(Object obj) {
+        try {
+            Thread.sleep(100);
+            System.err.println(obj);
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }

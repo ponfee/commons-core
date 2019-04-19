@@ -14,22 +14,21 @@ import code.ponfee.commons.io.GzipProcessor;
 import code.ponfee.commons.util.ObjectUtils;
 
 /**
- * 
  * Object toString Serializer
  * 
  * @author Ponfee
  */
-public class BaseStringSerializer extends Serializer {
+public class ToStringSerializer extends Serializer {
 
     private static final Map<Class<?>, Constructor<?>> CONSTRUCTOR_CACHE = new HashMap<>();
 
     private final Charset charset;
 
-    public BaseStringSerializer() {
+    public ToStringSerializer() {
         this(StandardCharsets.UTF_8);
     }
 
-    public BaseStringSerializer(@Nonnull Charset charset) {
+    public ToStringSerializer(@Nonnull Charset charset) {
         Preconditions.checkNotNull(charset);
         this.charset = charset;
     }

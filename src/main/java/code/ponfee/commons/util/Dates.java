@@ -10,6 +10,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
 
 import com.google.common.base.Preconditions;
@@ -158,6 +159,10 @@ public class Dates {
         Objects.requireNonNull(start, "start date non null");
         Objects.requireNonNull(end, "end date non null");
         return (end.getTime() - start.getTime()) / 1000;
+    }
+
+    public static int daysbetween(Date start, Date end) {
+        return Days.daysBetween(new DateTime(start), new DateTime(end)).getDays();
     }
 
     /**

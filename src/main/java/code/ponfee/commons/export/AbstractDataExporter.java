@@ -1,6 +1,9 @@
 package code.ponfee.commons.export;
 
 import java.lang.reflect.Array;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -66,8 +69,12 @@ public abstract class AbstractDataExporter<T> implements DataExporter<T> {
                     if ((data = table.poll()) != null) {
                         if (data instanceof Object[]) {
                             array = (Object[]) data;
+                        } else if (data instanceof Collection<?>) {
+                            array = collection2array((Collection<?>) data);
+                        } else if (data instanceof Iterator<?>) {
+                            array = iterator2array((Iterator<?>) data);
                         } else if (data.getClass().isArray()) {
-                            array = array2array(data);
+                            array = covariantArray(data);
                         } else if (data instanceof Map<?, ?>) {
                             array = map2array((Map<?, ?>) data);
                         } else {
@@ -92,7 +99,24 @@ public abstract class AbstractDataExporter<T> implements DataExporter<T> {
                     .collect(Collectors.toList());
     }
 
-    private static Object[] array2array(Object array0) {
+    private static Object[] collection2array(Collection<?> coll) {
+        Object[] array = new Object[coll.size()];
+        int i = 0;
+        for (Object obj : coll) {
+            array[i++] = obj;
+        }
+        return array;
+    }
+
+    private static Object[] iterator2array(Iterator<?> iter) {
+        List<Object> list = new LinkedList<>();
+        for (; iter.hasNext();) {
+            list.add(iter.next());
+        }
+        return list.toArray();
+    }
+
+    private static Object[] covariantArray(Object array0) {
         int size = Array.getLength(array0);
         Object[] array = new Object[size];
         for (int i = 0; i < size; i++) {

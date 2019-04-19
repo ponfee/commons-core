@@ -23,15 +23,26 @@ import code.ponfee.commons.reflect.Fields;
  * e.g.：
  *    1.开启spring切面特性：<aop:aspectj-autoproxy />
  *    2.编写子类：
- *        ＠Component
- *        ＠Aspect
+ *        ＠Component ＠Aspect
  *        public class TestMethodValidator extends MethodValidator {
- *            ＠Around(value = "execution(public * code.ponfee.xxx.service.impl..*Impl..*(..)) 
- *                    && ＠annotation(cst)", argNames = "pjp,cst")
- *            public ＠Override Object constrain(ProceedingJoinPoint pjp, Constraints cst) 
- *                throws Throwable {
+ *
+ *            ＠Around(
+ *                value = "execution(public * code.ponfee.xxx.service.impl..*Impl..*(..)) && ＠annotation(cst)", 
+ *                argNames = "pjp,cst"
+ *            )
+ *            ＠Override
+ *            public Object constrain(ProceedingJoinPoint pjp, Constraints cst) throws Throwable {
  *                return super.constrain(pjp, cst);
  *            }
+ *
+ *            ＠Override
+ *            protected Object handleFailure(Class<?> returnType, String errMsg) {
+ *                if (BaseResult.class.isAssignableFrom(returnType)) {
+ *                    return BaseResult.failure(errMsg);
+ *                }
+ *                return super.handleFailure(returnType, errMsg);
+ *            }
+ *
  *        }
  * </pre>
  * 

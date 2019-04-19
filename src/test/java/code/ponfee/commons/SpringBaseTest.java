@@ -61,10 +61,22 @@ public abstract class SpringBaseTest<T> {
     }
 
     public static void consoleJson(Object obj) {
-        System.out.println(Jsons.toJson(obj));
+        try {
+            Thread.sleep(100);
+            System.err.println(Jsons.toJson(obj));
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void console(Object obj) {
-        System.out.println(obj);
+        try {
+            Thread.sleep(100);
+            System.err.println(obj);
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

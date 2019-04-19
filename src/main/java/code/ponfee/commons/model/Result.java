@@ -97,12 +97,12 @@ public class Result<T> implements java.io.Serializable {
     }
 
     // ----------------------------------------------of operations
-    public static Result<Void> of(boolean condition, ResultCode resultCode) {
-        return condition ? SUCCESS : failure(resultCode);
+    public static Result<Void> of(boolean status, ResultCode resultCode) {
+        return status ? SUCCESS : failure(resultCode);
     }
 
-    public static <T> Result<T> of(boolean condition, ResultCode resultCode, T data) {
-        return condition ? success(data) : failure(resultCode);
+    public static <T> Result<T> of(boolean status, ResultCode resultCode, T data) {
+        return status ? success(data) : failure(resultCode);
     }
 
     // -----------------------------------------------database update or delete affected rows
@@ -140,7 +140,7 @@ public class Result<T> implements java.io.Serializable {
     }
 
     public @Transient boolean isSuccess() {
-        return code == SUCCESS.getCode();
+        return ResultCode.isSuccessCode(code);
     }
 
     public @Transient boolean isFailure() {
