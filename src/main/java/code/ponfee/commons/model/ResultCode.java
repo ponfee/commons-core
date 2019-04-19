@@ -2,6 +2,8 @@ package code.ponfee.commons.model;
 
 import java.io.Serializable;
 
+import com.google.common.collect.ImmutableList;
+
 /**
  * Http response code: {@link java.net.HttpURLConnection#HTTP_OK}
  *  100 => "HTTP/1.1 100 Continue",
@@ -122,6 +124,10 @@ public final class ResultCode implements Serializable {
     public static final ResultCode SERVER_UNAVAILABLE = create0(503, "服务不可用");
     public static final ResultCode SERVER_UNSUPPORT   = create0(505, "服务不支持");
 
+    public static final ImmutableList<Integer> SUCCESS_CODES = ImmutableList.of(
+        OK.getCode(), CREATED.getCode(), NO_CONTENT.getCode()
+    );
+
     private final Integer code;
     private final String msg;
 
@@ -166,6 +172,10 @@ public final class ResultCode implements Serializable {
             throw new IllegalArgumentException(BIZ_ERROR);
         }
         return new ResultCode(code, msg);
+    }
+
+    public static boolean isSuccessCode(int code) {
+        return SUCCESS_CODES.contains(code);
     }
 
     public int getCode() {

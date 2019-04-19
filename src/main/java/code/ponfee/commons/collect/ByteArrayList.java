@@ -1,12 +1,12 @@
 package code.ponfee.commons.collect;
 
 import static com.google.common.base.Preconditions.checkElementIndex;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkPositionIndexes;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The primitive byte array of list
@@ -25,7 +25,7 @@ public class ByteArrayList extends AbstractArrayList<Byte> {
 
     public ByteArrayList(byte[] array, int start, int end) {
         super(start, end);
-        checkNotNull(array);
+        Objects.requireNonNull(array);
         this.array = array;
     }
 
@@ -67,7 +67,7 @@ public class ByteArrayList extends AbstractArrayList<Byte> {
     public Byte set(int index, Byte element) {
         checkElementIndex(index, size());
         byte oldValue = array[start + index];
-        array[start + index] = checkNotNull(element);
+        array[start + index] = Objects.requireNonNull(element);
         return oldValue;
     }
 

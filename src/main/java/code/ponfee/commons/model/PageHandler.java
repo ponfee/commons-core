@@ -1,8 +1,9 @@
 package code.ponfee.commons.model;
 
-import java.lang.reflect.Method;
 import java.util.Dictionary;
 import java.util.Map;
+
+import javax.annotation.Nonnull;
 
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.ImmutableMap;
@@ -32,8 +33,7 @@ public final class PageHandler {
     public static final PageHandler NORMAL = new PageHandler(
         DEFAULT_PAGE_NUM, DEFAULT_PAGE_SIZE, DEFAULT_OFFSET, DEFAULT_LIMIT
     );
-    private static final int MAX_SIZE = 1000;
-    private static final int MIN_SIZE = 0;
+    public static final int MAX_SIZE = 500;
 
     private final String paramPageNum;
     private final String paramPageSize;
@@ -48,7 +48,12 @@ public final class PageHandler {
         this.paramLimit = paramLimit;
     }
 
-    public <T> void handle(T params) {
+    /**
+     * Handles the page parameters
+     *  
+     * @param params the params
+     */
+    public void handle(@Nonnull Object params) {
         Integer pageSize = getInt(params, paramPageSize);
         Integer limit = getInt(params, paramLimit);
 
@@ -59,22 +64,25 @@ public final class PageHandler {
             pageSize = 0;
         }
 
-        // 分页处理，pageSizeZero：默认值为false，当该参数设置为true时，如果pageSize=0或者
+        // 分页处理，pageSizeZero：默认值为false，当该参数设置为true时，如果pageSize=0或
         // RowBounds.limit=0就会查询出全部的结果（相当于没有执行分页查询，但是返回结果仍然是Page类型）
-        if (pageSize != null && pageSize > -1) { // first use page size
-            startPage(getInt(params, paramPageNum), 
-                      Numbers.bounds(pageSize, MIN_SIZE, MAX_SIZE));
+        if (pageSize != null && pageSize > -1) { // first priority use page size
+            startPage(
+                getInt(params, paramPageNum), Numbers.bounds(pageSize, 0, MAX_SIZE)
+            );
         } else {
-            offsetPage(getInt(params, paramOffset), 
-                       Numbers.bounds(limit, MIN_SIZE, MAX_SIZE));
+            offsetPage(
+                getInt(params, paramOffset), Numbers.bounds(limit, 0, MAX_SIZE)
+            );
         }
     }
 
     /**
-     * 分页查询（类oracle方式）</p>
+     * Page query with pageNum and pageSize
      * pageSize=0时查询全部数据
-     * @param pageNum
-     * @param pageSize
+     * 
+     * @param pageNum the pageNum
+     * @param pageSize the pageSize
      */
     public static void startPage(Integer pageNum, Integer pageSize) {
         if (pageNum == null || pageNum < 1) {
@@ -87,10 +95,11 @@ public final class PageHandler {
     }
 
     /**
-     * 分页查询（类mysql方式）</p>
+     * Page query with offset and limit
      * RowBounds.limit=0则会查询出全部的结果
-     * @param offset
-     * @param limit
+     * 
+     * @param offset the offset
+     * @param limit the limit
      */
     public static void offsetPage(Integer offset, Integer limit) {
         if (offset == null || offset < 0) {
@@ -115,20 +124,24 @@ public final class PageHandler {
     }
 
     /**
-     * get page number from java bean or map or dictionary
-     * @param params
-     * @param name
-     * @return
+     * Gets page number from java bean or map or dictionary
+     * 
+     * @param params the params collect object
+     * @param name the param name
+     * @return a value of name
      */
-    private static <T> Integer getInt(T params, String name) {
+    private static Integer getInt(Object params, String name) {
         try {
             Object value;
-            if (Map.class.isInstance(params) || Dictionary.class.isInstance(params)) {
-                Method get = params.getClass().getMethod("get", Object.class);
+            if (params instanceof Map) {
+                /*Method get = params.getClass().getMethod("get", Object.class);
                 get.setAccessible(true); // Guava ImmutableMap must be set accessible true
-                value = get.invoke(params, name);
+                value = get.invoke(params, name);*/
+                value = ((Map<?, ?>) params).get(name);
+            } else if (params instanceof Dictionary) {
+                value = ((Dictionary<?, ?>) params).get(name);
             } else {
-                value = Fields.get(params, name);
+                value = Fields.get(params, name); // as java bean
             }
             return Numbers.toWrapInt(value);
         } catch (Exception e) {

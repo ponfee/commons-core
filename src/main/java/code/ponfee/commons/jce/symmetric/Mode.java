@@ -19,5 +19,5 @@ package code.ponfee.commons.jce.symmetric;
 public enum Mode {
     ECB, CBC, CFB, OFB, CTR, // 
     EAX, OCB, CFB8, CFB64, //
-    CFB128, OpenPGPCFB, GCM, CCM
+    CFB128, OpenPGPCFB, GCM, CCM //
 }

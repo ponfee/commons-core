@@ -10,8 +10,8 @@ import com.google.common.collect.ImmutableMap;
 import code.ponfee.commons.http.ContentType;
 import code.ponfee.commons.http.Http;
 import code.ponfee.commons.json.Jsons;
+import code.ponfee.commons.util.Bytes;
 import code.ponfee.commons.util.ObjectUtils;
-import code.ponfee.commons.util.Strings;
 
 @SuppressWarnings("unchecked")
 public class TestOpenApi {
@@ -60,7 +60,7 @@ public class TestOpenApi {
         long number = new Random(captcha.hashCode()).nextLong();
         System.out.println(number);
         System.out.println(captcha.hashCode());
-        number = Strings.crc32(Integer.toString(captcha.hashCode()));
+        number = Bytes.crc32(Bytes.fromInt(captcha.hashCode()));
         System.out.println(number);
     }
 }

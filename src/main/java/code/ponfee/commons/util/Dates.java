@@ -5,14 +5,14 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
+
+import javax.annotation.Nonnull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
-
-import com.google.common.base.Preconditions;
 
 /**
  * 基于joda的日期工具类
@@ -92,7 +92,7 @@ public class Dates {
      * @return 日期
      */
     public static Date ofMillis(long millis) {
-        return new DateTime(millis).toDate();
+        return new Date(millis);
     }
 
     /**
@@ -101,7 +101,7 @@ public class Dates {
      * @return
      */
     public static Date ofSeconds(long seconds) {
-        return new DateTime(seconds * 1000).toDate();
+        return new Date(seconds * 1000);
     }
 
     /**
@@ -130,15 +130,6 @@ public class Dates {
     }
 
     /**
-     * 格式化日期对象，格式为yyyy-MM-dd HH:mm:ss
-     * @param mills 毫秒
-     * @return 日期字符串
-     */
-    public static String format(long mills) {
-        return new DateTime(mills).toString(DEFAULT_DATE_FORMAT);
-    }
-
-    /**
      * 格式化日期对象
      * @param mills 毫秒
      * @param pattern 格式
@@ -154,10 +145,12 @@ public class Dates {
      * @param end 结束时间
      * @return 时间间隔
      */
-    public static long clockdiff(Date start, Date end) {
-        Objects.requireNonNull(start, "start date non null");
-        Objects.requireNonNull(end, "end date non null");
+    public static long clockdiff(@Nonnull Date start, @Nonnull Date end) {
         return (end.getTime() - start.getTime()) / 1000;
+    }
+
+    public static int daysbetween(Date start, Date end) {
+        return Days.daysBetween(new DateTime(start), new DateTime(end)).getDays();
     }
 
     /**
@@ -166,8 +159,7 @@ public class Dates {
      * @param numOfMillis 毫秒数
      * @return 时间
      */
-    public static Date plusMillis(Date date, int numOfMillis) {
-        Preconditions.checkArgument(date != null);
+    public static Date plusMillis(@Nonnull Date date, int numOfMillis) {
         return new DateTime(date).plusMillis(numOfMillis).toDate();
     }
 
@@ -177,8 +169,7 @@ public class Dates {
      * @param numOfSeconds 秒数
      * @return 时间
      */
-    public static Date plusSeconds(Date date, int numOfSeconds) {
-        Preconditions.checkArgument(date != null);
+    public static Date plusSeconds(@Nonnull Date date, int numOfSeconds) {
         return new DateTime(date).plusSeconds(numOfSeconds).toDate();
     }
 
@@ -188,8 +179,7 @@ public class Dates {
      * @param numOfMinutes 分钟数
      * @return 时间
      */
-    public static Date plusMinutes(Date date, int numOfMinutes) {
-        Preconditions.checkArgument(date != null);
+    public static Date plusMinutes(@Nonnull Date date, int numOfMinutes) {
         return new DateTime(date).plusMinutes(numOfMinutes).toDate();
     }
 
@@ -199,8 +189,7 @@ public class Dates {
      * @param numOfHours 小时数
      * @return 时间
      */
-    public static Date plusHours(Date date, int numOfHours) {
-        Preconditions.checkArgument(date != null);
+    public static Date plusHours(@Nonnull Date date, int numOfHours) {
         return new DateTime(date).plusHours(numOfHours).toDate();
     }
 
@@ -210,8 +199,7 @@ public class Dates {
      * @param numdays 天数
      * @return 时间
      */
-    public static Date plusDays(Date date, int numdays) {
-        Preconditions.checkArgument(date != null);
+    public static Date plusDays(@Nonnull Date date, int numdays) {
         return new DateTime(date).plusDays(numdays).toDate();
     }
 
@@ -221,8 +209,7 @@ public class Dates {
      * @param numWeeks 周数
      * @return 时间
      */
-    public static Date plusWeeks(Date date, int numWeeks) {
-        Preconditions.checkArgument(date != null);
+    public static Date plusWeeks(@Nonnull Date date, int numWeeks) {
         return new DateTime(date).plusWeeks(numWeeks).toDate();
     }
 
@@ -232,8 +219,7 @@ public class Dates {
      * @param numMonths 月数
      * @return 时间
      */
-    public static Date plusMonths(Date date, int numMonths) {
-        Preconditions.checkArgument(date != null);
+    public static Date plusMonths(@Nonnull Date date, int numMonths) {
         return new DateTime(date).plusMonths(numMonths).toDate();
     }
 
@@ -243,8 +229,7 @@ public class Dates {
      * @param numYears 年数
      * @return 时间
      */
-    public static Date plusYears(Date date, int numYears) {
-        Preconditions.checkArgument(date != null);
+    public static Date plusYears(@Nonnull Date date, int numYears) {
         return new DateTime(date).plusYears(numYears).toDate();
     }
 
@@ -254,20 +239,8 @@ public class Dates {
      * @param target 目标日期
      * @return 大于返回true，反之false
      */
-    public static Boolean isAfter(Date source, Date target) {
-        Preconditions.checkArgument(source != null);
-        Preconditions.checkArgument(target != null);
+    public static boolean isAfter(@Nonnull Date source, @Nonnull Date target) {
         return new DateTime(source).isAfter(target.getTime());
-    }
-
-    /**
-     * 日期a是否大于当前日期
-     * @param source 待比较日期
-     * @return 大于返回true，反之false
-     */
-    public static Boolean isAfterNow(Date source) {
-        Preconditions.checkArgument(source != null);
-        return new DateTime(source).isAfterNow();
     }
 
     /**
@@ -276,20 +249,8 @@ public class Dates {
      * @param target 目标日期
      * @return 小于返回true，反之false
      */
-    public static Boolean isBefore(Date source, Date target) {
-        Preconditions.checkArgument(source != null);
-        Preconditions.checkArgument(target != null);
+    public static boolean isBefore(@Nonnull Date source, @Nonnull Date target) {
         return new DateTime(source).isBefore(target.getTime());
-    }
-
-    /**
-     * 日期a是否大于当前日期
-     * @param source 待比较日期
-     * @return 小于返回true，反之false
-     */
-    public static Boolean isBeforeNow(Date source) {
-        Preconditions.checkArgument(source != null);
-        return new DateTime(source).isBeforeNow();
     }
 
     /**
@@ -297,8 +258,7 @@ public class Dates {
      * @param date 时间
      * @return 时间
      */
-    public static Date startOfDay(Date date) {
-        Preconditions.checkArgument(date != null);
+    public static Date startOfDay(@Nonnull Date date) {
         return new DateTime(date).withTimeAtStartOfDay().toDate();
     }
 
@@ -307,8 +267,7 @@ public class Dates {
      * @param date 时间
      * @return 时间
      */
-    public static Date endOfDay(Date date) {
-        Preconditions.checkArgument(date != null);
+    public static Date endOfDay(@Nonnull Date date) {
         return new DateTime(date).millisOfDay().withMaximumValue().toDate();
     }
 
@@ -317,8 +276,7 @@ public class Dates {
      * @param date 日期
      * @return 当前周第一天
      */
-    public static Date startOfWeek(Date date) {
-        Preconditions.checkArgument(date != null);
+    public static Date startOfWeek(@Nonnull Date date) {
         return new DateTime(date).dayOfWeek().withMinimumValue()
                                  .withTimeAtStartOfDay().toDate();
     }
@@ -328,8 +286,7 @@ public class Dates {
      * @param date 日期
      * @return 当前周最后一天
      */
-    public static Date endOfWeek(Date date) {
-        Preconditions.checkArgument(date != null);
+    public static Date endOfWeek(@Nonnull Date date) {
         return new DateTime(date).dayOfWeek().withMaximumValue()
                                  .millisOfDay().withMaximumValue().toDate();
     }
@@ -339,8 +296,7 @@ public class Dates {
      * @param date 日期
      * @return 当前月的第一天
      */
-    public static Date startOfMonth(Date date) {
-        Preconditions.checkArgument(date != null);
+    public static Date startOfMonth(@Nonnull Date date) {
         return new DateTime(date).dayOfMonth().withMinimumValue()
                                  .withTimeAtStartOfDay().toDate();
     }
@@ -350,8 +306,7 @@ public class Dates {
      * @param date 日期
      * @return 当前月的最后一天
      */
-    public static Date endOfMonth(Date date) {
-        Preconditions.checkArgument(date != null);
+    public static Date endOfMonth(@Nonnull Date date) {
         return new DateTime(date).dayOfMonth().withMaximumValue()
                                  .millisOfDay().withMaximumValue().toDate();
     }
@@ -361,8 +316,7 @@ public class Dates {
      * @param date 日期
      * @return 当前年的第一天
      */
-    public static Date startOfYear(Date date) {
-        Preconditions.checkArgument(date != null);
+    public static Date startOfYear(@Nonnull Date date) {
         return new DateTime(date).dayOfYear().withMinimumValue()
                                  .withTimeAtStartOfDay().toDate();
     }
@@ -372,39 +326,19 @@ public class Dates {
      * @param date 日期
      * @return 当前年的最后一天
      */
-    public static Date endOfYear(Date date) {
-        Preconditions.checkArgument(date != null);
+    public static Date endOfYear(@Nonnull Date date) {
         return new DateTime(date).dayOfYear().withMaximumValue()
                                  .millisOfDay().withMaximumValue().toDate();
     }
 
     /**
-     * 获取当前时间所在周的周n
+     * 获取指定时间所在周的周n，1<=day<=7
+     * @param date 相对日期
      * @param day 1:星期一，2:星期二，...
      * @return 本周周几的日期对象
      */
-    public static Date currentDayOfWeek(int day) {
-        return dayOfWeek(now(), day);
-    }
-
-    /**
-     * 获取指定时间所在周的周n，1<=day<=7
-     * @param date
-     * @param day
-     * @return
-     */
-    public static Date dayOfWeek(Date date, int day) {
-        Preconditions.checkArgument(date != null);
+    public static Date dayOfWeek(@Nonnull Date date, int day) {
         return new DateTime(startOfDay(date)).withDayOfWeek(day).toDate();
-    }
-
-    /**
-     * 获取当前时间所在月的n号，1<=day<=31
-     * @param day
-     * @return
-     */
-    public static Date currentDayOfMonth(int day) {
-        return dayOfMonth(now(), day);
     }
 
     /**
@@ -413,18 +347,8 @@ public class Dates {
      * @param day
      * @return
      */
-    public static Date dayOfMonth(Date date, int day) {
-        Preconditions.checkArgument(date != null);
+    public static Date dayOfMonth(@Nonnull Date date, int day) {
         return new DateTime(startOfDay(date)).withDayOfMonth(day).toDate();
-    }
-
-    /**
-     * 获取当前时间所在年的n天，1<=day<=366
-     * @param day
-     * @return
-     */
-    public static Date currentDayOfYear(int day) {
-        return dayOfYear(now(), day);
     }
 
     /**
@@ -433,28 +357,23 @@ public class Dates {
      * @param day
      * @return
      */
-    public static Date dayOfYear(Date date, int day) {
-        Preconditions.checkArgument(date != null);
+    public static Date dayOfYear(@Nonnull Date date, int day) {
         return new DateTime(startOfDay(date)).withDayOfYear(day).toDate();
     }
 
-    public static int dayOfYear(Date date) {
-        Preconditions.checkArgument(date != null);
+    public static int dayOfYear(@Nonnull Date date) {
         return new DateTime(date).getDayOfYear();
     }
 
-    public static int dayOfMonth(Date date) {
-        Preconditions.checkArgument(date != null);
+    public static int dayOfMonth(@Nonnull Date date) {
         return new DateTime(date).getDayOfMonth();
     }
 
-    public static int dayOfWeek(Date date) {
-        Preconditions.checkArgument(date != null);
+    public static int dayOfWeek(@Nonnull Date date) {
         return new DateTime(date).getDayOfWeek();
     }
 
-    public static int hourOfDay(Date date) {
-        Preconditions.checkArgument(date != null);
+    public static int hourOfDay(@Nonnull Date date) {
         return new DateTime(date).getHourOfDay();
     }
 
@@ -468,14 +387,6 @@ public class Dates {
         long seconds = ThreadLocalRandom.current().nextLong(clockdiff(begin, end));
         int s = seconds > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) seconds;
         return Dates.plusSeconds(begin, s);
-    }
-
-    public static Date random(Date begin) {
-        return random(begin, now());
-    }
-
-    public static Date random() {
-        return random(ofMillis(0), now());
     }
 
     // ----------------------------------------------------------------java 8 date

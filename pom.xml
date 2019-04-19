@@ -10,8 +10,10 @@
     <packaging>jar</packaging>
 
     <!-- mvn package -Dmaven.test.skip=true：不执行测试用例，也不编译测试用例类；
-         mvn package -DskipTests：跳过单元测试，但是会继续编译；-->
-    
+         mvn package -DskipTests：跳过单元测试，但是会继续编译；
+         https://github.com/alibaba/p3c
+    -->
+
     <properties>
         <project.encoding>UTF-8</project.encoding>
         <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
@@ -380,7 +382,7 @@
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
-            <version>3.5.0</version>
+            <version>3.5.1</version>
         </dependency>
         <dependency>
             <groupId>org.mybatis</groupId>
@@ -610,19 +612,19 @@
       <dependency>
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat-catalina</artifactId>
-        <version>8.5.37</version>
+        <version>8.5.40</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat-jasper</artifactId>
-        <version>8.5.37</version>
+        <version>8.5.40</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.tomcat.embed</groupId>
         <artifactId>tomcat-embed-core</artifactId>
-        <version>8.5.37</version>
+        <version>8.5.40</version>
         <scope>test</scope>
       </dependency>
 

@@ -32,8 +32,8 @@ import code.ponfee.commons.reflect.Fields;
  */
 public class PageMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
+    // pageSize(or limit) has not spec or spec less 1 then use this default value
     private static final int DEFAULT_SIZE = 20;
-    private static final int MAX_SIZE     = 500;
 
     private static final List<String> SIZE_PARAMS = Arrays.asList(
         DEFAULT_PAGE_SIZE, DEFAULT_LIMIT
@@ -69,11 +69,9 @@ public class PageMethodArgumentResolver implements HandlerMethodArgumentResolver
             }
         });
 
-        if (page.getLimit() > 0) {
-            if (page.getLimit() < 1) {
-                page.setLimit(DEFAULT_SIZE);
-            } else if (page.getLimit() > MAX_SIZE) {
-                page.setLimit(MAX_SIZE);
+        if (page.getLimit() > 0) { // use limit query
+            if (page.getLimit() > PageHandler.MAX_SIZE) {
+                page.setLimit(PageHandler.MAX_SIZE);
             }
             if (page.getOffset() < 0) {
                 page.setOffset(0); // start with 0
@@ -81,8 +79,8 @@ public class PageMethodArgumentResolver implements HandlerMethodArgumentResolver
         } else {
             if (page.getPageSize() < 1) {
                 page.setPageSize(DEFAULT_SIZE);
-            } else if (page.getPageSize() > MAX_SIZE) {
-                page.setPageSize(MAX_SIZE);
+            } else if (page.getPageSize() > PageHandler.MAX_SIZE) {
+                page.setPageSize(PageHandler.MAX_SIZE);
             }
             if (page.getPageNum() < 1) {
                 page.setPageNum(1); // start with 1

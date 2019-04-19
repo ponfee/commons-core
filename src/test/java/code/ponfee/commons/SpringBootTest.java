@@ -61,7 +61,7 @@
 //        // do no thing
 //    }
 //
-//    public static void printJson(Object obj) {
+//    public static void consoleJson(Object obj) {
 //        try {
 //            Thread.sleep(100);
 //            System.err.println(Jsons.toJson(obj));
@@ -71,7 +71,7 @@
 //        }
 //    }
 //
-//    public static void print(Object obj) {
+//    public static void console(Object obj) {
 //        try {
 //            Thread.sleep(100);
 //            System.err.println(obj);

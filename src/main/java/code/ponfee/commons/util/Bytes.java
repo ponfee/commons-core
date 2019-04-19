@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Formatter;
+import java.util.zip.CRC32;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -522,6 +523,16 @@ public final class Bytes {
         for (int i = destFrom, j = srcFrom; i < destTo; i++, j++) {
             dest[i] = (j < srcTo) ? src[j] : tailing;
         }
+    }
+
+    public static long crc32(byte[] bytes) {
+        CRC32 crc32 = new CRC32();
+        crc32.update(bytes);
+        return crc32.getValue();
+    }
+
+    public static int crc16(byte[] bytes) {
+        return CRC16.crc16(bytes);
     }
 
 }

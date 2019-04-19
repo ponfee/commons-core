@@ -140,7 +140,7 @@ public class DatePeriodCalculator {
         for (int i = 0; i < 100000; i++) {
             int step = ThreadLocalRandom.current().nextInt(37) + 1;
             int next = -47 + ThreadLocalRandom.current().nextInt(94);
-            Date target = Dates.random(Dates.plusSeconds(STARTING_DATE, 10));
+            Date target = Dates.random(Dates.ofMillis(0), Dates.plusSeconds(STARTING_DATE, 10));
             String except, actual;
 
             except = except(Periods.DAILY, target, step, next);
@@ -192,7 +192,7 @@ public class DatePeriodCalculator {
     }
     
     private static void test2() {
-        Date target = Dates.random(STARTING_DATE);
+        Date target = Dates.random(Dates.ofMillis(0), STARTING_DATE);
         System.out.println(Dates.format(target));
         for (int i = 0; i < 100; i++) {
             Interval interval = DatePeriods.HOURLY.next(STARTING_DATE, target, 2, 1);

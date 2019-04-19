@@ -275,12 +275,12 @@ public class JedisClient implements DisposableBean {
         return this.shardedJedisPool.getResource();
     }
 
-    final <T> byte[] serialize(T t, boolean isCompress) {
-        return serializer.serialize(t, isCompress);
+    final byte[] serialize(Object obj, boolean isCompress) {
+        return serializer.serialize(obj, isCompress);
     }
 
-    final <T> byte[] serialize(T t) {
-        return this.serialize(t, false);
+    final byte[] serialize(Object obj) {
+        return this.serialize(obj, false);
     }
 
     final <T> T deserialize(byte[] data, Class<T> clazz, boolean isCompress) {

@@ -5,32 +5,30 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Nonnull;
-
-import com.google.common.base.Preconditions;
 
 import code.ponfee.commons.io.GzipProcessor;
 import code.ponfee.commons.util.ObjectUtils;
 
 /**
- * 
  * Object toString Serializer
  * 
  * @author Ponfee
  */
-public class BaseStringSerializer extends Serializer {
+public class ToStringSerializer extends Serializer {
 
     private static final Map<Class<?>, Constructor<?>> CONSTRUCTOR_CACHE = new HashMap<>();
 
     private final Charset charset;
 
-    public BaseStringSerializer() {
+    public ToStringSerializer() {
         this(StandardCharsets.UTF_8);
     }
 
-    public BaseStringSerializer(@Nonnull Charset charset) {
-        Preconditions.checkNotNull(charset);
+    public ToStringSerializer(@Nonnull Charset charset) {
+        Objects.requireNonNull(charset);
         this.charset = charset;
     }
 
@@ -46,7 +44,7 @@ public class BaseStringSerializer extends Serializer {
             bytes = GzipProcessor.decompress(bytes);
         }
 
-        Constructor<T> constructor = getConstructor(type);
+        Constructor<T> constructor = getByteArrayArgConstructor(type);
         if (constructor != null) {
             try {
                 return constructor.newInstance(bytes);
@@ -59,7 +57,7 @@ public class BaseStringSerializer extends Serializer {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> Constructor<T> getConstructor(Class<T> type) {
+    private static <T> Constructor<T> getByteArrayArgConstructor(Class<T> type) {
         if (CONSTRUCTOR_CACHE.containsKey(type)) {
             return (Constructor<T>) CONSTRUCTOR_CACHE.get(type);
         }
