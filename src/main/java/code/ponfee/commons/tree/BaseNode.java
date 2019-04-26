@@ -41,7 +41,7 @@ public class BaseNode<T extends Serializable & Comparable<T>, A>
     protected List<T> path; // 节点路径list<nid>（父节点在前，末尾元素是节点本身的nid）
 
     protected int childLeafCount; // 子叶子节点数量（若为叶子节点则为1）
-    protected int leftLeafCount;  // 左叶子节点数量（在其左边的所有叶子节点数量）
+    protected int leftLeafCount;  // 左叶子节点数量（在其左边的所有叶子节点数量：相邻左兄弟节点的左叶子节点个数+该兄弟节点的子节点个数）
     protected int treeNodeCount;  // 整棵树的节点数量（包括根节点）
     protected int treeMaxDepth;   // 节点树的最大深度（包括自身层级）
 
