@@ -1,17 +1,16 @@
 package code.ponfee.commons.util;
 
-import code.ponfee.commons.io.Files;
-import code.ponfee.commons.math.Numbers;
-import com.google.common.base.CaseFormat;
-import org.apache.commons.lang3.StringUtils;
-
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.zip.CRC32;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.base.CaseFormat;
+
+import code.ponfee.commons.math.Numbers;
 
 /**
  * 字符串工具类
@@ -59,22 +58,6 @@ public class Strings {
         int end = length - start - len;
         String regex = "(\\w{" + start + "})\\w{" + len + "}(\\w{" + end + "})";
         return mask(text, regex, "$1" + StringUtils.repeat(maskChar, len) + "$2");
-    }
-
-    /**
-     * 字符串转long
-     * @param str
-     * @param charset
-     * @return
-     */
-    public static long crc32(String str, String charset) {
-        CRC32 crc32 = new CRC32();
-        crc32.update(str.getBytes(Charset.forName(charset)));
-        return crc32.getValue();
-    }
-
-    public static long crc32(String str) {
-        return crc32(str, Files.UTF_8);
     }
 
     /**

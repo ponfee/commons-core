@@ -45,7 +45,7 @@ public class ToStringSerializer extends Serializer {
             bytes = GzipProcessor.decompress(bytes);
         }
 
-        Constructor<T> constructor = getConstructor(type);
+        Constructor<T> constructor = getByteArrayArgConstructor(type);
         if (constructor != null) {
             try {
                 return constructor.newInstance(bytes);
@@ -58,7 +58,7 @@ public class ToStringSerializer extends Serializer {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> Constructor<T> getConstructor(Class<T> type) {
+    private static <T> Constructor<T> getByteArrayArgConstructor(Class<T> type) {
         if (CONSTRUCTOR_CACHE.containsKey(type)) {
             return (Constructor<T>) CONSTRUCTOR_CACHE.get(type);
         }
