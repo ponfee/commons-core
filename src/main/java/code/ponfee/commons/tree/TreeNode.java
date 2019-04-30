@@ -144,7 +144,8 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A>
     /**
      * 按继承方式展开节点：父子节点相邻 ，Inherit
      * 深度优先搜索DFS：（Depth-First Search）
-     * should be before invoke {@link #mount(List)}
+     * 
+     * Should be invoking after {@link #mount(List)}
      * 
      * @return a list nodes for dfs tree node
      */
@@ -157,7 +158,8 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A>
     /**
      * 按层级方式展开节点：兄弟节点相邻，Hierarchy
      * 广度优先搜索BFS：（Breadth-First Search）
-     * should be before invoke {@link #mount(List)}
+     * 
+     * Should be invoking after {@link #mount(List)}
      * 
      * @return a list nodes for bfs tree node
      */

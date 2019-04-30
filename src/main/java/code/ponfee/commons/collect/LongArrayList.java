@@ -1,12 +1,12 @@
 package code.ponfee.commons.collect;
 
 import static com.google.common.base.Preconditions.checkElementIndex;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkPositionIndexes;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The primitive long array of list
@@ -24,7 +24,7 @@ public class LongArrayList extends AbstractArrayList<Long> {
 
     public LongArrayList(long[] array, int start, int end) {
         super(start, end);
-        checkNotNull(array);
+        Objects.requireNonNull(array);
         this.array = array;
     }
 
@@ -66,7 +66,7 @@ public class LongArrayList extends AbstractArrayList<Long> {
     public Long set(int index, Long element) {
         checkElementIndex(index, size());
         long oldValue = array[start + index];
-        array[start + index] = checkNotNull(element);
+        array[start + index] = Objects.requireNonNull(element);
         return oldValue;
     }
 

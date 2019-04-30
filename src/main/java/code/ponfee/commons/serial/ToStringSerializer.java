@@ -5,10 +5,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Nonnull;
-
-import com.google.common.base.Preconditions;
 
 import code.ponfee.commons.io.GzipProcessor;
 import code.ponfee.commons.util.ObjectUtils;
@@ -29,7 +28,7 @@ public class ToStringSerializer extends Serializer {
     }
 
     public ToStringSerializer(@Nonnull Charset charset) {
-        Preconditions.checkNotNull(charset);
+        Objects.requireNonNull(charset);
         this.charset = charset;
     }
 

@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.stream.Collectors;
 
 /**
- * User in spring redis xml configuration
+ * Use in spring redis xml configuration
  *
  * @author Ponfee
  */

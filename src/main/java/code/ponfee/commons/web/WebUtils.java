@@ -285,6 +285,30 @@ public final class WebUtils {
     }
 
     /**
+     * 响应数据流，如图片数据
+     * 
+     * @param resp the HttpServletResponse
+     * @param data the byte array data
+     * @param contentType the content-type
+     * @param isGzip whether to encode gzip
+     */
+    public static void response(HttpServletResponse resp, byte[] data,
+                                String contentType, boolean isGzip) {
+        try (OutputStream out = resp.getOutputStream()) {
+            resp.setContentType(contentType);
+            if (isGzip) {
+                resp.setHeader("Content-Encoding", "gzip");
+                GzipProcessor.compress(data, out);
+            } else {
+                out.write(data);
+            }
+        } catch (IOException e) {
+            // cannot happened
+            throw new RuntimeException("response byte array data occur error", e);
+        }
+    }
+
+    /**
      * ross-Origin Resource Sharing
      * 
      * @param req  the HttpServletRequest

@@ -59,6 +59,7 @@ public abstract class MethodValidator extends FieldValidator {
      * @return
      * @throws Throwable
      */
+    @SuppressWarnings("unchecked")
     public Object constrain(ProceedingJoinPoint pjp, Constraints validator) throws Throwable {
         Object[] args = pjp.getArgs();
         if (args == null || args.length == 0) {
@@ -105,15 +106,20 @@ public abstract class MethodValidator extends FieldValidator {
                         msg = "参数{" + argsName[cst.index()] + "}不能为空;";
                     }
                     throw new IllegalArgumentException(msg);
-                } else if (Map.class.isInstance(fieldVal) || Dictionary.class.isInstance(fieldVal)) {
-                    // 验证map对象
-                    Method get = fieldVal.getClass().getMethod("get", Object.class);
+                } else if (fieldVal instanceof Map) {
+                    /*Method get = fieldVal.getClass().getMethod("get", Object.class);
                     get.setAccessible(true); // ImmutableMap must be set accessible true
-                    fieldVal = get.invoke(fieldVal, cst.field());
+                    fieldVal = get.invoke(fieldVal, cst.field());*/
+                    fieldVal = ((Map<String, Object>) fieldVal).get(cst.field());
                     fieldType = fieldVal == null ? null : fieldVal.getClass();
                     fieldName = argsName[cst.index()] + "[" + cst.field() + "]";
                     builder.append(constrain(fieldName, fieldVal, cst, fieldType)); // cannot cache
-                } else {
+                }else if (fieldVal instanceof Dictionary) {
+                    fieldVal = ((Dictionary<String, Object>) fieldVal).get(cst.field());
+                    fieldType = fieldVal == null ? null : fieldVal.getClass();
+                    fieldName = argsName[cst.index()] + "[" + cst.field() + "]";
+                    builder.append(constrain(fieldName, fieldVal, cst, fieldType)); // cannot cache
+                }  else {
                     // 验证java bean
                     String[] ognl = cst.field().split("\\.");
                     Field field;
