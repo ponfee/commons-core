@@ -298,10 +298,6 @@ public final class Numbers {
         }
     }
 
-    public static BigInteger toBigInteger(String hex) {
-        return new BigInteger(hex, 16);
-    }
-
     public static int sum(Integer a, Integer b) {
         return ofNullable(a).orElse(0) + ofNullable(b).orElse(0);
     }

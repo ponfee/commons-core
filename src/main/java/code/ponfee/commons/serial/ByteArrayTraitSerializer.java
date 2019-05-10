@@ -41,7 +41,7 @@ public class ByteArrayTraitSerializer extends Serializer {
             }
             try {
                 //return clazz.getDeclaredMethod("fromByteArray", byte[].class).invoke(null, bytes);
-                return (T) clazz.getConstructor(byte[].class).newInstance(bytes);
+                return clazz.getConstructor(byte[].class).newInstance(bytes);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

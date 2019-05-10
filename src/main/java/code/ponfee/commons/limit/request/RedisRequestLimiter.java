@@ -123,7 +123,7 @@ public class RedisRequestLimiter extends RequestLimiter{
     // -----------------------------------------------------------------------private methods
     private void checkLimit(String key, int ttl, int limit, String message)
         throws RequestLimitException {
-        long times = (Long) client.valueOps().incrByEX(key, 1, ttl);
+        long times = client.valueOps().incrByEX(key, 1, ttl);
         if (times > limit) {
             throw new RequestLimitException(message);
         }

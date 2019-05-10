@@ -25,9 +25,7 @@ public class MavenProjects {
     }
 
     public static File getMainJavaFile(Class<?> clazz) {
-        String path = getProjectBaseDir() + "/src/main/java/";
-        path += clazz.getCanonicalName().replace('.', '/') + ".java";
-        return new File(path);
+        return new File(getMainJavaPath("") + clazz.getCanonicalName().replace('.', '/') + ".java");
     }
 
     public static byte[] getMainJavaFileAsByteArray(Class<?> clazz) {
@@ -39,9 +37,7 @@ public class MavenProjects {
     }
 
     public static File getTestJavaFile(Class<?> clazz) {
-        String path = getProjectBaseDir() + "/src/test/java/";
-        path += clazz.getCanonicalName().replace('.', '/') + ".java";
-        return new File(path);
+        return new File(getTestJavaPath("") + clazz.getCanonicalName().replace('.', '/') + ".java");
     }
 
     public static byte[] getTestJavaFileAsByteArray(Class<?> clazz) {

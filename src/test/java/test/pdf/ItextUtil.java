@@ -54,7 +54,7 @@ public class ItextUtil {
                 PdfSignatureAppearance appearance = stamper.getSignatureAppearance();
                 appearance.setReason(signatureInfo.getReason());
                 appearance.setLocation(signatureInfo.getLocation());
-                //设置签名的签名域名称，多次追加签名的时候，签名预名称不能一样，图片大小受表单域大小影响（过小导致压缩）
+                //设置签名的签名域名称，多次追加签名的时候，签名域名称不能一样，图片大小受表单域大小影响（过小导致压缩）
                 //appearance.setVisibleSignature(signatureInfo.getFieldName());
                 appearance.setVisibleSignature(new Rectangle(200, 200, 400, 400), 1, "pdf seal[" + System.nanoTime() + "]");
                 //读取图章图片

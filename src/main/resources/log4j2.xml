@@ -49,7 +49,10 @@
         <Logger name="dao" additivity="false" level="DEBUG" >
             <AppenderRef ref="Console"/>
         </Logger> -->
-        <!-- net.sf.log4jdbc.Slf4jSpyLogDelegator -->
+        <!-- maven gav: com.googlecode.log4jdbc:log4jdbc:1.2
+             default.jdbc.driverClass=net.sf.log4jdbc.DriverSpy 
+             net.sf.log4jdbc.Slf4jSpyLogDelegator
+        -->
         <Logger name="jdbc.audit" additivity="false" level="OFF">
             <AppenderRef ref="Console" />
         </Logger>
