@@ -223,10 +223,10 @@ public class TransitPage<T> {
         transit.setPages(page.getPages());
         transit.setPrePage(page.getPrePage());
         transit.setNextPage(page.getNextPage());
-        transit.setFirstPage(page.isFirstPage());
-        transit.setLastPage(page.isLastPage());
-        transit.setHasPreviousPage(page.isHasPreviousPage());
-        transit.setHasNextPage(page.isHasNextPage());
+        transit.setFirstPage(page.getFirstPage());
+        transit.setLastPage(page.getLastPage());
+        transit.setHasPreviousPage(page.getHasPreviousPage());
+        transit.setHasNextPage(page.getHasNextPage());
         transit.setNavigatePages(page.getNavigatePages());
         transit.setNavigatePageNums(page.getNavigatePageNums());
         transit.setNavigateFirstPage(page.getNavigateFirstPage());

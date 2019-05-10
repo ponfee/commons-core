@@ -16,7 +16,7 @@ import code.ponfee.commons.serial.Protostuff.ProtostuffPool;
 
 public class ProtostuffRedisSerializer<T> implements RedisSerializer<T> {
 
-    private final ProtostuffPool protostuffPool = new ProtostuffPool(
+    private static final ProtostuffPool PROTOSTUFF_POOL = new ProtostuffPool(
         new GenericObjectPoolConfig(), new AbandonedConfig()
     );
 
@@ -24,13 +24,13 @@ public class ProtostuffRedisSerializer<T> implements RedisSerializer<T> {
     public byte[] serialize(T obj) throws SerializationException {
         Protostuff protostuff = null;
         try {
-            protostuff = this.protostuffPool.borrowObject();
+            protostuff = PROTOSTUFF_POOL.borrowObject();
             return protostuff.serialize(obj);
         } catch (Exception e) {
             throw new SerializationException(e.getMessage(), e);
         } finally {
             if (protostuff != null) {
-                this.protostuffPool.returnObject(protostuff);
+                PROTOSTUFF_POOL.returnObject(protostuff);
             }
         }
     }
@@ -39,13 +39,13 @@ public class ProtostuffRedisSerializer<T> implements RedisSerializer<T> {
     public T deserialize(byte[] bytes) throws SerializationException {
         Protostuff protostuff = null;
         try {
-            protostuff = this.protostuffPool.borrowObject();
+            protostuff = PROTOSTUFF_POOL.borrowObject();
             return protostuff.deserialize(bytes);
         } catch (Exception e) {
             throw new SerializationException(e.getMessage(), e);
         } finally {
             if (protostuff != null) {
-                this.protostuffPool.returnObject(protostuff);
+                PROTOSTUFF_POOL.returnObject(protostuff);
             }
         }
     }

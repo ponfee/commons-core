@@ -2,6 +2,7 @@
 /**/.classpath
 /**/.project
 /**/.settings/
+/**/.myeclipse/
 
 # Intellij
 /**/.idea/
@@ -35,10 +36,10 @@ gradle/
 
 # Others
 /**/.svn/
-/**/.myeclipse
 /**/.externalToolBuilders/
 /**/.recommenders/
 /**/.metadata/
+/**/node_modules/
 out/
 build/
 bin/

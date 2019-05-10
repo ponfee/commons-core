@@ -3,8 +3,7 @@ package code.ponfee.commons.serial;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.objenesis.Objenesis;
-import org.springframework.objenesis.ObjenesisStd;
+import org.springframework.objenesis.ObjenesisHelper;
 
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtostuffIOUtil;
@@ -19,7 +18,6 @@ import io.protostuff.runtime.RuntimeSchema;
 public final class ProtostuffUtils {
 
     private static final Map<Class<?>, Schema<?>> SCHEMA_CACHE = new HashMap<>();
-    private static final Objenesis OBJENESIS = new ObjenesisStd(true);
 
     private ProtostuffUtils() {}
 
@@ -37,13 +35,9 @@ public final class ProtostuffUtils {
     }
 
     public static <T> T deserialize(byte[] data, Class<T> type) {
-        try {
-            T message = OBJENESIS.newInstance(type);
-            ProtostuffIOUtil.mergeFrom(data, message, getSchema(type));
-            return message;
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
+        T message = ObjenesisHelper.newInstance(type);
+        ProtostuffIOUtil.mergeFrom(data, message, getSchema(type));
+        return message;
     }
 
     @SuppressWarnings("unchecked")

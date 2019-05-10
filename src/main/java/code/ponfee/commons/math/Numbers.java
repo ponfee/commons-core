@@ -197,13 +197,16 @@ public final class Numbers {
      * 向下转单位
      *
      * @param value
-     * @param scale
+     * @param pow
      * @return
      */
-    public static double lower(double value, int scale) {
-        return new BigDecimal(value / Math.pow(10, scale))
-                    .setScale(scale, BigDecimal.ROUND_HALF_UP)
-                    .doubleValue();
+    public static double lower(double value, int pow) {
+        return new BigDecimal(value / Math.pow(10, pow)).doubleValue();
+    }
+
+    public static double lower(double value, int pow, int scale) {
+        return new BigDecimal(value / Math.pow(10, pow))
+            .setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     /**
@@ -215,6 +218,11 @@ public final class Numbers {
      */
     public static double upper(double value, int pow) {
         return new BigDecimal(value * Math.pow(10, pow)).doubleValue();
+    }
+
+    public static double upper(double value, int pow, int scale) {
+        return new BigDecimal(value * Math.pow(10, pow))
+            .setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     /**
@@ -241,6 +249,10 @@ public final class Numbers {
      * @return
      */
     public static String percent(double value, int scale) {
+        if (Double.isNaN(value) || Double.isInfinite(value)) {
+            return "--";
+        }
+
         String format = "#,##0";
         if (scale > 0) {
             format += "." + StringUtils.leftPad("", scale, '0');
@@ -298,10 +310,6 @@ public final class Numbers {
         }
     }
 
-    public static BigInteger toBigInteger(String hex) {
-        return new BigInteger(hex, 16);
-    }
-
     public static int sum(Integer a, Integer b) {
         return ofNullable(a).orElse(0) + ofNullable(b).orElse(0);
     }
@@ -324,8 +332,9 @@ public final class Numbers {
     public static int[] average(int quantity, int segment) {
         int[] array = new int[segment];
         int remainder = quantity % segment;
-        Arrays.fill(array, 0, remainder, quantity / segment + 1);
-        Arrays.fill(array, remainder, segment, quantity / segment);
+        int quotient = quantity / segment;
+        Arrays.fill(array, 0, remainder, quotient + 1);
+        Arrays.fill(array, remainder, segment, quotient);
         return array;
     }
 

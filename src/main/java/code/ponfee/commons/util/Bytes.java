@@ -8,11 +8,10 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Formatter;
+import java.util.Objects;
 import java.util.zip.CRC32;
 
 import org.apache.commons.lang3.StringUtils;
-
-import com.google.common.base.Preconditions;
 
 import code.ponfee.commons.math.Numbers;
 
@@ -48,8 +47,9 @@ public final class Bytes {
     public static String hexDump(byte[] data, int chunk, int block) {
         Formatter fmt = new Formatter(), text;
 
+        String lineNumberFormat = "%0" + (Integer.toHexString((data.length + 15) / 16).length() + 1) + "x: ";
         for (int i, j = 0, wid = block * chunk; j * wid < data.length; j++) {
-            fmt.format("%06x: ", j * wid); // 输出行号：“00000: ”
+            fmt.format(lineNumberFormat, j * wid); // 输出行号：“00000: ”
 
             text = new Formatter(); // 右边文本
             for (i = 0; i < wid && (i + j * wid) < data.length; i++) {
@@ -58,7 +58,7 @@ public final class Bytes {
                 if ((i + 1) % block == 0 || i + 1 == wid) {
                     fmt.format("%s", SPACE_CHAR); // block与block间加一个空格
                 }
-                if (b >= 0x21 && b <= 0x7e) {
+                if (b > 0x1F && b < 0x7F) {
                     text.format("%c", b);
                 } else {
                     text.format("%c", '.'); // 非ascii码则输出“.”
@@ -419,8 +419,7 @@ public final class Bytes {
      * @return a new byte array of them
      */
     public static byte[] concat(byte[] first, byte[]... rest) {
-        Preconditions.checkArgument(first != null, 
-                                    "the first array arg cannot be null");
+        Objects.requireNonNull(first, "the first array arg cannot be null");
         if (rest == null || rest.length == 0) {
             return first;
         }

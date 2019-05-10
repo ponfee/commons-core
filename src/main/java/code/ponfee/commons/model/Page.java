@@ -4,15 +4,15 @@ import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.cglib.beans.BeanCopier;
+
+import com.google.common.collect.Lists;
 
 /**
  * 参考guthub开源的mybatis分页工具
@@ -25,7 +25,11 @@ import org.springframework.cglib.beans.BeanCopier;
  * 
  *   Mapper插件：
  *     https://github.com/abel533/Mapper
- * @author fupf
+ * 
+ *   Spring Boot集成 MyBatis, 分页插件 PageHelper, 通用 Mapper
+ *     https://github.com/abel533/MyBatis-Spring-Boot
+ * 
+ * @author Ponfee
  */
 public class Page<T> implements java.io.Serializable {
     private static final long serialVersionUID = 1313118491812094979L;
@@ -42,10 +46,10 @@ public class Page<T> implements java.io.Serializable {
     private List<T> rows; // 结果集
     private int prePage; // 前一页
     private int nextPage; // 下一页
-    private boolean isFirstPage = false; // 是否为第一页
-    private boolean isLastPage = false; // 是否为最后一页
-    private boolean hasPreviousPage = false; // 是否有前一页
-    private boolean hasNextPage = false; // 是否有下一页
+    private Boolean firstPage = Boolean.TRUE; // 是否为第一页（Pojo中bool类型一律不加is且用Boolean包装类型）
+    private Boolean lastPage = Boolean.FALSE; // 是否为最后一页
+    private Boolean hasPreviousPage = Boolean.FALSE; // 是否有前一页
+    private Boolean hasNextPage = Boolean.FALSE; // 是否有下一页
     private int navigatePages; // 导航页码数
     private int[] navigatePageNums; // 所有导航页号
     private int navigateFirstPage; // 导航条上的第一页
@@ -177,8 +181,8 @@ public class Page<T> implements java.io.Serializable {
      * 判定页面边界
      */
     private void judgePageBoudary() {
-        isFirstPage = pageNum == 1;
-        isLastPage = pageNum == pages;
+        firstPage = pageNum == 1;
+        lastPage = pageNum == pages;
         hasPreviousPage = pageNum > 1;
         hasNextPage = pageNum < pages;
     }
@@ -211,20 +215,36 @@ public class Page<T> implements java.io.Serializable {
         return startRow;
     }
 
-    public boolean isFirstPage() {
-        return isFirstPage;
+    public Boolean getFirstPage() {
+        return firstPage;
     }
 
-    public void setFirstPage(boolean isFirstPage) {
-        this.isFirstPage = isFirstPage;
+    public void setFirstPage(Boolean firstPage) {
+        this.firstPage = firstPage;
     }
 
-    public boolean isLastPage() {
-        return isLastPage;
+    public Boolean getLastPage() {
+        return lastPage;
     }
 
-    public void setLastPage(boolean isLastPage) {
-        this.isLastPage = isLastPage;
+    public void setLastPage(Boolean lastPage) {
+        this.lastPage = lastPage;
+    }
+
+    public Boolean getHasPreviousPage() {
+        return hasPreviousPage;
+    }
+
+    public void setHasPreviousPage(Boolean hasPreviousPage) {
+        this.hasPreviousPage = hasPreviousPage;
+    }
+
+    public Boolean getHasNextPage() {
+        return hasNextPage;
+    }
+
+    public void setHasNextPage(Boolean hasNextPage) {
+        this.hasNextPage = hasNextPage;
     }
 
     public void setStartRow(int startRow) {
@@ -279,21 +299,6 @@ public class Page<T> implements java.io.Serializable {
         this.nextPage = nextPage;
     }
 
-    public boolean isHasPreviousPage() {
-        return hasPreviousPage;
-    }
-
-    public void setHasPreviousPage(boolean hasPreviousPage) {
-        this.hasPreviousPage = hasPreviousPage;
-    }
-
-    public boolean isHasNextPage() {
-        return hasNextPage;
-    }
-
-    public void setHasNextPage(boolean hasNextPage) {
-        this.hasNextPage = hasNextPage;
-    }
 
     public int getNavigatePages() {
         return navigatePages;
@@ -341,7 +346,7 @@ public class Page<T> implements java.io.Serializable {
      * @param action
      */
     public void process(Consumer<T> action) {
-        Preconditions.checkArgument(action != null);
+        Objects.requireNonNull(action);
         if (isEmpty()) {
             return;
         }
@@ -354,7 +359,7 @@ public class Page<T> implements java.io.Serializable {
      * @return
      */
     public <E> Page<E> transform(Function<T, E> transformer) {
-        Preconditions.checkArgument(transformer != null);
+        Objects.requireNonNull(transformer);
         Page<E> page = this.copy();
         if (isEmpty()) {
             return page;

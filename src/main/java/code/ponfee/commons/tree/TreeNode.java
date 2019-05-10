@@ -200,7 +200,7 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A>
         for (Iterator<E> iter = nodes.iterator(); iter.hasNext();) {
             BaseNode<T, A> node = iter.next();
 
-            if (!ignoreOrphan && !Strings.isBlank(node.getPid())) { // effect condition that pid is null
+            if (!ignoreOrphan && Strings.isBlank(node.getPid())) { // effect condition that pid is null
                 // 不忽略孤儿节点且节点的父节点为空，则其父节点视为根节点（将其挂载到根节点下）
                 Fields.put(node, "pid", mountPidIfNull); // pid is final modify
             }

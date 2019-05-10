@@ -8,6 +8,9 @@
 
 package test;
 
+import java.io.ByteArrayOutputStream;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -16,14 +19,15 @@ import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import javax.sound.midi.Soundbank;
-
 import org.junit.Test;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 
 import code.ponfee.commons.concurrent.ThreadPoolExecutors;
+import code.ponfee.commons.util.Bytes;
+import code.ponfee.commons.util.Dates;
+import code.ponfee.commons.util.MavenProjects;
 import io.netty.util.internal.ThreadLocalRandom;
 
 /**
@@ -33,6 +37,13 @@ import io.netty.util.internal.ThreadLocalRandom;
 public class Test1 {
     
     public static void main(String[] args) throws InterruptedException, ExecutionException {
+        
+        Date d1 = Dates.toDate("2019-05-10 10:23:34");
+        Date d2 = Dates.toDate("2019-05-11 08:23:34");
+        
+        System.out.println(Dates.daysbetween(Dates.startOfDay(d1), Dates.endOfDay(d2)));
+        
+        System.out.println(List.class.isInstance(null));
         Stopwatch watch = Stopwatch.createStarted();
         CompletableFuture<String> future1 = new CompletableFuture<>();
         new Thread(()->{
@@ -134,5 +145,24 @@ public class Test1 {
     
     public boolean test(Integer i) {
         return i > 2;
+    }
+    @Test
+    public void test5() throws Exception {
+        byte[] data = MavenProjects.getTestJavaFileAsByteArray(this.getClass());
+        System.out.println((data.length + 15) / 16);
+        System.out.println(Integer.toHexString((data.length + 15) / 16));
+        String lineNumberFormat = "%0" + Integer.toHexString((data.length + 15) / 16).length() + "x: ";
+        System.out.println(lineNumberFormat);
+        System.out.println(Bytes.hexDump(data));
+        
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        /*org.apache.commons.io.HexDump.dump(MavenProjects.getTestJavaFileAsByteArray(this.getClass()), 0, out, 0);
+        System.out.println(new String(out.toByteArray()));*/
+        
+        /*new sun.misc.HexDumpEncoder().encode(MavenProjects.getTestJavaFileAsByteArray(this.getClass()), out);
+        System.out.println(new String(out.toByteArray()));*/
+        
+        
+        //System.out.println(Bytes.hexDump(Bytes.fromChar(Numbers.CHAR_ZERO)));
     }
 }

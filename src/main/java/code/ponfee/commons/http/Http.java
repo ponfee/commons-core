@@ -153,8 +153,9 @@ public final class Http {
         return this;
     }
 
-    // ----------------------------param--------------------------
+    // --------------------------------------------------------query params
     /**
+     * 
      * 最终是拼接成queryString的形式追加到url（即作为get的http请求参数）
      * get方式会有编码等问题，推荐使用data方式传参数：{@link #data(Map)}
      * @param params
@@ -170,7 +171,7 @@ public final class Http {
         return this;
     }
 
-    // ----------------------------data--------------------------
+    // --------------------------------------------------------body params: form(text, file), text(eg. json), file
     /**
      * 发送到服务器的查询字符串或json串：name1=value1&name2=value2
      * 

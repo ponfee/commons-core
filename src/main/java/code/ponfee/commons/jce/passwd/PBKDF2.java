@@ -135,8 +135,8 @@ public final class PBKDF2 {
      * @param dkLen           the length of the hash to compute in bytes
      * @return the PBDKF2 hash of the password
      */
-    private static byte[] pbkdf2(HmacAlgorithms alg, char[] password, byte[] salt,
-                                 int iterationCount, int dkLen) {
+    public static byte[] pbkdf2(HmacAlgorithms alg, char[] password, byte[] salt,
+                                int iterationCount, int dkLen) {
         PBEKeySpec spec = new PBEKeySpec(password, salt, iterationCount, dkLen << 3);
         try {
             SecretKeyFactory skf = Providers.getSecretKeyFactory("PBKDF2With" + alg.algorithm());

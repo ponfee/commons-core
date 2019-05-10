@@ -39,8 +39,9 @@ public final class AsyncBatchTransmitter<T> {
     public AsyncBatchTransmitter(BiFunction<List<T>, Boolean, Runnable> processor, 
                                  int thresholdPeriod, int thresholdChunk, 
                                  ExecutorService executor) {
-        this.batch = new AsyncBatchThread(processor, thresholdPeriod, 
-                                          thresholdChunk, executor);
+        this.batch = new AsyncBatchThread(
+            processor, thresholdPeriod, thresholdChunk, executor
+        );
     }
 
     /**
@@ -154,7 +155,7 @@ public final class AsyncBatchTransmitter<T> {
             T t;
             List<T> list = new ArrayList<>(thresholdChunk);
             for (;;) {
-                if (isEnd && queue.isEmpty() && cumulate() > 2 * thresholdPeriod) {
+                if (isEnd && queue.isEmpty() && duration() > (thresholdPeriod << 1)) {
                     if (requireDestroyWhenEnd) {
                         try {
                             executor.shutdown();
@@ -178,7 +179,7 @@ public final class AsyncBatchTransmitter<T> {
                 }
 
                 if (   list.size() == thresholdChunk 
-                    || ( !list.isEmpty() && (isEnd || cumulate() > thresholdPeriod) )
+                    || ( !list.isEmpty() && (isEnd || duration() > thresholdPeriod) )
                 ) {
                     // task抛异常后：
                     //   execute输出错误信息，线程结束，后续任务会创建新线程执行，会抛出异常
@@ -200,7 +201,7 @@ public final class AsyncBatchTransmitter<T> {
             lastConsumeTimeMillis = System.currentTimeMillis();
         }
 
-        long cumulate() {
+        long duration() {
             return System.currentTimeMillis() - lastConsumeTimeMillis;
         }
     }

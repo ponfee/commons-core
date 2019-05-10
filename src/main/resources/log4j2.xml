@@ -1,85 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--日志级别以及优先级排序： OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
 <!-- Log4j 2.x 配置文件：每30秒自动检查和应用配置文件的更新；log4j-core-2.11.0.jar!/Log4j-config.xsd -->
-<Configuration status="WARN" monitorInterval="30" 
-               strict="true" name="commons-log">
+<Configuration status="WARN" monitorInterval="30" strict="true" name="commons-core-log">
 
-    <properties>
-        <property name="LOG_HOME">${log4j2.home:-..}/logs</property>
-        <property name="LOG_FILE_NAME">commons-code</property>
-    </properties>
+  <properties>
+    <!-- 系统配置变量 -->
+    <property name="LOG_HOME">${log.home:-../logs}</property>
+    <!-- <property name="LOG_HOME">${log.home}</property> 可由maven配置变量 -->
+    <property name="LOG_FILE_NAME">commons-core</property>
+  </properties>
 
-    <Appenders>
-        <!-- 输出到控制台 -->
-        <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%-4r %-5p [%t] %37c %3x - %m%n" />
-        </Console>
+  <Appenders>
+    <!-- 输出到控制台 -->
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%-4r %-5p [%t] %37c %3x - %m%n" />
+    </Console>
 
-        <!-- 输出到文件，按天或者超过100MB分割 -->
-        <RollingFile name="RollingFile" fileName="${LOG_HOME}/${LOG_FILE_NAME}.log" 
-             filePattern="${LOG_HOME}/$${date:yyyy-MM}/${LOG_FILE_NAME}-%d{yyyy-MM-dd}-%i.log.gz">
+    <!-- 输出到文件，按天或者超过100MB分割 -->
+    <RollingFile name="RollingFile" fileName="${LOG_HOME}/${LOG_FILE_NAME}.log"
+      filePattern="${LOG_HOME}/$${date:yyyy-MM}/${LOG_FILE_NAME}-%d{yyyy-MM-dd}-%i.log.gz">
 
-            <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
-            <!-- <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY" /> -->
+      <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+      <!-- <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY" /> -->
 
-            <PatternLayout pattern="[%-5p] %d{yyyy-MM-dd HH:mm:ss} %l%n%m%n" />
-            <Policies>
-                <!-- 启动时就重新滚动日志 -->
-                <!-- <OnStartupTriggeringPolicy /> -->
+      <PatternLayout pattern="[%-5p] %d{yyyy-MM-dd HH:mm:ss} %l%n%m%n" />
+      <Policies>
+        <!-- 启动时就重新滚动日志 -->
+        <!-- <OnStartupTriggeringPolicy /> -->
 
-                <!-- 如果启用此配置，则日志会按文件名生成新压缩文件，即如果filePattern配置的日期格式为 %d{yyyy-MM-dd HH}，
-                `则每小时生成一个压缩文件，如果filePattern配置的日期格式为 %d{yyyy-MM-dd} ，则天生成一个压缩文件 -->
-                <!-- modulate=true用来调整时间，interval属性用来指定多久滚动一次，默认是1 hour，
-                `比如现在是早上3am，interval=4，那么第一次滚动是在4am，接着是8am，而不是7am -->
-                <!-- <TimeBasedTriggeringPolicy interval="1" modulate="true" /> -->
-                <TimeBasedTriggeringPolicy />
+        <!-- 如果启用此配置，则日志会按文件名生成新压缩文件，即如果filePattern配置的日期格式为 %d{yyyy-MM-dd HH}，
+        `则每小时生成一个压缩文件，如果filePattern配置的日期格式为 %d{yyyy-MM-dd} ，则天生成一个压缩文件 -->
+        <!-- modulate=true用来调整时间，interval属性用来指定多久滚动一次，默认是1 hour，
+        `比如现在是早上3am，interval=4，那么第一次滚动是在4am，接着是8am，而不是7am -->
+        <!-- <TimeBasedTriggeringPolicy interval="1" modulate="true" /> -->
+        <TimeBasedTriggeringPolicy />
 
-                <SizeBasedTriggeringPolicy size="100 MB" />
-            </Policies>
-            <!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件，这里设置了100 -->
-            <DefaultRolloverStrategy max="100" />
-        </RollingFile>
-    </Appenders>
+        <SizeBasedTriggeringPolicy size="100 MB" />
+      </Policies>
+      <!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件，这里设置了100 -->
+      <DefaultRolloverStrategy max="100" />
+    </RollingFile>
+  </Appenders>
 
-    <Loggers>
-        <!-- 
-          Mybatis: <setting name="logImpl" value="SLF4J" />
-                   <setting name="logPrefix" value="dao." />
-          Instead by log4jdbc: jdbc.sqltiming
-        <Logger name="dao" additivity="false" level="DEBUG" >
-            <AppenderRef ref="Console"/>
-        </Logger> -->
-        <!-- net.sf.log4jdbc.Slf4jSpyLogDelegator -->
-        <Logger name="jdbc.audit" additivity="false" level="OFF">
-            <AppenderRef ref="Console" />
-        </Logger>
-        <Logger name="jdbc.resultset" additivity="false" level="OFF">
-            <AppenderRef ref="Console" />
-        </Logger>
-        <Logger name="jdbc.connection" additivity="false" level="OFF">
-            <AppenderRef ref="Console" />
-        </Logger>
-        <Logger name="jdbc.sqlonly" additivity="false" level="OFF">
-            <AppenderRef ref="Console" />
-        </Logger>
-        <Logger name="log4jdbc.debug" additivity="false" level="OFF">
-            <AppenderRef ref="Console" />
-        </Logger>
-        <Logger name="jdbc.sqltiming" additivity="false" level="DEBUG">
-            <AppenderRef ref="Console" />
-        </Logger>
+  <Loggers>
+    <!-- 
+      Mybatis: <setting name="logImpl" value="SLF4J" />
+               <setting name="logPrefix" value="dao." />
+      Instead by log4jdbc: jdbc.sqltiming
+    <Logger name="dao" additivity="false" level="DEBUG" >
+        <AppenderRef ref="Console"/>
+    </Logger> -->
+    <!-- maven gav: com.googlecode.log4jdbc:log4jdbc:1.2
+         default.jdbc.driverClass=net.sf.log4jdbc.DriverSpy 
+         net.sf.log4jdbc.Slf4jSpyLogDelegator
+    -->
+    <Logger name="jdbc.audit" additivity="false" level="OFF">
+      <AppenderRef ref="Console" />
+    </Logger>
+    <Logger name="jdbc.resultset" additivity="false" level="OFF">
+      <AppenderRef ref="Console" />
+    </Logger>
+    <Logger name="jdbc.connection" additivity="false" level="OFF">
+      <AppenderRef ref="Console" />
+    </Logger>
+    <Logger name="jdbc.sqlonly" additivity="false" level="OFF">
+      <AppenderRef ref="Console" />
+    </Logger>
+    <Logger name="log4jdbc.debug" additivity="false" level="OFF">
+      <AppenderRef ref="Console" />
+    </Logger>
+    <Logger name="jdbc.sqltiming" additivity="false" level="DEBUG">
+      <AppenderRef ref="Console" />
+    </Logger>
 
-        <!-- additivity指定是否同时输出日志到父类的appender，缺省为true -->
-        <Logger name="code.ponfee.commons" level="WARN" additivity="false">
-            <AppenderRef ref="Console" />
-            <AppenderRef ref="RollingFile" />
-        </Logger>
+    <!-- additivity指定是否同时输出日志到父类的appender，缺省为true -->
+    <Logger name="code.ponfee.commons" level="WARN" additivity="false">
+      <AppenderRef ref="Console" />
+      <AppenderRef ref="RollingFile" />
+    </Logger>
 
-        <!-- 当根据日志名字获取不到指定的日志器时就使用Root作为默认的日志器 -->
-        <Root level="WARN">
-            <AppenderRef ref="Console" />
-            <AppenderRef ref="RollingFile" />
-        </Root>
-    </Loggers>
+    <!-- 当根据日志名字获取不到指定的日志器时就使用Root作为默认的日志器 -->
+    <Root level="WARN">
+      <AppenderRef ref="Console" />
+      <AppenderRef ref="RollingFile" />
+    </Root>
+  </Loggers>
 
 </Configuration>

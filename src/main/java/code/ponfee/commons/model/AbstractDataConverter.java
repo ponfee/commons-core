@@ -9,7 +9,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.springframework.cglib.beans.BeanCopier;
+import org.springframework.objenesis.ObjenesisHelper;
 
+import code.ponfee.commons.reflect.BeanMaps;
 import code.ponfee.commons.reflect.CglibUtils;
 
 /**
@@ -87,7 +89,9 @@ public abstract class AbstractDataConverter<F, T> implements Function<F, T> {
         if (copier == null) {
             synchronized (this) {
                 if (copier == null) {
-                    copier = BeanCopier.create(getActualTypeArgument(this.getClass(), 0), toType, false);
+                    copier = BeanCopier.create(
+                        getActualTypeArgument(this.getClass(), 0), toType, false
+                    );
                 }
             }
         }
@@ -105,13 +109,8 @@ public abstract class AbstractDataConverter<F, T> implements Function<F, T> {
             return (T) from;
         }
 
-        // new instance
-        T to;
-        try {
-            to = toType.getConstructor().newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        //to = toType.getConstructor().newInstance();
+        T to = ObjenesisHelper.newInstance(toType);
 
         copy(from, to, supplier);
         return to;
@@ -131,11 +130,9 @@ public abstract class AbstractDataConverter<F, T> implements Function<F, T> {
         if (to instanceof Map && from instanceof Map) {
             ((Map) to).putAll((Map<?, ?>) from);
         } else if (to instanceof Map) {
-            //((Map) to).putAll(ObjectUtils.bean2map(from));
-            ((Map) to).putAll(CglibUtils.bean2map(from));
+            ((Map) to).putAll(BeanMaps.CGLIB.toMap(from));
         } else if (from instanceof Map) {
-            //ObjectUtils.map2bean((Map) from, to);
-            CglibUtils.map2bean((Map) from, to);
+            BeanMaps.CGLIB.copy((Map) from, to);
         } else {
             BeanCopier copier = (supplier != null) ? supplier.get() : null;
             if (copier != null) {

@@ -169,13 +169,13 @@ public class ECParameters implements java.io.Serializable {
                         String b, String gx, String gy, 
                         String n, String S) {
         this.name = name;
-        this.p  = Numbers.toBigInteger(p);
-        this.a  = Numbers.toBigInteger(a);
-        this.b  = Numbers.toBigInteger(b);
-        this.gx = Numbers.toBigInteger(gx);
-        this.gy = Numbers.toBigInteger(gy);
-        this.n  = Numbers.toBigInteger(n);
-        this.S  = Numbers.toBigInteger(S);
+        this.p  = hexToBigInteger(p);
+        this.a  = hexToBigInteger(a);
+        this.b  = hexToBigInteger(b);
+        this.gx = hexToBigInteger(gx);
+        this.gy = hexToBigInteger(gy);
+        this.n  = hexToBigInteger(n);
+        this.S  = hexToBigInteger(S);
 
         ECCurve curve = null;
         ECPoint pointG = null;
@@ -225,7 +225,6 @@ public class ECParameters implements java.io.Serializable {
                ? "0" : Hex.encodeHexString(bytes);
     }
 
-    
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(p)
@@ -255,4 +254,7 @@ public class ECParameters implements java.io.Serializable {
         //return EqualsBuilder.reflectionEquals(this, obj, false, null, false, "name");
     }
 
+    private static BigInteger hexToBigInteger(String hex) {
+        return new BigInteger(hex, 16);
+    }
 }

@@ -24,7 +24,7 @@ public final class Serializations {
     public static final byte BYTE_TRUE = (byte) 0xFF;
     public static final byte BYTE_FALSE = 0x00;
 
-    private static final Serializer SERIALIZER = new KryoSerializer();
+    private static final Serializer OBJECT_SERIALIZER = new KryoSerializer();
 
     public static byte[] serialize(boolean value) {
         return new byte[] { value ? BYTE_TRUE : BYTE_FALSE };
@@ -121,7 +121,7 @@ public final class Serializations {
             return Bytes.fromInt(((Enum<?>) value).ordinal());
         } else if (value instanceof Serializable) {
             //return SerializationUtils.serialize((Serializable) value);
-            return SERIALIZER.serialize(value);
+            return OBJECT_SERIALIZER.serialize(value);
         } else {
             throw new UnsupportedOperationException(
                 ClassUtils.getClassName(value.getClass()) + " is not Serializable."
@@ -192,7 +192,7 @@ public final class Serializations {
         } else if (type.isEnum()) {
             return type.getEnumConstants()[Bytes.toInt(value)];
         } else {
-            return SERIALIZER.deserialize(value, type);
+            return OBJECT_SERIALIZER.deserialize(value, type);
             //return (T) SerializationUtils.deserialize(value);
         }
     }

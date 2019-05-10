@@ -395,6 +395,7 @@ public final class BCrypt {
         return crypt(passwd, salt, logrounds, ciphertext);
     }
 
+    // ---------------------------------------------------------------------------private methods
     /**
      * Perform the central password hashing step in the bcrypt scheme
      * @param passwd   the password to hash
