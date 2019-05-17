@@ -35,14 +35,15 @@ public final class ThreadPoolExecutors {
 
     public static final int MAX_CAP = 0x7FFF; // max #workers - 1
 
+    // ----------------------------------------------------------rejected policy
     public static final RejectedExecutionHandler CALLER_RUN = new CallerRunsPolicy();
 
     public static final RejectedExecutionHandler DISCARD_POLICY = new DiscardPolicy();
 
-    public static final RejectedExecutionHandler BLOCK_PRODUCER = (r, executor) -> {
+    public static final RejectedExecutionHandler BLOCK_PRODUCER = (task, executor) -> {
         if (!executor.isShutdown()) {
             try {
-                executor.getQueue().put(r);
+                executor.getQueue().put(task);
             } catch (InterruptedException ignored) {
                 ignored.printStackTrace();
             }
@@ -51,21 +52,25 @@ public final class ThreadPoolExecutors {
 
     // ----------------------------------------------------------scheduler
     public static final ScheduledExecutorService CALLER_RUN_SCHEDULER =
-        new DelegatedScheduledExecutorService("caller-run-sched", CALLER_RUN);
+        new DelegatedScheduledExecutorService("caller-run-scheduled", CALLER_RUN);
 
     public static final ScheduledExecutorService DISCARD_POLICY_SCHEDULER =
-        new DelegatedScheduledExecutorService("discard-policy-sched", DISCARD_POLICY);
+        new DelegatedScheduledExecutorService("discard-policy-scheduled", DISCARD_POLICY);
 
     public static final ScheduledExecutorService BLOCK_PRODUCER_SCHEDULER =
-        new DelegatedScheduledExecutorService("discard-policy-sched", BLOCK_PRODUCER);
+        new DelegatedScheduledExecutorService("block-producer-scheduled", BLOCK_PRODUCER);
 
     // ----------------------------------------------------------executor
     public static final ExecutorService CALLER_RUN_EXECUTOR =
-        new DelegatedExecutorService("caller-run-exec", 0, CALLER_RUN);
+        new DelegatedExecutorService("caller-run-executor", 0, CALLER_RUN);
 
     public static final ExecutorService INFINITY_QUEUE_EXECUTOR =
-        new DelegatedExecutorService("infinity-queue-exec", Integer.MAX_VALUE, BLOCK_PRODUCER);
+        new DelegatedExecutorService("infinity-queue-executor", Integer.MAX_VALUE, BLOCK_PRODUCER);
 
+    public static final ExecutorService BLOCK_PRODUCER_EXECUTOR =
+        new DelegatedExecutorService("infinity-queue-executor", 8192, BLOCK_PRODUCER);
+
+    // ----------------------------------------------------------
     public static ThreadPoolExecutor create(int corePoolSize, int maximumPoolSize, long keepAliveTime) {
         return create(corePoolSize, maximumPoolSize, keepAliveTime, 0, null, null);
     }

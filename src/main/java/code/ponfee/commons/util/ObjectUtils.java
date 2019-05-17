@@ -1,18 +1,12 @@
 package code.ponfee.commons.util;
 
-import static com.google.common.base.CaseFormat.LOWER_CAMEL;
-import static com.google.common.base.CaseFormat.LOWER_UNDERSCORE;
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -22,6 +16,7 @@ import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.objenesis.ObjenesisHelper;
 
 import com.google.common.base.Preconditions;
 
@@ -83,94 +78,6 @@ public final class ObjectUtils {
             return ((Dictionary<?, ?>) o).isEmpty();
         } else {
             return false;
-        }
-    }
-
-    /**
-     * Map object converts to java bean object
-     * 
-     * @param map the map object
-     * @param bean the java bean object
-     * 
-     * @see code.ponfee.commons.reflect.CglibUtils#map2bean(Map, Object)
-     * @Deprecated will be instead of code.ponfee.commons.reflect.CglibUtils#map2bean(Map, Object)
-     */
-    @Deprecated
-    public static <T> void map2bean(Map<String, ?> map, T bean) {
-        String name; Object value; Class<?> type;
-        try {
-            BeanInfo beanInfo = Introspector.getBeanInfo(bean.getClass());
-            for (PropertyDescriptor prop : beanInfo.getPropertyDescriptors()) {
-                if ("class".equals(name = prop.getName())) { // getClass()
-                    continue;
-                }
-
-                String name0 = name;
-                if (   !map.containsKey(name)
-                    && !map.containsKey(name = LOWER_UNDERSCORE.to(LOWER_CAMEL, name0))
-                    && !map.containsKey(name = LOWER_CAMEL.to(LOWER_UNDERSCORE, name0))
-                ) {
-                    continue;
-                }
-
-                value = map.get(name);
-                if ((type = prop.getPropertyType()).isPrimitive() && Strings.isEmpty(value)) {
-                    continue; // 原始类型时：value为null或为空字符串时跳过
-                }
-
-                // set value into bean field
-                prop.getWriteMethod().invoke(bean, convert(value, type));
-            }
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    /**
-     * Returns a map object which is copy of java bean
-     * 
-     * @param map   the map object
-     * @param type  the java bean type, must has a default constructor
-     * @return a java bean object
-     * 
-     * @see code.ponfee.commons.reflect.CglibUtils#map2bean(Map, Class)
-     * @Deprecated will be instead of code.ponfee.commons.reflect.CglibUtils#map2bean(Map, Class)
-     */
-    @Deprecated
-    public static <T> T map2bean(Map<String, ?> map, Class<T> type) {
-        T bean;
-        try {
-            bean = type.getConstructor().newInstance();
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-        map2bean(map, bean);
-        return bean;
-    }
-
-    /**
-     * Returns a map object which is copy of java bean
-     * 
-     * @param bean the java bean object
-     * @return a HashMap object
-     * 
-     * @see code.ponfee.commons.reflect.CglibUtils#bean2map(Object)
-     * @Deprecated will be instead of code.ponfee.commons.reflect.CglibUtils#bean2map(Object)
-     */
-    @Deprecated
-    public static Map<String, Object> bean2map(Object bean) {
-        try {
-            BeanInfo beanInfo = Introspector.getBeanInfo(bean.getClass());
-            Map<String, Object> map = new HashMap<>();
-            String name;
-            for (PropertyDescriptor prop : beanInfo.getPropertyDescriptors()) {
-                if (!"class".equals((name = prop.getName()))) { // getClass()
-                    map.put(name, prop.getReadMethod().invoke(bean));
-                }
-            }
-            return map;
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
         }
     }
 
@@ -363,12 +270,7 @@ public final class ObjectUtils {
     @SuppressWarnings("unchecked")
     public static <T> T copyFrom(T source, String... fields) {
         Preconditions.checkState(ArrayUtils.isNotEmpty(fields));
-        T target;
-        try {
-            target = (T) source.getClass().newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        T target = (T) ObjenesisHelper.newInstance(source.getClass());
         copy(source, target, fields);
         return target;
     }

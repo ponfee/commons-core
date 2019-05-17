@@ -1,6 +1,6 @@
 // Copyright (C) 2011 - Will Glozer.  All rights reserved.
 
-package test.jce.pwd;
+package code.ponfee.commons.jce;
 
 import static java.lang.Integer.MAX_VALUE;
 import static org.junit.Assert.assertEquals;

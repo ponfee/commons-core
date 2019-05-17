@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.cglib.beans.BeanCopier;
-import org.springframework.cglib.beans.BeanMap;
 
 import code.ponfee.commons.collect.ObjectArrayWrapper;
 
@@ -46,53 +45,6 @@ public class CglibUtils {
             }
         }
         copier.copy(source, target, null);
-    }
-
-    /**
-     * Returns a map of bean field-value
-     * 
-     * @param bean the bean object
-     * @return a map
-     */
-    public static Map<String, Object> bean2map(Object bean) {
-        if (bean == null) {
-            return null;
-        }
-
-        BeanMap beanMap = BeanMap.create(bean);
-        Map<String, Object> map = new HashMap<>(beanMap.size());
-        for (Object key : beanMap.keySet()) {
-            map.put(String.valueOf(key), beanMap.get(key));
-        }
-        return map;
-    }
-
-    /**
-     * Copy map key-value to bean object field-value
-     * 
-     * @param map  the map
-     * @param bean the bean
-     */
-    public static void map2bean(Map<String, Object> map, Object bean) {
-        BeanMap.create(bean).putAll(map);
-    }
-
-    /**
-     * Returns a bean object of specified Class<T> instance,
-     * and copy map key-value to bean object field-value
-     * 
-     * @param map  the map
-     * @param type the type, must be has no args default constructor
-     * @return a bean object of specified Class<T> instance
-     */
-    public static <T> T map2bean(Map<String, Object> map, Class<T> type) {
-        try {
-            T bean = type.getConstructor().newInstance();
-            map2bean(map, bean);
-            return bean;
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
     }
 
 }

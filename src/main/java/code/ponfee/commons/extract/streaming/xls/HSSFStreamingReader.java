@@ -20,7 +20,7 @@ import com.google.common.base.Preconditions;
  */
 public class HSSFStreamingReader {
 
-    private int rowCacheableSize = 0; // if less 0 then 0(SynchronousQueue)
+    private int rowCacheSize = 0; // if less 0 then 0(SynchronousQueue)
     private int[] sheetIndexs;
     private String[] sheetNames;
 
@@ -38,15 +38,15 @@ public class HSSFStreamingReader {
     /**
      * Reads spec sheet that is in sheet index at int array
      * 
-     * @param rowCacheableSize  the size of read row count in memory
+     * @param rowCacheSize  the size of read row count in memory
      * @param sheetIndexs sheet index at int array
      * @return HSSFStreamingReader instance
      */
-    public static HSSFStreamingReader create(int rowCacheableSize, int... sheetIndexs) {
-        Preconditions.checkArgument(rowCacheableSize > 0);
+    public static HSSFStreamingReader create(int rowCacheSize, int... sheetIndexs) {
+        Preconditions.checkArgument(rowCacheSize > 0);
         Preconditions.checkArgument(ArrayUtils.isNotEmpty(sheetIndexs));
         HSSFStreamingReader reader = new HSSFStreamingReader();
-        reader.rowCacheableSize = rowCacheableSize;
+        reader.rowCacheSize = rowCacheSize;
         reader.sheetIndexs = sheetIndexs;
         return reader;
     }
@@ -54,20 +54,20 @@ public class HSSFStreamingReader {
     /**
      * Reads spec sheet that is in sheet name at string array
      * 
-     * @param rowCacheableSize  the size of read row count in memory
+     * @param rowCacheSize  the size of read row count in memory
      * @return HSSFStreamingReader instance
      */
-    public static HSSFStreamingReader create(int rowCacheableSize, String... sheetNames) {
-        Preconditions.checkArgument(rowCacheableSize > 0);
+    public static HSSFStreamingReader create(int rowCacheSize, String... sheetNames) {
+        Preconditions.checkArgument(rowCacheSize > 0);
         Preconditions.checkArgument(ArrayUtils.isNotEmpty(sheetNames));
         HSSFStreamingReader reader = new HSSFStreamingReader();
-        reader.rowCacheableSize = rowCacheableSize;
+        reader.rowCacheSize = rowCacheSize;
         reader.sheetNames = sheetNames;
         return reader;
     }
 
     public HSSFStreamingWorkbook open(InputStream input, ExecutorService executor) {
-        return new HSSFStreamingWorkbook(input, rowCacheableSize, 
+        return new HSSFStreamingWorkbook(input, rowCacheSize, 
                                          sheetIndexs, sheetNames, executor);
     }
 

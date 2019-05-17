@@ -1,6 +1,6 @@
 package code.ponfee.commons.extract.streaming;
 
-import static code.ponfee.commons.concurrent.ThreadPoolExecutors.INFINITY_QUEUE_EXECUTOR;
+import static code.ponfee.commons.concurrent.ThreadPoolExecutors.BLOCK_PRODUCER_EXECUTOR;
 
 import java.io.File;
 import java.io.InputStream;
@@ -86,7 +86,7 @@ public class StreamingExcelExtractor<T> extends ExcelExtractor<T> {
                                    int startRow, ExcelType type, 
                                    int sheetIndex, ExecutorService executor) {
         super(dataSource, headers, startRow, type, sheetIndex);
-        this.executor = executor == null ? INFINITY_QUEUE_EXECUTOR : executor;
+        this.executor = executor == null ? BLOCK_PRODUCER_EXECUTOR : executor;
     }
 
     @Override

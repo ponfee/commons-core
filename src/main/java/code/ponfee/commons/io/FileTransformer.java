@@ -87,25 +87,23 @@ public class FileTransformer {
             File dest = Files.touch(targetPath + filepath.substring(sourcePath.length()));
             boolean isMatch = file.getName().matches(includeFileExtensions);
 
-            if (StringUtils.isNotEmpty(encoding) && isMatch && (charset = guessEncoding(filepath)) != null
-                && !"void".equalsIgnoreCase(charset) && !encoding.equalsIgnoreCase(charset)) {
-
+            if (   StringUtils.isNotEmpty(encoding) 
+                && isMatch 
+                && (charset = guessEncoding(filepath)) != null
+                && !"void".equalsIgnoreCase(charset) 
+                && !encoding.equalsIgnoreCase(charset)
+            ) {
                 log.append("转换　[").append(charset).append("]").append(StringUtils.rightPad(filepath, FIX_LENGTH)).append("　-->　");
                 transform(file, dest, charset, encoding, searchList, replacementList);
                 log.append("[").append(encoding).append("]").append(dest.getAbsolutePath()).append("\n");
-
             } else if (isMatch && searchList != null && searchList.length > 0) {
-
                 log.append("替换　").append(StringUtils.rightPad(filepath, FIX_LENGTH)).append("　-->　");
                 transform(file, dest, searchList, replacementList);
                 log.append(dest.getAbsolutePath()).append("\n");
-
             } else {
-
                 log.append("复制　").append(StringUtils.rightPad(filepath, FIX_LENGTH)).append("　-->　");
                 transform(file, dest);
                 log.append(dest.getAbsolutePath()).append("\n");
-
             }
         }
     }
@@ -178,7 +176,8 @@ public class FileTransformer {
     public static String guessEncoding(String path) {
         try {
             return buildDetector().detectCodepage(new File(path).toURI().toURL()).name();
-        } catch (IOException e) {
+        } catch (IOException ignored) {
+            ignored.printStackTrace();
             return null;
         }
     }
@@ -195,7 +194,8 @@ public class FileTransformer {
     public static String guessEncoding(InputStream inputStream) {
         try (InputStream input = inputStream) {
             return buildDetector().detectCodepage(input, input.available()).name();
-        } catch (IOException e) {
+        } catch (IOException ignored) {
+            ignored.printStackTrace();
             return null;
         }
     }

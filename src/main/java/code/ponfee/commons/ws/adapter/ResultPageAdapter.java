@@ -11,7 +11,7 @@ import code.ponfee.commons.ws.adapter.model.TransitPage;
  * Result<Page<T>>转换器
  * @param <T>
  * 
- * @see java.util.Collections.PageableAdapter
+ * @see org.springframework.data.domain.jaxb.PageAdapter
  * 
  * @author fupf
  */

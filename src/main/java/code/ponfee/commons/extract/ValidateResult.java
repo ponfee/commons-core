@@ -29,7 +29,7 @@ public class ValidateResult<T> {
     }
 
     public String getErrorsAsString() {
-        return StringUtils.join(errors, Files.WINDOWS_LINE_SEPARATOR);
+        return StringUtils.join(errors, Files.UNIX_LINE_SEPARATOR);
     }
 
     public List<T> getData() {

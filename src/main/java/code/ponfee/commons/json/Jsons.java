@@ -2,6 +2,8 @@ package code.ponfee.commons.json;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -10,6 +12,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import code.ponfee.commons.reflect.BeanMaps;
 
 /**
  * The json utility based jackson
@@ -238,6 +242,27 @@ public final class Jsons {
     // ----------------------------------------------------static methods
     public static String toJson(Object target) {
         return NORMAL.string(target);
+    }
+
+    public static String toJson(Object bean, String... excludeFields) {
+        if (excludeFields != null) {
+            Map<?, ?> map = BeanMaps.CGLIB.toMap(bean);
+            for (String excludeField : excludeFields) {
+                map.remove(excludeField);
+            }
+            bean = map;
+        }
+        return NORMAL.string(bean);
+    }
+
+    public static String toJson(Map<?, ?> map, String... excludeKeys) {
+        if (excludeKeys != null) {
+            map = new HashMap<>(map);
+            for (String excludeKey : excludeKeys) {
+                map.remove(excludeKey);
+            }
+        }
+        return NORMAL.string(map);
     }
 
     public static byte[] toBytes(Object target) {

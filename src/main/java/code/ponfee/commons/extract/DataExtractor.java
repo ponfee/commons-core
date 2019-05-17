@@ -83,7 +83,8 @@ public abstract class DataExtractor<T> {
         return result;
     }
 
-    public boolean isNotEmpty(T data) {
+    // ---------------------------------------------------------------------------protected methods
+    protected boolean isNotEmpty(T data) {
         if (data instanceof String[]) {
             for (String str : (String[]) data) {
                 if (StringUtils.isNotBlank(str)) {

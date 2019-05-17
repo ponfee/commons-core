@@ -5,7 +5,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * LRU cache
+ * LRU cache based LinkedHashMap
  * 
  * @author Ponfee
  * 
@@ -16,19 +16,16 @@ public class LRUCache<K, V> extends LinkedHashMap<K, V> {
 
     private static final long serialVersionUID = 3943991140850259837L;
 
-    private static final float DEFAULT_LOAD_FACTOR = 0.75f;
-    private static final int DEFAULT_MAXIMUM_CAPACITY = 1 << 10;
-
     private final Lock lock = new ReentrantLock();
 
     private volatile int maxCapacity;
 
     public LRUCache() {
-        this(DEFAULT_MAXIMUM_CAPACITY);
+        this(1024); // default maximum capacity 1024
     }
 
     public LRUCache(int maxCapacity) {
-        super(16, DEFAULT_LOAD_FACTOR, true); // default initial capacity 16
+        super(16, 0.75f, true); // default initial capacity 16
         this.maxCapacity = maxCapacity;
     }
 

@@ -3,6 +3,7 @@ package code.ponfee.commons.jce;
 import java.security.GeneralSecurityException;
 
 import org.apache.commons.codec.binary.Hex;
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.base.Stopwatch;
@@ -11,6 +12,7 @@ import code.ponfee.commons.jce.passwd.BCrypt;
 import code.ponfee.commons.jce.passwd.Crypt;
 import code.ponfee.commons.jce.passwd.PBKDF2;
 import code.ponfee.commons.jce.passwd.SCrypt;
+import code.ponfee.commons.util.SecureRandoms;
 
 public class PasswdTest {
 
@@ -42,7 +44,7 @@ public class PasswdTest {
      * @throws GeneralSecurityException
      */
     @Test
-    public void testPBKDF2() {
+    public void testPBKDF2_1() {
         // Print out 10 hashes
         for (int i = 0; i < 10; i++) {
             System.out.println(PBKDF2.create(HmacAlgorithms.HmacSHA256, "p\r\nassw0Rd!".toCharArray(), 16, 65535, 32));
@@ -76,9 +78,6 @@ public class PasswdTest {
         byte[] pwd = "123456".getBytes();
         byte[] salt = "0123456789123456".getBytes();
         System.out.println("\n=====================PBKDF2=============================");
-        String hashed = SCrypt.createPbkdf2(HmacAlgorithms.HmacSHA256, pwd, salt, 1024, 32);
-        System.out.println(hashed);
-        System.out.println(SCrypt.checkPbkdf2(HmacAlgorithms.HmacSHA256, pwd, salt, 1024, hashed));
 
         System.out.println("\n=====================scrypt cost=============================");
         Stopwatch watch = Stopwatch.createStarted();
@@ -99,7 +98,7 @@ public class PasswdTest {
 
         System.out.println("\n=====================Scrypt=============================");
         String password = "passwd";
-        hashed = SCrypt.create(password, 1, 2, 2);
+        String hashed = SCrypt.create(password, 1, 2, 2);
         System.out.println(hashed);
         System.out.println("Test begin...");
         boolean flag = true;
@@ -151,4 +150,34 @@ public class PasswdTest {
             System.err.println("Test fail!");
         }
     }
+
+    @Test
+    public void testScrypt2() {
+        byte[] pwd = SecureRandoms.nextBytes(20);
+        byte[] salt = SecureRandoms.nextBytes(16);
+        byte[] except = SCrypt.scrypt(HmacAlgorithms.HmacSHA256, pwd, salt, 8, 255, 255, 32);
+        byte[] actual = org.bouncycastle.crypto.generators.SCrypt.generate(pwd, salt, 8, 255, 255, 32);
+        Assert.assertArrayEquals(except, actual);
+    }
+
+    @Test
+    public void testBcrypt2() {
+        byte[] pwd = SecureRandoms.nextBytes(20);
+        byte[] salt = SecureRandoms.nextBytes(16);
+        byte[] except = BCrypt.crypt(pwd, salt, 5);
+        byte[] actual = org.bouncycastle.crypto.generators.BCrypt.generate(pwd, salt, 5);
+        Assert.assertArrayEquals(except, actual);
+    }
+
+    @Test
+    public void testPBKDF2_2() {
+        String pwd = "SecureRandoms.nextBytes(20)";
+        int iterationCount = 20;
+        int dkLen = 32;
+        byte[] salt = SecureRandoms.nextBytes(16);
+        byte[] except = PBKDF2.pbkdf2(HmacAlgorithms.HmacSHA256, pwd.toCharArray(), salt, iterationCount, dkLen);
+        byte[] actual = SCrypt.pbkdf2(HmacAlgorithms.HmacSHA256, pwd.getBytes(), salt, iterationCount, dkLen);
+        Assert.assertArrayEquals(except, actual);
+    }
+
 }

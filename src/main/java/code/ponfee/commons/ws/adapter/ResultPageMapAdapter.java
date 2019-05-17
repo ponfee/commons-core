@@ -17,7 +17,7 @@ import code.ponfee.commons.ws.adapter.model.MapItem;
  * @param <K>
  * @param <V>
  * 
- * @see java.util.Collections.PageableAdapter
+ * @see org.springframework.data.domain.jaxb.PageAdapter
  * 
  * @author fupf
  */

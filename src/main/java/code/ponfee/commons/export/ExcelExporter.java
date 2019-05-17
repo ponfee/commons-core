@@ -274,7 +274,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
 
     /**
      * excel中嵌入图片
-     * excel.nestedImage(byte[] image, width, cheight);
+     * excel.insertImage(byte[] image, width, cheight);
      */
     public void insertImage(byte[] imageBytes, int width, int height) {
         if (imageBytes == null || imageBytes.length == 0) {
@@ -416,7 +416,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
             createBlankRow(table.getCaption(), sheet, titleStyle, cursorRow, totalLeafCount);
         }
 
-        //sheet.trackAllColumnsForAutoSizing();
+        //sheet.trackAllColumnsForAutoSizing(); // 设置自动列宽
 
         // 约定非叶子节点不能跨行
         Set<Integer> rows = new HashSet<>();
@@ -435,7 +435,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
             if (flat.isLeaf()) {
                 endRow = cursorRow.get() + treeMaxDepth - cellLevel;
                 sheet.setColumnWidth(beginCol, DEFAULT_WIDTH);
-                //sheet.autoSizeColumn(beginCol);
+                //sheet.autoSizeColumn(beginCol); // 设置自动列宽，要在autoSizeColumn前使用trackAllColumnsForAutoSizing()
             } else {
                 endRow = cursorRow.get(); // 约定非子节点不能跨行
             }

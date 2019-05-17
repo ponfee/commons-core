@@ -4,7 +4,7 @@ import com.google.common.base.CaseFormat;
 import com.google.common.collect.ImmutableMap;
 
 import code.ponfee.commons.jce.DigestAlgorithms;
-import code.ponfee.commons.util.ObjectUtils;
+import code.ponfee.commons.reflect.BeanMaps;
 
 public class MapToObjTest {
 
@@ -69,9 +69,9 @@ public class MapToObjTest {
         //a = ObjectUtils.map2bean(map, A.class);
         //System.out.println(a);
 
-        a = ObjectUtils.map2bean(ImmutableMap.of("aB", 123, "str", "abc", "mode", "RipeMD128"), A.class);
+        a = BeanMaps.PROPS.toBean(ImmutableMap.of("aB", 123, "str", "abc", "mode", "RipeMD128"), A.class);
         System.out.println(a);
-        System.out.println(ObjectUtils.bean2map(a));
+        System.out.println(BeanMaps.PROPS.toMap(a));
     }
 
 }

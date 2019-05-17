@@ -1,4 +1,4 @@
-package test.serial;
+package code.ponfee.commons.collects;
 
 import java.util.ArrayList;
 import java.util.List;

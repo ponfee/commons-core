@@ -36,39 +36,6 @@ public final class SCrypt {
 
     private static final char SEPARATOR = '$';
 
-    // -------------------------------------------------------------------pbkdf2
-    /**
-     * Implementation of PBKDF2 (RFC2898).
-     * 
-     * @param alg HMAC algorithm to use.
-     * @param P Password.
-     * @param S Salt.
-     * @param c Iteration count.
-     * @param dkLen Intended length, in octets, of the derived key (hash byte size).
-     * @return The derived key.
-     */
-    public static String createPbkdf2(HmacAlgorithms alg, byte[] P, byte[] S, 
-                                      int c, int dkLen) {
-        return Base64UrlSafe.encode(pbkdf2(alg, P, S, c, dkLen));
-    }
-
-    /**
-     * Checks the pbkdf2 hashed value
-     * 
-     * @param alg  HMAC algorithm to use.
-     * @param P    Password.
-     * @param S    Salt.
-     * @param c    Iteration count.
-     * @param hashed  the hashed value to check
-     * @return {@code true} is checked success
-     */
-    public static boolean checkPbkdf2(HmacAlgorithms alg, byte[] P, byte[] S,
-                                      int c, String hashed) {
-        byte[] actual = Base64UrlSafe.decode(hashed);
-        byte[] except = pbkdf2(alg, P, S, c, actual.length);
-        return Arrays.equals(actual, except);
-    }
-
     // -------------------------------------------------------------------scrypt
     public static String create(String passwd, int N, int r, int p) {
         return create(HmacAlgorithms.HmacSHA256, passwd, N, r, p, 32);
@@ -106,6 +73,7 @@ public final class SCrypt {
 
     /**
      * Compare the supplied plaintext password to a hashed password.
+     * 
      * @param passwd Plaintext password.
      * @param hashed scrypt hashed password.
      * @return true if passwd matches hashed value.
@@ -135,6 +103,7 @@ public final class SCrypt {
 
     /**
      * Implementation of PBKDF2 (RFC2898).
+     * 
      * @param alg HmacAlgorithm.
      * @param P password of byte array.
      * @param S Salt.
@@ -142,8 +111,8 @@ public final class SCrypt {
      * @param dkLen Intended length, in octets, of the derived key.
      * @return the byte array of DK
      */
-    private static byte[] pbkdf2(HmacAlgorithms alg, byte[] P, 
-                                 byte[] S, int c, int dkLen) {
+    public static byte[] pbkdf2(HmacAlgorithms alg, byte[] P, 
+                                byte[] S, int c, int dkLen) {
         Mac mac = HmacUtils.getInitializedMac(alg, Providers.BC, P);
         int hLen = mac.getMacLength();
 
@@ -191,6 +160,7 @@ public final class SCrypt {
     /**
      * Pure Java implementation of the 
      * <a href="http://www.tarsnap.com/scrypt/scrypt.pdf"/>scrypt KDF</a>.
+     * 
      * @param alg HmacAlgorithm.
      * @param P Password.
      * @param S Salt.
@@ -221,6 +191,7 @@ public final class SCrypt {
         return pbkdf2(alg, P, B, 1, dkLen);
     }
 
+    // ------------------------------------------------------------------------------private methods
     private static void smix(byte[] B, int Bi, int r, int N, byte[] V, byte[] XY) {
         int i, Xi = 0, Yi = r << 7;
 

@@ -9,6 +9,8 @@
 package test;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -23,10 +25,9 @@ import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 
 import code.ponfee.commons.concurrent.ThreadPoolExecutors;
-import code.ponfee.commons.math.Numbers;
 import code.ponfee.commons.util.Bytes;
+import code.ponfee.commons.util.Dates;
 import code.ponfee.commons.util.MavenProjects;
-import io.netty.buffer.ByteBufUtil;
 import io.netty.util.internal.ThreadLocalRandom;
 
 /**
@@ -36,6 +37,13 @@ import io.netty.util.internal.ThreadLocalRandom;
 public class Test1 {
     
     public static void main(String[] args) throws InterruptedException, ExecutionException {
+        
+        Date d1 = Dates.toDate("2019-05-10 10:23:34");
+        Date d2 = Dates.toDate("2019-05-11 08:23:34");
+        
+        System.out.println(Dates.daysbetween(Dates.startOfDay(d1), Dates.endOfDay(d2)));
+        
+        System.out.println(List.class.isInstance(null));
         Stopwatch watch = Stopwatch.createStarted();
         CompletableFuture<String> future1 = new CompletableFuture<>();
         new Thread(()->{
