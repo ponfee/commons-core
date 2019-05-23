@@ -96,7 +96,7 @@ public class KeyStoreResolverTester {
         X509Certificate ccert = X509CertGenerator.createRootCert(null, _issuer, alg, p1.getPrivateKey(), p1.getPublicKey(), before, after);
         KeyStoreResolver ca = new KeyStoreResolver(KeyStoreType.PKCS12);
 
-        byte[] pkcs8Key = RSAPrivateKeys.toEncryptedPkcs8(p1.getPrivateKey(), caPwd);
+        byte[] pkcs8Key = Base64.getDecoder().decode(RSAPrivateKeys.toEncryptedPkcs8(p1.getPrivateKey(), caPwd));
         ca.setKeyEntry(X509CertUtils.getCertInfo(ccert, X509CertInfo.SUBJECT_CN), pkcs8Key, new X509Certificate[] { ccert });
         //ca.setKeyEntry(X509CertUtils.getCertInfo(ccert, X509CertInfo.SUBJECT_CN), p1.getPrivateKey(), caPwd, new X509Certificate[] { ccert });
         test0((RSAPrivateKey) ca.getPrivateKey("1234"), (RSAPublicKey) ca.getCertificate().getPublicKey());
@@ -108,7 +108,7 @@ public class KeyStoreResolverTester {
             X509CertGenerator.createSubjectCert(ccert, p1.getPrivateKey(), null, _subject, alg, p2.getPrivateKey(), p2.getPublicKey(), before, after);
         KeyStoreResolver subject = new KeyStoreResolver(KeyStoreType.PKCS12);
         String scn = X509CertUtils.getCertInfo(scert, X509CertInfo.SUBJECT_CN);
-        pkcs8Key = RSAPrivateKeys.toEncryptedPkcs8(p2.getPrivateKey(), subjectPwd);
+        pkcs8Key = Base64.getDecoder().decode(RSAPrivateKeys.toEncryptedPkcs8(p2.getPrivateKey(), subjectPwd));
         subject.setKeyEntry(scn, pkcs8Key, new X509Certificate[] { scert, ccert });
         //subject.setKeyEntry(scn, p2.getPrivateKey(), subjectPwd, new X509Certificate[] { scert, ccert });
         test0((RSAPrivateKey) subject.getPrivateKey(subjectPwd), (RSAPublicKey) subject.getCertificate().getPublicKey());

@@ -3,6 +3,7 @@ package code.ponfee.commons.jce.sm;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
@@ -10,7 +11,6 @@ import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.math.ec.ECPoint;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 
 import code.ponfee.commons.jce.ECParameters;
@@ -43,10 +43,8 @@ public final class SM2 {
     private int count;
 
     private SM2(ECPoint publicKey, BigInteger privateKey, BigInteger n) {
-        Preconditions.checkArgument(publicKey != null, 
-                                    "public key cannot be null.");
-        Preconditions.checkArgument(privateKey != null, 
-                                    "private key cannot be null.");
+        Objects.requireNonNull(publicKey, "public key cannot be null.");
+        Objects.requireNonNull(privateKey, "private key cannot be null.");
 
         ECPoint point = publicKey.multiply(privateKey); // S = [h]point
 

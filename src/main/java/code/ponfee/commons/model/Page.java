@@ -4,15 +4,15 @@ import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.cglib.beans.BeanCopier;
+
+import com.google.common.collect.Lists;
 
 /**
  * 参考guthub开源的mybatis分页工具
@@ -346,7 +346,7 @@ public class Page<T> implements java.io.Serializable {
      * @param action
      */
     public void process(Consumer<T> action) {
-        Preconditions.checkArgument(action != null);
+        Objects.requireNonNull(action);
         if (isEmpty()) {
             return;
         }
@@ -359,7 +359,7 @@ public class Page<T> implements java.io.Serializable {
      * @return
      */
     public <E> Page<E> transform(Function<T, E> transformer) {
-        Preconditions.checkArgument(transformer != null);
+        Objects.requireNonNull(transformer);
         Page<E> page = this.copy();
         if (isEmpty()) {
             return page;

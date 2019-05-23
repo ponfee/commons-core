@@ -13,19 +13,24 @@
     mvn package -Dmaven.test.skip=true：不执行测试用例，也不编译测试用例类；
     mvn package -DskipTests：跳过单元测试，但是会继续编译；
     https://github.com/alibaba/p3c
+
+    javac: 不加“-g”则默认为“-g:source,lines”
+      -g                     生成所有调试信息
+      -g:none                不生成任何调试信息
+      -g:{lines,vars,source} 只生成某些调试信息
   -->
 
   <properties>
     <project.encoding>UTF-8</project.encoding>
     <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
     <spring.version>4.3.23.RELEASE</spring.version>
-    <!-- log4j2用2.11.0版本jetty报错（用2.8.2版本解决此问题）：Error scanning entry 
+    <!-- log4j2用2.11.2版本jetty报错（用2.8.2版本解决此问题）：Error scanning entry 
          META-INF/versions/9/org/apache/logging/log4j/util/ProcessIdUtil.class from jar 
     -->
-    <!-- <log4j2.version>2.8.2</log4j2.version> -->
     <log4j2.version>2.11.2</log4j2.version>
     <slf4j.version>1.7.26</slf4j.version>
     <java.version>1.8</java.version>
+    <!-- jetty9.2版本会在bouncycastle的1.61版本下报错 -->
     <bouncycastle.version>1.61</bouncycastle.version>
   </properties>
 
@@ -234,7 +239,7 @@
     <dependency>
       <groupId>net.lingala.zip4j</groupId>
       <artifactId>zip4j</artifactId>
-      <version>1.3.2</version>
+      <version>1.3.3</version>
     </dependency>
 
     <!-- ====================spring==================== -->
@@ -709,35 +714,74 @@
     </testResources>
 
     <plugins>
+
       <plugin>
+        <!-- http://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.7.0</version>
+        <version>3.8.1</version>
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
           <encoding>${project.encoding}</encoding>
-          <optimize>true</optimize>
-          <!-- <debug>true</debug>
           <showDeprecation>true</showDeprecation>
-          <showWarnings>false</showWarnings> -->
-          <compilerArgument>-parameters</compilerArgument>
-          <compilerArguments>
-            <!-- <verbose /> -->
-            <!-- windows用;分隔，linux用:分隔 -->
-            <bootclasspath>${java.home}/lib/rt.jar${separator}${java.home}/lib/jce.jar${separator}${java.home}/lib/jsse.jar</bootclasspath>
-          </compilerArguments>
+          <showWarnings>true</showWarnings>
+          <!-- <fork>true</fork> 乱码 -->
+          <!-- <compilerArgument>-verbose -parameters -bootclasspath ${java.home}\lib\rt.jar</compilerArgument> -->
+          <compilerArgs>
+            <arg>-bootclasspath</arg>
+            <!-- windows用“;”号分隔；linux用“:”号分隔；${JAVA_HOME}/lib/tools.jar； -->
+            <arg>${java.home}/lib/rt.jar${separator}${java.home}/lib/jce.jar${separator}${java.home}/lib/jsse.jar</arg>
+            <!-- <arg>-verbose</arg> -->
+            <arg>-parameters</arg>
+          </compilerArgs>
           <excludes>
             <exclude>node_modules/**</exclude>
           </excludes>
-          <!-- <skip>true</skip>
-          <skipTests>true</skipTests> -->
+          <optimize>true</optimize>
+          <!-- <debug>false</debug>
+          <debuglevel>none</debuglevel>
+          <skip>true</skip>  -->
         </configuration>
       </plugin>
+
+      <!-- <plugin>
+        <groupId>com.github.wvengen</groupId>
+        <artifactId>proguard-maven-plugin</artifactId>
+        <version>2.0.14</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>proguard</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <attach>true</attach>
+          <obfuscate>true</obfuscate>
+          <attachArtifactClassifier>pg</attachArtifactClassifier>
+          <options>
+            <option>-target ${java.version}</option>
+            <option>-useuniqueclassmembernames</option>
+            <option>-ignorewarnings</option>
+            <option>-keep public class * {public protected *;}</option>
+          </options>
+          <outjar>${project.artifactId}-${publish.version}-pg.jar</outjar>
+          <libs>
+            <lib>${java.home}/lib/rt.jar</lib>
+            <lib>${java.home}/lib/jce.jar</lib>
+            <lib>${java.home}/lib/jsse.jar</lib>
+          </libs>
+          <injar>classes</injar>
+          <outputDirectory>${project.build.directory}</outputDirectory>
+        </configuration>
+      </plugin> -->
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.0.1</version>
+        <version>3.1.0</version>
         <executions>
           <execution>
             <id>attach-source</id>
@@ -758,7 +802,7 @@
       <!-- <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.1.1</version>
+        <version>3.2.1</version>
         <executions>
           <execution>
             <phase>package</phase>

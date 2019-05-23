@@ -8,11 +8,10 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Formatter;
+import java.util.Objects;
 import java.util.zip.CRC32;
 
 import org.apache.commons.lang3.StringUtils;
-
-import com.google.common.base.Preconditions;
 
 import code.ponfee.commons.math.Numbers;
 
@@ -420,8 +419,7 @@ public final class Bytes {
      * @return a new byte array of them
      */
     public static byte[] concat(byte[] first, byte[]... rest) {
-        Preconditions.checkArgument(first != null, 
-                                    "the first array arg cannot be null");
+        Objects.requireNonNull(first, "the first array arg cannot be null");
         if (rest == null || rest.length == 0) {
             return first;
         }

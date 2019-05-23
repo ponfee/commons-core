@@ -104,6 +104,7 @@ public final class RSAPrivateKeys {
     // ----------------------------------EXTRACT PUBLIC KEY FROM PRIVATE KEY-----------------------------------
     /**
      * extract public key from private key
+     * 
      * @param privateKey
      * @return
      */
@@ -297,9 +298,9 @@ public final class RSAPrivateKeys {
      * 
      * @param privateKey the private key
      * @param password   the password
-     * @return byte array of private key pkcs#8 format
+     * @return a string of encrypted private key pkcs#8 format
      */
-    public static byte[] toEncryptedPkcs8(RSAPrivateKey privateKey, String password) {
+    public static String toEncryptedPkcs8(RSAPrivateKey privateKey, String password) {
         JcePKCSPBEOutputEncryptorBuilder builder = new JcePKCSPBEOutputEncryptorBuilder(
             PKCSObjectIdentifiers.pbeWithSHAAnd3_KeyTripleDES_CBC
         );
@@ -315,13 +316,13 @@ public final class RSAPrivateKeys {
      * 
      * @param privateKey the private key
      * @param outEncryptor the OutputEncryptor
-     * @return byte array of private key pkcs#8 format
+     * @return a string of encrypted private key pkcs#8 format
      */
-    public static byte[] toEncryptedPkcs8(RSAPrivateKey privateKey, OutputEncryptor outEncryptor) {
+    public static String toEncryptedPkcs8(RSAPrivateKey privateKey, OutputEncryptor outEncryptor) {
         try {
             PrivateKeyInfo privKeyInfo = PrivateKeyInfo.getInstance(privateKey.getEncoded());
             PemObject pem = new PKCS8Generator(privKeyInfo, outEncryptor).generate();
-            return pem.getContent();
+            return Base64.getEncoder().encodeToString(pem.getContent());
         } catch (IOException e) {
             throw new SecurityException(e);
         }
@@ -362,6 +363,10 @@ public final class RSAPrivateKeys {
         return fromEncryptedPkcs8Pem(encryptedPem, builder.build(password.toCharArray()));
     }
 
+    public static RSAPrivateKey fromEncryptedPkcs8(String encryptedPrivateKey, String password) {
+        return fromEncryptedPkcs8(Base64.getDecoder().decode(encryptedPrivateKey), password);
+    }
+
     /**
      * Parse private key from encrypted format
      * 
@@ -369,10 +374,14 @@ public final class RSAPrivateKeys {
      * @param password  the password
      * @return RSAPrivateKey
      */
-    public static RSAPrivateKey fromEncryptedPkcs8(byte[] encryptedPrivateKey,
-                                                   String password) {
+    public static RSAPrivateKey fromEncryptedPkcs8(byte[] encryptedPrivateKey, String password) {
         JcePKCSPBEInputDecryptorProviderBuilder builder = new JcePKCSPBEInputDecryptorProviderBuilder();
         return fromEncryptedPkcs8(encryptedPrivateKey, builder.build(password.toCharArray()));
+    }
+
+    public static RSAPrivateKey fromEncryptedPkcs8(String encryptedPrivateKey,
+                                                   InputDecryptorProvider inputDecryptor) {
+        return fromEncryptedPkcs8(Base64.getDecoder().decode(encryptedPrivateKey), inputDecryptor);
     }
 
     /**

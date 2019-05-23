@@ -16,7 +16,6 @@ import code.ponfee.commons.jce.security.RSAPublicKeys;
 import code.ponfee.commons.jce.sm.SM2;
 import code.ponfee.commons.jce.symmetric.SymmetricCryptor;
 import code.ponfee.commons.util.Base64UrlSafe;
-import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
 
 import java.nio.charset.Charset;
@@ -26,10 +25,14 @@ import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
+import java.util.Objects;
+
+import javax.annotation.Nonnull;
 
 /**
  * 加解密服务提供
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public abstract class CryptoProvider {
 
@@ -39,7 +42,7 @@ public abstract class CryptoProvider {
      * @param original  the origin data
      * @return encrypted data
      */
-    public abstract byte[] encrypt(byte[] original);
+    public abstract byte[] encrypt(@Nonnull byte[] original);
 
     /**
      * Decrypts data
@@ -47,7 +50,7 @@ public abstract class CryptoProvider {
      * @param encrypted  the encrypted data
      * @return origin data
      */
-    public abstract byte[] decrypt(byte[] encrypted);
+    public abstract byte[] decrypt(@Nonnull byte[] encrypted);
 
     /**
      * Signs the data
@@ -188,13 +191,13 @@ public abstract class CryptoProvider {
         return new CryptoProvider() {
             @Override
             public byte[] encrypt(byte[] original) {
-                Preconditions.checkArgument(original != null);
+                Objects.requireNonNull(original);
                 return symmetricKey.encrypt(original);
             }
 
             @Override
             public byte[] decrypt(byte[] encrypted) {
-                Preconditions.checkArgument(encrypted != null);
+                Objects.requireNonNull(encrypted);
                 return symmetricKey.decrypt(encrypted);
             }
         };
@@ -202,35 +205,25 @@ public abstract class CryptoProvider {
 
     // -----------------------------------------------------------------------RSA
     /**
-     * RSA private key密钥组件
-     * forbid use private key encrypt and use public key decrypt
+     * rsa public key密钥组件
      * 
-     * @param pkcs8PrivateKey  the string of pkcs8 private key format
+     * @param pkcs8PublicKey  the string of pkcs8 public key format
      * @return
      */
-    public static CryptoProvider rsaPrivateKeyProvider(final String pkcs8PrivateKey) {
+    public static CryptoProvider rsaPublicKeyProvider(final String pkcs8PublicKey) {
         return new CryptoProvider() {
-            final RSAPrivateKey priKey = RSAPrivateKeys.fromPkcs8(pkcs8PrivateKey); // thread-safe
-            final RSAPublicKey  pubKey = RSAPrivateKeys.extractPublicKey(priKey); // thread-safe
+            final RSAPublicKey pubKey = RSAPublicKeys.fromPkcs8(pkcs8PublicKey); // thread-safe
 
             @Override
             public byte[] encrypt(byte[] original) {
-                Preconditions.checkArgument(original != null);
-                // only support public key encrypt
-                // forbid encrypt with private key
+                Objects.requireNonNull(original);
                 return RSACryptor.encrypt(original, pubKey); // 公钥加密
             }
 
             @Override
             public byte[] decrypt(byte[] encrypted) {
-                Preconditions.checkArgument(encrypted != null);
-                // only support private key decrypt
-                return RSACryptor.decrypt(encrypted, priKey); // 私钥解密
-            }
-
-            @Override
-            public byte[] sign(byte[] data) {
-                return RSACryptor.signSha1(data, priKey);
+                // cannot support public key decrypt
+                throw new UnsupportedOperationException("cannot support decrypt.");
             }
 
             @Override
@@ -241,24 +234,45 @@ public abstract class CryptoProvider {
     }
 
     /**
-     * rsa public key密钥组件
-     * @param pkcs8PublicKey  the string of pkcs8 public key format
+     * pkcs8PrivateKey include public exponent
+     * 
+     * forbid use private key encrypt and use public key decrypt
+     * 
+     * @param pkcs8PrivateKey  the string of pkcs8 private key format
      * @return
      */
-    public static CryptoProvider rsaPublicKeyProvider(final String pkcs8PublicKey) {
-        return new CryptoProvider() {
-            final RSAPublicKey pubKey = RSAPublicKeys.fromPkcs8(pkcs8PublicKey); // thread-safe
+    public static CryptoProvider rsaPrivateKeyProvider(String pkcs8PrivateKey) {
+        RSAPrivateKey priKey = RSAPrivateKeys.fromPkcs8(pkcs8PrivateKey); // thread-safe
+        return rsaProvider(priKey, RSAPrivateKeys.extractPublicKey(priKey));
+    }
 
+    /**
+     * Creates CryptoProvider of RSA 
+     * 
+     * @param priKey the RSAPrivateKey
+     * @param pubKey the pubKey
+     * @return a CryptoProvider of RSA 
+     */
+    public static CryptoProvider rsaProvider(final RSAPrivateKey priKey, final RSAPublicKey pubKey) {
+        return new CryptoProvider() {
             @Override
             public byte[] encrypt(byte[] original) {
-                Preconditions.checkArgument(original != null);
+                Objects.requireNonNull(original);
+                // only support public key encrypt
+                // forbid encrypt with private key
                 return RSACryptor.encrypt(original, pubKey); // 公钥加密
             }
 
             @Override
             public byte[] decrypt(byte[] encrypted) {
-                // cannot support public key decrypt
-                throw new UnsupportedOperationException("cannot support decrypt.");
+                Objects.requireNonNull(encrypted);
+                // only support private key decrypt
+                return RSACryptor.decrypt(encrypted, priKey); // 私钥解密
+            }
+
+            @Override
+            public byte[] sign(byte[] data) {
+                return RSACryptor.signSha1(data, priKey);
             }
 
             @Override
