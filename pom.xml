@@ -23,15 +23,13 @@
   <properties>
     <project.encoding>UTF-8</project.encoding>
     <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
-    <spring.version>4.3.23.RELEASE</spring.version>
-    <!-- log4j2用2.11.2版本jetty报错（用2.8.2版本解决此问题）：Error scanning entry 
-         META-INF/versions/9/org/apache/logging/log4j/util/ProcessIdUtil.class from jar 
-    -->
-    <log4j2.version>2.11.2</log4j2.version>
+    <spring.version>4.3.24.RELEASE</spring.version>
+    <!-- Java 9: Error scanning entry META-INF/versions/9/org/apache/logging/log4j/util/ProcessIdUtil.class from jar -->
+    <log4j2.version>2.8.2</log4j2.version>
     <slf4j.version>1.7.26</slf4j.version>
     <java.version>1.8</java.version>
-    <!-- jetty9.2版本会在bouncycastle的1.61版本下报错 -->
-    <bouncycastle.version>1.61</bouncycastle.version>
+    <!-- Java 9 Modular: 1.61 -->
+    <bouncycastle.version>1.60</bouncycastle.version>
   </properties>
 
   <profiles>
@@ -732,7 +730,6 @@
             <arg>-bootclasspath</arg>
             <!-- windows用“;”号分隔；linux用“:”号分隔；${JAVA_HOME}/lib/tools.jar； -->
             <arg>${java.home}/lib/rt.jar${separator}${java.home}/lib/jce.jar${separator}${java.home}/lib/jsse.jar</arg>
-            <!-- <arg>-verbose</arg> -->
             <arg>-parameters</arg>
           </compilerArgs>
           <excludes>
@@ -741,10 +738,15 @@
           <optimize>true</optimize>
           <!-- <debug>false</debug>
           <debuglevel>none</debuglevel>
-          <skip>true</skip>  -->
+          <skip>true</skip> -->
         </configuration>
       </plugin>
 
+      <!-- 
+        http://wvengen.github.io/proguard-maven-plugin
+        https://github.com/wvengen/proguard-maven-plugin
+        https://blog.csdn.net/xiao190128/article/details/81777912
+       -->
       <!-- <plugin>
         <groupId>com.github.wvengen</groupId>
         <artifactId>proguard-maven-plugin</artifactId>
@@ -758,43 +760,74 @@
           </execution>
         </executions>
         <configuration>
-          <attach>true</attach>
           <obfuscate>true</obfuscate>
-          <attachArtifactClassifier>pg</attachArtifactClassifier>
-          <options>
-            <option>-target ${java.version}</option>
-            <option>-useuniqueclassmembernames</option>
-            <option>-ignorewarnings</option>
-            <option>-keep public class * {public protected *;}</option>
-          </options>
-          <outjar>${project.artifactId}-${publish.version}-pg.jar</outjar>
+          <addMavenDescriptor>false</addMavenDescriptor>
+          <inFilter>!application.properties</inFilter>
+
+          <injar>classes</injar>
+          <attach>false</attach>
+          <outjar>${project.build.finalName}-proguard.jar</outjar>
+
+          <!—— <injar>${project.build.finalName}.jar</injar>
+          <attach>true</attach>
+          <attachArtifactClassifier>proguard</attachArtifactClassifier>
+          <attachArtifactType>jar</attachArtifactType> ——>
+
+          <outputDirectory>${project.build.directory}</outputDirectory>
           <libs>
             <lib>${java.home}/lib/rt.jar</lib>
             <lib>${java.home}/lib/jce.jar</lib>
             <lib>${java.home}/lib/jsse.jar</lib>
           </libs>
-          <injar>classes</injar>
-          <outputDirectory>${project.build.directory}</outputDirectory>
+          <options>
+            <option>-target ${java.version}</option>
+            <option>-ignorewarnings</option>
+            <option>-dontshrink</option>
+            <option>-dontoptimize</option>
+            <option>-dontskipnonpubliclibraryclasses</option>
+            <option>-dontskipnonpubliclibraryclassmembers</option>
+            <option>-keeppackagenames</option>
+            <option><![CDATA[-keep class * {*;}]]></option>
+          </options>
         </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>net.sf.proguard</groupId>
+            <artifactId>proguard-base</artifactId>
+            <version>6.1.0</version>
+          </dependency>
+        </dependencies>
       </plugin> -->
 
-      <plugin>
+      <!-- http://maven.apache.org/plugins/maven-assembly-plugin/single-mojo.html -->
+      <!-- <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>3.1.0</version>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.1.1</version>
+        <configuration>
+          <appendAssemblyId>false</appendAssemblyId>
+        </configuration>
         <executions>
           <execution>
-            <id>attach-source</id>
+            <id>make-assembly</id>
             <phase>package</phase>
             <goals>
-              <goal>jar-no-fork</goal>
+              <goal>single</goal>
             </goals>
+            <configuration>
+              <finalName>${project.artifactId}</finalName>
+              <skipAssembly>false</skipAssembly>
+              <descriptors>
+                <descriptor>src/main/assembly/assembly.xml</descriptor>
+              </descriptors>
+            </configuration>
           </execution>
         </executions>
-      </plugin>
+      </plugin> -->
 
       <!-- 
         https://blog.csdn.net/u011499747/article/details/83045928
+        http://maven.apache.org/plugins/maven-shade-plugin/shade-mojo.html
           maven-jar-plugin:
           maven-assembly-plugin: mvn assembly:assembly
           maven-shade-plugin: mvn clean package
@@ -820,6 +853,47 @@
           </execution>
         </executions>
       </plugin> -->
+
+      <!--  package jar -->
+      <!-- <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.1.2</version>
+        <executions>
+          <execution>
+            <id>make-a-jar</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin> -->
+
+    <!--<plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.2.2</version>
+        <configuration>
+          <warSourceExcludes>page/**</warSourceExcludes>
+        </configuration>
+      </plugin>-->
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>attach-source</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
 
   </build>

@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -17,6 +18,7 @@ import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
 import com.google.common.collect.ImmutableMap;
@@ -277,6 +279,28 @@ public final class Collects {
     }
 
     /**
+     * Returns the duplicates elements for list
+     * 
+     * @param list the list
+     * @return a set of duplicates elements for list
+     */
+    public static <T> Set<T> duplicate(List<T> list) {
+        if (CollectionUtils.isEmpty(list)) {
+            return Collections.emptySet();
+        }
+
+        return list.stream().collect(
+            Collectors.groupingBy(Function.identity(), Collectors.counting())
+        ).entrySet().stream().filter(
+            e -> (e.getValue() > 1)
+        ).map(
+            Entry::getKey
+        ).collect(
+            Collectors.toSet()
+        );
+    }
+
+    /**
      * The two set different elements
      * 
      * @param set1
@@ -291,6 +315,7 @@ public final class Collects {
 
     /**
      * map差集
+     * 
      * @param map1
      * @param map2
      * @return

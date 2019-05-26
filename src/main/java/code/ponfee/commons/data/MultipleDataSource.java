@@ -3,9 +3,7 @@ package code.ponfee.commons.data;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
@@ -14,7 +12,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
-import com.google.common.collect.ImmutableList;
+import code.ponfee.commons.collect.Collects;
 
 /**
  * Multiple DataSource: 
@@ -22,6 +20,8 @@ import com.google.common.collect.ImmutableList;
  *   super.setDefaultTargetDataSource(defaultDataSource); // 设置默认的数据源
  *   determineCurrentLookupKey() // 获取当前数据源， 当返回为空或无对应数据源时
  *                               // 会使用defaultTargetDataSource
+ * 
+ * @see MultipletRoutingDataSource
  * 
  * @author Ponfee
  */
@@ -50,15 +50,7 @@ public class MultipleDataSource extends AbstractRoutingDataSource {
         names.add(0, defaultName); // default data source at the first
 
         // checks whether duplicate datasource name
-        Set<String> duplicates = names.stream().collect(
-            Collectors.groupingBy(Function.identity(), Collectors.counting())
-        ).entrySet().stream().filter(
-            e -> (e.getValue() > 1)
-        ).map(
-            Entry::getKey
-        ).collect(
-            Collectors.toSet()
-        );
+        Set<String> duplicates = Collects.duplicate(names);
         if (CollectionUtils.isNotEmpty(duplicates)) {
             throw new IllegalArgumentException("Duplicated data source name: " + duplicates.toString());
         }
@@ -74,7 +66,7 @@ public class MultipleDataSource extends AbstractRoutingDataSource {
         // if determineCurrentLookupKey not get, then use this default
         super.setDefaultTargetDataSource(defaultDataSource);
 
-        MultipleDataSourceContext.dataSourceKeys = ImmutableList.copyOf(names);
+        MultipleDataSourceContext.addAll(names);
     }
 
     @Override

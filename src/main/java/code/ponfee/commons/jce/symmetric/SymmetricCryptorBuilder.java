@@ -1,6 +1,5 @@
 package code.ponfee.commons.jce.symmetric;
 
-import java.security.GeneralSecurityException;
 import java.security.Provider;
 
 import javax.crypto.KeyGenerator;
@@ -8,6 +7,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import code.ponfee.commons.jce.Providers;
 import code.ponfee.commons.util.SecureRandoms;
 
 /**
@@ -29,14 +29,8 @@ public final class SymmetricCryptorBuilder {
 
     private SymmetricCryptorBuilder(Algorithm alg, byte[] key, Provider provider) {
         if (key == null) {
-            try {
-                KeyGenerator keyGenerator = (provider == null) 
-                                          ? KeyGenerator.getInstance(alg.name()) 
-                                          : KeyGenerator.getInstance(alg.name(), provider);
-                this.secretKey = keyGenerator.generateKey();
-            } catch (GeneralSecurityException e) {
-                throw new SecurityException(e);
-            }
+            KeyGenerator keyGenerator = Providers.getKeyGenerator(alg.name(), provider);
+            this.secretKey = keyGenerator.generateKey();
         } else {
             this.secretKey = new SecretKeySpec(key, alg.name());
         }

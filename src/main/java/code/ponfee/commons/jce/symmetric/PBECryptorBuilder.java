@@ -1,6 +1,5 @@
 package code.ponfee.commons.jce.symmetric;
 
-import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidKeySpecException;
@@ -12,6 +11,7 @@ import javax.crypto.spec.PBEParameterSpec;
 
 import org.apache.commons.text.RandomStringGenerator;
 
+import code.ponfee.commons.jce.Providers;
 import code.ponfee.commons.jce.symmetric.PBECryptor.PBEAlgorithm;
 
 /**
@@ -33,12 +33,10 @@ public class PBECryptorBuilder {
     private PBECryptorBuilder(PBEAlgorithm algorithm, char[] pass, Provider provider) {
         try {
             // new SecretKeySpec(new String(pass).getBytes(), algName); // 也可用此方法来构造具体的密钥
-            SecretKeyFactory factory = (provider == null) 
-                                     ? SecretKeyFactory.getInstance(algorithm.name())
-                                     : SecretKeyFactory.getInstance(algorithm.name(), provider);
+            SecretKeyFactory factory = Providers.getSecretKeyFactory(algorithm.name(), provider);
             this.secretKey = factory.generateSecret(new PBEKeySpec(pass));
             this.provider = provider;
-        } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
+        } catch (InvalidKeySpecException e) {
             throw new SecurityException(e);
         }
     }

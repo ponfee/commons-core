@@ -25,7 +25,7 @@ public class ELParser {
 
     private static final Pattern PARAMS_PATTERN = Pattern.compile("\\$\\{\\s*([a-zA-Z0-9_\\-\\.]+)\\s*\\}");
     private static final Pattern DATETM_PATTERN = Pattern.compile("\\$\\[\\s*([a-zA-Z0-9_,\\-\\+\\.\\(\\)\\s]+)\\s*\\]");
-    private static final Pattern SPEL_PATTERN   = Pattern.compile("\\{\\{(.+)\\}\\}");
+    private static final Pattern SPEL_PATTERN   = Pattern.compile("\\{\\{\\s*([^\\{\\}]+)\\s*\\}\\}");
 
     public static String parse(String text) {
         return parseDatetm(text);
@@ -73,10 +73,10 @@ public class ELParser {
             return text;
         }
 
-        StandardEvaluationContext context = new StandardEvaluationContext(params);
+        StandardEvaluationContext context = new StandardEvaluationContext();
         context.setVariables((Map<String, Object>) params); // #key
         //context.setVariables("name", (Map<String, Object>) params); // #name[key]
-        //context.setRootObject(params);
+        //context.setRootObject(params); //  // #root.field
         ExpressionParser parser = new SpelExpressionParser();
         String result = text;
         Matcher matcher = SPEL_PATTERN.matcher(text);
