@@ -187,7 +187,7 @@ public final class RSACryptor {
 
     private static <T extends Key & RSAKey> void docrypt(InputStream input, T key, OutputStream out, 
                                                          int cryptMode, boolean isPadding) {
-        // Cipher.getInstance(key.getAlgorithm())
+        // Providers.getCipher(key.getAlgorithm())
         Cipher cipher = Providers.getCipher(
             key.getAlgorithm() + (isPadding ? ECB_PKCS1PADDING.transform() : NONE_NOPADDING.transform())
         );
@@ -222,7 +222,7 @@ public final class RSACryptor {
     private static <T extends Key & RSAKey> byte[] docrypt(byte[] data, T key, 
                                                            int cryptMode, boolean isPadding) {
         int blockSize = getBlockSize(cryptMode, key);
-        // Cipher.getInstance(key.getAlgorithm())
+        // Providers.getCipher(key.getAlgorithm())
         Cipher cipher = Providers.getCipher(
             key.getAlgorithm() + (isPadding ? ECB_PKCS1PADDING.transform() : NONE_NOPADDING.transform())
         );

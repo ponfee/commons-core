@@ -8,6 +8,7 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
+import code.ponfee.commons.jce.Providers;
 import code.ponfee.commons.util.Base64UrlSafe;
 
 /**
@@ -100,9 +101,7 @@ public class SymmetricCryptor {
      */
     private byte[] docrypt(byte[] bytes, int cryptMode) {
         try {
-            Cipher cipher = (provider == null) 
-                            ? Cipher.getInstance(transformation)
-                            : Cipher.getInstance(transformation, provider);
+            Cipher cipher = Providers.getCipher(transformation, provider);
             cipher.init(cryptMode, secretKey, parameter);
             return cipher.doFinal(bytes);
         } catch (GeneralSecurityException e) {

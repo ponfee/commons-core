@@ -154,7 +154,7 @@ public final class ECDSASigner {
 
     private static byte[] docrypt(byte[] data, Key key, int cryptMode) {
         try {
-            Cipher cipher = Cipher.getInstance(key.getAlgorithm());
+            Cipher cipher = Providers.getCipher(key.getAlgorithm());
             cipher.init(cryptMode, key);
             return cipher.doFinal(data);
         } catch (Exception e) {
