@@ -9,8 +9,10 @@ import code.ponfee.commons.concurrent.AsyncBatchTransmitter;
 public class TestBatchTransmitter {
 
     public static void main(String[] args) throws InterruptedException {
+        AtomicInteger summer = new AtomicInteger();
         final AsyncBatchTransmitter<Integer> transmitter = new AsyncBatchTransmitter<>((list, isEnd) -> {
             return () -> {
+                summer.addAndGet(list.size());
                 System.out.println(list.size() + "==" + Thread.currentThread().getId()
                     + "-" + Thread.currentThread().getName() + ", " + isEnd);
                 //System.out.println(1 / 0); // submit方式不会打印异常
@@ -24,9 +26,9 @@ public class TestBatchTransmitter {
         for (int i = 0; i < n; i++) {
             Thread thread = new Thread(() -> {
                 while (flag.get()) {
-                    transmitter.put(increment.getAndIncrement());
+                    transmitter.put(increment.incrementAndGet());
                     try {
-                        Thread.sleep(161 + ThreadLocalRandom.current().nextInt(1211));
+                        Thread.sleep(161 + ThreadLocalRandom.current().nextInt(1161));
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -43,5 +45,6 @@ public class TestBatchTransmitter {
             thread.join();
         }
         System.out.println(increment.get());
+        System.out.println(summer.get());
     }
 }

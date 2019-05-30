@@ -16,10 +16,19 @@ import java.util.stream.StreamSupport;
 
 /**
  * The class use in fork {@link Stream},
- * from book "Java 8 In Action"
- *
+ * from book "Java 8 In Action"<p>
+ * 
+ * Usage:
+ * <pre> {@code
+ *   Stream<Integer> stream = Stream.of(1, 2, 3, 4, 4, 5, 5);
+ *   StreamForker.Results results = new StreamForker<>(stream)
+ *     .fork(1, s -> s.max(Integer::compareTo)) // 直接聚合
+ *     .fork(2, s -> s.distinct().reduce(0, Integer::sum))
+ *     .getResults();
+ * } </pre>
+ * 
  * @param <T>
- * @author Ponfee
+ * @author Java 8 In Action
  */
 public class StreamForker<T> {
 

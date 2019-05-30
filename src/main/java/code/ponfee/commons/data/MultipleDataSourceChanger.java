@@ -18,17 +18,28 @@ public class MultipleDataSourceChanger implements MethodInterceptor {
 
     private static final ExpressionParser PARSER = new SpelExpressionParser();
 
+    /*public Object doAround(ProceedingJoinPoint pjp) throws Throwable {
+        MethodSignature ms = (MethodSignature) pjp.getSignature();
+        // DatabaseQueryServiceImpl.query4page(PageRequestParams)
+        System.out.println(ms.getMethod());
+
+        // DatabaseQueryServiceImpl$$EnhancerBySpringCGLIB$$ca6c0b12.query4page(PageRequestParams)
+        System.out.println(pjp.getTarget().getClass().getMethod(ms.getName(), ms.getParameterTypes()));
+        return pjp.proceed();
+    }*/
+
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
         Method method = invocation.getMethod();
         Object[] args = invocation.getArguments();
 
-
         boolean changed = false;
         DataSourceNaming dsn = method.getAnnotation(DataSourceNaming.class);
         try {
             if (dsn != null && StringUtils.isNotBlank(dsn.value())) {
-                String name = PARSER.parseExpression(dsn.value()).getValue(
+                String name = PARSER.parseExpression(
+                    dsn.value()
+                ).getValue(
                     new StandardEvaluationContext(args), String.class
                 );
                 MultipleDataSourceContext.set(name);

@@ -2,7 +2,7 @@ package code.ponfee.commons.concurrent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.BiFunction;
@@ -17,7 +17,7 @@ import com.google.common.base.Preconditions;
 public final class AsyncBatchTransmitter<T> {
 
     // 单消费者用LinkedBlockingQueue，多消费者用ConcurrentLinkedQueue
-    private final Queue<T> queue = new LinkedBlockingQueue<>(); // capacity: Integer.MAX_VALUE
+    private final BlockingQueue<T> queue = new LinkedBlockingQueue<>(); // capacity: Integer.MAX_VALUE
     private final AsyncBatchThread batch;
     private volatile boolean isEnd = false;
 
@@ -152,9 +152,8 @@ public final class AsyncBatchTransmitter<T> {
          * it is a thread and the alone thread
          */
         public @Override void run() {
-            T t;
             List<T> list = new ArrayList<>(thresholdChunk);
-            for (;;) {
+            for (int left = thresholdChunk;;) {
                 if (isEnd && queue.isEmpty() && duration() > (thresholdPeriod << 1)) {
                     if (requireDestroyWhenEnd) {
                         try {
@@ -167,25 +166,16 @@ public final class AsyncBatchTransmitter<T> {
                 }
 
                 // 尽量不要使用queue.size()，时间复杂度O(n)
-                if (!queue.isEmpty()) {
-                    for (int n = thresholdChunk - list.size(), i = 0; i < n; i++) {
-                        t = queue.poll();
-                        if (t == null) {
-                            break; // break inner loop
-                        } else {
-                            list.add(t);
-                        }
-                    }
+                if (!queue.isEmpty() && left > 0) {
+                    left -= queue.drainTo(list, left);
                 }
 
-                if (   list.size() == thresholdChunk 
-                    || ( !list.isEmpty() && (isEnd || duration() > thresholdPeriod) )
-                ) {
+                if (left == 0 || (!list.isEmpty() && (isEnd || duration() > thresholdPeriod))) {
                     // task抛异常后：
                     //   execute输出错误信息，线程结束，后续任务会创建新线程执行，会抛出异常
                     //   submit不输出错误信息，线程继续分配执行其它任务，不会抛出异常，除非你调用Future.get()
                     executor.submit(processor.apply(list, isEnd && queue.isEmpty())); // 提交到异步批量处理
-                    list = new ArrayList<>(thresholdChunk);
+                    list = new ArrayList<>(left = thresholdChunk);
                     refresh();
                 } else {
                     try {
