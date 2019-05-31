@@ -1,6 +1,7 @@
 package code.ponfee.commons.data;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.Callable;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -10,6 +11,8 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
+
+import code.ponfee.commons.function.ThrowingCallable;
 
 /**
  * 多数据源切换，用于Spring XML配置文件形式的切面拦截多数据源切换处理
@@ -49,21 +52,7 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
         System.out.println(pjp.getTarget().getClass().getMethod(ms.getName(), ms.getParameterTypes()));*/
 
         Method method = ((MethodSignature) pjp.getSignature()).getMethod();
-        String name = getDataSourceName(
-            method, pjp.getArgs(), method.getAnnotation(DataSourceNaming.class)
-        );
-        boolean changed = false;
-        try {
-            if (StringUtils.isNotBlank(name)) {
-                changed = true;
-                MultipleDataSourceContext.set(name);
-            }
-            return pjp.proceed();
-        } finally {
-            if (changed) {
-                MultipleDataSourceContext.clear();
-            }
-        }
+        return around(method, pjp.getArgs(), ThrowingCallable.unchecked(() -> pjp.proceed()));
     }
 
     /**
@@ -88,33 +77,36 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
     public Object invoke(MethodInvocation invocation) throws Throwable {
         Method method = invocation.getMethod();
         Object[] args = invocation.getArguments();
-        String name = getDataSourceName(
-            method, args, method.getAnnotation(DataSourceNaming.class)
-        );
+        return around(method, args, () -> method.invoke(invocation.getThis(), args));
+    }
+
+    public static Object around(Method method, Object[] args, Callable<Object> call) throws Throwable {
+        return around(method, args, method.getAnnotation(DataSourceNaming.class), call);
+    }
+
+    public static Object around(Method method, Object[] args, DataSourceNaming dsn, 
+                                Callable<Object> call) throws Throwable {
+        String name = null;
+        if (dsn != null && StringUtils.isNotBlank(dsn.value())) {
+            name = PARSER.parseExpression(
+                dsn.value()
+            ).getValue(
+                new StandardEvaluationContext(args), String.class
+            );
+        }
 
         boolean changed = false;
         try {
             if (StringUtils.isNotBlank(name)) {
-                changed = true;
                 MultipleDataSourceContext.set(name);
+                changed = true;
             }
-            return method.invoke(invocation.getThis(), args);
+            return call.call();
         } finally {
             if (changed) {
                 MultipleDataSourceContext.clear();
             }
         }
-    }
-
-    public static String getDataSourceName(Method method, Object[] args, DataSourceNaming dsn) {
-        if (dsn == null || StringUtils.isBlank(dsn.value())) {
-            return null;
-        }
-        return PARSER.parseExpression(
-            dsn.value()
-        ).getValue(
-            new StandardEvaluationContext(args), String.class
-        );
     }
 
 }

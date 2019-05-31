@@ -2,10 +2,11 @@ package code.ponfee.commons.data;
 
 import java.lang.reflect.Method;
 
-import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.Ordered;
+
+import code.ponfee.commons.function.ThrowingCallable;
 
 /**
  * <pre>
@@ -37,22 +38,11 @@ import org.springframework.core.Ordered;
 public abstract class MultipleDataSourceAspect implements Ordered {
 
     public Object doAround(ProceedingJoinPoint pjp, DataSourceNaming dsn) throws Throwable {
-        Method method = ((MethodSignature) pjp.getSignature()).getMethod();
-        String name = MultipleDataSourceAdvisor.getDataSourceName(
-            method, pjp.getArgs(), method.getAnnotation(DataSourceNaming.class)
+        return MultipleDataSourceAdvisor.around(
+            ((MethodSignature) pjp.getSignature()).getMethod(), 
+            pjp.getArgs(), dsn, 
+            ThrowingCallable.unchecked(() -> pjp.proceed())
         );
-        boolean changed = false;
-        try {
-            if (StringUtils.isNotBlank(name)) {
-                changed = true;
-                MultipleDataSourceContext.set(name);
-            }
-            return pjp.proceed();
-        } finally {
-            if (changed) {
-                MultipleDataSourceContext.clear();
-            }
-        }
     }
 
     @Override
