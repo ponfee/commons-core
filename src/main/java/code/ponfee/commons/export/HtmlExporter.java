@@ -153,9 +153,9 @@ public class HtmlExporter extends AbstractDataExporter<String> {
             StringBuilder builder = new StringBuilder("<tr><td colspan=\"")
                 .append(totalLeafCount)
                 .append("\" style=\"color:red; padding:3px;font-size:14px;\">")
-                .append("<div style=\"font-weight:bold;\">备注：</div>");
+                .append("<div style=\"text-align:left;font-weight:bold;\">备注：</div>");
             for (String comment : comments) {
-                builder.append("<div style=\"text-indent:2em;\">")
+                builder.append("<div style=\"text-align:left;text-indent:2em;\">")
                        .append(comment)
                        .append("</div>");
             }

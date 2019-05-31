@@ -1,11 +1,11 @@
 package code.ponfee.commons.data;
 
-import static java.lang.reflect.Proxy.newProxyInstance;
 import static org.apache.ibatis.reflection.ExceptionUtil.unwrapThrowable;
 import static org.mybatis.spring.SqlSessionUtils.closeSqlSession;
 import static org.mybatis.spring.SqlSessionUtils.getSqlSession;
 import static org.mybatis.spring.SqlSessionUtils.isSqlSessionTransactional;
 
+import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
@@ -52,16 +52,16 @@ public class MultipleSqlSessionTemplate extends SqlSessionTemplate {
         this.defaultTargetExceptionTranslator = new MyBatisExceptionTranslator(
             defaultTargetSqlSessionFactory.getConfiguration().getEnvironment().getDataSource(), true
         );
-        this.sqlSessionProxy = (SqlSession) newProxyInstance(
-            SqlSessionFactory.class.getClassLoader(), 
-            new Class[] {SqlSession.class }, 
+        this.sqlSessionProxy = (SqlSession) Proxy.newProxyInstance(
+            SqlSessionFactory.class.getClassLoader(), new Class[] {SqlSession.class }, 
             (proxy, method, args) -> {
+                SqlSessionFactory sqlSessionFactory = getSqlSessionFactory();
                 SqlSession sqlSession = getSqlSession(
-                     getSqlSessionFactory(), defaultTargetExecutorType, defaultTargetExceptionTranslator
+                    sqlSessionFactory, defaultTargetExecutorType, defaultTargetExceptionTranslator
                 );
                 try {
                     Object result = method.invoke(sqlSession, args);
-                    if (!isSqlSessionTransactional(sqlSession, getSqlSessionFactory())) {
+                    if (!isSqlSessionTransactional(sqlSession, sqlSessionFactory)) {
                         // force commit even on non-dirty sessions because some databases require
                         // a commit/rollback before calling close()
                         sqlSession.commit(true);
@@ -71,7 +71,7 @@ public class MultipleSqlSessionTemplate extends SqlSessionTemplate {
                     Throwable unwrapped = unwrapThrowable(t);
                     if (defaultTargetExceptionTranslator != null && unwrapped instanceof PersistenceException) {
                         // release the connection to avoid a deadlock if the translator is no loaded. See issue #22
-                        closeSqlSession(sqlSession, getSqlSessionFactory());
+                        closeSqlSession(sqlSession, sqlSessionFactory);
                         sqlSession = null;
                         Throwable translated = defaultTargetExceptionTranslator.translateExceptionIfPossible(
                             (PersistenceException) unwrapped
@@ -83,7 +83,7 @@ public class MultipleSqlSessionTemplate extends SqlSessionTemplate {
                     throw unwrapped;
                 } finally {
                     if (sqlSession != null) {
-                        closeSqlSession(sqlSession, getSqlSessionFactory());
+                        closeSqlSession(sqlSession, sqlSessionFactory);
                     }
                 }
             }

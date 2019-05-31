@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 多数据源注解，用于面向切面自动切换数据源
+ * 多数据源注解，指定要切换的数据源名称，支持Spring SPEL，上下文为方法参数（数组）
  * 
  * @author Ponfee
  */
