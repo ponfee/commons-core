@@ -1,28 +1,32 @@
 package code.ponfee.commons.jedis.spring;
 
+import static java.util.Collections.singletonList;
+
 import java.util.Arrays;
-import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
-import java.util.function.Consumer;
 
-import org.apache.commons.collections4.CollectionUtils;
+import javax.annotation.Nonnull;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.core.BoundValueOperations;
-import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SessionCallback;
 
 import com.google.common.base.Preconditions;
 
+import code.ponfee.commons.jedis.JedisLock;
+import code.ponfee.commons.jedis.JedisOperations;
+import code.ponfee.commons.jedis.ValueOperations;
 import code.ponfee.commons.math.Numbers;
 import code.ponfee.commons.util.Bytes;
-
-import javax.annotation.Nonnull;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.ShardedJedis;
 
 /**
  * <pre>
@@ -65,7 +69,7 @@ import javax.annotation.Nonnull;
  * </pre>
  * 
  * 基于redis的分布式锁
- * 使用redis transaction功能实现
+ * 使用redis lua script功能实现
  * 
  * @author Ponfee
  */
@@ -74,23 +78,29 @@ public class SpringRedisLock implements Lock, java.io.Serializable {
     private static final long serialVersionUID = -6209919116306827731L;
     private static Logger logger = LoggerFactory.getLogger(SpringRedisLock.class);
 
+    private static final byte[] EX_BYTES = ValueOperations.EX.getBytes();
+    private static final byte[] NX_BYTES = ValueOperations.NX.getBytes();
+    private static final byte[] UNLOCK_SCRIPT_BYTES = JedisLock.UNLOCK_SCRIPT.getBytes();
+    private static final Long UNLOCK_SUCCESS = 1L;
+
     private static final int MAX_TOMEOUT_SECONDS = 86400; // 最大超 时为1天
     private static final int MIN_TOMEOUT_SECONDS = 1; // 最小超 时为1秒
     private static final int MIN_SLEEP_MILLIS = 9; // 最小休眠时间为9毫秒
-    private static final String KEY_PREFIX = "lock:";
+    private static final byte[] KEY_PREFIX = "lock:".getBytes();
+
     private static final transient ThreadLocal<byte[]> LOCK_VALUE = new ThreadLocal<>();
 
-    private final transient RedisTemplate<String, byte[]> redis;
-    private final String lockKey;
+    private final transient RedisTemplate<byte[], byte[]> redisTemplate;
+    private final byte[] lockKey;
     private final int timeoutSeconds; // 锁的超时时间，防止死锁
     private final long timeoutMillis;
     private final long sleepMillis;
 
-    public SpringRedisLock(RedisTemplate<String, byte[]> redis, String lockKey) {
+    public SpringRedisLock(RedisTemplate<byte[], byte[]> redis, String lockKey) {
         this(redis, lockKey, MAX_TOMEOUT_SECONDS);
     }
 
-    public SpringRedisLock(RedisTemplate<String, byte[]> redis, 
+    public SpringRedisLock(RedisTemplate<byte[], byte[]> redis, 
                            String lockKey, int timeoutSeconds) {
         this(redis, lockKey, timeoutSeconds, 9);
     }
@@ -102,13 +112,13 @@ public class SpringRedisLock implements Lock, java.io.Serializable {
      * @param timeoutSeconds     锁超时时间（防止死锁）
      * @param sleepMillis        休眠时间（毫秒）
      */
-    public SpringRedisLock(RedisTemplate<String, byte[]> redis, String lockKey, 
+    public SpringRedisLock(RedisTemplate<byte[], byte[]> redis, String lockKey, 
                            int timeoutSeconds, int sleepMillis) {
         Preconditions.checkArgument(redis != null, "jedis template cannot be null");
         Preconditions.checkArgument(StringUtils.isNotEmpty(lockKey), "lock key cannot be null");
 
-        this.redis = redis;
-        this.lockKey = KEY_PREFIX + lockKey; // add prefix key by "jedis:lock:"
+        this.redisTemplate = redis;
+        this.lockKey = Bytes.concat(KEY_PREFIX, lockKey.getBytes()); // add prefix key by "jedis:lock:"
         timeoutSeconds = Math.abs(timeoutSeconds);
         if (timeoutSeconds > MAX_TOMEOUT_SECONDS) {
             timeoutSeconds = MAX_TOMEOUT_SECONDS;
@@ -123,7 +133,8 @@ public class SpringRedisLock implements Lock, java.io.Serializable {
     /**
      * 等待锁直到获取
      */
-    public @Override void lock() {
+    @Override
+    public void lock() {
         while (!tryLock()) {
             try {
                 TimeUnit.MILLISECONDS.sleep(sleepMillis);
@@ -136,7 +147,8 @@ public class SpringRedisLock implements Lock, java.io.Serializable {
     /**
      * 等待锁直到获取成功或抛出InterruptedException异常
      */
-    public @Override void lockInterruptibly() throws InterruptedException {
+    @Override
+    public void lockInterruptibly() throws InterruptedException {
         for (;;) {
             if (Thread.interrupted()) {
                 throw new InterruptedException();
@@ -151,45 +163,18 @@ public class SpringRedisLock implements Lock, java.io.Serializable {
     /**
      * 尝试获取锁，成功返回true，失败返回false
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public @Override boolean tryLock() {
-        BoundValueOperations<String, byte[]> valueOps = redis.boundValueOps(lockKey);
-
-        byte[] lockValue = generateValue();
-        Boolean result = valueOps.setIfAbsent(lockValue); // 竞争锁
-        // 仅当lockKey不存在才能设置成功并返回true，否则setnx不做任何动作返回false
-        if (result != null && result) {
-            // 成功获取锁后需要设置失效期
-            LOCK_VALUE.set(lockValue);
-            valueOps.expire(timeoutSeconds, TimeUnit.SECONDS);
-            return true;
-        }
-
-        return (boolean) redis.execute((SessionCallback) redisOps -> {
-            redisOps.watch(lockKey); // 监视lockKey
-            BoundValueOperations<String, byte[]> valOps = redisOps.boundValueOps(lockKey);
-            byte[] value = valOps.get(); // 获取当前锁值
-            if (value == null || value.length == 0) {
-                redisOps.unwatch();
-                return tryLock(); // 锁被释放，重新获取
-            } else if (System.currentTimeMillis() <= parseValue(value)) {
-                redisOps.unwatch();
-                return Arrays.equals(LOCK_VALUE.get(), value); // 锁未超时则判断是否当前线程持有（可重入锁）
+    @Override
+    public boolean tryLock() {
+        return redisTemplate.execute((RedisCallback<Boolean>) conn -> {
+            byte[] lockValue = generateValue();
+            String result = getJedis(conn, lockKey).set(
+                lockKey, lockValue, NX_BYTES, EX_BYTES, timeoutSeconds
+            );
+            if (JedisOperations.SUCCESS_MSG.equals(result)) {
+                LOCK_VALUE.set(lockValue);
+                return Boolean.TRUE;
             } else {
-                byte[] lockVal = generateValue();
-                redisOps.multi();
-                valOps.getAndSet(lockVal);
-                valOps.expire(timeoutSeconds, TimeUnit.SECONDS);
-                // 锁已超时，争抢锁（事务控制）
-                List<Object> res = redisOps.exec(); // exec执行完后被监控的key会自动unwatch
-                if (   CollectionUtils.isNotEmpty(res)
-                    && Arrays.equals(value, (byte[]) res.get(0))
-                ) {
-                    LOCK_VALUE.set(lockVal);
-                    return true;
-                } else {
-                    return false;
-                }
+                return Boolean.FALSE;
             }
         });
     }
@@ -198,7 +183,8 @@ public class SpringRedisLock implements Lock, java.io.Serializable {
      * 尝试获取锁，成功返回true，失败返回false
      * 线程中断则抛出interrupted异常
      */
-    public @Override boolean tryLock(long timeout, @Nonnull TimeUnit unit)
+    @Override
+    public boolean tryLock(long timeout, @Nonnull TimeUnit unit)
         throws InterruptedException {
         timeout = unit.toNanos(timeout);
         long startTime = System.nanoTime();
@@ -219,24 +205,26 @@ public class SpringRedisLock implements Lock, java.io.Serializable {
     /**
      * 释放锁
      */
-    @SuppressWarnings({ "unchecked" })
-    public @Override void unlock() {
-        doIfHoldLock(redisOps -> redisOps.delete(lockKey));
+    @Override
+    public void unlock() {
+        final byte[] lockValue = LOCK_VALUE.get();
+        if (lockValue != null) {
+            redisTemplate.execute((RedisCallback<Boolean>) conn -> {
+                Object result = getJedis(conn, lockKey).eval(
+                    UNLOCK_SCRIPT_BYTES, singletonList(lockKey), singletonList(lockValue)
+                );
+                LOCK_VALUE.remove();
+                return UNLOCK_SUCCESS.equals(result);
+            });
+        }
     }
 
-    @SuppressWarnings({ "unchecked" })
-    public void expireLock(int timeoutSeconds) {
-        doIfHoldLock(redisOps -> redisOps.expire(lockKey, timeoutSeconds, TimeUnit.SECONDS));
-    }
-
-    public void delLock() {
-        redis.delete(lockKey);
-    }
-
-    public @Override @Nonnull Condition newCondition() {
+    @Override
+    public Condition newCondition() {
         throw new UnsupportedOperationException();
     }
 
+    // ----------------------------------------------------------------------------------extends public methods
     /**
      * <pre> 
      *  {@code
@@ -260,7 +248,7 @@ public class SpringRedisLock implements Lock, java.io.Serializable {
      */
     public boolean isHeldByCurrentThread() {
         byte[] value = LOCK_VALUE.get();
-        return value != null && Arrays.equals(value, redis.opsForValue().get(lockKey));
+        return value != null && Arrays.equals(value, redisTemplate.opsForValue().get(lockKey));
     }
 
     /**
@@ -268,36 +256,24 @@ public class SpringRedisLock implements Lock, java.io.Serializable {
      * @return
      */
     public boolean isLocked() {
-        return redis.opsForValue().get(lockKey) != null;
+        return redisTemplate.opsForValue().get(lockKey) != null;
     }
 
-    /**
-     * 解析值数据
-     * @param value
-     * @return
-     */
-    private long parseValue(byte[] value) {
-        return Bytes.toLong(value, 16); // long value after 16 byte uuid
+    public void forceUnlock(int seconds) {
+        redisTemplate.delete(lockKey);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void doIfHoldLock(Consumer<RedisOperations> action) {
-        redis.execute((SessionCallback) redisOps -> {
-            redisOps.watch(lockKey);
-            BoundValueOperations<String, byte[]> valOps = redisOps.boundValueOps(lockKey);
-            byte[] value = LOCK_VALUE.get(); // 获取当前线程保存的锁值
-            if (value == null || !Arrays.equals(value, valOps.get())) {
-                // 当前线程未获取过锁或锁已被其它线程获取
-                redisOps.unwatch();
-            } else {
-                // 当前线程持有锁，需要释放锁
-                redisOps.multi();
-                action.accept(redisOps);
-                redisOps.exec(); // 自动unwatch
-            }
-            LOCK_VALUE.remove(); // 删除
-            return null;
-        });
+    // ----------------------------------------------------------------------------------private methods
+    private Jedis getJedis(RedisConnection conn, byte[] key) {
+        Object object = conn.getNativeConnection();
+        Objects.requireNonNull(object);
+        if (object instanceof Jedis) {
+            return (Jedis) object;
+        } else if (object instanceof ShardedJedis) {
+            return ((ShardedJedis) object).getShard(key);
+        } else {
+            throw new UnsupportedOperationException("Unsupported " + object.getClass());
+        }
     }
 
     /**
@@ -307,8 +283,7 @@ public class SpringRedisLock implements Lock, java.io.Serializable {
     private byte[] generateValue() {
         UUID uuid = UUID.randomUUID();
         long most  = uuid.getMostSignificantBits(), 
-             least = uuid.getLeastSignificantBits(),
-             time  = System.currentTimeMillis() + timeoutMillis;
+             least = uuid.getLeastSignificantBits();
 
         return new byte[] {
             (byte) (most  >>> 56), (byte) (most  >>> 48),
@@ -319,12 +294,7 @@ public class SpringRedisLock implements Lock, java.io.Serializable {
             (byte) (least >>> 56), (byte) (least >>> 48),
             (byte) (least >>> 40), (byte) (least >>> 32),
             (byte) (least >>> 24), (byte) (least >>> 16),
-            (byte) (least >>>  8), (byte) (least       ),
-
-            (byte) (time  >>> 56), (byte) (time  >>> 48),
-            (byte) (time  >>> 40), (byte) (time  >>> 32),
-            (byte) (time  >>> 24), (byte) (time  >>> 16),
-            (byte) (time  >>>  8), (byte) (time        )
+            (byte) (least >>>  8), (byte) (least       )
         };
     }
 

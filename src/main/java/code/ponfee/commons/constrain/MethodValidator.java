@@ -66,10 +66,8 @@ public abstract class MethodValidator extends FieldValidator {
             return pjp.proceed();
         }
 
-        MethodSignature ms = (MethodSignature) pjp.getSignature();
-        Method method = pjp.getTarget().getClass()
-                           .getMethod(ms.getName(), ms.getParameterTypes()); // ms.getMethod()
-        String methodSign = method.toGenericString(); // ClassUtils.getMethodSignature(method)
+        Method method = ((MethodSignature) pjp.getSignature()).getMethod();
+        String methodSign = method.toGenericString();
         String[] argsName = METHOD_SIGN_CACHE.get(methodSign);
         if (argsName == null) {
             // 要用到asm字节码操作，消耗性能，所以缓存

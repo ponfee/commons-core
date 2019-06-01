@@ -8,6 +8,8 @@
 
 package code.ponfee.commons.tree;
 
+import java.util.function.Function;
+
 import org.apache.commons.collections4.CollectionUtils;
 
 /**
@@ -36,6 +38,10 @@ public final class FlatNode<T extends java.io.Serializable & Comparable<T>, A>
         super.treeMaxDepth = nt.treeMaxDepth;
 
         this.leaf = CollectionUtils.isEmpty(nt.getChildren());
+    }
+
+    public <R> R convert(Function<FlatNode<T, A>, R> convertor) {
+        return convertor.apply(this);
     }
 
     // ----------------------------------------------getter/setter

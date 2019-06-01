@@ -38,8 +38,8 @@ public class PKCS7Signature {
      * byte流数据签名（单人）
      * @param privKey
      * @param cert
-     * @param data 是否附原文
-     * @param attach
+     * @param data 
+     * @param attach 是否附原文
      * @return
      */
     public static byte[] sign(PrivateKey privKey, X509Certificate cert, byte[] data, boolean attach) {

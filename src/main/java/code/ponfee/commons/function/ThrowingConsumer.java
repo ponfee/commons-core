@@ -7,7 +7,7 @@ import java.util.function.Consumer;
  * 
  * @author Ponfee
  * @param <T> the type of the input to the operation
- * @param <E> the type of the call apply method possible occur exception
+ * @param <E> the type of the call accept method possible occur exception
  */
 public interface ThrowingConsumer<T, E extends Throwable> {
     void accept(T t) throws E;

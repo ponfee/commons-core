@@ -1,7 +1,5 @@
 package code.ponfee.commons.log;
 
-import java.lang.reflect.Method;
-
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
@@ -76,10 +74,8 @@ public abstract class LogRecorder {
      * @throws Throwable
      */
     public Object around(ProceedingJoinPoint pjp, LogAnnotation log) throws Throwable {
-        MethodSignature m = (MethodSignature) pjp.getSignature();
-        Method method = pjp.getTarget().getClass().getMethod(m.getName(), m.getParameterTypes());
-        //String methodName = ClassUtils.getMethodSignature(method);
-        String methodName = method.toGenericString();
+        MethodSignature ms = (MethodSignature) pjp.getSignature();
+        String methodName = ms.getMethod().toGenericString();
 
         // request volume threshold
         if (limiter != null && log != null && log.enabled()

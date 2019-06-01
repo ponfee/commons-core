@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package code.ponfee.commons.data;
+package code.ponfee.commons.data.lookup;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
@@ -35,19 +32,15 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.jdbc.datasource.AbstractDataSource;
 import org.springframework.util.Assert;
 
+import code.ponfee.commons.cache.Cache;
+import code.ponfee.commons.cache.CacheBuilder;
 import code.ponfee.commons.collect.Collects;
+import code.ponfee.commons.data.NamedDataSource;
 
 /**
  * Abstract {@link javax.sql.DataSource} implementation that routes {@link #getConnection()}
  * calls to one of various target DataSources based on a lookup key. The latter is usually
  * (but not necessarily) determined through some thread-bound transaction context.
- * 
- * 
- * MultipletRoutingDataSource: 
- *   super.setTargetDataSources(map); // 设置数据源集
- *   super.setDefaultTargetDataSource(defaultDataSource); // 设置默认的数据源
- *   determineCurrentLookupKey() // 获取当前数据源， 当返回为空或无对应数据源时
- *                               // 会使用defaultTargetDataSource
  * 
  * @author Juergen Hoeller
  * @author Ponfee
@@ -56,32 +49,26 @@ import code.ponfee.commons.collect.Collects;
  * @see #setDefaultTargetDataSource
  * @see #determineCurrentLookupKey()
  */
-public class MultipletRoutingDataSource extends AbstractDataSource {
+public class MultipletCachedDataSource extends AbstractDataSource {
 
-    private final boolean lenientFallback;
-    private final Map<String, DataSource> dataSources = new HashMap<>();
+    private final Cache<DataSource> dataSources = CacheBuilder.newBuilder()
+        .autoReleaseInSeconds(3600).caseSensitiveKey(true).keepaliveInMillis(7200000).build();
     private final DataSource defaultDataSource;
 
-    public MultipletRoutingDataSource(NamedDataSource dataSource) {
-        this(true, dataSource.getName(), dataSource.getDataSource());
+    public MultipletCachedDataSource(NamedDataSource dataSource) {
+        this(dataSource.getName(), dataSource.getDataSource());
     }
 
-    public MultipletRoutingDataSource(NamedDataSource... dataSources) {
-        this(true, dataSources);
-    }
-
-    public MultipletRoutingDataSource(boolean lenientFallback, NamedDataSource... dataSources) {
+    public MultipletCachedDataSource(NamedDataSource... dataSources) {
         this(
-            lenientFallback,
             dataSources[0].getName(), 
             dataSources[0].getDataSource(), 
             ArrayUtils.subarray(dataSources, 1, dataSources.length)
         );
     }
 
-    public MultipletRoutingDataSource(boolean lenientFallback, String defaultName, 
-                                      DataSource defaultDataSource, 
-                                      NamedDataSource... othersDataSource) {
+    public MultipletCachedDataSource(String defaultName, DataSource defaultDataSource, 
+                                     NamedDataSource... othersDataSource) {
         if (othersDataSource == null) {
             othersDataSource = new NamedDataSource[0];
         }
@@ -96,57 +83,42 @@ public class MultipletRoutingDataSource extends AbstractDataSource {
             throw new IllegalArgumentException("Duplicated data source name: " + duplicates.toString());
         }
 
-        this.lenientFallback = lenientFallback;
-
         // if determineCurrentLookupKey not get, then use this default
         this.defaultDataSource = defaultDataSource;
 
-        // 设置数据源集
-        this.dataSources.put(defaultName, defaultDataSource);
+        // 设置数据源集（初始设置的数据源永不失效）
+        this.dataSources.set(defaultName, defaultDataSource, Cache.KEEPALIVE_FOREVER);
         for (NamedDataSource ds : othersDataSource) {
-            this.dataSources.put(ds.getName(), ds.getDataSource());
+            this.dataSources.set(ds.getName(), ds.getDataSource(), Cache.KEEPALIVE_FOREVER);
         }
 
         MultipleDataSourceContext.addAll(names);
     }
 
-    /**
-     * Determine the current lookup key. This will typically be
-     * implemented to check a thread-bound transaction context.
-     * <p>Allows for arbitrary keys. The returned key needs
-     * to match the stored lookup key type, as resolved by the
-     * {@link #resolveSpecifiedLookupKey} method.
-     */
-    protected Object determineCurrentLookupKey() {
-        return MultipleDataSourceContext.get();
+    public synchronized void add(NamedDataSource ds, long expireTimeMillis) {
+        this.add(ds.getName(), ds.getDataSource(), expireTimeMillis);
     }
 
-    public synchronized void addDataSource(NamedDataSource ds) {
-        this.addDataSource(ds.getName(), ds.getDataSource());
-    }
-
-    public synchronized void addDataSource(@Nonnull String dataSourceName, 
-                                           @Nonnull DataSource datasource) {
-        if (dataSources.containsKey(dataSourceName)) {
-            throw new IllegalArgumentException("Duplicate datasource name: " + dataSourceName);
+    public synchronized void addIfAbsent(String dataSourceName, Supplier<DataSource> supplier, 
+                                         long expireTimeMillis) {
+        if (!this.dataSources.containsKey(dataSourceName)) {
+            this.add(dataSourceName, supplier.get(), expireTimeMillis);
         }
-        dataSources.put(dataSourceName, datasource);
+    }
+
+    public synchronized void add(@Nonnull String dataSourceName, @Nonnull DataSource datasource,
+                                 long expireTimeMillis) {
+        Assert.isTrue(expireTimeMillis > 0, "ExpireTimeMillis must greater than 0.");
+        if (dataSources.containsKey(dataSourceName)) {
+            throw new IllegalArgumentException("Duplicated name: " + dataSourceName);
+        }
+        dataSources.set(dataSourceName, datasource, expireTimeMillis);
         MultipleDataSourceContext.add(dataSourceName);
     }
 
-    public synchronized void removeDataSource(String dataSourceName) {
-        dataSources.remove(dataSourceName);
+    public synchronized void remove(String dataSourceName) {
+        dataSources.getAndRemove(dataSourceName);
         MultipleDataSourceContext.remove(dataSourceName);
-    }
-
-    public synchronized void removeDataSource(DataSource dataSource) {
-        for (Iterator<Entry<String, DataSource>> iter = dataSources.entrySet().iterator(); iter.hasNext();) {
-            Entry<String, DataSource> entry = iter.next();
-            if (dataSource.equals(entry.getValue())) {
-                iter.remove();
-                MultipleDataSourceContext.remove(entry.getKey());
-            }
-        }
     }
 
     @Override
@@ -182,14 +154,12 @@ public class MultipletRoutingDataSource extends AbstractDataSource {
      * @see #determineCurrentLookupKey()
      */
     protected DataSource determineTargetDataSource() {
-        Assert.notNull(this.dataSources, "DataSource router not initialized");
-        Object lookupKey = determineCurrentLookupKey();
-        DataSource dataSource = this.dataSources.get(lookupKey);
-        if (dataSource == null && (this.lenientFallback || lookupKey == null)) {
-            dataSource = this.defaultDataSource;
-        }
+        String lookupKey = MultipleDataSourceContext.get();
+        DataSource dataSource = (lookupKey == null) 
+                              ? this.defaultDataSource 
+                              : this.dataSources.get(lookupKey);
         if (dataSource == null) {
-            throw new IllegalStateException("Cannot determine target DataSource for lookup key [" + lookupKey + "]");
+            throw new IllegalStateException("Cannot found DataSource for name [" + lookupKey + "]");
         }
         return dataSource;
     }

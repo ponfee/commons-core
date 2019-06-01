@@ -25,6 +25,8 @@ import org.mybatis.spring.MyBatisExceptionTranslator;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 
+import code.ponfee.commons.data.lookup.MultipleDataSourceContext;
+
 /**
  * Mutiple datasource for SqlSessionTemplate
  * 

@@ -12,6 +12,7 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
+import code.ponfee.commons.data.lookup.MultipleDataSourceContext;
 import code.ponfee.commons.function.ThrowingCallable;
 
 /**
@@ -24,7 +25,7 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
     private static final ExpressionParser PARSER = new SpelExpressionParser();
 
     /**
-     * 基于Spring XML &lt;aop:aspect /&gt;方式的配置
+     * 基于Spring XML &lt;aop:aspect /&gt;的配置方式
      * 
      * <pre>{@code
      *   <!-- aop:advisor必须在aop:aspect前面 -->
@@ -51,12 +52,15 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
         // DatabaseQueryServiceImpl$$EnhancerBySpringCGLIB$$ca6c0b12.query4page(PageRequestParams)
         System.out.println(pjp.getTarget().getClass().getMethod(ms.getName(), ms.getParameterTypes()));*/
 
-        Method method = ((MethodSignature) pjp.getSignature()).getMethod();
-        return around(method, pjp.getArgs(), ThrowingCallable.unchecked(() -> pjp.proceed()));
+        return around(
+            ((MethodSignature) pjp.getSignature()).getMethod(), 
+            pjp.getArgs(), 
+            ThrowingCallable.unchecked(() -> pjp.proceed())
+        );
     }
 
     /**
-     * 基于Spring XML &lt;aop:advisor /&gt;方式的配置
+     * 基于Spring XML &lt;aop:advisor /&gt;的配置方式
      * <pre>{@code
      * 
      *   <bean id="dsChangeAdvice" class="code.ponfee.commons.data.MultipleDataSourceAdvisor" />
