@@ -18,5 +18,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DataSourceNaming {
 
+    /**
+     * Specifiy string of the dataSource name
+     */
     String value() default "";
 }

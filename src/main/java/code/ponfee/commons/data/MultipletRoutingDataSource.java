@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -128,7 +129,7 @@ public class MultipletRoutingDataSource extends AbstractDataSource {
     public synchronized void addDataSource(@Nonnull String dataSourceName, 
                                            @Nonnull DataSource datasource) {
         if (dataSources.containsKey(dataSourceName)) {
-            throw new IllegalArgumentException("Duplicate datasource name: " + dataSourceName);
+            throw new IllegalArgumentException("Duplicated name: " + dataSourceName);
         }
         dataSources.put(dataSourceName, datasource);
         MultipleDataSourceContext.add(dataSourceName);
@@ -139,7 +140,9 @@ public class MultipletRoutingDataSource extends AbstractDataSource {
         MultipleDataSourceContext.remove(dataSourceName);
     }
 
-    public synchronized void removeDataSource(DataSource dataSource) {
+    public synchronized void removeDataSource(@Nonnull DataSource dataSource) {
+        Objects.requireNonNull(dataSource);
+
         for (Iterator<Entry<String, DataSource>> iter = dataSources.entrySet().iterator(); iter.hasNext();) {
             Entry<String, DataSource> entry = iter.next();
             if (dataSource.equals(entry.getValue())) {

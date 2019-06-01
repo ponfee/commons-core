@@ -62,9 +62,10 @@ public final class MultipleDataSourceContext {
         dataSourceKeys.remove(key);
     }
 
-    public static List<String> getDataSourceKeys() {
+    public static List<String> listDataSourceNames() {
         return dataSourceKeys == null 
              ? Collections.emptyList() 
              : ImmutableList.copyOf(dataSourceKeys);
     }
+
 }
