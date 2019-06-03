@@ -38,7 +38,7 @@ public class Cache<T> {
     private volatile boolean isDestroy = false; // 是否被销毁
     private final Lock lock = new ReentrantLock(); // 定时清理加锁
     private ScheduledExecutorService scheduler;
-    private DateProvider dateProvider = DateProvider.CURRENT;
+    private TimestampProvider dateProvider = TimestampProvider.CURRENT;
 
     Cache(boolean caseSensitiveKey, boolean compressKey, long keepAliveInMillis, 
           int autoReleaseInSeconds, ScheduledExecutorService scheduler) {
@@ -84,7 +84,7 @@ public class Cache<T> {
         return keepAliveInMillis;
     }
 
-    public DateProvider getDateProvider() {
+    public TimestampProvider getDateProvider() {
         return dateProvider;
     }
 
@@ -92,7 +92,7 @@ public class Cache<T> {
         return dateProvider.now();
     }
 
-    protected void setDateProvider(DateProvider dateProvider) {
+    protected void setDateProvider(TimestampProvider dateProvider) {
         this.dateProvider = dateProvider;
     }
 
