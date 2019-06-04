@@ -7,7 +7,7 @@ import java.util.function.Supplier;
  * 
  * @author Ponfee
  * @param <R> the type of results supplied by this supplier
- * @param <T> the type of the call apply method possible occur exception
+ * @param <T> the type of the call get method possible occur exception
  */
 @FunctionalInterface
 public interface ThrowingSupplier<R, T extends Throwable> {

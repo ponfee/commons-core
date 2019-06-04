@@ -4,6 +4,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.Assert;
+
 import code.ponfee.commons.concurrent.AsyncBatchTransmitter;
 
 public class TestBatchTransmitter {
@@ -46,5 +48,6 @@ public class TestBatchTransmitter {
         }
         System.out.println(increment.get());
         System.out.println(summer.get());
+        Assert.assertEquals(increment.get(), summer.get());
     }
 }

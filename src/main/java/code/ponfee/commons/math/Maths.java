@@ -10,8 +10,9 @@ public class Maths {
 
     /**
      * 以2为底n的对数
-     * @param n
-     * @return
+     * 
+     * @param n the value
+     * @return a value of log(n)/log(2)
      */
     public static double log2(double n) {
         return log(n, 2);
@@ -33,9 +34,10 @@ public class Maths {
 
     /**
      * rotate shift left，循环左移位操作：0<=n<=32
-     * @param x
-     * @param n
-     * @return
+     * 
+     * @param x the value
+     * @param n shift bit len
+     * @return a number of rotate left result
      */
     public static int rotateLeft(int x, int n) {
         return (x << n) | (x >>> (32 - n));

@@ -1,7 +1,5 @@
 package code.ponfee.commons.data;
 
-import java.lang.reflect.Method;
-
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.Ordered;

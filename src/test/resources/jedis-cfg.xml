@@ -46,7 +46,7 @@
         redis.sentinel.passwd= -->
         <constructor-arg index="1" value="REDIS_SENTINEL" />
         <constructor-arg index="2" value="112.74.170.75:16379,112.74.170.75:16380" />
-        <constructor-arg index="3" value="mnWcasH5zN5bncE57pBz" />
+        <constructor-arg index="3" value="" />
         <constructor-arg index="4">
             <bean class="code.ponfee.commons.serial.FstSerializer" />
         </constructor-arg>

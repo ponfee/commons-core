@@ -7,7 +7,7 @@ import java.util.concurrent.Callable;
  * 
  * @author Ponfee
  * @param <R> the result type of method {@code call}
- * @param <T> the type of the call apply method possible occur exception
+ * @param <T> the type of the call "call" method possible occur exception
  */
 @FunctionalInterface
 public interface ThrowingCallable<R, T extends Throwable> {

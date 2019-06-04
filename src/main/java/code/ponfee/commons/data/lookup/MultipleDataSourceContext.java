@@ -1,4 +1,4 @@
-package code.ponfee.commons.data;
+package code.ponfee.commons.data.lookup;
 
 import java.util.Collections;
 import java.util.List;

@@ -7,3 +7,5 @@
 ### mvn install:install-file -Dfile=third-jce-1.0.jar -DgroupId=third-jce -DartifactId=third-jce -Dversion=1.0 -Dpackaging=jar
 
 ### mvn install:install-file -Dfile=chardet-1.0.jar -DgroupId=org.mozilla.intl -DartifactId=chardet -Dversion=1.0 -Dpackaging=jar
+
+### mvn deploy:deploy-file   -Dfile=chardet-1.0.jar -DgroupId=org.mozilla.intl -DartifactId=chardet -Dversion=1.0 -Dpackaging=jar -Durl=http://maven.aliyun.com/nexus/content/repositories/releases/ -DrepositoryId=aliyun-nexus-releases

@@ -1,4 +1,4 @@
-package code.ponfee.commons.data;
+package code.ponfee.commons.data.lookup;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,25 +13,25 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
 import code.ponfee.commons.collect.Collects;
+import code.ponfee.commons.data.NamedDataSource;
 
 /**
- * Multiple DataSource: 
- *   super.setTargetDataSources(map); // 设置数据源集
- *   super.setDefaultTargetDataSource(defaultDataSource); // 设置默认的数据源
- *   determineCurrentLookupKey() // 获取当前数据源， 当返回为空或无对应数据源时
- *                               // 会使用defaultTargetDataSource
+ * Multiple DataSource: <p>
+ *   {@linkplain #setTargetDataSources(Map)}：设置数据源集 <p>
+ *   {@linkplain #setDefaultTargetDataSource(Object)}：设置默认的数据源 <p>
+ *   {@linkplain #determineCurrentLookupKey()}：获取当前数据源， 当返回为空或无对应数据源时会使用defaultTargetDataSource <p>
  * 
- * @see MultipletRoutingDataSource
+ * @see MultipletScalableDataSource
  * 
  * @author Ponfee
  */
-public class MultipleDataSource extends AbstractRoutingDataSource {
+public class MultipleFixedDataSource extends AbstractRoutingDataSource {
 
-    public MultipleDataSource(NamedDataSource dataSource) {
+    public MultipleFixedDataSource(NamedDataSource dataSource) {
         this(dataSource.getName(), dataSource.getDataSource());
     }
 
-    public MultipleDataSource(NamedDataSource... dataSources) {
+    public MultipleFixedDataSource(NamedDataSource... dataSources) {
         this(
             dataSources[0].getName(), 
             dataSources[0].getDataSource(), 
@@ -39,8 +39,8 @@ public class MultipleDataSource extends AbstractRoutingDataSource {
         );
     }
 
-    public MultipleDataSource(String defaultName, DataSource defaultDataSource, 
-                              NamedDataSource... othersDataSource) {
+    public MultipleFixedDataSource(String defaultName, DataSource defaultDataSource, 
+                                   NamedDataSource... othersDataSource) {
         if (othersDataSource == null) {
             othersDataSource = new NamedDataSource[0];
         }
@@ -55,16 +55,15 @@ public class MultipleDataSource extends AbstractRoutingDataSource {
             throw new IllegalArgumentException("Duplicated data source name: " + duplicates.toString());
         }
 
-        // to map
-        Map<Object, Object> map = Arrays.stream(othersDataSource).collect(
-            Collectors.toMap(NamedDataSource::getName, NamedDataSource::getDataSource)
-        );
-        map.put(defaultName, defaultDataSource);
-
-        super.setTargetDataSources(map); // 设置数据源集
-
         // if determineCurrentLookupKey not get, then use this default
         super.setDefaultTargetDataSource(defaultDataSource);
+
+        // set datasources
+        Map<Object, Object> dataSources = Arrays.stream(othersDataSource).collect(
+            Collectors.toMap(NamedDataSource::getName, NamedDataSource::getDataSource)
+        );
+        dataSources.put(defaultName, defaultDataSource);
+        super.setTargetDataSources(dataSources);
 
         MultipleDataSourceContext.addAll(names);
     }

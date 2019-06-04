@@ -407,7 +407,7 @@
     <dependency>
       <groupId>org.springframework.data</groupId>
       <artifactId>spring-data-redis</artifactId>
-      <version>1.8.20.RELEASE</version>
+      <version>1.8.22.RELEASE</version>
     </dependency>
     <!-- ====================redis==================== -->
 
