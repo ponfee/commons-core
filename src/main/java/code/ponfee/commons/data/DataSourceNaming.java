@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Inherited
-@Target({ ElementType.TYPE, ElementType.METHOD })
+@Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DataSourceNaming {
 

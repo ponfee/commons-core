@@ -151,7 +151,8 @@ public final class AsyncBatchTransmitter<T> {
          * thread inner run, don't to direct call this method
          * it is a thread and the alone thread
          */
-        public @Override void run() {
+        @Override
+        public void run() {
             List<T> list = new ArrayList<>(thresholdChunk);
             for (int left = thresholdChunk;;) {
                 if (isEnd && queue.isEmpty() && duration() > (thresholdPeriod << 1)) {

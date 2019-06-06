@@ -36,7 +36,7 @@ public final class WebContext {
     private static final ThreadLocal<HttpServletResponse> RESPONSE = new ThreadLocal<>();
 
     /** 用于非用户访问请求：程序内部反射调用controller方法 */
-    private static final ThreadLocal<Map<String, String[]>> CUST_PARAMS =
+    private static final ThreadLocal<Map<String, String[]>> INJECTED_PARAMS =
         ThreadLocal.withInitial(HashMap::new);
 
     // -----------------------getter
@@ -52,6 +52,25 @@ public final class WebContext {
     }
 
     /**
+     * 设置参数
+     * @param name
+     * @param value
+     */
+    public static void setParameter(String name, String value) {
+        String[] values = INJECTED_PARAMS.get().get(name);
+        if (values == null || values.length == 0) {
+            values = new String[] { value };
+        } else {
+            values = ArrayUtils.add(values, value);
+        }
+        INJECTED_PARAMS.get().put(name, values);
+    }
+
+    public static void clearParameter() {
+        INJECTED_PARAMS.remove();
+    }
+
+    /**
      * 获取参数
      * @param name
      * @return
@@ -61,24 +80,9 @@ public final class WebContext {
         if (null != request) {
             return request.getParameter(name);
         } else {
-            String[] values = CUST_PARAMS.get().get(name); // CUST_PARAMS.get().remove(name)
+            String[] values = INJECTED_PARAMS.get().get(name); // CUST_PARAMS.get().remove(name)
             return (values == null || values.length == 0) ? null : values[0];
         }
-    }
-
-    /**
-     * 设置参数
-     * @param name
-     * @param value
-     */
-    public static void setParameter(String name, String value) {
-        String[] values = CUST_PARAMS.get().get(name);
-        if (values == null || values.length == 0) {
-            values = new String[] { value };
-        } else {
-            values = ArrayUtils.add(values, value);
-        }
-        CUST_PARAMS.get().put(name, values);
     }
 
     /**
@@ -91,12 +95,12 @@ public final class WebContext {
         if (null != request) {
             return request.getParameterValues(name);
         } else {
-            return CUST_PARAMS.get().get(name);
+            return INJECTED_PARAMS.get().get(name);
         }
     }
 
-    public String getText() {
-        return getText(Files.UTF_8);
+    public String getBodyAsText() {
+        return getBodyAsText(Files.UTF_8);
     }
 
     /**
@@ -106,7 +110,7 @@ public final class WebContext {
      * @param charset the string encoding
      * @return string
      */
-    public String getText(String charset) {
+    public String getBodyAsText(String charset) {
         try (InputStream input = getRequest().getInputStream()) {
             return IOUtils.toString(input, charset);
         } catch (Exception e) {
@@ -148,16 +152,16 @@ public final class WebContext {
     }
 
     /**
-     * 过滤器
+     * 过滤器：根据filterName的属性值的首字母排序的顺序执行
      */
     @WebFilter(
-       filterName = "code.ponfee.commons.web.WebContext$WebContextFilter",
+       filterName = "0.code.ponfee.commons.web.WebContext$WebContextFilter",
        dispatcherTypes = {
-            DispatcherType.REQUEST,
-            DispatcherType.FORWARD,
-            DispatcherType.INCLUDE,
-            DispatcherType.ASYNC,
-            DispatcherType.ERROR
+           DispatcherType.REQUEST,
+           DispatcherType.FORWARD,
+           DispatcherType.INCLUDE,
+           DispatcherType.ASYNC,
+           DispatcherType.ERROR
         }, 
         urlPatterns = { "/*" }, 
         initParams = { @WebInitParam(name = "cors", value = "true") },
@@ -166,11 +170,13 @@ public final class WebContext {
     public static class WebContextFilter implements Filter {
         private boolean cors;
 
-        public @Override void init(FilterConfig cfg) {
+        @Override
+        public void init(FilterConfig cfg) {
             cors = Boolean.parseBoolean(cfg.getInitParameter("cors"));
         }
 
-        public @Override void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) 
+        @Override
+        public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) 
             throws IOException, ServletException { 
             try {
                 WebContext.setRequest((HttpServletRequest) req);
@@ -180,13 +186,13 @@ public final class WebContext {
                 }
                 chain.doFilter(req, resp);
             } finally {
-                CUST_PARAMS.remove();
                 WebContext.removeRequest();
                 WebContext.removeResponse();
             }
         }
 
-        public @Override void destroy() {}
+        @Override
+        public void destroy() {}
     }
 
 }
