@@ -3,9 +3,7 @@ package code.ponfee.commons.xml;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
@@ -23,13 +21,9 @@ import code.ponfee.commons.io.Closeables;
  */
 public final class XmlReader {
 
-    private static final DocumentBuilder BUILDER;
+    private static final DocumentBuilderFactory FACTORY = DocumentBuilderFactory.newInstance();
     static {
-        try {
-            BUILDER = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            throw new XmlException("init XmlReader failed");
-        }
+        FACTORY.setExpandEntityReferences(false); // XXE漏洞
     }
 
     private Document document;
@@ -49,9 +43,7 @@ public final class XmlReader {
     public static XmlReader create(InputStream inputStream) {
         try {
             XmlReader readers = new XmlReader();
-            synchronized (BUILDER) { // non thread safe
-                readers.document = BUILDER.parse(inputStream);
-            }
+            readers.document = FACTORY.newDocumentBuilder().parse(inputStream);
             readers.root = readers.document.getFirstChild().getNodeName();
             readers.xpath = XPathFactory.newInstance().newXPath();
             return readers;

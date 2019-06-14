@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -54,14 +55,17 @@ public final class ObjectUtils {
                : reflectionToString(obj, ToStringStyle.JSON_STYLE);
     }
 
-    public static <T> Predicate<T> not(Predicate<T> predicate) {
-        return predicate.negate();
+    @SuppressWarnings("unchecked")
+    public static <T> Predicate<T> not(Predicate<? super T> target) {
+        Objects.requireNonNull(target);
+        return (Predicate<T>) target.negate();
     }
 
     /**
      * 判断对象是否为空
-     * @param o
-     * @return
+     * 
+     * @param o the object
+     * @return {@code true} is empty
      */
     public static boolean isEmpty(Object o) {
         if (o == null) {
@@ -78,6 +82,24 @@ public final class ObjectUtils {
             return ((Dictionary<?, ?>) o).isEmpty();
         } else {
             return false;
+        }
+    }
+
+    /**
+     * Gets the target's name value
+     * 
+     * @param obj
+     * @return a value
+     */
+    public static Object getValue(Object obj, String name) {
+        if (obj == null) {
+            return null;
+        } else if (Map.class.isInstance(obj)) {
+            return ((Map<?, ?>) obj).get(name);
+        } else if (Dictionary.class.isInstance(obj)) {
+            return ((Dictionary<?, ?>) obj).get(name);
+        } else {
+            return Fields.get(obj, name);
         }
     }
 

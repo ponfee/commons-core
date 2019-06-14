@@ -5,7 +5,6 @@ import static code.ponfee.commons.reflect.GenericUtils.getActualTypeArgument;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.springframework.cglib.beans.BeanCopier;
@@ -15,35 +14,47 @@ import code.ponfee.commons.reflect.BeanMaps;
 import code.ponfee.commons.reflect.CglibUtils;
 
 /**
- * Converts model to the data transfer object
+ * Converts model object to the data transfer object
  * 
- * @param <F> from(source)
- * @param <T> to  (target)
+ * @param <S> source
+ * @param <T> target
  * 
  * @author Ponfee
  */
-public abstract class AbstractDataConverter<F, T> implements Function<F, T> {
+public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
 
-    private final Class<T> toType;
-    private volatile BeanCopier copier;
+    private final Class<T> targetType;
+    private final BeanCopier copier;
 
     @SuppressWarnings("unchecked")
     public AbstractDataConverter() {
-        toType = (Class<T>) getActualTypeArgument(this.getClass(), 1);
+        targetType = (Class<T>) getActualTypeArgument(getClass(), 1);
+        copier = BeanCopier.create(
+            getActualTypeArgument(getClass(), 0), targetType, false
+        );
     }
 
-    public T convert(F from) {
-        if (from == null) {
+    /**
+     * Returns an target object copy source the argument object<p>
+     * 
+     * Sub class can override this method<p>
+     * 
+     * @param source the object
+     * @return a target object
+     */
+    public T convert(S source) {
+        if (source == null) {
             return null;
         }
-        return convert(from, toType, this::getCopier);
+        return convert(source, targetType, copier);
     }
 
-    public void copyProperties(F from, T to) {
-        copy(from, to, this::getCopier);
+    // -------------------------------------------------------------final methods
+    public final void copyProperties(S source, T target) {
+        copy(source, target, copier);
     }
 
-    public final List<T> convert(List<F> list) {
+    public final List<T> convert(List<S> list) {
         if (list == null) {
             return null;
         }
@@ -51,7 +62,7 @@ public abstract class AbstractDataConverter<F, T> implements Function<F, T> {
         return list.stream().map(this).collect(Collectors.toList());
     }
 
-    public final Page<T> convert(Page<F> page) {
+    public final Page<T> convert(Page<S> page) {
         if (page == null) {
             return null;
         }
@@ -59,21 +70,21 @@ public abstract class AbstractDataConverter<F, T> implements Function<F, T> {
         return page.transform(this);
     }
 
-    public final Result<T> convertResultBean(Result<F> result) {
+    public final Result<T> convertResultBean(Result<S> result) {
         if (result == null) {
             return null;
         }
         return result.copy(convert(result.getData()));
     }
 
-    public final Result<List<T>> convertResultList(Result<List<F>> result) {
+    public final Result<List<T>> convertResultList(Result<List<S>> result) {
         if (result == null) {
             return null;
         }
         return result.copy(convert(result.getData()));
     }
 
-    public final Result<Page<T>> convertResultPage(Result<Page<F>> result) {
+    public final Result<Page<T>> convertResultPage(Result<Page<S>> result) {
         if (result == null) {
             return null;
         }
@@ -81,113 +92,100 @@ public abstract class AbstractDataConverter<F, T> implements Function<F, T> {
     }
 
     // ----------------------------------------------other methods
-    public @Override final T apply(F from) {
-        return this.convert(from);
-    }
-
-    private BeanCopier getCopier() {
-        if (copier == null) {
-            synchronized (this) {
-                if (copier == null) {
-                    copier = BeanCopier.create(
-                        getActualTypeArgument(this.getClass(), 0), toType, false
-                    );
-                }
-            }
-        }
-        return copier;
+    @Override
+    public final T apply(S source) {
+        return this.convert(source);
     }
 
     // -----------------------------------------------static methods
-    public static <T, F> T convert(F from, Class<T> toType) {
-        return convert(from, toType, null);
+    public static <S, T> T convert(S source, Class<T> targetType) {
+        return convert(source, targetType, null);
     }
 
     @SuppressWarnings({ "unchecked" })
-    public static <T, F> T convert(F from, Class<T> toType, Supplier<BeanCopier> supplier) {
-        if (from == null || toType.isInstance(from)) {
-            return (T) from;
+    public static <S, T> T convert(S source, Class<T> targetType, BeanCopier copier) {
+        if (source == null || targetType.isInstance(source)) {
+            return (T) source;
         }
 
-        //to = toType.getConstructor().newInstance();
-        T to = ObjenesisHelper.newInstance(toType);
+        //target = targetType.getConstructor().newInstance();
+        T target = ObjenesisHelper.newInstance(targetType);
 
-        copy(from, to, supplier);
-        return to;
+        copy(source, target, copier);
+        return target;
     }
 
-    public static <T, F> void copy(F from, T to) {
-        copy(from, to, null);
+    public static <S, T> void copy(S source, T target) {
+        copy(source, target, null);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T, F> void copy(F from, T to, Supplier<BeanCopier> supplier) {
-        if (from == null || to == null) {
+    public static <S, T> void copy(S source, T target, BeanCopier copier) {
+        if (source == null || target == null) {
             return;
         }
 
         // convert
-        if (to instanceof Map && from instanceof Map) {
-            ((Map) to).putAll((Map<?, ?>) from);
-        } else if (to instanceof Map) {
-            ((Map) to).putAll(BeanMaps.CGLIB.toMap(from));
-        } else if (from instanceof Map) {
-            BeanMaps.CGLIB.copy((Map) from, to);
+        if (target instanceof Map && source instanceof Map) {
+            ((Map) target).putAll((Map<?, ?>) source);
+        } else if (target instanceof Map) {
+            ((Map) target).putAll(BeanMaps.CGLIB.toMap(source));
+        } else if (source instanceof Map) {
+            BeanMaps.CGLIB.copy((Map) source, target);
         } else {
-            BeanCopier copier = (supplier != null) ? supplier.get() : null;
             if (copier != null) {
-                copier.copy(from, to, null);
+                copier.copy(source, target, null);
             } else {
-                CglibUtils.copyProperties(from, to);
+                CglibUtils.copyProperties(source, target);
             }
-            //org.apache.commons.beanutils.BeanUtils.copyProperties(to, from);
-            //org.apache.commons.beanutils.PropertyUtils.copyProperties(to, from);
-            //org.springframework.beans.BeanUtils.copyProperties(from, to);
-            //org.springframework.cglib.beans.BeanCopier.create(source, target, false);
+            //org.apache.commons.beanutils.BeanUtils.copyProperties(target, source);
+            //org.apache.commons.beanutils.PropertyUtils.copyProperties(target, source);
+            //org.springframework.beans.BeanUtils.copyProperties(source, target);
+            //org.springframework.cglib.beans.BeanCopier.create(sourceType, targetType, false);
         }
     }
 
-    public static <F, T> T convert(F from, Function<F, T> converter) {
-        if (from == null) {
+    public static <S, T> T convert(S source, Function<S, T> converter) {
+        if (source == null) {
             return null;
         }
-        return converter.apply(from);
+        return converter.apply(source);
     }
 
-    public static <F, T> List<T> convert(
-        List<F> list, Function<F, T> converter) {
+    public static <S, T> List<T> convert(
+        List<S> list, Function<S, T> converter) {
         if (list == null) {
             return null;
         }
         return list.stream().map(converter).collect(Collectors.toList());
     }
 
-    public static <F, T> Page<T> convert(
-        Page<F> page, Function<F, T> converter) {
+    public static <S, T> Page<T> convert(
+        Page<S> page, Function<S, T> converter) {
         if (page == null) {
             return null;
         }
         return page.transform(converter);
     }
 
-    public static <F, T> Result<T> convertResultBean(
-        Result<F> result, Function<F, T> converter) {
+    public static <S, T> Result<T> convertResultBean(
+        Result<S> result, Function<S, T> converter) {
         if (result == null) {
             return null;
         }
         return result.copy(converter.apply(result.getData()));
     }
 
-    public static <F, T> Result<List<T>> convertResultList(
-        Result<List<F>> result, Function<F, T> converter) {
+    public static <S, T> Result<List<T>> convertResultList(
+        Result<List<S>> result, Function<S, T> converter) {
         if (result == null) {
             return null;
         }
         return result.copy(convert(result.getData(), converter));
     }
 
-    public static <F, T> Result<Page<T>> convertResultPage(
-        Result<Page<F>> result, Function<F, T> converter) {
+    public static <S, T> Result<Page<T>> convertResultPage(
+        Result<Page<S>> result, Function<S, T> converter) {
         if (result == null) {
             return null;
         }

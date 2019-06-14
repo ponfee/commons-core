@@ -38,6 +38,8 @@ import code.ponfee.commons.util.Strings;
  *   e.g.：FieldValidator.newInstance().constrain(bean);
  * </pre>
  * 
+ * GAV: net.sf.oval:oval:1.90
+ * 
  * 字段校验
  * @author fupf
  */
@@ -49,7 +51,7 @@ public class FieldValidator {
     private static final String CFG_ERR = "约束配置错误[";
     private static final String EMPTY = "";
     private static final Lock LOCK = new ReentrantLock();
-    static final Cache<String[]> METHOD_SIGN_CACHE = CacheBuilder.newBuilder().build();
+    static final Cache<String[]> METHOD_ARGSNAME = CacheBuilder.newBuilder().build();
     private static final Cache<CacheResult> META_CFG_CACHE = CacheBuilder.newBuilder().build();
 
     protected FieldValidator() {}
@@ -76,10 +78,10 @@ public class FieldValidator {
                     continue;
                 }
 
-                String name = ClassUtils.getClassName(clazz);
-                Object value = Fields.get(bean, field);
-                String error = constrain(name, field.getName(), value, cst, field.getType());
-                builder.append(error);
+                builder.append(constrain(
+                    ClassUtils.getClassName(clazz), field.getName(), 
+                    Fields.get(bean, field), cst, field.getType()
+                ));
             }
             clazz = clazz.getSuperclass();
         }

@@ -5,7 +5,7 @@ import code.ponfee.commons.reflect.ClassUtils;
 
 /**
  * 
- * Object toString Serializer
+ * Byte array trait Serializer
  * 
  * @author Ponfee
  */

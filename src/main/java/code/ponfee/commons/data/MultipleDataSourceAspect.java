@@ -4,7 +4,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.Ordered;
 
-import code.ponfee.commons.function.ThrowingCallable;
+import code.ponfee.commons.exception.CheckedThrowing;
 
 /**
  * <pre>
@@ -39,7 +39,7 @@ public abstract class MultipleDataSourceAspect implements Ordered {
         return MultipleDataSourceAdvisor.around(
             ((MethodSignature) pjp.getSignature()).getMethod(), 
             pjp.getArgs(), dsn, 
-            ThrowingCallable.unchecked(() -> pjp.proceed())
+            CheckedThrowing.callable(() -> pjp.proceed())
         );
     }
 

@@ -13,7 +13,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import code.ponfee.commons.data.lookup.MultipleDataSourceContext;
-import code.ponfee.commons.function.ThrowingCallable;
+import code.ponfee.commons.exception.CheckedThrowing.ThrowingCallable;
 
 /**
  * 多数据源切换，用于Spring XML配置文件形式的切面拦截多数据源切换处理
@@ -55,7 +55,7 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
         return around(
             ((MethodSignature) pjp.getSignature()).getMethod(), 
             pjp.getArgs(), 
-            ThrowingCallable.unchecked(() -> pjp.proceed())
+            ThrowingCallable.checked(() -> pjp.proceed())
         );
     }
 

@@ -62,8 +62,7 @@ public class JedisClient implements DisposableBean {
      * <pre>
      *  ShardedJedis注入格式：
      *   host1:port1,host2:port2,host3:port3
-     *   name1:host1:port1,name2:host2:port2,name3:host3:port3
-     *   name1:host1:port1:password1,name2:host2:port2:password2,name3:host3:port3:password3
+     *   host1:port1:password1,host2:port2:password2,host3:port3:password3
      * </pre>
      * @param poolCfg
      * @param hosts
@@ -78,22 +77,11 @@ public class JedisClient implements DisposableBean {
                 continue;
             }
 
-            String name, host, port, password = null;
-            String[] array = str.split(":");
-            if (array.length == 2) {
-                host = array[0].trim();
-                port = array[1].trim();
-                name = host + ":" + port;
-            } else if (array.length == 3 || array.length == 4) {
-                name = array[0].trim();
-                host = array[1].trim();
-                port = array[2].trim();
-                if (array.length == 4) {
-                    password = array[3].trim();
-                }
-            } else {
-                logger.error("invalid hosts config[" + hosts + "]");
-                continue;
+            String[] array = str.split(":", 3);
+            String host = array[0].trim(), port = array[1].trim(), 
+                   name = host + ":" + port, password = null;
+            if (array.length == 3) {
+                password = array[2].trim();
             }
 
             JedisShardInfo info = new JedisShardInfo(host, Integer.parseInt(port), timeout, name);
@@ -326,10 +314,15 @@ public class JedisClient implements DisposableBean {
                 if (jedis != null) {
                     try {
                         jedis.disconnect();
+                    } catch (Exception ignored) {
+                        ignored.printStackTrace();
+                    }
+                    try {
                         jedis.close();
                     } catch (Exception ignored) {
                         ignored.printStackTrace();
                     }
+                    jedis = null;
                 }
             }
             try {

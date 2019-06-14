@@ -1,5 +1,6 @@
 package code.ponfee.commons.export;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -32,7 +33,7 @@ public class SplitCsvFileExporter extends AbstractSplitExporter {
         }
 
         @Override
-        protected AbstractDataExporter<?> createExporter() {
+        protected AbstractDataExporter<?> createExporter() throws IOException {
             return new CsvFileExporter(savingFilePath, withBom);
         }
     }

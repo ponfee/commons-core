@@ -1,6 +1,5 @@
 package code.ponfee.commons.serial;
 
-import java.io.Serializable;
 import java.lang.ref.SoftReference;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -11,6 +10,7 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.commons.pool2.impl.PooledSoftReference;
 
+import code.ponfee.commons.jedis.spring.ProtostuffRedisSerializer.ProtostuffWrapper;
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtostuffIOUtil;
 import io.protostuff.Schema;
@@ -25,13 +25,14 @@ import io.protostuff.runtime.RuntimeSchema;
  */
 public class Protostuff {
 
+    private static final Schema<ProtostuffWrapper> SCHEMA =
+        RuntimeSchema.getSchema(ProtostuffWrapper.class);
+
     private final ProtostuffWrapper wrapper;
-    private final Schema<ProtostuffWrapper> schema;
     private final LinkedBuffer buffer;
 
     public Protostuff() {
         this.wrapper = new ProtostuffWrapper();
-        this.schema = RuntimeSchema.getSchema(ProtostuffWrapper.class);
         this.buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
     }
 
@@ -40,10 +41,13 @@ public class Protostuff {
             return null;
         }
 
-        wrapper.data = obj;
-        byte[] bytes = ProtostuffIOUtil.toByteArray(wrapper, schema, buffer);
-        buffer.clear();
-        return bytes;
+        wrapper.setValue(obj);
+        try {
+            return ProtostuffIOUtil.toByteArray(wrapper, SCHEMA, buffer);
+        } finally {
+            buffer.clear();
+            wrapper.setValue(null);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -51,18 +55,16 @@ public class Protostuff {
         if (ArrayUtils.isEmpty(bytes)) {
             return null;
         }
-        ProtostuffWrapper wrapper = schema.newMessage();
-        ProtostuffIOUtil.mergeFrom(bytes, wrapper, schema);
-        return (T) wrapper.data;
-    }
-
-    private static final class ProtostuffWrapper implements Serializable {
-        private static final long serialVersionUID = -7170699878063967720L;
-        private Object data;
+        //ProtostuffWrapper wrapper = SCHEMA.newMessage();
+        ProtostuffIOUtil.mergeFrom(bytes, wrapper, SCHEMA);
+        try {
+            return (T) wrapper.getValue();
+        } finally {
+            wrapper.setValue(null);
+        }
     }
 
     public static class ProtostuffFactory extends BasePooledObjectFactory<Protostuff> {
-
         @Override
         public Protostuff create() {
             return new Protostuff();
@@ -76,7 +78,6 @@ public class Protostuff {
     }
 
     public static class ProtostuffPool extends GenericObjectPool<Protostuff> {
-
         public ProtostuffPool() {
             super(new ProtostuffFactory());
         }
@@ -84,6 +85,40 @@ public class Protostuff {
         public ProtostuffPool(GenericObjectPoolConfig config,
                               AbandonedConfig abandonedConfig) {
             super(new ProtostuffFactory(), config, abandonedConfig);
+        }
+    }
+
+    public static class ProtostuffWithPool {
+        private static final ProtostuffPool PROTOSTUFF_POOL = new ProtostuffPool(
+            new GenericObjectPoolConfig(), new AbandonedConfig()
+        );
+
+        public <T> byte[] serialize(T obj) throws SerializationException {
+            Protostuff protostuff = null;
+            try {
+                protostuff = PROTOSTUFF_POOL.borrowObject();
+                return protostuff.serialize(obj);
+            } catch (Exception e) {
+                throw new SerializationException(e.getMessage(), e);
+            } finally {
+                if (protostuff != null) {
+                    PROTOSTUFF_POOL.returnObject(protostuff);
+                }
+            }
+        }
+
+        public <T> T deserialize(byte[] bytes) throws SerializationException {
+            Protostuff protostuff = null;
+            try {
+                protostuff = PROTOSTUFF_POOL.borrowObject();
+                return protostuff.deserialize(bytes);
+            } catch (Exception e) {
+                throw new SerializationException(e.getMessage(), e);
+            } finally {
+                if (protostuff != null) {
+                    PROTOSTUFF_POOL.returnObject(protostuff);
+                }
+            }
         }
     }
 

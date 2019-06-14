@@ -93,7 +93,7 @@ final class ClassPathResourceLoader {
                         jar.close();
                         jar = null;
                         break;
-                    case URL_PROTOCOL_ZIP: // weblogic is zip file
+                    case URL_PROTOCOL_ZIP: // as a zip file in weblogic environment
                         String zipPath = URLDecoder.decode(url.getFile(), encoding);
                         if (zipPath.startsWith(ResourceLoaderFacade.FS_PREFIX)) {
                             zipPath = zipPath.substring(ResourceLoaderFacade.FS_PREFIX.length());
@@ -119,14 +119,16 @@ final class ClassPathResourceLoader {
                             if (fileName.contains("/")) {
                                 fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
                             }
-                            return new Resource(URLDecoder.decode(url.getFile(), encoding), 
-                                                fileName, transform(zip.getInputStream(entry)));
+                            return new Resource(
+                                URLDecoder.decode(url.getFile(), encoding), 
+                                fileName, transform(zip.getInputStream(entry))
+                            );
                         }
                         zip.close();
                         zip = null;
                         break;
                     default:
-                        throw new UnsupportedOperationException("un supported process " + url.getProtocol());
+                        throw new UnsupportedOperationException("Unsupported protocol: " + url.getProtocol());
                 }
             }
             return null;
@@ -222,12 +224,13 @@ final class ClassPathResourceLoader {
                             // 2、匹配后缀
                             boolean isDir = (idx != -1 && name.substring(0, idx).equals(directory)) 
                                             || (recursive && name.startsWith(directory));
-                            boolean isSufx = isEmpty(extensions) 
-                                             || name.toLowerCase().matches("^(.+\\.)(" + join(extensions, "|") + ")$");
-                            if (isDir && isSufx) {
-                                list.add(new Resource(URLDecoder.decode(url.getFile(), encoding), 
-                                                      entry.getName(), 
-                                                      transform(zip.getInputStream(entry))));
+                            boolean isSuffix = isEmpty(extensions) 
+                                            || name.toLowerCase().matches("^(.+\\.)(" + join(extensions, "|") + ")$");
+                            if (isDir && isSuffix) {
+                                list.add(new Resource(
+                                    URLDecoder.decode(url.getFile(), encoding), 
+                                    entry.getName(), transform(zip.getInputStream(entry))
+                                ));
                             }
                         }
                         zip.close();

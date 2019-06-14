@@ -76,7 +76,7 @@ public class ELParser {
         StandardEvaluationContext context = new StandardEvaluationContext();
         context.setVariables((Map<String, Object>) params); // #key
         //context.setVariables("name", (Map<String, Object>) params); // #name[key]
-        //context.setRootObject(params); //  // #root.field
+        //context.setRootObject(params); // #root.field
         ExpressionParser parser = new SpelExpressionParser();
         String result = text;
         Matcher matcher = SPEL_PATTERN.matcher(text);

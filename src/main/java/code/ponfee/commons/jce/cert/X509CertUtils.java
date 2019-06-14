@@ -31,7 +31,6 @@ import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
-import org.bouncycastle.jce.X509Principal;
 import org.bouncycastle.jce.provider.X509CRLObject;
 import org.bouncycastle.jce.provider.X509CRLParser;
 import org.bouncycastle.jce.provider.X509CertificateObject;
@@ -246,9 +245,9 @@ public class X509CertUtils {
                 case END_TM:
                     return DATE_FORMAT.format(cert.getNotAfter());
                 case SUBJECT_DN:
-                    return new X509Principal(cert.getSubjectX500Principal().getEncoded()).getName();
+                    return cert.getSubjectDN().getName();
                 case ISSUER_DN:
-                    return new X509Principal(cert.getIssuerX500Principal().getEncoded()).getName();
+                    return cert.getIssuerDN().getName();
                 case PUBLIC_KEY:
                     return Base64.getEncoder().encodeToString(cert.getPublicKey().getEncoded());
                 case USAGE:
@@ -265,46 +264,19 @@ public class X509CertUtils {
                 case SUBJECT_O:
                 case SUBJECT_OU:
                 case SUBJECT_ST:
-                    return parseCertDN(new X509Principal(cert.getSubjectX500Principal().getEncoded()).getName(), info);
+                    return parseCertDN(cert.getSubjectDN().getName(), info);
                 case ISSUER_C:
                 case ISSUER_CN:
                 case ISSUER_L:
                 case ISSUER_O:
                 case ISSUER_OU:
                 case ISSUER_ST:
-                    return parseCertDN(new X509Principal(cert.getIssuerX500Principal().getEncoded()).getName(), info);
+                    return parseCertDN(cert.getIssuerDN().getName(), info);
                 default:
                     return null;
             }
         } catch (Exception e) {
             return null;
-        }
-    }
-
-    /**
-     * 查询证书信息
-     * @param x509p
-     * @param info
-     * @return
-     */
-    public static String parseCertDN(X509Principal x509p, X509CertInfo info) {
-        switch (info) {
-            case SUBJECT_C:
-            case SUBJECT_CN:
-            case SUBJECT_L:
-            case SUBJECT_O:
-            case SUBJECT_OU:
-            case SUBJECT_ST:
-
-            case ISSUER_C:
-            case ISSUER_CN:
-            case ISSUER_L:
-            case ISSUER_O:
-            case ISSUER_OU:
-            case ISSUER_ST:
-                return parseCertDN(x509p.getName(), info);
-            default:
-                throw new IllegalArgumentException("暂不支持其它属性");
         }
     }
 
@@ -319,8 +291,7 @@ public class X509CertUtils {
         String[] split = certDN.split(",");
         for (String x : split) {
             if (x.contains(type)) {
-                x = x.trim();
-                return x.substring(type.length());
+                return x.trim().substring(type.length());
             }
         }
         return null;
@@ -334,7 +305,7 @@ public class X509CertUtils {
     @SuppressWarnings("unchecked")
     public static Map<String, Object> parseP7(byte[] p7bytes) {
         try {
-            Map<String, Object> result = new HashMap<>();
+            Map<String, Object> result = new HashMap<>(3);
             CMSSignedData cms = new CMSSignedData(p7bytes);
             result.put("content", cms.getSignedContent().getContent()); // 原文
 
@@ -346,7 +317,6 @@ public class X509CertUtils {
             int i = 0;
             for (SignerInformation signer : signers) {
                 Collection<X509CertificateHolder> certChain = certStore.getMatches(signer.getSID());
-                //X509CertificateStructure cert = certChain.iterator().next().toASN1Structure(); // bcmail-jdk16
                 Certificate cert = certChain.iterator().next().toASN1Structure(); // bcmail-jdk15on
                 certs[i++] = new X509CertificateObject(cert);
             }

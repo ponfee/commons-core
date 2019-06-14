@@ -128,9 +128,8 @@ public class PKCS7Signature {
             for (SignerInfo signed : pkcs7.getSignerInfos()) {
                 if (pkcs7.verify(signed, data) == null) {
                     String certSN = Hex.encodeHexString(signed.getCertificateSerialNumber().toByteArray());
-                    String certDN = signed.getCertificate(pkcs7).getSubjectX500Principal().getName();
-                    //new X509Principal(signed.getCertificate(pkcs7).getSubjectX500Principal().getEncoded()).getName()
-                    throw new SecurityException("验签失败[certSN：" + certSN + "；CertDN：" + certDN + "]");
+                    String subjectDN = signed.getCertificate(pkcs7).getSubjectX500Principal().getName();
+                    throw new SecurityException("验签失败[certSN：" + certSN + "；subjectDN：" + subjectDN + "]");
                 }
             }
         } catch (NoSuchAlgorithmException | SignatureException | IOException e) {

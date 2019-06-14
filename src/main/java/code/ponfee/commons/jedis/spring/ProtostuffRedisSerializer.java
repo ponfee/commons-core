@@ -1,12 +1,14 @@
 package code.ponfee.commons.jedis.spring;
 
-import org.apache.commons.pool2.impl.AbandonedConfig;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import java.io.Serializable;
+
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.SerializationException;
 
-import code.ponfee.commons.serial.Protostuff;
-import code.ponfee.commons.serial.Protostuff.ProtostuffPool;
+import io.protostuff.LinkedBuffer;
+import io.protostuff.ProtostuffIOUtil;
+import io.protostuff.Schema;
+import io.protostuff.runtime.RuntimeSchema;
 
 /**
  * Protostuff redis serialize utility
@@ -16,38 +18,48 @@ import code.ponfee.commons.serial.Protostuff.ProtostuffPool;
 
 public class ProtostuffRedisSerializer<T> implements RedisSerializer<T> {
 
-    private static final ProtostuffPool PROTOSTUFF_POOL = new ProtostuffPool(
-        new GenericObjectPoolConfig(), new AbandonedConfig()
-    );
+    public static final class ProtostuffWrapper implements Serializable, Cloneable {
+        private static final long serialVersionUID = -7170699878063967720L;
 
-    @Override
-    public byte[] serialize(T obj) throws SerializationException {
-        Protostuff protostuff = null;
-        try {
-            protostuff = PROTOSTUFF_POOL.borrowObject();
-            return protostuff.serialize(obj);
-        } catch (Exception e) {
-            throw new SerializationException(e.getMessage(), e);
-        } finally {
-            if (protostuff != null) {
-                PROTOSTUFF_POOL.returnObject(protostuff);
-            }
+        private Object value;
+
+        public ProtostuffWrapper() {}
+
+        public ProtostuffWrapper(Object value) {
+            this.value = value;
+        }
+
+        public Object getValue() {
+            return value;
+        }
+
+        public void setValue(Object value) {
+            this.value = value;
         }
     }
 
-    @Override
-    public T deserialize(byte[] bytes) throws SerializationException {
-        Protostuff protostuff = null;
-        try {
-            protostuff = PROTOSTUFF_POOL.borrowObject();
-            return protostuff.deserialize(bytes);
-        } catch (Exception e) {
-            throw new SerializationException(e.getMessage(), e);
-        } finally {
-            if (protostuff != null) {
-                PROTOSTUFF_POOL.returnObject(protostuff);
-            }
+    private static final Schema<ProtostuffWrapper> SCHEMA =
+        RuntimeSchema.getSchema(ProtostuffWrapper.class);
+
+    public byte[] serialize(T object) throws SerializationException {
+        if (object == null) {
+            return null;
         }
+
+        LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
+        ProtostuffWrapper wrapper = new ProtostuffWrapper(object);
+        try {
+            return ProtostuffIOUtil.toByteArray(wrapper, SCHEMA, buffer);
+        } finally {
+            buffer.clear();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public T deserialize(byte[] bytes) throws SerializationException {
+        ProtostuffWrapper wrapper = new ProtostuffWrapper();
+        ProtostuffIOUtil.mergeFrom(bytes, wrapper, SCHEMA);
+        return (T) wrapper.value;
     }
 
 }

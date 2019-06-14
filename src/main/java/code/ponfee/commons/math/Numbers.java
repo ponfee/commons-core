@@ -188,9 +188,9 @@ public final class Numbers {
             return val;
         }
 
-        return new BigDecimal(val)
-                    .setScale(scale, BigDecimal.ROUND_HALF_UP)
-                    .doubleValue();
+        return BigDecimal.valueOf(val)
+                .setScale(scale, BigDecimal.ROUND_HALF_UP)
+                .doubleValue();
     }
 
     /**
@@ -201,11 +201,11 @@ public final class Numbers {
      * @return
      */
     public static double lower(double value, int pow) {
-        return new BigDecimal(value / Math.pow(10, pow)).doubleValue();
+        return BigDecimal.valueOf(value / Math.pow(10, pow)).doubleValue();
     }
 
     public static double lower(double value, int pow, int scale) {
-        return new BigDecimal(value / Math.pow(10, pow))
+        return BigDecimal.valueOf(value / Math.pow(10, pow))
             .setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
@@ -217,11 +217,11 @@ public final class Numbers {
      * @return
      */
     public static double upper(double value, int pow) {
-        return new BigDecimal(value * Math.pow(10, pow)).doubleValue();
+        return BigDecimal.valueOf(value * Math.pow(10, pow)).doubleValue();
     }
 
     public static double upper(double value, int pow, int scale) {
-        return new BigDecimal(value * Math.pow(10, pow))
+        return BigDecimal.valueOf(value * Math.pow(10, pow))
             .setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
