@@ -16,6 +16,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.security.auth.Destroyable;
+
 import com.google.common.base.Preconditions;
 
 import code.ponfee.commons.jce.digest.DigestUtils;
@@ -62,9 +64,17 @@ public class Cache<T> {
                 if (!lock.tryLock()) {
                     return;
                 }
+
+                long now = now();
                 try {
-                    long now = now();
-                    cache.entrySet().removeIf(x -> x.getValue().isExpire(now));
+                    //cache.entrySet().removeIf(x -> x.getValue().isExpire(now));
+                    for (Iterator<Entry<Comparable<?>, CacheValue<T>>> iter = cache.entrySet().iterator(); iter.hasNext();) {
+                        CacheValue<T> cacheValue = iter.next().getValue();
+                        if (cacheValue.isExpire(now)) {
+                            iter.remove();
+                            closeDaemon(cacheValue);
+                        }
+                    }
                 } finally {
                     lock.unlock();
                 }
@@ -150,6 +160,7 @@ public class Cache<T> {
             return null;
         } else if (cacheValue.isExpire(now())) {
             cache.remove(key);
+            closeDaemon(cacheValue);
             return null;
         } else {
             return cacheValue.getValue();
@@ -157,8 +168,9 @@ public class Cache<T> {
     }
 
     /**
-     * get value and remove it
-     * @param key
+     * Gets value by key and remove it
+     * 
+     * @param key the key
      */
     public T getAndRemove(Comparable<?> key) {
         if (isDestroy) {
@@ -189,6 +201,7 @@ public class Cache<T> {
             return false;
         } else if (cacheValue.isExpire(now())) {
             cache.remove(key);
+            closeDaemon(cacheValue);
             return false;
         } else {
             return true;
@@ -218,6 +231,7 @@ public class Cache<T> {
                 }
             } else {
                 i.remove();
+                closeDaemon(cacheValue);
             }
         }
         return false;
@@ -240,6 +254,7 @@ public class Cache<T> {
                 values.add(value.getValue());
             } else {
                 i.remove();
+                closeDaemon(value);
             }
         }
         return values;
@@ -306,6 +321,28 @@ public class Cache<T> {
             }
         }
         return key;
+    }
+
+    /**
+     * Deamon close the expire value
+     * 
+     * @param cacheValue the cache value
+     */
+    private void closeDaemon(CacheValue<T> cacheValue) {
+        T value = cacheValue.getValue();
+        if (value instanceof AutoCloseable) {
+            try {
+                ((AutoCloseable) value).close();
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
+            }
+        } else if (value instanceof Destroyable) {
+            try {
+                ((Destroyable) value).destroy();
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
+            }
+        }
     }
 
 }

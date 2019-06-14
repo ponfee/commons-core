@@ -9,6 +9,11 @@ import code.ponfee.commons.reflect.ClassUtils;
 import code.ponfee.commons.util.Strings;
 
 /**
+ * 
+ * Class.getResourceAsStream(path)：不以'/'开头则相对此类的包路径获取，以'/'开头从ClassPath根下获取（内部还是由ClassLoader获取）
+ * ClassLoader.getResourceAsStream(path)：从ClassPath根下获取，path不能以'/'开头
+ * ServletContext.getResourceAsStream(path)：从WebAPP根目录下取资源，'/'开头和不以'/'开头情况一样
+ * 
  * <ul>
  *   <li>
  *    <span>classpath:</span>

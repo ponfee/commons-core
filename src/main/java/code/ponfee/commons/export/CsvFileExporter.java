@@ -14,16 +14,16 @@ import code.ponfee.commons.io.WrappedBufferedWriter;
  */
 public class CsvFileExporter extends AbstractCsvExporter<Void> {
 
-    public CsvFileExporter(String filePath, boolean withBom) {
+    public CsvFileExporter(String filePath, boolean withBom) throws IOException {
         this(new File(filePath), StandardCharsets.UTF_8, withBom);
     }
 
-    public CsvFileExporter(File file, Charset charset, boolean withBom) {
+    public CsvFileExporter(File file, Charset charset, boolean withBom) throws IOException {
         super(createWriter(file, charset, withBom));
     }
 
     public CsvFileExporter(char csvSeparator, File file, 
-                           Charset charset, boolean withBom) {
+                           Charset charset, boolean withBom) throws IOException {
         super(createWriter(file, charset, withBom), csvSeparator);
     }
 
@@ -46,17 +46,13 @@ public class CsvFileExporter extends AbstractCsvExporter<Void> {
         }
     }
 
-    private static Appendable createWriter(File file, Charset charset,
-                                           boolean withBom) {
-        try {
-            WrappedBufferedWriter writer = new WrappedBufferedWriter(file, charset);
-            if (withBom) {
-                writer.write(WINDOWS_BOM);
-            }
-            return writer;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    private static Appendable createWriter(File file, Charset charset, boolean withBom)
+        throws IOException {
+        WrappedBufferedWriter writer = new WrappedBufferedWriter(file, charset);
+        if (withBom) {
+            writer.write(WINDOWS_BOM);
         }
+        return writer;
     }
 
 }

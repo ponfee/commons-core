@@ -90,15 +90,17 @@ public class ResourceScanner {
         try {
             for (String packageName : this.scanPaths) {
                 packageName = packageName.replace('.', '/');
-                Resource[] resources = resolver.getResources(CLASSPATH_ALL_URL_PREFIX + packageName + "/**/*.class");
-                MetadataReaderFactory readerFactory = new CachingMetadataReaderFactory(resolver);
+                Resource[] resources = resolver.getResources(
+                    CLASSPATH_ALL_URL_PREFIX + packageName + "/**/*.class"
+                );
+                MetadataReaderFactory mrf = new CachingMetadataReaderFactory(resolver);
                 for (Resource resource : resources) {
                     if (!resource.isReadable()) {
                         continue;
                     }
 
-                    MetadataReader reader = readerFactory.getMetadataReader(resource);
-                    if (!this.matchesFilter(reader, typeFilters, readerFactory)) {
+                    MetadataReader reader = mrf.getMetadataReader(resource);
+                    if (!this.matchesFilter(reader, typeFilters, mrf)) {
                         continue;
                     }
 
@@ -109,7 +111,6 @@ public class ResourceScanner {
                     }
                 }
             }
-
             return classSet;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -117,7 +118,8 @@ public class ResourceScanner {
     }
 
     /**
-     * 流扫描
+     * Scan as byte array
+     * 
      * @return Map<String, byte[]>
      */
     public Map<String, byte[]> scan4binary() {
@@ -125,9 +127,10 @@ public class ResourceScanner {
     }
 
     /**
-     * 流扫描
+     * Scan as byte array
+     * 
      * @param wildcard 通配符
-     * @return
+     * @return a result of Map<String, byte[]>
      */
     public Map<String, byte[]> scan4binary(String wildcard) {
         if (wildcard == null) {
@@ -150,7 +153,6 @@ public class ResourceScanner {
                     }
                 }
             }
-
             return result;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -159,6 +161,7 @@ public class ResourceScanner {
 
     /**
      * 文本扫描
+     * 
      * @return
      */
     public Map<String, String> scan4text() {
@@ -167,6 +170,7 @@ public class ResourceScanner {
 
     /**
      * 文本扫描
+     * 
      * @param wildcard
      * @return
      */
@@ -176,6 +180,7 @@ public class ResourceScanner {
 
     /**
      * 文本扫描
+     * 
      * @param wildcard
      * @param charset
      * @return
@@ -188,13 +193,15 @@ public class ResourceScanner {
         return result;
     }
 
+    // --------------------------------------------------------------------------private methods
     /**
      * 检查当前扫描到的Bean含有任何一个指定的注解标记
-     * @param reader
-     * @param typeFilters
-     * @param factory
-     * @return
-     * @throws IOException
+     * 
+     * @param reader the MetadataReader
+     * @param typeFilters the List<TypeFilter>
+     * @param factory the MetadataReaderFactory
+     * @return {@code true} means matched
+     * @throws IOException if occur IOException
      */
     private boolean matchesFilter(MetadataReader reader, List<TypeFilter> typeFilters,
                                   MetadataReaderFactory factory) throws IOException {

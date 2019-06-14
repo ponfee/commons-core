@@ -15,6 +15,7 @@ import org.springframework.cglib.beans.BeanCopier;
 import com.google.common.collect.Lists;
 
 /**
+ * <pre>
  * 参考guthub开源的mybatis分页工具
  *   项目地址: 
  *     http://git.oschina.net/free/Mybatis_PageHelper
@@ -28,6 +29,7 @@ import com.google.common.collect.Lists;
  * 
  *   Spring Boot集成 MyBatis, 分页插件 PageHelper, 通用 Mapper
  *     https://github.com/abel533/MyBatis-Spring-Boot
+ * </pre>
  * 
  * @author Ponfee
  */

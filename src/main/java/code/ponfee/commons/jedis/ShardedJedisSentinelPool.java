@@ -204,10 +204,15 @@ public class ShardedJedisSentinelPool extends Pool<ShardedJedis> {
                         if (jedis != null) {
                             try {
                                 jedis.disconnect();
+                            } catch (Exception ignored) {
+                                ignored.printStackTrace();
+                            }
+                            try {
                                 jedis.close();
                             } catch (Exception ignored) {
                                 ignored.printStackTrace();
                             }
+                            jedis = null;
                         }
                     }
                 }

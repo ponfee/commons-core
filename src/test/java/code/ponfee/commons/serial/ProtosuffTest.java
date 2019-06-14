@@ -41,14 +41,10 @@ public class ProtosuffTest {
         Stopwatch watch = Stopwatch.createStarted();
         final Protostuff ser1 = new Protostuff();
         final Protostuff ser2 = new Protostuff();
-        try {
-            MultithreadExecutor.execAsync(50, () -> {
-                Assert.assertEquals("test123", ((Result<String>) ser2.deserialize(ser1.serialize(Result.success("test123")))).getData());
-                Assert.assertEquals("abce", ((LogInfo) ser1.deserialize(ser2.serialize(new LogInfo("abce")))).getMethodName());
-            }, 5);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        MultithreadExecutor.execAsync(50, () -> {
+            Assert.assertEquals("test123", ((Result<String>) ser2.deserialize(ser1.serialize(Result.success("test123")))).getData());
+            Assert.assertEquals("abce", ((LogInfo) ser1.deserialize(ser2.serialize(new LogInfo("abce")))).getMethodName());
+        }, 5);
         System.out.println(watch.stop());
     }
 
@@ -58,16 +54,31 @@ public class ProtosuffTest {
         ProtostuffRedisSerializer<Object> ser1 = new ProtostuffRedisSerializer<>();
         ProtostuffRedisSerializer<Object> ser2 = new ProtostuffRedisSerializer<>();
 
-        try {
-            MultithreadExecutor.execAsync(50, () -> {
-                Assert.assertEquals("test123", ((Result<String>) ser2.deserialize(ser1.serialize(Result.success("test123")))).getData());
-                Assert.assertEquals("abce", ((LogInfo) ser1.deserialize(ser2.serialize(new LogInfo("abce")))).getMethodName());
-            }, 5);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        MultithreadExecutor.execAsync(2, () -> {
+            Assert.assertEquals("test123", ((Result<String>) ser2.deserialize(ser1.serialize(Result.success("test123")))).getData());
+            Assert.assertEquals("abce", ((LogInfo) ser1.deserialize(ser2.serialize(new LogInfo("abce")))).getMethodName());
+        }, 5);
 
         System.out.println(watch.stop());
     }
 
+    @Test
+    public void test5() {
+        Stopwatch watch = Stopwatch.createStarted();
+        Protostuff ser1 = new Protostuff();
+        for (int i = 0; i < 10000000; i++) {
+            Result<?> result = (Result<String>) ser1.deserialize(ser1.serialize(Result.success("test123")));
+        }
+        System.out.println(watch.stop());
+    }
+
+    @Test
+    public void test6() {
+        Stopwatch watch = Stopwatch.createStarted();
+        ProtostuffRedisSerializer<Object> ser1 = new ProtostuffRedisSerializer<>();
+        for (int i = 0; i < 10000000; i++) {
+            Result<?> result = (Result<String>) ser1.deserialize(ser1.serialize(Result.success("test123")));
+        }
+        System.out.println(watch.stop());
+    }
 }

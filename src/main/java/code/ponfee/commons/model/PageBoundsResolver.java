@@ -13,10 +13,11 @@ public final class PageBoundsResolver {
 
     /**
      * 多个数据源查询结果分页
+     * 
      * @param pageNum 页号
      * @param pageSize 页大小
      * @param subTotalCounts 各数据源查询结果集行总计
-     * @return
+     * @return a list of page bounds
      */
     public static List<PageBounds> resolve(int pageNum, int pageSize, long... subTotalCounts) {
         if (subTotalCounts == null || subTotalCounts.length == 0) {
@@ -76,10 +77,11 @@ public final class PageBoundsResolver {
 
     /**
      * 单个数据源查询结果分页
-     * @param pageNum
-     * @param pageSize
-     * @param totalCounts
-     * @return
+     * 
+     * @param pageNum the page number
+     * @param pageSize the page size
+     * @param totalCounts the total counts
+     * @return a page bounds
      */
     public static PageBounds resolve(int pageNum, int pageSize, long totalCounts) {
         List<PageBounds> list = resolve(pageNum, pageSize, new long[] { totalCounts });

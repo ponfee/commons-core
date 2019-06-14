@@ -119,6 +119,11 @@ public final class Bytes {
     }
 
     // -----------------------------------------------------------------hexEncode/hexDecode
+    public static void hexEncode(char[] charArray, int i, byte b) {
+        charArray[  i] = HEX_LOWER_CODES[(0xF0 & b) >>> 4];
+        charArray[++i] = HEX_LOWER_CODES[ 0x0F & b       ];
+    }
+
     public static String hexEncode(byte b, boolean lowercase) {
         char[] codes = lowercase ? HEX_LOWER_CODES : HEX_UPPER_CODES;
         return new String(new char[] {

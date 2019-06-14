@@ -12,11 +12,11 @@ public class WrappedBigDecimal {
     private BigDecimal decimal;
 
     public WrappedBigDecimal(Number num) {
-        decimal = new BigDecimal(num.doubleValue());
+        decimal = BigDecimal.valueOf(num.doubleValue());
     }
 
     public synchronized void add(Number num) {
-        decimal = decimal.add(new BigDecimal(num.doubleValue()));
+        decimal = decimal.add(BigDecimal.valueOf(num.doubleValue()));
     }
 
     public synchronized void divide(BigDecimal divisor) {

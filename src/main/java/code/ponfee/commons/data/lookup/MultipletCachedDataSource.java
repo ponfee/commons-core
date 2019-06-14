@@ -52,7 +52,8 @@ import code.ponfee.commons.data.NamedDataSource;
 public class MultipletCachedDataSource extends AbstractDataSource {
 
     private final Cache<DataSource> dataSources = CacheBuilder.newBuilder()
-        .autoReleaseInSeconds(3600).caseSensitiveKey(true).keepaliveInMillis(7200000).build();
+        .autoReleaseInSeconds(300).caseSensitiveKey(true).build();
+
     private final DataSource defaultDataSource;
 
     public MultipletCachedDataSource(NamedDataSource dataSource) {

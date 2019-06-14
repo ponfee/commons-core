@@ -384,17 +384,13 @@ public class HttpRequest {
         };
     }
 
-    private static ConnectionFactory CONNECTION_FACTORY = ConnectionFactory.DEFAULT;
+    private static ConnectionFactory connectionFactory = ConnectionFactory.DEFAULT;
 
     /**
      * Specify the {@link ConnectionFactory} used to create new requests.
      */
-    public static void setConnectionFactory(ConnectionFactory connectionFactory) {
-        if (connectionFactory == null) {
-            CONNECTION_FACTORY = ConnectionFactory.DEFAULT;
-        } else {
-            CONNECTION_FACTORY = connectionFactory;
-        }
+    public static void setConnectionFactory(ConnectionFactory cf) {
+        connectionFactory = cf != null ? cf : ConnectionFactory.DEFAULT;
     }
 
     /**
@@ -439,23 +435,19 @@ public class HttpRequest {
          */
         protected abstract void done() throws IOException;
 
-        public @Override final V call() throws HttpException {
-            boolean thrown = false;
+        @Override
+        public final V call() throws HttpException {
             try {
                 return run();
             } catch (HttpException e) {
-                thrown = true;
                 throw e;
-            } catch (IOException e) {
-                thrown = true;
+            } catch (Exception e) {
                 throw new HttpException(e);
             } finally {
                 try {
                     done();
-                } catch (IOException e) {
-                    if (!thrown) {
-                        throw new HttpException(e);
-                    }
+                } catch (Exception ignored) {
+                    ignored.printStackTrace();
                 }
             }
         }
@@ -1154,14 +1146,14 @@ public class HttpRequest {
 
     private HttpURLConnection createConnection() {
         try {
-            HttpURLConnection connection;
+            HttpURLConnection conn;
             if (httpProxyHost != null) {
-                connection = CONNECTION_FACTORY.create(url, createProxy());
+                conn = connectionFactory.create(url, createProxy());
             } else {
-                connection = CONNECTION_FACTORY.create(url);
+                conn = connectionFactory.create(url);
             }
-            connection.setRequestMethod(requestMethod);
-            return connection;
+            conn.setRequestMethod(requestMethod);
+            return conn;
         } catch (IOException e) {
             throw new HttpException(e);
         }

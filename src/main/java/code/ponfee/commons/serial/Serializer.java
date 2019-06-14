@@ -18,7 +18,7 @@ public abstract class Serializer {
      * @param compress 是否要压缩：true是；false否；
      * @return 序例化后的流数据
      */
-    protected abstract byte[] serialize0(Object obj, boolean compress);
+    protected abstract <T> byte[] serialize0(T obj, boolean compress);
 
     /**
      * 流数据反序例化为对象

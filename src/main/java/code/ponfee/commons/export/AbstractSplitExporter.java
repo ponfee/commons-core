@@ -1,5 +1,6 @@
 package code.ponfee.commons.export;
 
+import java.io.IOException;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
@@ -86,10 +87,12 @@ public abstract class AbstractSplitExporter extends AbstractDataExporter<Void> {
             try (AbstractDataExporter<?> exporter = createExporter()) {
                 exporter.build(subTable);
                 complete(exporter);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
 
-        protected abstract AbstractDataExporter<?> createExporter();
+        protected abstract AbstractDataExporter<?> createExporter() throws IOException;
 
         protected void complete(AbstractDataExporter<?> exporter) {}
     }

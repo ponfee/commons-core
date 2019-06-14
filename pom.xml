@@ -12,7 +12,10 @@
   <!-- 
     mvn package -Dmaven.test.skip=true：不执行测试用例，也不编译测试用例类；
     mvn package -DskipTests：跳过单元测试，但是会继续编译；
+    mvn versions:set -DnewVersion=1.17-SNAPSHOT
+
     https://github.com/alibaba/p3c
+    https://www.jianshu.com/p/68a3ed571314
 
     javac: 不加“-g”则默认为“-g:source,lines”
       -g                     生成所有调试信息
@@ -356,7 +359,12 @@
     <dependency><!-- jackson -->
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.9.8</version>
+      <version>2.9.9</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>2.9.9</version>
     </dependency>
     <dependency><!-- hessian -->
       <groupId>com.caucho</groupId>

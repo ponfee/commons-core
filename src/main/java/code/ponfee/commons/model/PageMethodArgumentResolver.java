@@ -3,7 +3,6 @@ package code.ponfee.commons.model;
 import static code.ponfee.commons.model.PageHandler.DEFAULT_LIMIT;
 import static code.ponfee.commons.model.PageHandler.DEFAULT_PAGE_SIZE;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,8 +12,9 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import com.google.common.collect.ImmutableList;
+
 import code.ponfee.commons.math.Numbers;
-import code.ponfee.commons.model.PageRequestParams;
 import code.ponfee.commons.reflect.Fields;
 
 /**
@@ -35,7 +35,7 @@ public class PageMethodArgumentResolver implements HandlerMethodArgumentResolver
     // pageSize(or limit) has not spec or spec less 1 then use this default value
     private static final int DEFAULT_SIZE = 20;
 
-    private static final List<String> SIZE_PARAMS = Arrays.asList(
+    private static final List<String> SIZE_PARAMS = ImmutableList.of(
         DEFAULT_PAGE_SIZE, DEFAULT_LIMIT
     );
 
@@ -90,9 +90,9 @@ public class PageMethodArgumentResolver implements HandlerMethodArgumentResolver
         return page;
     }
 
-    //@Target(ElementType.PARAMETER)
-    //@Retention(RetentionPolicy.RUNTIME)
-    //@Documented
-    //public static @interface PageRequestParam {}
+    /*@Target(ElementType.PARAMETER)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    public static @interface PageRequestParam {}*/
 
 }
