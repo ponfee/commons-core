@@ -116,11 +116,11 @@ public final class PageHandler {
     }
 
     public static int computePageNum(long offset, int limit) {
-        return limit == 0 ? 0 : (int) offset / limit + 1;
+        return limit == 0 ? 0 : (int) (offset / limit + 1);
     }
 
     public static int computeOffset(long pageNum, int pageSize) {
-        return (int) (pageNum - 1) * pageSize;
+        return (int) ((pageNum - 1) * pageSize);
     }
 
     /**

@@ -10,7 +10,7 @@ import org.junit.Test;
 import code.ponfee.commons.http.Http;
 import code.ponfee.commons.jce.pkcs.CryptoMessageSyntax;
 import code.ponfee.commons.jce.pkcs.PKCS7Envelope;
-import code.ponfee.commons.jce.pkcs.PKCS7Envelope.AlgorithmMapping;
+import code.ponfee.commons.jce.pkcs.PKCS7Envelope.AlgorithmOidMapping;
 import code.ponfee.commons.jce.security.KeyStoreResolver;
 import code.ponfee.commons.jce.security.KeyStoreResolver.KeyStoreType;
 import code.ponfee.commons.jce.security.RSACryptor;
@@ -28,7 +28,7 @@ public class PKCS7EnvelopeTester {
         System.out.println("origin len------------" + data.length);
         System.out.println("===============================================");
 
-        byte[] enveloped = PKCS7Envelope.envelop(data, cert, AlgorithmMapping.DESede_CBC);
+        byte[] enveloped = PKCS7Envelope.envelop(data, cert, AlgorithmOidMapping.DESede_CBC);
         System.out.println("cost"+(System.currentTimeMillis()-start));
         start = System.currentTimeMillis();
         //System.out.println(Bytes.hexDump(enveloped));

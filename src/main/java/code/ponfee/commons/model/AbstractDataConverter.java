@@ -24,7 +24,7 @@ import code.ponfee.commons.reflect.CglibUtils;
 public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
 
     private final Class<T> targetType;
-    private BeanCopier copier;
+    private final BeanCopier copier;
 
     @SuppressWarnings("unchecked")
     public AbstractDataConverter() {

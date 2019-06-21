@@ -7,10 +7,12 @@ import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.cglib.beans.BeanMap;
 import org.springframework.objenesis.ObjenesisHelper;
 
@@ -77,7 +79,10 @@ public enum BeanMaps {
             if (fields == null) {
                 synchronized (cachedFields) {
                     if ((fields = cachedFields.get(beanType)) == null) {
-                        fields = ImmutableList.copyOf(ClassUtils.listFields(beanType));
+                        List<Field> list = ClassUtils.listFields(beanType);
+                        fields = CollectionUtils.isEmpty(list) 
+                               ? Collections.emptyList() 
+                               : ImmutableList.copyOf(list);
                         cachedFields.put(beanType, fields);
                     }
                 }

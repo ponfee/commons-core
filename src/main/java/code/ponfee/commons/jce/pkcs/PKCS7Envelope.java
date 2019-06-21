@@ -3,6 +3,7 @@ package code.ponfee.commons.jce.pkcs;
 import java.io.ByteArrayOutputStream;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -26,8 +27,6 @@ import org.bjca.jce.fastparser.EnvelopedData;
 import org.bjca.jce.fastparser.FastPkcs7;
 import org.bjca.jce.fastparser.Item;
 import org.bjca.jce.fastparser.RecipientInfo;
-import org.bouncycastle.jce.X509Principal;
-import org.bouncycastle.util.Arrays;
 
 import code.ponfee.commons.io.Closeables;
 import code.ponfee.commons.jce.Providers;
@@ -56,7 +55,7 @@ public final class PKCS7Envelope {
      * @param alg
      * @return
      */
-    public static byte[] envelop(byte[] plaindata, X509Certificate cert, AlgorithmMapping alg) {
+    public static byte[] envelop(byte[] plaindata, X509Certificate cert, AlgorithmOidMapping alg) {
         DEROutputStream dout = null;
         try {
             // 生成对称密钥
@@ -80,11 +79,10 @@ public final class PKCS7Envelope {
             byte[] encdata = cipher.doFinal(plaindata);
 
             // 填充接收者信息
-            X509Principal p = new X509Principal(cert.getIssuerX500Principal().getEncoded());
             DERConstructedSequence recipientInfo = new DERConstructedSequence();
             recipientInfo.addObject(new DERInteger(0));
             recipientInfo.addObject(
-                new IssuerAndSerialNumber(new X509Name(p.getName()), new DERInteger(cert.getSerialNumber()))
+                new IssuerAndSerialNumber(new X509Name(cert.getIssuerDN().getName()), new DERInteger(cert.getSerialNumber()))
             );
             recipientInfo.addObject(
                 new AlgorithmIdentifier(new DERObjectIdentifier(OID_RSA_ECB_PKCS1PADDING), null)
@@ -165,7 +163,7 @@ public final class PKCS7Envelope {
             input = new ASN1InputStream(bs);
             AlgorithmIdentifier alg = AlgorithmIdentifier.getInstance(input.readObject());
             String algoid = alg.getObjectId().getId();
-            AlgorithmMapping algorithm = getAlgByOid(algoid);
+            AlgorithmOidMapping algorithm = AlgorithmOidMapping.fromOid(algoid);
             Cipher cipher = Providers.getCipher(algorithm.transform);
 
             // 对称加密向量参数
@@ -191,19 +189,10 @@ public final class PKCS7Envelope {
         }
     }
 
-    private static AlgorithmMapping getAlgByOid(String oid) {
-        for (AlgorithmMapping alg : AlgorithmMapping.values()) {
-            if (alg.oid.equals(oid)) {
-                return alg;
-            }
-        }
-        throw new IllegalArgumentException("unknown the alg oid: " + oid);
-    }
-
     /**
      * 算法相关
      */
-    public enum AlgorithmMapping {
+    public static enum AlgorithmOidMapping {
         AES128_WRAP("2.16.840.1.101.3.4.1.5", "AES", "AES", 0), //
         AES192_WRAP("2.16.840.1.101.3.4.1.25", "AES", "AES", 0), //
         AES256_WRAP("2.16.840.1.101.3.4.1.45", "AES", "AES", 0), //
@@ -219,16 +208,24 @@ public final class PKCS7Envelope {
         AES256_CBC("2.16.840.1.101.3.4.1.42", "AES", "AES/CBC/PKCS5Padding", 16), //
         ;
 
-        final String oid;
-        final String name;
-        final String transform;
-        final int ivLen;
+        public final String oid;
+        public final String name;
+        public final String transform;
+        public final int ivLen;
 
-        AlgorithmMapping(String oid, String name, String transform, int ivLen) {
+        private AlgorithmOidMapping(String oid, String name, String transform, int ivLen) {
             this.oid = oid;
             this.name = name;
             this.transform = transform;
             this.ivLen = ivLen;
+        }
+
+        public static AlgorithmOidMapping fromOid(String oid) {
+            return Arrays.stream(AlgorithmOidMapping.values()).filter(
+                a -> a.oid.equals(oid)
+            ).findFirst().orElseThrow(
+                () -> new IllegalArgumentException("Unknown the alg oid: " + oid)
+            );
         }
     }
 

@@ -34,7 +34,7 @@ public class BaseNode<T extends Serializable & Comparable<T>, A>
     protected final T pid; // parent node id
     protected final int orders; // 节点次序（在兄弟节点间的排序中使用到）
     protected final boolean enabled; // 状态（业务相关）：false无效；true有效；
-    protected final A attach; // 附加节点（附加信息，与业务相关）
+    protected final A attach; // 附加信息（与业务相关）
 
     protected boolean available; // 是否可用（parent.available & this.enabled）
     protected int level; // 节点层级（以根节点为1开始，往下逐级加1）

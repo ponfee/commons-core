@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -54,8 +55,10 @@ public final class ObjectUtils {
                : reflectionToString(obj, ToStringStyle.JSON_STYLE);
     }
 
-    public static <T> Predicate<T> not(Predicate<T> predicate) {
-        return predicate.negate();
+    @SuppressWarnings("unchecked")
+    public static <T> Predicate<T> not(Predicate<? super T> target) {
+        Objects.requireNonNull(target);
+        return (Predicate<T>) target.negate();
     }
 
     /**
