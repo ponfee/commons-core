@@ -25,4 +25,8 @@ public class SearchAfter<T> implements java.io.Serializable {
         return value;
     }
 
+    public SearchAfter<T> copy(T value) {
+        return new SearchAfter<>(this.sortField, value);
+    }
+
 }

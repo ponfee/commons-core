@@ -63,8 +63,9 @@ public final class ObjectUtils {
 
     /**
      * 判断对象是否为空
-     * @param o
-     * @return
+     * 
+     * @param o the object
+     * @return {@code true} is empty
      */
     public static boolean isEmpty(Object o) {
         if (o == null) {
@@ -81,6 +82,24 @@ public final class ObjectUtils {
             return ((Dictionary<?, ?>) o).isEmpty();
         } else {
             return false;
+        }
+    }
+
+    /**
+     * Gets the target's name value
+     * 
+     * @param obj
+     * @return a value
+     */
+    public static Object getValue(Object obj, String name) {
+        if (obj == null) {
+            return null;
+        } else if (Map.class.isInstance(obj)) {
+            return ((Map<?, ?>) obj).get(name);
+        } else if (Dictionary.class.isInstance(obj)) {
+            return ((Dictionary<?, ?>) obj).get(name);
+        } else {
+            return Fields.get(obj, name);
         }
     }
 

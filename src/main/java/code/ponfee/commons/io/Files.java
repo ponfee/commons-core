@@ -78,6 +78,8 @@ public final class Files {
         out.close();
     }
 
+    private static final byte[] WINDOWS_BOM = { (byte) 0xEF, (byte) 0xBB, (byte) 0xBF };
+
     /**
      * 创建目录
      * @param path
@@ -374,7 +376,6 @@ public final class Files {
      * add file bom head
      * @param filepath
      */
-    public static final byte[] WINDOWS_BOM = { (byte) 0xEF, (byte) 0xBB, (byte) 0xBF };
     public static void addBOM(String filepath) {
         addBOM(new File(filepath));
     }

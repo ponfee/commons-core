@@ -48,3 +48,5 @@ dist/
 
 # rebel.xml
 /**/rebel.xml
+/**/.cache-main
+/**/dependency-reduced-pom.xml
