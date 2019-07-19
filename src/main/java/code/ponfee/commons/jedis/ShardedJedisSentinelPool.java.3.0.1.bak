@@ -52,7 +52,7 @@ public class ShardedJedisSentinelPool extends ShardedJedisPool {
     protected final int database;
 
     protected final Set<MasterListener> masterListeners = new HashSet<>();
-    private volatile List<HostAndPort> currentHostMasters;
+    private List<HostAndPort> currentHostMasters;
 
     public ShardedJedisSentinelPool(List<String> masters, Set<String> sentinels) {
         this(new GenericObjectPoolConfig(), masters, sentinels, 

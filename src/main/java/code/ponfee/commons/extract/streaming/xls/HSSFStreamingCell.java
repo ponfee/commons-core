@@ -212,4 +212,14 @@ public class HSSFStreamingCell implements Cell {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public void removeFormula() throws IllegalStateException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setBlank() {
+        throw new UnsupportedOperationException();
+    }
+
 }

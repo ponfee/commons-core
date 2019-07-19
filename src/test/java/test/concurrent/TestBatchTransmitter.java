@@ -12,14 +12,16 @@ public class TestBatchTransmitter {
 
     public static void main(String[] args) throws InterruptedException {
         AtomicInteger summer = new AtomicInteger();
-        final AsyncBatchTransmitter<Integer> transmitter = new AsyncBatchTransmitter<>((list, isEnd) -> {
-            return () -> {
-                summer.addAndGet(list.size());
-                System.out.println(list.size() + "==" + Thread.currentThread().getId()
-                    + "-" + Thread.currentThread().getName() + ", " + isEnd);
-                //System.out.println(1 / 0); // submit方式不会打印异常
-            };
-        });
+        final AsyncBatchTransmitter<Integer> transmitter = new AsyncBatchTransmitter<>((list, isEnd) -> 
+             new Runnable() {
+                @Override
+                public void run() {
+                    summer.addAndGet(list.size());
+                    System.out.println(list.size() + "==" + Thread.currentThread().getId() + "-" + Thread.currentThread().getName() + ", " + isEnd);
+                    //System.out.println(1 / 0); // submit方式不会打印异常
+                }
+            }
+        );
 
         AtomicBoolean flag = new AtomicBoolean(true);
         AtomicInteger increment = new AtomicInteger(0);

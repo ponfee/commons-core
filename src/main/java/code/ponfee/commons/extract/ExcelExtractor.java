@@ -10,7 +10,6 @@ import java.util.Iterator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -119,18 +118,19 @@ public class ExcelExtractor<T> extends DataExtractor<T> {
      * @param cell
      * @return
      */
-    protected String getStringCellValue(Cell cell) {
+    private String getStringCellValue(Cell cell) {
         if (cell == null) {
             return StringUtils.EMPTY;
         }
         switch (cell.getCellType()) {
             case NUMERIC:
-                if (DateUtil.isCellDateFormatted(cell)) {
-                    return Dates.format(cell.getDateCellValue());
-                } else {
-                    // Solve: Cannot get a STRING value from a NUMERIC cell
-                    cell.setCellType(CellType.STRING);
-                    return cell.getStringCellValue();
+                return getNumericAsString(cell);
+
+            case FORMULA:
+                try {
+                    return getNumericAsString(cell);
+                } catch (Exception e) {
+                    return cell.getRichStringCellValue().getString();
                 }
 
             case STRING:
@@ -139,18 +139,22 @@ public class ExcelExtractor<T> extends DataExtractor<T> {
             case BOOLEAN:
                 return Boolean.toString(cell.getBooleanCellValue());
 
-            case FORMULA:
-                cell.setCellType(CellType.STRING);
-                return cell.getStringCellValue();
-
-            case BLANK: // 空值
             case ERROR: // 错误
+                return "Error: " + Byte.toString(cell.getErrorCellValue());
+
             default:
                 return StringUtils.EMPTY;
         }
     }
 
+    private String getNumericAsString(Cell cell) {
+        return DateUtil.isCellDateFormatted(cell)
+             ? Dates.format(cell.getDateCellValue()) 
+             : String.valueOf(cell.getNumericCellValue());
+    }
+
     public enum ExcelType {
         XLS, XLSX
     }
+
 }

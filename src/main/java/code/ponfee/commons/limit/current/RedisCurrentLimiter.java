@@ -68,45 +68,43 @@ public class RedisCurrentLimiter implements CurrentLimiter {
         }, autoClearInSeconds, autoClearInSeconds, TimeUnit.SECONDS);
 
         // 批量记录
-        this.transmitter = new AsyncBatchTransmitter<>((traces, isEnd) -> {
-            return () -> {
-                Map<String, Map<byte[], Double>> groups = new HashMap<>();
-                Map<byte[], Double> batch;
-                for (Trace trace : traces) {
-                    batch = groups.computeIfAbsent(trace.key, k -> new HashMap<>());
-                    // ObjectUtils.uuid22()
-                    // Long.toString(IdWorker.LOCAL_WORKER.nextId(), Character.MAX_RADIX)
-                    batch.put(Bytes.fromLong(IdWorker.LOCAL_WORKER.nextId()), trace.timeMillis);
-                }
+        this.transmitter = new AsyncBatchTransmitter<>((traces, isEnd) -> () -> {
+            Map<String, Map<byte[], Double>> groups = new HashMap<>();
+            Map<byte[], Double> batch;
+            for (Trace trace : traces) {
+                batch = groups.computeIfAbsent(trace.key, k -> new HashMap<>());
+                // ObjectUtils.uuid22()
+                // Long.toString(IdWorker.LOCAL_WORKER.nextId(), Character.MAX_RADIX)
+                batch.put(Bytes.fromLong(IdWorker.LOCAL_WORKER.nextId()), trace.timeMillis);
+            }
 
-                /*for (Entry<String, Map<byte[], Double>> entry : groups.entrySet()) {
+            /*for (Entry<String, Map<byte[], Double>> entry : groups.entrySet()) {
+                if (entry.getValue().isEmpty()) {
+                    continue;
+                }
+                // TRACE_KEY_PREFIX + trace.key
+                jedisClient.zsetOps().zadd(
+                    concat(TRACE_KEY_BYTES, entry.getKey().getBytes(UTF_8)),
+                    entry.getValue(), EXPIRE_SECONDS
+                );
+                entry.getValue().clear();
+            }*/
+            jedisClient.hook(shardedJedis -> {
+                ShardedJedisPipeline pipeline = shardedJedis.pipelined();
+                for (Entry<String, Map<byte[], Double>> entry : groups.entrySet()) {
                     if (entry.getValue().isEmpty()) {
                         continue;
                     }
-                    // TRACE_KEY_PREFIX + trace.key
-                    jedisClient.zsetOps().zadd(
-                        concat(TRACE_KEY_BYTES, entry.getKey().getBytes(UTF_8)),
-                        entry.getValue(), EXPIRE_SECONDS
-                    );
+                    byte[] key = concat(TRACE_KEY_BYTES, entry.getKey().getBytes(UTF_8));
+                    pipeline.zadd(key, entry.getValue());
+                    pipeline.expire(key, EXPIRE_SECONDS);
                     entry.getValue().clear();
-                }*/
-                jedisClient.hook(shardedJedis -> {
-                    ShardedJedisPipeline pipeline = shardedJedis.pipelined();
-                    for (Entry<String, Map<byte[], Double>> entry : groups.entrySet()) {
-                        if (entry.getValue().isEmpty()) {
-                            continue;
-                        }
-                        byte[] key = concat(TRACE_KEY_BYTES, entry.getKey().getBytes(UTF_8));
-                        pipeline.zadd(key, entry.getValue());
-                        pipeline.expire(key, EXPIRE_SECONDS);
-                        entry.getValue().clear();
-                    }
-                    pipeline.sync();
-                });
+                }
+                pipeline.sync();
+            });
 
-                groups.clear();
-                traces.clear();
-            };
+            groups.clear();
+            traces.clear();
         }, 100, 5000); // 100毫秒间隔，5000条∕次
     }
 
@@ -115,11 +113,13 @@ public class RedisCurrentLimiter implements CurrentLimiter {
      * @param key
      * @return 是否频繁访问：true是；false否；
      */
-    public @Override boolean checkpoint(String key) {
+    @Override
+    public boolean checkpoint(String key) {
         return checkpoint(key, getRequestThreshold(key));
     }
 
-    public @Override boolean checkpoint(String key, long requestThreshold) {
+    @Override
+    public boolean checkpoint(String key, long requestThreshold) {
         if (requestThreshold < 0) {
             return true; // 小于0表示无限制
         } else if (requestThreshold == 0) {
@@ -159,7 +159,8 @@ public class RedisCurrentLimiter implements CurrentLimiter {
      * @param threshold
      * @return 是否设置成功：true是；false否；
      */
-    public @Override boolean setRequestThreshold(String key, long threshold) {
+    @Override
+    public boolean setRequestThreshold(String key, long threshold) {
         boolean flag = jedisClient.valueOps().setLong(THRESHOLD_KEY_PREFIX + key,
                                                       threshold, EXPIRE_SECONDS);
         if (flag) {
@@ -174,7 +175,8 @@ public class RedisCurrentLimiter implements CurrentLimiter {
      * @param key
      * @return
      */
-    public @Override long getRequestThreshold(String key) {
+    @Override
+    public long getRequestThreshold(String key) {
         Long threshold = confCache.get(key);
         if (threshold == null) {
             synchronized (getLock(key)) {
@@ -226,7 +228,7 @@ public class RedisCurrentLimiter implements CurrentLimiter {
         return jedisClient.zsetOps().zcount(TRACE_KEY_PREFIX + key, fromMillis, toMillis);
     }
 
-    private static class Trace {
+    private class Trace {
         final String key;
         final double timeMillis;
 

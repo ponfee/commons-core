@@ -295,7 +295,7 @@ public interface Providers {
         }
 
         // --------------------------------------------------------------------------
-        private static volatile Provider globalProvider = null;
+        private static Provider globalProvider = null;
     }
 
     /**

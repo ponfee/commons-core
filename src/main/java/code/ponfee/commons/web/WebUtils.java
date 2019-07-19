@@ -451,6 +451,7 @@ public final class WebUtils {
         Cookie cookie = new Cookie(name, value);
         cookie.setPath(path);
         cookie.setMaxAge(maxAge);
+        //cookie.setHttpOnly(true);
         return cookie;
     }
 

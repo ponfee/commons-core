@@ -14,7 +14,6 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.cglib.beans.BeanMap;
-import org.springframework.objenesis.ObjenesisHelper;
 
 import com.google.common.collect.ImmutableList;
 
@@ -159,8 +158,7 @@ public enum BeanMaps {
      * @return a bean object of specified Class<T> instance
      */
     public final <T> T toBean(Map<String, Object> map, Class<T> beanType) {
-        //T bean = type.getConstructor().newInstance();
-        T bean = ObjenesisHelper.newInstance(beanType);
+        T bean = ObjectUtils.newInstance(beanType);
         this.copy(bean, map);
         return bean;
     }

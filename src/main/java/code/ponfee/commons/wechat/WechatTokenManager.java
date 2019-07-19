@@ -242,8 +242,8 @@ public class WechatTokenManager implements DisposableBean {
         final String jsapiTicketKey;
         final String lockRefreshKey;
 
-        volatile String accessToken = null;
-        volatile String jsapiTicket = null;
+        String accessToken = null;
+        String jsapiTicket = null;
 
         Wechat(String appid, String secret) {
             this.appid = appid;

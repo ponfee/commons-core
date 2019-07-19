@@ -106,7 +106,6 @@ public class SimpleXmlHandler {
      * 
      * </pre>
      */
-    @SuppressWarnings("unchecked")
     public static List<Map<String, String>> parse(InputStream xml) {
         try {
             List<Map<String, String>> results = new ArrayList<>();

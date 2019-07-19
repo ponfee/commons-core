@@ -8,11 +8,14 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import code.ponfee.commons.io.Files;
-import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.FileHeader;
 import net.lingala.zip4j.model.ZipParameters;
-import net.lingala.zip4j.util.Zip4jConstants;
+import net.lingala.zip4j.model.enums.AesKeyStrength;
+import net.lingala.zip4j.model.enums.CompressionLevel;
+import net.lingala.zip4j.model.enums.CompressionMethod;
+import net.lingala.zip4j.model.enums.EncryptionMethod;
 
 /**
  * zip utility based zip4j
@@ -98,18 +101,17 @@ public class ZipUtils {
 
         // create zip parameters
         ZipParameters parameters = new ZipParameters();
-        parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE); // 压缩方式
-        parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL); // 压缩级别
+        parameters.setCompressionMethod(CompressionMethod.DEFLATE); // 压缩方式
+        parameters.setCompressionLevel(CompressionLevel.NORMAL); // 压缩级别
         if (!StringUtils.isEmpty(passwd)) {
-            parameters.setPassword(passwd.toCharArray());
             parameters.setEncryptFiles(true);
-            //parameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_STANDARD); // 加密方式
-            parameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_AES); // 加密方式
-            parameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_128);
+            parameters.setEncryptionMethod(EncryptionMethod.AES); // 加密方式
+            parameters.setAesKeyStrength(AesKeyStrength.KEY_STRENGTH_256);
+            //parameters.setEncryptionMethod(EncryptionMethod.ZIP_STANDARD); // 加密方式
         }
+        ZipFile zipFile = new ZipFile(destFile, toCharArray(passwd));
 
         // 开始压缩
-        ZipFile zipFile = new ZipFile(destFile);
         if (srcFile.isFile()) { // 压缩文件
             zipFile.addFile(srcFile, parameters);
         } else { // 压缩目录
@@ -174,9 +176,8 @@ public class ZipUtils {
      * @return 解压后文件数组
      * @throws ZipException 压缩文件有损坏或者解压缩失败抛出
      */
-    public static File[] unzip(String zipFile, String dest, 
-                               String passwd) throws ZipException {
-        return unzip(new File(zipFile), dest, passwd, Files.UTF_8);
+    public static File[] unzip(String zipFile, String dest, String passwd) throws ZipException {
+        return unzip(new File(zipFile), dest, passwd);
     }
 
     /**
@@ -185,20 +186,21 @@ public class ZipUtils {
      * @param zipFile 指定的压缩文件
      * @param dest 解压目录
      * @param passwd 压缩文件的密码
-     * @param charset 字符编码
      * @return  解压后文件数组
      * @throws ZipException 压缩文件有损坏或者解压缩失败抛出
      */
-    @SuppressWarnings("unchecked")
-    public static File[] unzip(File zipFile, String dest, String passwd, 
-                               String charset) throws ZipException {
+    public static File[] unzip(File zipFile, String dest, String passwd) throws ZipException {
         // validate zip file
         if (!zipFile.exists()) {
             throw new ZipException("zip file not found: " + zipFile.getAbsolutePath());
         }
-        ZipFile zFile = new ZipFile(zipFile);
+
+        ZipFile zFile = new ZipFile(zipFile, toCharArray(passwd));
         if (!zFile.isValidZipFile()) {
             throw new ZipException("invalid zip file.");
+        }
+        if (zFile.isEncrypted() && StringUtils.isEmpty(passwd)) {
+            throw new ZipException("passwd can't be null");
         }
 
         // validate dest file path
@@ -211,16 +213,6 @@ public class ZipUtils {
         }
 
         // unpack zip file
-        if (!StringUtils.isEmpty(charset)) {
-            zFile.setFileNameCharset(charset);
-        }
-        if (zFile.isEncrypted()) {
-            if (StringUtils.isEmpty(passwd)) {
-                throw new ZipException("passwd can't be null");
-            } else {
-                zFile.setPassword(passwd.toCharArray());
-            }
-        }
         zFile.extractAll(dest);
         List<File> fileEntries = new ArrayList<>();
         for (FileHeader fileHeader : (List<FileHeader>) zFile.getFileHeaders()) {
@@ -229,6 +221,10 @@ public class ZipUtils {
             }
         }
         return fileEntries.toArray(new File[fileEntries.size()]);
+    }
+
+    private static char[] toCharArray(String str) {
+        return StringUtils.isEmpty(str) ? null : str.toCharArray();
     }
 
 }

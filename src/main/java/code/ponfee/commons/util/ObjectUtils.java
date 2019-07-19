@@ -4,9 +4,13 @@ import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToStrin
 
 import java.lang.reflect.Array;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -248,6 +252,7 @@ public final class ObjectUtils {
     /**
      * short uuid
      * should between 3 (inclusive) and 32 (exclusive)
+     * 
      * @param len
      * @param chars
      * @return
@@ -265,6 +270,7 @@ public final class ObjectUtils {
 
     /**
      * 获取堆栈信息
+     * 
      * @param deepPath
      * @return
      */
@@ -282,6 +288,13 @@ public final class ObjectUtils {
                       .toString();
     }
 
+    /**
+     * Copies source fields value to target fields
+     * 
+     * @param source the source
+     * @param target the target
+     * @param fields the fields of String array
+     */
     public static <T> void copy(T source, T target, String... fields) {
         Preconditions.checkState(ArrayUtils.isNotEmpty(fields));
         for (String field : fields) {
@@ -289,12 +302,54 @@ public final class ObjectUtils {
         }
     }
 
+    /**
+     * Returns a new instance of copy from spec fields
+     * 
+     * @param source the source
+     * @param fields the fields
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public static <T> T copyFrom(T source, String... fields) {
         Preconditions.checkState(ArrayUtils.isNotEmpty(fields));
-        T target = (T) ObjenesisHelper.newInstance(source.getClass());
+        T target = (T) newInstance(source.getClass());
         copy(source, target, fields);
         return target;
+    }
+
+    /**
+     * Returns a new instance of type
+     * 
+     * @param type the type class
+     * @return a new instance
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T newInstance(Class<T> type) {
+        if (Map.class == type) { // interface
+            return (T) new HashMap<>();
+        } else if (Dictionary.class == type) { // abstract
+            return (T) new Hashtable<>();
+        } else if (Collection.class == type || List.class == type) {  // interface
+            return (T) new ArrayList<>();
+        } else {
+            return ObjenesisHelper.newInstance(type);
+        }
+    }
+
+    /**
+     * Returns the type is a bean type
+     * 
+     * @param type the type class
+     * @return a boolean
+     */
+    public boolean isBean(Class<?> type) {
+        if (type == null) {
+            return false;
+        }
+        return !org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper(type)
+            && !Map.class.isAssignableFrom(type) 
+            && !Dictionary.class.isAssignableFrom(type) 
+            && !Collection.class.isAssignableFrom(type);
     }
 
 }

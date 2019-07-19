@@ -40,8 +40,9 @@ public class Wechats {
      *              这样做的目的是防止应用接受任意伪造的授权码。
      * 
      * @param scope snsapi_base    ：不弹出授权页面，直接跳转，只能获取用户openid<p>
-     *              snsapi_userinfo：弹出授权页面，可通过openid拿到昵称、性别、所在地。
-     *                               并且，即使在未关注的情况下，只要用户授权，也能获取其信息<p>
+     *              snsapi_userinfo：弹出授权页面，可通过openid拿到昵称、性别、所在地。并且，即使在未关注的情况下，只要用户授权，也能获取其信息<p>
+     *              snsapi_login：登录
+     *                               
      * @param redirect the service url
      * 
      * @return a url of wechat auth
@@ -104,6 +105,25 @@ public class Wechats {
     }
 
     /**
+     * Refresh the access token by refresh_token
+     * 
+     * @param appid the appid
+     * @param refreshToken the refresh_token
+     * @return refresed a new access_token by refresh_token
+     */
+    public static Map<String, Object> refreshAccessToken(String appid, String refreshToken) {
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("grant_type", "refresh_token");
+        params.put("appid", appid);
+        params.put("refresh_token", refreshToken);
+        Map<String, Object> result = Http.post("https://api.weixin.qq.com/sns/oauth2/refresh_token")
+                                         .data(params).request(Map.class);
+
+        checkError(result);
+        return result;
+    }
+
+    /**
      * <pre>
      *  {
      *    "openid":"oLVPpjqs9BhvzwPj5A-vTYAX3GLc",
@@ -133,25 +153,6 @@ public class Wechats {
         params.put("openid", openid);
         params.put("lang", "zh_CN"); // this param can be unset
         Map<String, Object> result = Http.post("https://api.weixin.qq.com/sns/userinfo")
-                                         .data(params).request(Map.class);
-
-        checkError(result);
-        return result;
-    }
-
-    /**
-     * Refresh the access token by refresh_token
-     * 
-     * @param appid the appid
-     * @param refreshToken the refresh_token
-     * @return refresed a new access_token by refresh_token
-     */
-    public static Map<String, Object> refreshAccessToken(String appid, String refreshToken) {
-        Map<String, String> params = new LinkedHashMap<>();
-        params.put("grant_type", "refresh_token");
-        params.put("appid", appid);
-        params.put("refresh_token", refreshToken);
-        Map<String, Object> result = Http.post("https://api.weixin.qq.com/sns/oauth2/refresh_token")
                                          .data(params).request(Map.class);
 
         checkError(result);
@@ -197,14 +198,15 @@ public class Wechats {
      *  {
      *    "subscribe": 1,
      *    "openid": "oLVPpjqs2BhvzwPj5A-vTYAX4GLc",
-     *    "nickname": "刺猬宝宝",
+     *    "nickname": "nickname",
      *    "sex": 1,
      *    "language": "zh_CN",
+     *    "unionid": "unionid" // 只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段
      *    "city": "深圳",
      *    "province": "广东",
      *    "country": "中国",
      *    "headimgurl": "http://wx.qlogo.cn/mmopen/JcDicrZBlREhnNXZRudod9PmibRkIs5K2f1tUQ7lFjC63pYHaXGxNDgMzjGDEuvzYZbFOqtUXaxSdoZG6iane5ko9H30krIbzGv/0",
-     *    "subscribe_time": 1386160805
+     *    "subscribe_time": 1386160805 // 用户关注时间，为时间戳。如果用户曾多次关注，则取最后关注时间
      *  }
      * </pre>
      * 

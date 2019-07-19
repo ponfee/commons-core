@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -23,7 +24,6 @@ import com.google.common.base.Throwables;
 import code.ponfee.commons.exception.BasicException;
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.model.ResultCode;
-import code.ponfee.commons.web.WebUtils;
 
 /**
  * Global exception handler for web application
@@ -82,7 +82,11 @@ public class WebExceptionHandler {
             logger.info("", t);
             handleException(req, resp, ((BasicException) t).getCode(), debug -> t.getMessage());
         } else {
-            logger.error("Server error", t);
+            if (t instanceof ServletRequestBindingException) {
+                logger.info("Server error", t);
+            } else {
+                logger.error("Server error", t);
+            }
             handleException(
                 req, resp, ResultCode.SERVER_ERROR.getCode(), 
                 debug -> debug ? Throwables.getStackTraceAsString(t) : ERROR_MSG

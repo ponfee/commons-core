@@ -252,6 +252,17 @@ public class Strings {
         return prefix + join(pathElements, FOLDER_SEPARATOR);
     }
 
+    public static String safePath(String path) {
+        if (path == null) {
+            return null;
+        }
+        path = cleanPath(path).replace("../", "");
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+        return path;
+    }
+
     /**
      * 集合拼接为字符串<p>
      * join(Lists.newArrayList("a","b","c"), ",", "(", ")") -> (a),(b),(c)

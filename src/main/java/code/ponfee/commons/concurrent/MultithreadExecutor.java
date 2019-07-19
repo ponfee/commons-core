@@ -53,7 +53,7 @@ public class MultithreadExecutor {
        ).toArray(CompletableFuture[]::new);
 
         try {
-            Thread.sleep(execSeconds * 1000); // parent thread sleep
+            Thread.sleep(execSeconds * 1000L); // parent thread sleep
             flag.set(false);
             CompletableFuture.allOf(futures).join();
         } catch (InterruptedException e) {
@@ -126,9 +126,7 @@ public class MultithreadExecutor {
                                     Executor executor) {
         Stopwatch watch = Stopwatch.createStarted();
         coll.stream().map(
-            x -> CompletableFuture.runAsync(
-                () -> action.accept(x), executor
-            )
+            x -> CompletableFuture.runAsync(() -> action.accept(x), executor)
         ).collect(
             Collectors.toList()
         ).forEach(

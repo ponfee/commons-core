@@ -366,7 +366,7 @@ public class JedisClientTester {
     public void testScan() {
         List<String> masters = Arrays.asList("DDT_CORE_CNSZ22_REDIS_CACHE");
         Set<String> sentinels = new HashSet<>(Arrays.asList("10.202.40.105:8001", "10.202.40.105:8002", "10.202.40.107:8001"));
-        String password = "";
+        String password = "admin.123";
         int timeout = 300000;
         JedisPoolConfig cfg = new JedisPoolConfig();
         cfg.setMaxTotal(5);
@@ -384,6 +384,7 @@ public class JedisClientTester {
 
         for (Jedis jedis : pool.getResource().getAllShards()) {
             scan(jedis);
+            jedis.del("task:payment:scanTest");
         }
         pool.close();
     }
@@ -391,7 +392,7 @@ public class JedisClientTester {
     private static void scan(Jedis jedis) {
         ScanParams scanParams = new ScanParams();
         scanParams.count(2000); // 设置每次scan个数
-        scanParams.match("*");
+        scanParams.match("task:payment:*");
         String ok = "0", cursor = ok;
         try {
             do {

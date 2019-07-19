@@ -12,6 +12,6 @@ public interface TimestampProvider {
     TimestampProvider LATEST   = () -> Long.MAX_VALUE;
     TimestampProvider EARLIEST = () -> Long.MIN_VALUE;
 
-    long now();
+    long get();
 
 }

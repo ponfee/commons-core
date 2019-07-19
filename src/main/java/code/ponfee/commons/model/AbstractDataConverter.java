@@ -8,10 +8,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.cglib.beans.BeanCopier;
-import org.springframework.objenesis.ObjenesisHelper;
 
 import code.ponfee.commons.reflect.BeanMaps;
 import code.ponfee.commons.reflect.CglibUtils;
+import code.ponfee.commons.util.ObjectUtils;
 
 /**
  * Converts model object to the data transfer object
@@ -109,7 +109,7 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
         }
 
         //target = targetType.getConstructor().newInstance();
-        T target = ObjenesisHelper.newInstance(targetType);
+        T target = ObjectUtils.newInstance(targetType);
 
         copy(source, target, copier);
         return target;
