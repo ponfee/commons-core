@@ -52,6 +52,7 @@ public class Cache<T> {
         this.keepAliveInMillis = keepAliveInMillis;
 
         if (autoReleaseInSeconds > 0) {
+
             if (scheduler != null) {
                 this.scheduler = scheduler;
             } else {
@@ -79,6 +80,7 @@ public class Cache<T> {
                     lock.unlock();
                 }
             }, autoReleaseInSeconds, autoReleaseInSeconds, TimeUnit.SECONDS);
+
         }
     }
 
@@ -103,7 +105,7 @@ public class Cache<T> {
     }
 
     private long now() {
-        return timestampProvider.now();
+        return timestampProvider.get();
     }
 
     // --------------------------------cache value-------------------------------
@@ -336,7 +338,8 @@ public class Cache<T> {
             } catch (Exception ignored) {
                 ignored.printStackTrace();
             }
-        } else if (value instanceof Destroyable) {
+        }
+        if (value instanceof Destroyable) {
             try {
                 ((Destroyable) value).destroy();
             } catch (Exception ignored) {

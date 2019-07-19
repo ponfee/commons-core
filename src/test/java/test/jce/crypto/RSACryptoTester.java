@@ -3,12 +3,15 @@ package test.jce.crypto;
 import static code.ponfee.commons.jce.security.RSACryptor.generateKeyPair;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
+import java.util.Random;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.ArrayUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -159,7 +162,26 @@ public class RSACryptoTester {
         System.out.println(sha1);
         System.out.println(Hex.encodeHexString(array));
     }
-    
+
+    @Test // RSA乘法同态加密
+    public void test8() {
+        RSAKeyPair kp = RSACryptor.generateKeyPair(1024);
+        RSAPublicKey publicKey = kp.getPublicKey();
+        RSAPrivateKey privateKey = kp.getPrivateKey();
+
+        BigInteger n = privateKey.getModulus();
+        BigInteger d = privateKey.getPrivateExponent();
+        BigInteger e = publicKey.getPublicExponent();
+
+        Random ran = new Random();
+        long num1 = ran.nextInt(65537), num2 = ran.nextInt(65537), num3 = ran.nextInt(65537), product = num1*num2*num3;
+        BigInteger r1 = new BigInteger(num1 + "").modPow(e, n);
+        BigInteger r2 = new BigInteger(num2 + "").modPow(e, n);
+        BigInteger r3 = new BigInteger(num3 + "").modPow(e, n);
+        Assert.assertEquals(product, r1.multiply(r2).multiply(r3).modPow(d, n).longValue()); // num1*num2*num3
+        System.out.println(product);
+    }
+
     private static void test(RSAPrivateKey privateKey, RSAPublicKey publicKey) throws IOException {
         byte[] data = Files.toByteArray(MavenProjects.getTestJavaFile(RSACryptoTester.class));
         System.out.println("=============================加密测试==============================");

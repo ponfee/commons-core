@@ -11,7 +11,8 @@ public class RSAPKCS1PaddingCryptor extends AbstractRSACryptor {
         super(true);
     }
 
-    public @Override int getOriginBlockSize(RSAKey rsaKey) {
+    @Override
+    public int getOriginBlockSize(RSAKey rsaKey) {
         return rsaKey.n.bitLength() / 8 - 11;
     }
 

@@ -230,7 +230,9 @@ public class ValueOperations extends JedisOperations {
 
     public boolean setnx(byte[] key, byte[] value, int seconds) {
         return call(shardedJedis -> {
-            String result = shardedJedis.set(key, value, NX.getBytes(), EX.getBytes(), getActualExpire(seconds));
+            String result = shardedJedis.set(
+                key, value, NX.getBytes(), EX.getBytes(), getActualExpire(seconds)
+            );
             return SUCCESS_MSG.equals(result);
         }, false, key, value, seconds);
     }

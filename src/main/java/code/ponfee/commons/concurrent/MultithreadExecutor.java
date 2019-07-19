@@ -126,9 +126,7 @@ public class MultithreadExecutor {
                                     Executor executor) {
         Stopwatch watch = Stopwatch.createStarted();
         coll.stream().map(
-            x -> CompletableFuture.runAsync(
-                () -> action.accept(x), executor
-            )
+            x -> CompletableFuture.runAsync(() -> action.accept(x), executor)
         ).collect(
             Collectors.toList()
         ).forEach(

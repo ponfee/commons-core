@@ -297,4 +297,12 @@ public final class ObjectUtils {
         return target;
     }
 
+    public boolean isBean(Class<?> type) {
+        if (type == null) {
+            return false;
+        }
+        return !org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper(type)
+            && !Map.class.isAssignableFrom(type) 
+            && !Collection.class.isAssignableFrom(type);
+    }
 }

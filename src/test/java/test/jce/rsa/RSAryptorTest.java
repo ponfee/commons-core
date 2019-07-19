@@ -177,15 +177,15 @@ public class RSAryptorTest {
 
             // 1
             byte[] encrypted1 = cs.encrypt(data, ek);
-            byte[] decrypted1 = cs.decrypt(encrypted1, dk);
+            byte[] decrypted1 = cs.decrypt(encrypted1, dk);                   // XXX DATA!=decrypted1    1% 
 
             // 2
             byte[] encrypted2 = encrypted1;
-            byte[] decrypted2 = RSACryptor.decryptNoPadding(encrypted2, pri);
+            byte[] decrypted2 = RSACryptor.decryptNoPadding(encrypted2, pri); // XXX DATA!=decrypted1    1%
 
             // 3
             byte[] encrypted3 = RSACryptor.encryptNoPadding(data, pub);
-            byte[] decrypted3 = RSACryptor.decryptNoPadding(encrypted3, pri);
+            byte[] decrypted3 = RSACryptor.decryptNoPadding(encrypted3, pri); // XXX DATA!=decrypted1    5%
 
             // 4
             byte[] encrypted4 = RSACryptor.encrypt(data, pub);
