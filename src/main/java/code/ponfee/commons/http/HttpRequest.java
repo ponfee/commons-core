@@ -257,7 +257,7 @@ public class HttpRequest {
 
     private static final String[] EMPTY_STRINGS = {};
 
-    private static final HostnameVerifier TRUSTED_VERIFIER = (hostname, session) -> true;
+    private static final HostnameVerifier TRUSTED_VERIFIER = (hostname, session) -> /*hostname.equalsIgnoreCase(session.getPeerHost())*/true;
 
     private static final SSLSocketFactory TRUSTED_FACTORY;
     static {

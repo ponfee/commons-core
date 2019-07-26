@@ -118,7 +118,7 @@ public class ExcelExtractor<T> extends DataExtractor<T> {
      * @param cell
      * @return
      */
-    protected String getStringCellValue(Cell cell) {
+    private String getStringCellValue(Cell cell) {
         if (cell == null) {
             return StringUtils.EMPTY;
         }
@@ -140,7 +140,7 @@ public class ExcelExtractor<T> extends DataExtractor<T> {
                 return Boolean.toString(cell.getBooleanCellValue());
 
             case ERROR: // 错误
-                return Byte.toString(cell.getErrorCellValue());
+                return "Error: " + Byte.toString(cell.getErrorCellValue());
 
             default:
                 return StringUtils.EMPTY;

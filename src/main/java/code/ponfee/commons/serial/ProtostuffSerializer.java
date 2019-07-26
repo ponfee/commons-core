@@ -3,9 +3,8 @@ package code.ponfee.commons.serial;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.objenesis.ObjenesisHelper;
-
 import code.ponfee.commons.io.GzipProcessor;
+import code.ponfee.commons.util.ObjectUtils;
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtostuffIOUtil;
 import io.protostuff.Schema;
@@ -40,7 +39,7 @@ public class ProtostuffSerializer extends Serializer {
             bytes = GzipProcessor.decompress(bytes);
         }
 
-        T message = ObjenesisHelper.newInstance(type);
+        T message = ObjectUtils.newInstance(type);
         ProtostuffIOUtil.mergeFrom(bytes, message, getSchema(type));
         return message;
     }

@@ -53,7 +53,7 @@ public class MultithreadExecutor {
        ).toArray(CompletableFuture[]::new);
 
         try {
-            Thread.sleep(execSeconds * 1000); // parent thread sleep
+            Thread.sleep(execSeconds * 1000L); // parent thread sleep
             flag.set(false);
             CompletableFuture.allOf(futures).join();
         } catch (InterruptedException e) {

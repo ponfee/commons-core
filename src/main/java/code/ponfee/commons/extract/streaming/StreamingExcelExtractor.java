@@ -6,16 +6,12 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.concurrent.ExecutorService;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import com.monitorjbl.xlsx.StreamingReader;
 
 import code.ponfee.commons.extract.ExcelExtractor;
 import code.ponfee.commons.extract.streaming.xls.HSSFStreamingReader;
-import code.ponfee.commons.util.Dates;
 
 /**
  * Excel file data extractor based streaming
@@ -111,41 +107,6 @@ public class StreamingExcelExtractor<T> extends ExcelExtractor<T> {
                 }
             default:
                 throw new RuntimeException("Unknown excel type: " + type);
-        }
-    }
-
-    /**
-     * 获取单元格的值
-     * 
-     * @param cell
-     * @return
-     */
-    @Override
-    protected String getStringCellValue(Cell cell) {
-        if (cell == null) {
-            return StringUtils.EMPTY;
-        }
-        switch (cell.getCellType()) {
-            case NUMERIC:
-                if (DateUtil.isCellDateFormatted(cell)) {
-                    return Dates.format(cell.getDateCellValue());
-                } else {
-                    return cell.getStringCellValue();
-                }
-
-            case STRING:
-                return cell.getStringCellValue();
-
-            case BOOLEAN:
-                return Boolean.toString(cell.getBooleanCellValue());
-
-            case FORMULA:
-                return cell.getStringCellValue();
-
-            case BLANK: // 空值
-            case ERROR: // 错误
-            default:
-                return StringUtils.EMPTY;
         }
     }
 
