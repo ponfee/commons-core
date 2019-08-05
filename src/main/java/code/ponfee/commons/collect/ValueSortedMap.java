@@ -17,7 +17,7 @@ import java.util.function.Function;
 /**
  * Extends TreeMap sort by value
  * 
- * new TreeMap<>(Comparator.comparing(k -> map.get(k)));
+ * @see new TreeMap<>(Comparator.comparing(k -> map.get(k)));
  * 
  * @author Ponfee
  */

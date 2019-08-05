@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import code.ponfee.commons.reflect.Fields;
 
 /**
- * Converts model object to the map
+ * Converts model object to map
  * 
  * @param <S> source
  * 

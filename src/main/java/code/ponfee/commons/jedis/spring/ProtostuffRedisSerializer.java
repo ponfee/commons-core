@@ -47,9 +47,8 @@ public class ProtostuffRedisSerializer<T> implements RedisSerializer<T> {
         }
 
         LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
-        ProtostuffWrapper wrapper = new ProtostuffWrapper(object);
         try {
-            return ProtostuffIOUtil.toByteArray(wrapper, SCHEMA, buffer);
+            return ProtostuffIOUtil.toByteArray(new ProtostuffWrapper(object), SCHEMA, buffer);
         } finally {
             buffer.clear();
         }

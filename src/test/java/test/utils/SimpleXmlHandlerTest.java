@@ -6,11 +6,13 @@ import code.ponfee.commons.xml.SimpleXmlHandler;
 public class SimpleXmlHandlerTest {
 
     public static void main(String[] args) {
+        System.out.println(SimpleXmlHandlerTest.class.getResourceAsStream("signer.xsd"));
+        System.out.println(SimpleXmlHandlerTest.class.getClassLoader().getResourceAsStream("/signer.xsd"));
         System.out.println(ClassLoader.getSystemResourceAsStream("/signer.xsd"));
         System.out.println(Thread.currentThread().getContextClassLoader().getResourceAsStream("/signer.xsd"));
-        
-        System.out.println(SimpleXmlHandlerTest.class.getResourceAsStream("/signer.xsd"));
 
+        System.out.println(SimpleXmlHandlerTest.class.getResourceAsStream("/signer.xsd"));
+        System.out.println(SimpleXmlHandlerTest.class.getClassLoader().getResourceAsStream("signer.xsd"));
         System.out.println(ClassLoader.getSystemResourceAsStream("signer.xsd"));
         System.out.println(Thread.currentThread().getContextClassLoader().getResourceAsStream("signers.xml"));
 

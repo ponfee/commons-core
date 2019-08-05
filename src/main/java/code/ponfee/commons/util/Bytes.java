@@ -31,8 +31,8 @@ public final class Bytes {
     public static final byte[] EMPTY_BYTES = {}; // new byte[0]
 
     private static final char SPACE_CHAR = ' ';
-    private static final char[] HEX_LOWER_CODES = "0123456789abcdef".toCharArray();
-    private static final char[] HEX_UPPER_CODES = "0123456789ABCDEF".toCharArray();
+    private static final char[] HEX_LOWER_CODES = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
+    private static final char[] HEX_UPPER_CODES = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
     /**
      * Dump byte array, like as these 

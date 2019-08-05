@@ -72,6 +72,7 @@ public class Test3 {
     }
 
     public static void main(String[] args) throws Exception {
+        System.out.println(System.getProperty("user.home"));
         B.fromByteArray(new byte[] {});
         Class<? extends A> clazz1 = B.class;
         clazz1.getDeclaredMethod("fromByteArray", byte[].class).invoke(null, new byte[] {});
