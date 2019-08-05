@@ -191,6 +191,23 @@ public class Strings {
     }
 
     /**
+     * Returns a safe file system path that forbid access parent dir
+     * 
+     * @param path the path
+     * @return a safe path
+     */
+    public static String safePath(String path) {
+        if (path == null) {
+            return null;
+        }
+        path = cleanPath(path).replace("../", "");
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+        return path;
+    }
+
+    /**
      * 文件路径规范化，如“path/..”内部的点号
      * 注意：windows的文件分隔符“\”会替换为“/”
      * @param path 文件路径
@@ -250,17 +267,6 @@ public class Strings {
         }
 
         return prefix + join(pathElements, FOLDER_SEPARATOR);
-    }
-
-    public static String safePath(String path) {
-        if (path == null) {
-            return null;
-        }
-        path = cleanPath(path).replace("../", "");
-        if (path.startsWith("/")) {
-            path = path.substring(1);
-        }
-        return path;
     }
 
     /**
