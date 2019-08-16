@@ -15,7 +15,7 @@
     mvn versions:set -DnewVersion=1.17-SNAPSHOT
 
     https://github.com/alibaba/p3c
-    https://www.jianshu.com/p/68a3ed571314
+    sonar:https://www.jianshu.com/p/68a3ed571314
 
     javac: 不加“-g”则默认为“-g:source,lines”
       -g                     生成所有调试信息
@@ -46,13 +46,13 @@
         <repository>
           <!-- <servers>
             <server>
-              <id>nexus-snapshots</id>
+              <id>repos-snapshots</id>
               <username>username</username>
               <password>password</password>
             </server>
           </servers> -->
-          <id>aliyun-nexus-snapshots</id>
-          <url>http://maven.aliyun.com/nexus/content/repositories/snapshots/</url>
+          <id>repos-snapshots</id>
+          <url>https://maven.aliyun.com/repository/snapshots</url>
         </repository>
       </distributionManagement>
       <properties>
@@ -67,13 +67,13 @@
         <repository>
           <!-- <servers>
             <server>
-              <id>nexus-releases</id>
+              <id>repos-releases</id>
               <username>username</username>
               <password>password</password>
             </server>
           </servers> -->
-          <id>aliyun-nexus-releases</id>
-          <url>http://maven.aliyun.com/nexus/content/repositories/releases/</url>
+          <id>repos-releases</id>
+          <url>https://maven.aliyun.com/repository/releases</url>
         </repository>
       </distributionManagement>
       <properties>
@@ -359,7 +359,7 @@
     <dependency><!-- jackson -->
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.9.9.1</version>
+      <version>2.9.9.2</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -695,6 +695,14 @@
       <groupId>com.alibaba</groupId>
       <artifactId>transmittable-thread-local</artifactId>
       <version>2.10.2</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>de.mkammerer</groupId>
+      <artifactId>argon2-jvm</artifactId>
+      <version>2.5</version>
+      <scope>test</scope>
     </dependency>
 
   </dependencies>
@@ -820,6 +828,14 @@
         <version>3.1.1</version>
         <configuration>
           <appendAssemblyId>false</appendAssemblyId>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <archive>
+            <manifest>
+              <mainClass>cn.ponfee.Main</mainClass>
+            </manifest>
+          </archive>
         </configuration>
         <executions>
           <execution>
@@ -857,11 +873,20 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>cn.ponfee.Main</mainClass>
+                </transformer>
+              </transformers>
               <createSourcesJar>true</createSourcesJar>
               <artifactSet>
                 <includes>
                   <include>${project.groupId}:*:*</include>
                 </includes>
+                <excludes>
+                  <exclude>org.slf4j:*</exclude>
+                  <exclude>log4j:*</exclude>
+                </excludes>
               </artifactSet>
             </configuration>
           </execution>
@@ -873,6 +898,15 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>3.1.2</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <classpathPrefix>lib/</classpathPrefix>
+              <mainClass>cn.ponfee.Main</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
         <executions>
           <execution>
             <id>make-a-jar</id>
@@ -880,6 +914,24 @@
             <goals>
               <goal>jar</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>
+                ${project.build.directory}/lib
+              </outputDirectory>
+            </configuration>
           </execution>
         </executions>
       </plugin> -->

@@ -92,7 +92,7 @@ public final class Http {
         this.method = method;
     }
 
-    // ----------------------------method--------------------------
+    // ------------------------------------------------------method
     public static Http get(String url) {
         return new Http(url, HttpMethod.GET);
     }
@@ -129,7 +129,7 @@ public final class Http {
         return new Http(url, method);
     }
 
-    // ----------------------------header--------------------------
+    // ------------------------------------------------------header
     /**
      * 设置请求头
      * @param name
@@ -206,7 +206,7 @@ public final class Http {
         return this;
     }
 
-    // ----------------------------part--------------------------
+    // ------------------------------------------------------part
     public Http addPart(String formName, String fileName, Object mimePart) {
         return this.addPart(formName, fileName, null, mimePart);
     }
@@ -225,7 +225,7 @@ public final class Http {
         return this;
     }
 
-    // ----------------------------encode--------------------------
+    // ------------------------------------------------------encode
     /**
      * 编码url
      * @param encode
@@ -236,7 +236,7 @@ public final class Http {
         return this;
     }
 
-    // ----------------------------request contentType--------------------------
+    // ------------------------------------------------------request contentType
     /**
      * <pre>
      *  请求实体报头，发送信息至服务器时内容编码类型：
@@ -259,7 +259,7 @@ public final class Http {
         return this.contentType(contentType, Files.UTF_8);
     }
 
-    // ----------------------------response accept--------------------------
+    // ------------------------------------------------------response accept
     /**
      * 内容类型发送请求头，告诉服务器什么样的响应会接受返回
      * header("Accept", contentType)
@@ -271,7 +271,7 @@ public final class Http {
         return this;
     }
 
-    // --------------------------------timeout------------------------------
+    // --------------------------------------------------------------timeout
     /**
      * set connect timeout
      * @param seconds (s)
@@ -292,7 +292,7 @@ public final class Http {
         return this;
     }
 
-    // ----------------------------trust spec cert--------------------------
+    // ------------------------------------------------------trust spec cert
     /**
      * trust spec certificate
      * @param factory
@@ -307,7 +307,7 @@ public final class Http {
         return setSSLSocketFactory(sslContext.getSocketFactory());
     }
 
-    // --------------------------------request------------------------------
+    // --------------------------------------------------------------request
     public <T> T request(JavaType type) {
         return Jsons.fromJson(request(), type);
     }
