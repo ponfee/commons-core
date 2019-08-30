@@ -1,10 +1,13 @@
 package code.ponfee.commons.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,6 +26,22 @@ public class Strings {
     public static final String WINDOWS_FOLDER_SEPARATOR = "\\";
     public static final String TOP_PATH = "..";
     public static final String CURRENT_PATH = ".";
+
+    /**
+     * 解析参数
+     * 
+     * @param args
+     * @return
+     */
+    public static Map<String, String> fromArgs(String[] args) {
+        if (args == null) {
+            return null;
+        }
+        return Arrays.stream(args)
+                     .filter(s -> s != null && s.contains("="))
+                     .map(s -> s.split("=", 2))
+                     .collect(Collectors.toMap(p -> p[0], p -> p[1]));
+    }
 
     public static String mask(String text, String regex, String replacement) {
         if (text == null) {
@@ -99,6 +118,7 @@ public class Strings {
 
     /**
      * 以分隔符拆分字符串为字符串数组
+     * 
      * @param str         待拆分字符串
      * @param delimiter   分隔符
      * @return
@@ -110,6 +130,7 @@ public class Strings {
     /**
      * 以分隔符拆分字符串为字符串数组<p>
      * split("hello world", "l", "eo")  ->  [h,, wr,d]
+     * 
      * @param str            待拆分字符串
      * @param delimiter      分隔符
      * @param charsToDelete  待删除的字符串
@@ -153,6 +174,7 @@ public class Strings {
      * isMatch("aa", "a*")     = true
      * isMatch("ab", "?*")     = true
      * isMatch("aab", "c*a*b") = false
+     * 
      * @param s characters
      * @param p pattern
      * @return match result: true|false
@@ -210,6 +232,7 @@ public class Strings {
     /**
      * 文件路径规范化，如“path/..”内部的点号
      * 注意：windows的文件分隔符“\”会替换为“/”
+     * 
      * @param path 文件路径
      * @return 规范的文件路径 
      */
@@ -272,6 +295,7 @@ public class Strings {
     /**
      * 集合拼接为字符串<p>
      * join(Lists.newArrayList("a","b","c"), ",", "(", ")") -> (a),(b),(c)
+     * 
      * @param coll     集合对象
      * @param delim    分隔符
      * @param prefix   每个元素添加的前缀
@@ -336,6 +360,7 @@ public class Strings {
     /** 
      * 驼峰转换为下划线 
      * CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, camelCaseName);
+     * 
      * @param camelCaseName 驼峰名
      * @return the underscore name
      * @see CaseFormat#to(CaseFormat, String)
@@ -368,6 +393,7 @@ public class Strings {
      * 3  LOWER_CAMEL        java变量命名规范如lowerCamel
      * 4  UPPER_CAMEL        java和c++类的命名规范如UpperCamel
      * 5  UPPER_UNDERSCORE   java和c++常量的命名规范如UPPER_UNDERSCORE
+     * 
      * @param underscoreName 下划线名
      * @return the camel case name
      * @see CaseFormat#to(CaseFormat, String)
@@ -395,7 +421,8 @@ public class Strings {
 
     /**
      * 获取IEME校验码
-     * @param str
+     * 
+     * @param str the string
      * @return  校验码
      */
     public static int iemeCode(String str) {

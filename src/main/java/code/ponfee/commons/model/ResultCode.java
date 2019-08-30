@@ -109,7 +109,8 @@ public final class ResultCode implements Serializable {
     /** 公用结果码 */
     public static final ResultCode OK                 = create0(200, "OK");
     public static final ResultCode CREATED            = create0(201, "已创建"); // POST
-    public static final ResultCode NO_CONTENT         = create0(204, "无内容"); // PUT, PATCH, DELETE
+    public static final ResultCode PROCESSING         = create0(202, "处理中");
+    public static final ResultCode NO_CONTENT         = create0(204, "已处理，无返回内容"); // PUT, PATCH, DELETE
     public static final ResultCode REST_CONTENT       = create0(205, "请重置");
 
     public static final ResultCode REDIRECT           = create0(302, "重定向");
@@ -119,12 +120,15 @@ public final class ResultCode implements Serializable {
     public static final ResultCode FORBIDDEN          = create0(403, "拒绝访问"); // BACKLIST
     public static final ResultCode NOT_FOUND          = create0(404, "资源未找到"); // GET return null
     public static final ResultCode NOT_ALLOWED        = create0(405, "方法不允许");
+    public static final ResultCode NOT_ACCEPTABLE     = create0(406, "请求格式错误");
     public static final ResultCode REQUEST_TIMEOUT    = create0(408, "请求超时");
     public static final ResultCode OPS_CONFLICT       = create0(409, "操作冲突"); // DATABSE UPDATE DELETE FAIL
-    public static final ResultCode UNSUPPORT_MEDIA    = create0(415, "Unsupported Media Type");
+    public static final ResultCode UNSUPPORT_MEDIA    = create0(415, "格式不支持");
 
     public static final ResultCode SERVER_ERROR       = create0(500, "服务器错误");
+    public static final ResultCode BAD_GATEWAY        = create0(502, "网关错误");
     public static final ResultCode SERVER_UNAVAILABLE = create0(503, "服务不可用");
+    public static final ResultCode GATEWAY_TIMEOUT    = create0(504, "网关超时");
     public static final ResultCode SERVER_UNSUPPORT   = create0(505, "服务不支持");
 
     public static final ImmutableList<Integer> SUCCESS_CODES = ImmutableList.of(

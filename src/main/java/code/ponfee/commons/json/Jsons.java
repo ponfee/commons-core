@@ -2,9 +2,11 @@ package code.ponfee.commons.json;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -257,10 +259,11 @@ public final class Jsons {
 
     public static String toJson(Map<?, ?> map, String... excludeKeys) {
         if (excludeKeys != null) {
-            map = new HashMap<>(map);
-            for (String excludeKey : excludeKeys) {
-                map.remove(excludeKey);
-            }
+            map = map.entrySet().stream().filter(
+                e -> !ArrayUtils.contains(excludeKeys, e.getKey())
+            ).collect(
+                Collectors.toMap(Entry::getKey, Entry::getValue)
+            );
         }
         return NORMAL.string(map);
     }

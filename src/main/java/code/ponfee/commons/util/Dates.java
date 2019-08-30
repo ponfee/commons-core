@@ -268,7 +268,7 @@ public class Dates {
      * @return 时间
      */
     public static Date endOfDay(@Nonnull Date date) {
-        return new DateTime(date).millisOfDay().withMaximumValue().toDate();
+        return endOfDay(new DateTime(date));
     }
 
     /**
@@ -287,8 +287,7 @@ public class Dates {
      * @return 当前周最后一天
      */
     public static Date endOfWeek(@Nonnull Date date) {
-        return new DateTime(date).dayOfWeek().withMaximumValue()
-                                 .millisOfDay().withMaximumValue().toDate();
+        return endOfDay(new DateTime(date).dayOfWeek().withMaximumValue());
     }
 
     /**
@@ -307,8 +306,7 @@ public class Dates {
      * @return 当前月的最后一天
      */
     public static Date endOfMonth(@Nonnull Date date) {
-        return new DateTime(date).dayOfMonth().withMaximumValue()
-                                 .millisOfDay().withMaximumValue().toDate();
+        return endOfDay(new DateTime(date).dayOfMonth().withMaximumValue());
     }
 
     /**
@@ -327,8 +325,7 @@ public class Dates {
      * @return 当前年的最后一天
      */
     public static Date endOfYear(@Nonnull Date date) {
-        return new DateTime(date).dayOfYear().withMaximumValue()
-                                 .millisOfDay().withMaximumValue().toDate();
+        return endOfDay(new DateTime(date).dayOfYear().withMaximumValue());
     }
 
     /**
@@ -425,6 +422,11 @@ public class Dates {
     public static LocalDateTime toLocalDateTime(LocalDate localDate, 
                                                 LocalTime localTime) {
         return localDate.atTime(localTime);
+    }
+
+    private static Date endOfDay(DateTime date) {
+        //date.secondOfDay().withMaximumValue().millisOfSecond().withMinimumValue().toDate();
+        return date.withTime(23, 59, 59, 0).toDate();
     }
 
 }

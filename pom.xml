@@ -359,7 +359,7 @@
     <dependency><!-- jackson -->
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.9.9.2</version>
+      <version>2.9.9.3</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -705,6 +705,13 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>fastjson</artifactId>
+      <version>1.2.59</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -936,14 +943,23 @@
         </executions>
       </plugin> -->
 
-    <!--<plugin>
+      <!-- <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>3.2.2</version>
+        <version>3.2.3</version>
         <configuration>
-          <warSourceExcludes>page/**</warSourceExcludes>
+          <!—— warSourceExcludes是在编译完成后从warSourceDirectory目录复制文件时忽略，
+               packagingExcludes是在从target/${artifactId}-${version}目录打包时忽略 ——>
+          <!—— <warSourceDirectory>src/main/webapp | WebRoot | WebContent</warSourceDirectory>
+          <warSourceExcludes>page/**,js/**,css/**,imgs/**</warSourceExcludes> ——>
+          <warSourceIncludes>WEB-INF/lib/**,WEB-INF/web.xml,WEB-INF/mvc-config.xml,WEB-INF/jetty-web.xml</warSourceIncludes>
+
+          <!—— packagingExcludes在warSourceExcludes后面执行：排除src/main/resources或从远程仓库pull下来的 
+          <packagingExcludes>WEB-INF/classes/logback.xml,WEB-INF/lib/commons-logging-*.jar,%regex[WEB-INF/lib/log4j-(?!over-slf4j).*.jar]</packagingExcludes>
+          <packagingIncludes></packagingIncludes> ——>
+          <failOnMissingWebXml>true</failOnMissingWebXml>
         </configuration>
-      </plugin>-->
+      </plugin> -->
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
