@@ -1,4 +1,4 @@
-package code.ponfee.commons.collects;
+package code.ponfee.commons.innerclass;
 
 public class TryUsingAnonymousClass {
 
