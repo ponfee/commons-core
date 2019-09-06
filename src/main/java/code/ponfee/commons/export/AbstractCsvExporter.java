@@ -14,7 +14,7 @@ import code.ponfee.commons.tree.FlatNode;
 /**
  * Exports csv
  * 
- * @author fupf
+ * @author Ponfee
  */
 public abstract class AbstractCsvExporter<T> extends AbstractDataExporter<T> {
 
@@ -104,7 +104,7 @@ public abstract class AbstractCsvExporter<T> extends AbstractDataExporter<T> {
         }
     }
 
-    protected void flush() {}
+    //protected void flush() {}
 
     private void buildComplexThead(List<FlatNode<Integer, Thead>> thead) {
         List<Thead> leafs = super.getLeafThead(thead);

@@ -17,7 +17,7 @@ import code.ponfee.commons.tree.FlatNode;
 /**
  * Exports abstract class
  * 
- * @author fupf
+ * @author Ponfee
  */
 public abstract class AbstractDataExporter<T> implements DataExporter<T> {
 

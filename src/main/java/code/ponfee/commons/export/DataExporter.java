@@ -8,7 +8,7 @@ import java.io.Closeable;
  * 
  * 数据导出
  * 
- * @author fupf
+ * @author Ponfee
  */
 public interface DataExporter<T> extends Closeable {
 

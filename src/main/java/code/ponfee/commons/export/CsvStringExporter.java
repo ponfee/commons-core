@@ -9,7 +9,7 @@ import code.ponfee.commons.io.WrappedBufferedWriter;
 /**
  * Exports csv string
  * 
- * @author fupf
+ * @author Ponfee
  */
 public class CsvStringExporter extends AbstractCsvExporter<String> {
 

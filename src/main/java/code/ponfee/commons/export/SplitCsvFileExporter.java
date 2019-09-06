@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutorService;
 /**
  * Export multiple csv file
  *
- * @author fupf
+ * @author Ponfee
  */
 public class SplitCsvFileExporter extends AbstractSplitExporter {
 

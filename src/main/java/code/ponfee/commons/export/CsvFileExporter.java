@@ -10,7 +10,7 @@ import code.ponfee.commons.io.WrappedBufferedWriter;
 /**
  * Exports csv file
  * 
- * @author fupf
+ * @author Ponfee
  */
 public class CsvFileExporter extends AbstractCsvExporter<Void> {
 
@@ -22,8 +22,8 @@ public class CsvFileExporter extends AbstractCsvExporter<Void> {
         super(createWriter(file, charset, withBom));
     }
 
-    public CsvFileExporter(char csvSeparator, File file, 
-                           Charset charset, boolean withBom) throws IOException {
+    public CsvFileExporter(File file, Charset charset, boolean withBom,
+                           char csvSeparator) throws IOException {
         super(createWriter(file, charset, withBom), csvSeparator);
     }
 
@@ -35,15 +35,6 @@ public class CsvFileExporter extends AbstractCsvExporter<Void> {
     @Override
     public void close() {
         ((WrappedBufferedWriter) super.csv).close();
-    }
-
-    @Override
-    protected void flush() {
-        try {
-            ((WrappedBufferedWriter) super.csv).flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private static Appendable createWriter(File file, Charset charset, boolean withBom)

@@ -114,7 +114,7 @@ public class SimpleXmlHandler {
             for (Iterator<Element> seconds = root.elementIterator(); seconds.hasNext();) {
                 Element second = seconds.next();
                 map = new HashMap<>();
-                for (Attribute attr : (List<Attribute>) second.attributes()) {
+                for (Attribute attr : second.attributes()) {
                     map.put(attr.getName(), attr.getValue()); // 添加二级节点属性
                 }
                 for (Iterator<Element> thirds = second.elementIterator(); thirds.hasNext();) {

@@ -5,7 +5,7 @@ import java.util.concurrent.ExecutorService;
 /**
  * Export multiple excel file
  *
- * @author fupf
+ * @author Ponfee
  */
 public class SplitExcelExporter extends AbstractSplitExporter {
 

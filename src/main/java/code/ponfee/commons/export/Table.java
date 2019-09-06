@@ -16,7 +16,8 @@ import code.ponfee.commons.tree.TreeNode;
 
 /**
  * 表格
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class Table<E> implements Serializable {
     private static final long serialVersionUID = 1600567917100486004L;

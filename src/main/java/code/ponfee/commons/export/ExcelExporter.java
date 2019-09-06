@@ -72,7 +72,7 @@ import code.ponfee.commons.util.Strings;
  * | usermodel  | tradition model, need more cpu and memory                |     R & W    |
  * |------------|----------------------------------------------------------|--------------|
  * 
- * @author fupf
+ * @author Ponfee
  */
 public class ExcelExporter extends AbstractDataExporter<byte[]> {
 

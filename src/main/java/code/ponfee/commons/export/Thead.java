@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * 表头
  * 
- * @author fupf
+ * @author Ponfee
  */
 public class Thead implements Serializable {
 
