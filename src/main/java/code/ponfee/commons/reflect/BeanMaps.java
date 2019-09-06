@@ -42,7 +42,7 @@ public enum BeanMaps {
         }
 
         @Override
-        public void copy(Map<String, Object> sourceMap, Object targetBean) {
+        public void copyFromMap(Map<String, Object> sourceMap, Object targetBean) {
             BeanMap.create(targetBean).putAll(sourceMap);
         }
     },
@@ -62,8 +62,8 @@ public enum BeanMaps {
         }
 
         @Override
-        public void copy(Map<String, Object> sourceMap, Object targetBean) {
-            List<Field> fields = this.cachedFields.get(targetBean.getClass());
+        public void copyFromMap(Map<String, Object> sourceMap, Object targetBean) {
+            List<Field> fields = getFields(targetBean.getClass());
             sourceMap.forEach((k, v) -> {
                 for (Field field : fields) {
                     if (field.getName().equals(k)) {
@@ -76,7 +76,7 @@ public enum BeanMaps {
         private List<Field> getFields(Class<?> beanType) {
             List<Field> fields = cachedFields.get(beanType);
             if (fields == null) {
-                synchronized (cachedFields) {
+                synchronized (FIELDS) {
                     if ((fields = cachedFields.get(beanType)) == null) {
                         List<Field> list = ClassUtils.listFields(beanType);
                         fields = CollectionUtils.isEmpty(list) 
@@ -109,7 +109,7 @@ public enum BeanMaps {
         }
 
         @Override
-        public void copy(Map<String, Object> sourceMap, Object targetBean) {
+        public void copyFromMap(Map<String, Object> sourceMap, Object targetBean) {
             String name;
             Object value;
             Class<?> type;
@@ -159,7 +159,7 @@ public enum BeanMaps {
      */
     public final <T> T toBean(Map<String, Object> map, Class<T> beanType) {
         T bean = ObjectUtils.newInstance(beanType);
-        this.copy(bean, map);
+        this.copyFromMap(map, bean);
         return bean;
     }
 
@@ -169,7 +169,7 @@ public enum BeanMaps {
      * @param sourceMap  the source map
      * @param targetBean the target bean
      */
-    public abstract void copy(Map<String, Object> sourceMap, Object targetBean);
+    public abstract void copyFromMap(Map<String, Object> sourceMap, Object targetBean);
 
     /**
      * Copies bean object field-value to map key-value 
@@ -177,7 +177,7 @@ public enum BeanMaps {
      * @param sourceBean the source bean
      * @param targetMap  the target map
      */
-    public final void copy(Object sourceBean, Map<String, Object> targetMap) {
+    public final void copyFromBean(Object sourceBean, Map<String, Object> targetMap) {
         targetMap.putAll(this.toMap(sourceBean));
     }
 

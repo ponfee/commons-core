@@ -17,7 +17,11 @@ import java.util.function.Function;
 /**
  * Extends TreeMap sort by value
  * 
- * @see new TreeMap<>(Comparator.comparing(k -> map.get(k)));
+ * Also use like this {@code
+ *    Map<String, Integer>     originMap = ImmutableMap.of("b", 2, "a", 1);
+ *    TreeMap<String, Integer> sortedMap = new TreeMap<>(Comparator.comparing(k -> originMap.get(k)));
+ *    treeMap.putAll(map);
+ * }
  * 
  * @author Ponfee
  */

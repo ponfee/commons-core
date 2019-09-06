@@ -54,8 +54,7 @@ public class ObjectArrayWrapper<T> implements
         if (o == null) {
             return 1;
         }
-        return new CompareToBuilder().append(array, o.array)
-                                     .toComparison();
+        return new CompareToBuilder().append(array, o.array).toComparison();
     }
 
     /**
@@ -69,9 +68,7 @@ public class ObjectArrayWrapper<T> implements
 
     @Override
     public String toString() {
-        return "ObjectArrayWrapper [" + 
-                (array == null ? "null" : "array.length=" + array.length)
-             + "]";
+        return "ObjectArrayWrapper[" + (array == null ? "null" : "array.length=" + array.length) + "]";
     }
 
 }

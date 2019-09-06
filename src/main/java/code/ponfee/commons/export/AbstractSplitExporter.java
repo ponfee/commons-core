@@ -15,7 +15,7 @@ import code.ponfee.commons.util.Holder;
 /**
  * Export multiple file
  *
- * @author fupf
+ * @author Ponfee
  */
 public abstract class AbstractSplitExporter extends AbstractDataExporter<Void> {
 

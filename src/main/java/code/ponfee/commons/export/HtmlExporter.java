@@ -14,7 +14,8 @@ import code.ponfee.commons.tree.FlatNode;
 
 /**
  * html导出
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class HtmlExporter extends AbstractDataExporter<String> {
 

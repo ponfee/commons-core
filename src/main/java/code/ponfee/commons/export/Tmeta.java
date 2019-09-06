@@ -7,7 +7,8 @@ import code.ponfee.commons.util.Colors;
 
 /**
  * 每列的元数据配置
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class Tmeta implements Serializable {
 

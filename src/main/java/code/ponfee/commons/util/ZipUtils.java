@@ -215,7 +215,7 @@ public class ZipUtils {
         // unpack zip file
         zFile.extractAll(dest);
         List<File> fileEntries = new ArrayList<>();
-        for (FileHeader fileHeader : (List<FileHeader>) zFile.getFileHeaders()) {
+        for (FileHeader fileHeader : zFile.getFileHeaders()) {
             if (!fileHeader.isDirectory()) {
                 fileEntries.add(new File(dest, fileHeader.getFileName()));
             }

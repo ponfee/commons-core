@@ -109,9 +109,9 @@ public final class Bytes {
         StringBuilder builder = new StringBuilder(array.length << 3);
         String binary;
         for (byte b : array) {
-            // b & 0xFF：byte转int保留bit位
-            // | 0x100：100000000，对于正数保留八位，保证未尾8位为原byte的bit位（不|0x100的话前面的0会被舍去，倒数第9位为1）
-            // 也可以 + 0x100或leftPad(str, 8, '0')
+            // byte & 0xFF ：byte转int保留bit位
+            // byte | 0x100：100000000，对于正数保留八位，保证未尾8位为原byte的bit位（不“byte | 0x100”的话正数前面的0会被舍去，导致长度会小于8位）
+            // 也可以用 “byte + 0x100”或者“leftPad(binaryString, 8, '0')”
             binary = Integer.toBinaryString((b & 0xFF) | 0x100);
             builder.append(binary, 1, binary.length());
         }

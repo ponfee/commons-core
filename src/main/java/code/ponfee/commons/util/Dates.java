@@ -397,7 +397,7 @@ public class Dates {
     // ----------------------------------------------------------------java 8 date
     public static LocalDateTime toLocalDateTime(Date date) {
         return date.toInstant()
-                   .atZone(ZoneId.systemDefault())
+                   .atZone(ZoneId.systemDefault()) // .atOffset(ZoneOffset.of("+8"))
                    .toLocalDateTime();
     }
 

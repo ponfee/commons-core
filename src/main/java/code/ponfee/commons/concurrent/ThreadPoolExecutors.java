@@ -16,6 +16,7 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy;
+import java.util.concurrent.ThreadPoolExecutor.DiscardOldestPolicy;
 import java.util.concurrent.ThreadPoolExecutor.DiscardPolicy;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -39,6 +40,8 @@ public final class ThreadPoolExecutors {
     public static final RejectedExecutionHandler CALLER_RUN = new CallerRunsPolicy();
 
     public static final RejectedExecutionHandler DISCARD_POLICY = new DiscardPolicy();
+
+    public static final RejectedExecutionHandler DISCARD_OLDEST_POLICY = new DiscardOldestPolicy();
 
     public static final RejectedExecutionHandler BLOCK_PRODUCER = (task, executor) -> {
         if (!executor.isShutdown()) {

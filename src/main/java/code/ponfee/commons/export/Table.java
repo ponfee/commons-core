@@ -16,7 +16,8 @@ import code.ponfee.commons.tree.TreeNode;
 
 /**
  * 表格
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class Table<E> implements Serializable {
     private static final long serialVersionUID = 1600567917100486004L;
@@ -63,8 +64,8 @@ public class Table<E> implements Serializable {
 
     public Table(String[] names, Function<E, Object[]> converter) {
         List<BaseNode<Integer, Thead>> list = new ArrayList<>(names.length);
-        for (int i = 0, j = 1; i < names.length; i++, j++) {
-            list.add(new BaseNode<>(j, ROOT_PID, j, true, new Thead(names[i])));
+        for (int i = 1; i <= names.length; i++) {
+            list.add(new BaseNode<>(i, ROOT_PID, i, true, new Thead(names[i - 1])));
         }
         this.thead = TreeNode.<Integer, Thead>createRoot(ROOT_PID, null, 0)
                              .mount(list).bfsFlat();

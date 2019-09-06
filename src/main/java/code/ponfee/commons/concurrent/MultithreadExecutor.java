@@ -44,12 +44,14 @@ public class MultithreadExecutor {
         Stopwatch watch = Stopwatch.createStarted();
         AtomicBoolean flag = new AtomicBoolean(true);
 
+        // CALLER_RUN_EXECUTOR：caller run will be dead loop
+        // caller thread will be loop exec command, can't to run the after code
         CompletableFuture<?>[] futures = IntStream.range(0, threadNumber).mapToObj(
             x -> CompletableFuture.runAsync(() -> {
                 while (flag.get() && !Thread.currentThread().isInterrupted()) {
                     command.run();
                 }
-            }, INFINITY_QUEUE_EXECUTOR) // CALLER_RUN_EXECUTOR：caller run will be dead loop
+            }, INFINITY_QUEUE_EXECUTOR)
        ).toArray(CompletableFuture[]::new);
 
         try {

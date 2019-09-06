@@ -30,27 +30,29 @@ public class StringSerializer extends Serializer {
 
     @Override
     protected byte[] serialize0(Object obj, boolean compress) {
-        if (obj instanceof String) {
-            byte[] bytes = ((String) obj).getBytes(charset);
-            return compress ? GzipProcessor.compress(bytes) : bytes;
+        if (!(obj instanceof String)) {
+            throw new SerializationException(
+                "object must be java.lang.String type, but it's " + ClassUtils.getClassName(obj.getClass()) + " type"
+            );
         }
 
-        throw new SerializationException("object must be java.lang.String type, but it's "
-                                     + ClassUtils.getClassName(obj.getClass()) + " type");
+        byte[] bytes = ((String) obj).getBytes(charset);
+        return compress ? GzipProcessor.compress(bytes) : bytes;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     protected <T> T deserialize0(byte[] bytes, Class<T> clazz, boolean compress) {
-        if (clazz == String.class) {
-            if (compress) {
-                bytes = GzipProcessor.decompress(bytes);
-            }
-            return (T) new String(bytes, charset);
+        if (clazz != String.class) {
+            throw new SerializationException(
+                "clazz must be java.lang.String.class, but it's " + ClassUtils.getClassName(clazz) + ".class"
+            );
         }
 
-        throw new SerializationException("clazz must be java.lang.String.class, but it's "
-                                             + ClassUtils.getClassName(clazz) + ".class");
+        if (compress) {
+            bytes = GzipProcessor.decompress(bytes);
+        }
+        return (T) new String(bytes, charset);
     }
 
     // ----------------------------------------------------------------------
