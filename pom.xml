@@ -415,6 +415,11 @@
       <artifactId>protostuff-core</artifactId>
       <version>1.6.0</version>
     </dependency>
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>fastjson</artifactId>
+      <version>1.2.60</version>
+    </dependency>
     <!-- ====================序列化==================== -->
 
 
@@ -910,10 +915,23 @@
                   <include>${project.groupId}:*:*</include>
                 </includes>
                 <excludes>
+                  <!—— log jar file provide by flink ——>
                   <exclude>org.slf4j:*</exclude>
                   <exclude>log4j:*</exclude>
                 </excludes>
               </artifactSet>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                    <!—— log conf file provide by flink ——>
+                    <exclude>log4j2.xml</exclude>
+                  </excludes>
+                </filter>
+              </filters>
             </configuration>
           </execution>
         </executions>
