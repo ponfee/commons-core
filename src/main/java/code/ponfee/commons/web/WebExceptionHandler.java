@@ -1,7 +1,6 @@
 package code.ponfee.commons.web;
 
 import java.io.IOException;
-import java.util.function.Function;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -76,29 +75,29 @@ public class WebExceptionHandler {
     @ExceptionHandler(Throwable.class)
     public void handle(HttpServletRequest req, HttpServletResponse resp, Throwable t) {
         if (t instanceof IllegalArgumentException) {
-            logger.info("", t);
-            handleException(req, resp, ResultCode.BAD_REQUEST.getCode(), debug -> t.getMessage());
+            logger.debug("", t);
+            handleException(req, resp, ResultCode.BAD_REQUEST.getCode(), t.getMessage());
         } else if (t instanceof BasicException) {
             logger.info("", t);
-            handleException(req, resp, ((BasicException) t).getCode(), debug -> t.getMessage());
+            handleException(req, resp, ((BasicException) t).getCode(), t.getMessage());
         } else {
             if (t instanceof ServletRequestBindingException) {
-                logger.info("Server error", t);
+                logger.debug("Server error", t);
             } else {
                 logger.error("Server error", t);
             }
             handleException(
                 req, resp, ResultCode.SERVER_ERROR.getCode(), 
-                debug -> debug ? Throwables.getStackTraceAsString(t) : ERROR_MSG
+                logger.isDebugEnabled() ? Throwables.getStackTraceAsString(t) : ERROR_MSG
             );
         }
     }
 
     private void handleException(HttpServletRequest req, HttpServletResponse resp, 
-                                 int code, Function<Boolean, String> mapper) {
+                                 int code, String message) {
         boolean debug = logger.isDebugEnabled();
         if (debug || WebUtils.isAjax(req)) {
-            WebUtils.respJson(resp, new Result<>(code, mapper.apply(debug)));
+            WebUtils.respJson(resp, new Result<>(code, message));
         } else {
             try {
                 req.getRequestDispatcher("/page/500.html").forward(req, resp);

@@ -131,7 +131,7 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
         } else if (target instanceof Map) {
             ((Map) target).putAll(BeanMaps.CGLIB.toMap(source));
         } else if (source instanceof Map) {
-            BeanMaps.CGLIB.copy((Map) source, target);
+            BeanMaps.CGLIB.copyFromMap((Map) source, target);
         } else {
             if (copier != null) {
                 copier.copy(source, target, null);

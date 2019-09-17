@@ -729,13 +729,6 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-      <groupId>com.alibaba</groupId>
-      <artifactId>fastjson</artifactId>
-      <version>1.2.59</version>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
 
   <build>

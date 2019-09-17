@@ -80,6 +80,7 @@ public class TestBeanCopy {
 
     public static class TestBean {
         private int age;
+        private String _id;
 
         public int getAge() {
             return age;
@@ -89,6 +90,13 @@ public class TestBeanCopy {
             this.age = age;
         }
 
+        public String get_id() {
+            return _id;
+        }
+
+        public void set_id(String _id) {
+            this._id = _id;
+        }
     }
 
     @Test
@@ -115,5 +123,18 @@ public class TestBeanCopy {
         for (int i = 0; i < round; i++) {
             BeanMaps.CGLIB.toBean(map, TestBean.class);
         }
+    }
+    
+    @Test
+    public void test8() {
+        TestBean bean = new TestBean();
+        bean.setAge(20);
+        bean.set_id("xxx");
+        Map<String, Object> map = BeanMaps.PROPS.toMap(bean);
+        System.out.println(map);
+
+        map.put("_ip", "yyyy");
+
+        System.out.println(Jsons.toJson(BeanMaps.CGLIB.toBean(map, TestBean.class)));
     }
 }

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -397,7 +398,7 @@ public class Dates {
     // ----------------------------------------------------------------java 8 date
     public static LocalDateTime toLocalDateTime(Date date) {
         return date.toInstant()
-                   .atZone(ZoneId.systemDefault())
+                   .atZone(ZoneId.systemDefault()) // .atOffset(ZoneOffset.of("+8"))
                    .toLocalDateTime();
     }
 
