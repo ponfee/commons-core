@@ -11,24 +11,26 @@ public class BytesSerializer extends Serializer {
 
     @Override
     protected byte[] serialize0(Object obj, boolean compress) {
-        if (obj instanceof byte[]) {
-            byte[] bytes = (byte[]) obj;
-            return compress ? GzipProcessor.compress(bytes) : bytes;
+        if (!(obj instanceof byte[])) {
+            throw new SerializationException(
+                "Object must be byte[].class type, but it's " + ClassUtils.getClassName(obj.getClass()) + " type."
+            );
         }
 
-        throw new SerializationException("Object must be byte[].class type, but it's "
-                                + ClassUtils.getClassName(obj.getClass()) + " type.");
+        byte[] bytes = (byte[]) obj;
+        return compress ? GzipProcessor.compress(bytes) : bytes;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     protected <T> T deserialize0(byte[] bytes, Class<T> clazz, boolean compress) {
-        if (clazz == byte[].class) {
-            return (T) (compress ? GzipProcessor.decompress(bytes) : bytes);
+        if (clazz != byte[].class) {
+            throw new SerializationException(
+                "clazz must be byte[].class, but it's " + ClassUtils.getClassName(clazz) + ".class"
+            );
         }
 
-        throw new SerializationException("clazz must be byte[].class, but it's "
-                                   + ClassUtils.getClassName(clazz) + ".class");
+        return (T) (compress ? GzipProcessor.decompress(bytes) : bytes);
     }
 
     // -------------------------------------------------------------------
