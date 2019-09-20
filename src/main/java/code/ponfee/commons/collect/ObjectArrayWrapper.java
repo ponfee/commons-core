@@ -7,6 +7,8 @@ import java.util.Arrays;
 /**
  * The class use in Object array as hash map key
  * 
+ * For HashMap key
+ * 
  * @author Ponfee
  */
 public class ObjectArrayWrapper<T> implements 

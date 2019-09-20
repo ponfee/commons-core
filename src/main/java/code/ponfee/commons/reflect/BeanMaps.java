@@ -57,7 +57,7 @@ public enum BeanMaps {
             }
             List<Field> fields = getFields(bean.getClass());
             Map<String, Object> map = new HashMap<>(fields.size());
-            fields.stream().forEach(f -> map.put(f.getName(), Fields.get(bean, f)));
+            fields.forEach(f -> map.put(f.getName(), Fields.get(bean, f)));
             return map;
         }
 

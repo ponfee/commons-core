@@ -33,7 +33,7 @@ import code.ponfee.commons.util.Strings;
  * 
  * @author Ponfee
  */
-public final class TreeNode<T extends Serializable & Comparable<T>, A>
+public final class TreeNode<T extends Serializable & Comparable<T>, A extends Serializable>
     extends BaseNode<T, A> {
 
     private static final long serialVersionUID = -9081626363752680404L;
@@ -67,17 +67,17 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A>
     }
 
     // ---------------------------------------------------create root node
-    public static <T extends Serializable & Comparable<T>, A> TreeNode<T, A> 
+    public static <T extends Serializable & Comparable<T>, A extends Serializable> TreeNode<T, A> 
         createRoot(T nid) {
         return createRoot(nid, null, 0, true);
     }
 
-    public static <T extends Serializable & Comparable<T>, A> TreeNode<T, A> 
+    public static <T extends Serializable & Comparable<T>, A extends Serializable> TreeNode<T, A> 
         createRoot(T nid, T pid, int orders) {
         return createRoot(nid, pid, orders, true);
     }
 
-    public static <T extends Serializable & Comparable<T>, A> TreeNode<T, A> 
+    public static <T extends Serializable & Comparable<T>, A extends Serializable> TreeNode<T, A> 
         createRoot(T nid, T pid, int orders, boolean enabled) {
         return new TreeNode<>(nid, pid, orders, enabled);
     }
@@ -88,7 +88,7 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A>
      * @param node   the node for root
      * @return a tree root node
      */
-    public static <T extends Serializable & Comparable<T>, A> TreeNode<T, A> 
+    public static <T extends Serializable & Comparable<T>, A extends Serializable> TreeNode<T, A> 
         createRoot(BaseNode<T, A> node) {
         return new TreeNode<>(node);
     }

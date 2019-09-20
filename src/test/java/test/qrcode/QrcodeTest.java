@@ -6,7 +6,7 @@ package test.qrcode;
  *妈办苞眶をデ〖タとしたQRcodeを
  *テキストで叫蜗します
  */
-class Sample {
+public class QrcodeTest {
     public static void main(String[] args) {
 
         Qrcode x = new Qrcode();

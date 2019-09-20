@@ -27,9 +27,10 @@ import code.ponfee.commons.exception.CheckedThrowing;
  * 
  *  }
  * 
- * 注意：与&lt;tx:advice id="txManageAdvice" transaction-manager="txManager">搭配无效，要结合`@Transactional使用，
- *     &lt;tx:annotation-driven proxy-target-class="true" transaction-manager="txManager" order="9" />
+ * transaction-xml       ：数据源切换无效(doAround执行一次)，事务正常
+ * transaction-annotation：数据源切换正常(doAround执行一次)，事务正常
  * </pre>
+ * 
  * 
  * @author Ponfee
  */

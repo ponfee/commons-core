@@ -1,11 +1,13 @@
 package code.ponfee.commons.collect;
 
 /**
- * Byte array comparator
+ * The utility for compare two byte array
+ * 
+ * For compare
  * 
  * @author Ponfee
  */
-public class ByteArrayComparator {
+public final class ByteArrayComparator {
 
     public static int compareTo(final byte[] left, final byte[] right) {
         return compareTo(left, 0, left.length, right, 0, right.length);

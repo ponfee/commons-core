@@ -35,27 +35,27 @@ public final class Serializations {
     }
 
     public static byte[] serialize(short value) {
-        return Bytes.fromShort(value);
+        return Bytes.toBytes(value);
     }
 
     public static byte[] serialize(char value) {
-        return Bytes.fromChar(value);
+        return Bytes.toBytes(value);
     }
 
     public static byte[] serialize(int value) {
-        return Bytes.fromInt(value);
+        return Bytes.toBytes(value);
     }
 
     public static byte[] serialize(long value) {
-        return Bytes.fromLong(value);
+        return Bytes.toBytes(value);
     }
 
     public static byte[] serialize(float value) {
-        return Bytes.fromFloat(value);
+        return Bytes.toBytes(value);
     }
 
     public static byte[] serialize(double value) {
-        return Bytes.fromDouble(value);
+        return Bytes.toBytes(value);
     }
 
     public static byte[] serialize(CharSequence value) {
@@ -63,11 +63,11 @@ public final class Serializations {
     }
 
     public static byte[] serialize(Date value) {
-        return Bytes.fromLong(value.getTime());
+        return Bytes.toBytes(value.getTime());
     }
 
     public static byte[] serialize(Enum<?> value) {
-        return Bytes.fromInt(value.ordinal());
+        return Bytes.toBytes(value.ordinal());
     }
 
     public static byte[] serialize(InputStream value) {
@@ -102,23 +102,23 @@ public final class Serializations {
         } else if (value instanceof Byte) {
             return new byte[] { (Byte) value };
         } else if (value instanceof Short) {
-            return Bytes.fromShort((Short) value);
+            return Bytes.toBytes((Short) value);
         } else if (value instanceof Character) {
-            return Bytes.fromChar((Character) value);
+            return Bytes.toBytes((Character) value);
         } else if (value instanceof Integer) {
-            return Bytes.fromInt((Integer) value);
+            return Bytes.toBytes((Integer) value);
         } else if (value instanceof Long) {
-            return Bytes.fromLong((Long) value);
+            return Bytes.toBytes((Long) value);
         } else if (value instanceof Float) {
-            return Bytes.fromFloat((Float) value);
+            return Bytes.toBytes((Float) value);
         } else if (value instanceof Double) {
-            return Bytes.fromDouble((Double) value);
+            return Bytes.toBytes((Double) value);
         } else if (value instanceof CharSequence) {
             return ((CharSequence) value).toString().getBytes(UTF_8);
         } else if (value instanceof Date) {
-            return Bytes.fromLong(((Date) value).getTime());
+            return Bytes.toBytes(((Date) value).getTime());
         } else if (value instanceof Enum) {
-            return Bytes.fromInt(((Enum<?>) value).ordinal());
+            return Bytes.toBytes(((Enum<?>) value).ordinal());
         } else if (value instanceof Serializable) {
             //return SerializationUtils.serialize((Serializable) value);
             return OBJECT_SERIALIZER.serialize(value);

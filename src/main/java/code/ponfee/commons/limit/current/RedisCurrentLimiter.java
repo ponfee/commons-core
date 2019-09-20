@@ -75,7 +75,7 @@ public class RedisCurrentLimiter implements CurrentLimiter {
                 batch = groups.computeIfAbsent(trace.key, k -> new HashMap<>());
                 // ObjectUtils.uuid22()
                 // Long.toString(IdWorker.LOCAL_WORKER.nextId(), Character.MAX_RADIX)
-                batch.put(Bytes.fromLong(IdWorker.LOCAL_WORKER.nextId()), trace.timeMillis);
+                batch.put(Bytes.toBytes(IdWorker.LOCAL_WORKER.nextId()), trace.timeMillis);
             }
 
             /*for (Entry<String, Map<byte[], Double>> entry : groups.entrySet()) {

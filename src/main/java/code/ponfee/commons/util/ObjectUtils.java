@@ -9,10 +9,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -327,10 +329,12 @@ public final class ObjectUtils {
     public static <T> T newInstance(Class<T> type) {
         if (Map.class == type) { // interface
             return (T) new HashMap<>();
+        } else if (Set.class == type) { // interface
+            return (T) new HashSet<>();
+        } else if (Collection.class == type || List.class == type) { // interface
+            return (T) new ArrayList<>();
         } else if (Dictionary.class == type) { // abstract
             return (T) new Hashtable<>();
-        } else if (Collection.class == type || List.class == type) {  // interface
-            return (T) new ArrayList<>();
         } else {
             return ObjenesisHelper.newInstance(type);
         }

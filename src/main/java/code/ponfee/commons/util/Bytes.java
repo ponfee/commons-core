@@ -28,8 +28,6 @@ import code.ponfee.commons.math.Numbers;
  */
 public final class Bytes {
 
-    public static final byte[] EMPTY_BYTES = {}; // new byte[0]
-
     private static final char SPACE_CHAR = ' ';
     private static final char[] HEX_LOWER_CODES = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
     private static final char[] HEX_UPPER_CODES = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
@@ -110,7 +108,8 @@ public final class Bytes {
         String binary;
         for (byte b : array) {
             // byte & 0xFF ：byte转int保留bit位
-            // byte | 0x100：100000000，对于正数保留八位，保证未尾8位为原byte的bit位（不“byte | 0x100”的话正数前面的0会被舍去，导致长度会小于8位）
+            // byte | 0x100：对于正数保留八位，保证未尾8位为原byte的bit位，即1xxxxxxxx
+            //               正数会有前缀0，如果不加，转binary string时前面的0会被舍去
             // 也可以用 “byte + 0x100”或者“leftPad(binaryString, 8, '0')”
             binary = Integer.toBinaryString((b & 0xFF) | 0x100);
             builder.append(binary, 1, binary.length());
@@ -207,8 +206,8 @@ public final class Bytes {
      * @param chars the char array
      * @return byte array
      */
-    public static byte[] fromCharArray(char[] chars) {
-        return fromCharArray(chars, StandardCharsets.US_ASCII.name());
+    public static byte[] toBytes(char[] chars) {
+        return toBytes(chars, StandardCharsets.US_ASCII);
     }
 
     /**
@@ -217,16 +216,16 @@ public final class Bytes {
      * @param charset the charset
      * @return byte array
      */
-    public static byte[] fromCharArray(char[] chars, String charset) {
+    public static byte[] toBytes(char[] chars, Charset charset) {
         //return new String(chars).getBytes(Charset.forName(charset));
         CharBuffer buffer = CharBuffer.allocate(chars.length);
         buffer.put(chars);
         buffer.flip();
-        return Charset.forName(charset).encode(buffer).array();
+        return charset.encode(buffer).array();
     }
 
     // -----------------------------------------number convert to byte array
-    public static byte[] fromShort(short value) {
+    public static byte[] toBytes(short value) {
         return new byte[] {
             (byte) (value >>> 8), (byte) value
         };
@@ -248,7 +247,7 @@ public final class Bytes {
         //return buffer.getShort();
     }
 
-    public static byte[] fromInt(int value) {
+    public static byte[] toBytes(int value) {
         return new byte[] {
             (byte) (value >>> 24), (byte) (value >>> 16),
             (byte) (value >>>  8), (byte) (value       )
@@ -271,7 +270,7 @@ public final class Bytes {
      * @param value the long number
      * @return byte array
      */
-    public static byte[] fromLong(long value) {
+    public static byte[] toBytes(long value) {
         return new byte[] {
             (byte) (value >>> 56), (byte) (value >>> 48),
             (byte) (value >>> 40), (byte) (value >>> 32),
@@ -307,8 +306,8 @@ public final class Bytes {
     }
 
     // ----------------------------------------float/double convert to byte array
-    public static byte[] fromFloat(float value) {
-        return fromInt(Float.floatToIntBits(value));
+    public static byte[] toBytes(float value) {
+        return toBytes(Float.floatToIntBits(value));
     }
 
     public static float toFloat(byte[] bytes) {
@@ -319,8 +318,8 @@ public final class Bytes {
         return Float.intBitsToFloat(toInt(bytes, fromIdx));
     }
 
-    public static byte[] fromDouble(double value) {
-        return fromLong(Double.doubleToLongBits(value));
+    public static byte[] toBytes(double value) {
+        return toBytes(Double.doubleToLongBits(value));
     }
 
     public static double toDouble(byte[] bytes) {
@@ -332,7 +331,7 @@ public final class Bytes {
     }
 
     // ----------------------------------------char convert to byte array
-    public static byte[] fromChar(char value) {
+    public static byte[] toBytes(char value) {
         return new byte[] {
             (byte) (value >>> 8), (byte) value
         };
@@ -356,7 +355,7 @@ public final class Bytes {
      * @param val
      * @return the byte array
      */
-    public static byte[] fromBigDecimal(BigDecimal val) {
+    public static byte[] toBytes(BigDecimal val) {
         byte[] valueBytes = val.unscaledValue().toByteArray();
         byte[] result = new byte[valueBytes.length + Integer.BYTES];
         int offset = putInt(val.scale(), result, 0);
@@ -364,11 +363,19 @@ public final class Bytes {
         return result;
     }
 
-    public static int putInt(int n, byte[] out, int offset) {
-        out[  offset] = (byte) (n >>> 24);
-        out[++offset] = (byte) (n >>> 16);
-        out[++offset] = (byte) (n >>>  8);
-        out[++offset] = (byte) (n       );
+    /**
+     * Puts a int number to byte array
+     * 
+     * @param val    the int value
+     * @param bytes  the byte array
+     * @param offset the byte array start offset
+     * @return a int of next offset
+     */
+    public static int putInt(int val, byte[] bytes, int offset) {
+        bytes[  offset] = (byte) (val >>> 24);
+        bytes[++offset] = (byte) (val >>> 16);
+        bytes[++offset] = (byte) (val >>>  8);
+        bytes[++offset] = (byte) (val       );
         return ++offset;
     }
 

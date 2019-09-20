@@ -28,8 +28,8 @@ package code.ponfee.commons.jce.symmetric;
  * 13、TEA(Tiny Encryption Algorithm)简单高效的加密算法，加密解密速度快，实现简单。但安全性不如DES，QQ一直用tea加密
  * 
  * https://bouncycastle.org/documentation.html
- * https://downloads.bouncycastle.org/fips-java/BC-FJA-UserGuide-1.0.0.pdf
- * https://downloads.bouncycastle.org/fips-java/BC-FJA-(D)TLSUserGuide-1.0.3.pdf
+ * https://downloads.bouncycastle.org/fips-java/BC-FJA-UserGuide-1.0.2.pdf
+ * https://downloads.bouncycastle.org/fips-java/BC-FJA-(D)TLSUserGuide-1.0.9.pdf
  * 
  * @see org.bouncycastle.jcajce.provider.symmetric.ARC4
  * 

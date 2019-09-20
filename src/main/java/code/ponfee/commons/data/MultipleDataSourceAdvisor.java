@@ -27,7 +27,8 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
     /**
      * 基于Spring XML &lt;aop:aspect /&gt;的配置方式
      * 
-     * <pre>{@code
+     * <pre>
+     * {@code
      *   <!-- aop:advisor必须在aop:aspect前面 -->
      *   <bean id="dsChangeAdvice" class="code.ponfee.commons.data.MultipleDataSourceAdvisor" />
      *   <aop:config proxy-target-class="true">
@@ -37,8 +38,11 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
      *       <aop:around method="doAround" pointcut-ref="dbTxMgrPointcut" />
      *     </aop:aspect>
      *   </aop:config>
+     * }
      * 
-     * }</pre>
+     * transaction-xml       ：数据源切换正常(doAround执行六次)，事务正常
+     * transaction-annotation：数据源切换正常(doAround执行六次)，事务正常
+     * </pre>
      * 
      * @param pjp the ProceedingJoinPoint
      * @return target method return result
@@ -61,23 +65,26 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
 
     /**
      * 基于Spring XML &lt;aop:advisor /&gt;的配置方式
-     * <pre>{@code
-     * 
+     * <pre>
+     * {@code
      *   <bean id="dsChangeAdvice" class="code.ponfee.commons.data.MultipleDataSourceAdvisor" />
      *   <aop:config proxy-target-class="true">
-     *     <aop:pointcut id="dbTxMgrPointcut" 
-     *       expression="execution(public * cn.ponfee..*.service.impl..*..*(..))" />
+     *     <aop:pointcut id="dbTxMgrPointcut" expression="execution(public * cn.ponfee..*.service.impl..*..*(..))" />
      *     <aop:advisor advice-ref="dsChangeAdvice" pointcut-ref="dbTxMgrPointcut" order="0" />
      *     <aop:advisor advice-ref="txManageAdvice" pointcut-ref="dbTxMgrPointcut" order="9" />
      *   </aop:config>
-     * 
-     * }</pre>
+     * }
+     * transaction-xml       ：数据源切换正常(invoke  执行六次)，事务无效
+     * transaction-annotation：数据源切换正常(invoke  执行六次)，事务无效
+     * </pre>
      * 
      * @param invocation the MethodInvocation
      * @return target method return result
      * @throws Throwable if occur error
+     * 
+     * @deprecated 此方式事务失效（去掉此数据源切面，则事务正常）
      */
-    @Override
+    @Override @Deprecated
     public Object invoke(MethodInvocation invocation) throws Throwable {
         Method method = invocation.getMethod();
         Object[] args = invocation.getArguments();

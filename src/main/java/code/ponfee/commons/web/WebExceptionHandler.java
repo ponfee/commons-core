@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -81,7 +82,7 @@ public class WebExceptionHandler {
             logger.info("", t);
             handleException(req, resp, ((BasicException) t).getCode(), t.getMessage());
         } else {
-            if (t instanceof ServletRequestBindingException) {
+            if ((t instanceof ServletRequestBindingException) || (t instanceof TypeMismatchException)) {
                 logger.debug("Server error", t);
             } else {
                 logger.error("Server error", t);

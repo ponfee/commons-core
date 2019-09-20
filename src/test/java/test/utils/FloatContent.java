@@ -85,21 +85,21 @@ import code.ponfee.commons.util.Bytes;
 public class FloatContent {
 
     public static void main(String[] args) {
-        System.out.println(Bytes.toBinary(Bytes.fromFloat(Float.MAX_VALUE)));
-        System.out.println(Bytes.toBinary(Bytes.fromDouble(Double.MAX_VALUE)));
+        System.out.println(Bytes.toBinary(Bytes.toBytes(Float.MAX_VALUE)));
+        System.out.println(Bytes.toBinary(Bytes.toBytes(Double.MAX_VALUE)));
         System.out.println(Bytes.toFloat(new byte[] {127, (byte)0xff, (byte)0xff, (byte)0xff}));
         
         
-        System.out.println(Bytes.toBinary(Bytes.fromFloat(-12.5f)));
+        System.out.println(Bytes.toBinary(Bytes.toBytes(-12.5f)));
         System.out.println(Bytes.toBinary(ByteBuffer.allocate(4).putFloat(-12.5f).array()));
 
         System.out.println();
-        System.out.println(Bytes.toBinary(Bytes.fromFloat(17.625f)));
+        System.out.println(Bytes.toBinary(Bytes.toBytes(17.625f)));
         System.out.println(Bytes.toBinary(ByteBuffer.allocate(4).putFloat(17.625f).array()));
 
         System.out.println();
-        System.out.println(Bytes.toBinary(Bytes.fromFloat(6.9f)));
-        System.out.println(Bytes.toBinary(Bytes.fromFloat(0.9f)));
+        System.out.println(Bytes.toBinary(Bytes.toBytes(6.9f)));
+        System.out.println(Bytes.toBinary(Bytes.toBytes(0.9f)));
         
         System.out.println();
         System.out.println(ByteOrder.nativeOrder());
