@@ -8,6 +8,7 @@
 
 package code.ponfee.commons.tree;
 
+import java.io.Serializable;
 import java.util.function.Function;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -17,7 +18,7 @@ import org.apache.commons.collections4.CollectionUtils;
  * 
  * @author Ponfee
  */
-public final class FlatNode<T extends java.io.Serializable & Comparable<T>, A>
+public final class FlatNode<T extends java.io.Serializable & Comparable<T>, A extends Serializable>
     extends BaseNode<T, A> {
 
     private static final long serialVersionUID = 5191371614061952661L;

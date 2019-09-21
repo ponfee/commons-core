@@ -92,7 +92,7 @@ public class RedisBloomFilter {
      * @param elements Collection of elements.
      */
     public void putAll(Collection<byte[]> elements) {
-        elements.stream().forEach(this::put);
+        elements.forEach(this::put);
     }
 
     /**

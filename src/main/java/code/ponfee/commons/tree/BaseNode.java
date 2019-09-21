@@ -25,7 +25,7 @@ import code.ponfee.commons.util.Strings;
  * @param <T> the node id type
  * @param <A> the attachment biz object type
  */
-public class BaseNode<T extends Serializable & Comparable<T>, A>
+public class BaseNode<T extends Serializable & Comparable<T>, A extends Serializable>
     implements Serializable, Cloneable {
 
     private static final long serialVersionUID = -4116799955526185765L;
