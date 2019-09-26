@@ -252,13 +252,13 @@ public class SM2KeyExchanger implements Serializable {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         for (int i = 1; i < end; i++) {
             sm3.update(Z);
-            byte[] data = sm3.doFinal(Bytes.fromInt(ct));
+            byte[] data = sm3.doFinal(Bytes.toBytes(ct));
             baos.write(data, 0, data.length);
             ct++;
         }
 
         sm3.update(Z);
-        sm3.update(Bytes.fromInt(ct));
+        sm3.update(Bytes.toBytes(ct));
         byte[] last = sm3.doFinal();
         int len = klen & 0x1F; // klen % 32
         baos.write(last, 0, (len == 0) ? last.length : len);

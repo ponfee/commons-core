@@ -103,11 +103,11 @@ public class JedisClientTester {
         System.out.println(jedisClient.valueOps().incrBy("123456"));
         
         
-        System.out.println(jedisClient.valueOps().set("654321".getBytes(), Bytes.fromInt(789), 99999));
+        System.out.println(jedisClient.valueOps().set("654321".getBytes(), Bytes.toBytes(789), 99999));
         System.out.println(jedisClient.valueOps().incrBy("654321"));
         
         
-        System.out.println(jedisClient.valueOps().set("1111111".getBytes(), Bytes.fromInt(52), 99999));
+        System.out.println(jedisClient.valueOps().set("1111111".getBytes(), Bytes.toBytes(52), 99999));
         System.out.println(jedisClient.valueOps().incrBy("1111111"));
     }
 

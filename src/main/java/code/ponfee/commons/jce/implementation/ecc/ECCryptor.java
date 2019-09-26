@@ -84,11 +84,11 @@ public class ECCryptor extends Cryptor {
         byte[] keyBytes = Bytes.concat(secure.getX().toByteArray(), 
                                        secure.getY().toByteArray());
         int count = 1;
-        byte[] hashedKey = crypt(keyBytes, Bytes.fromInt(count), HMAC_ALG, BC);
+        byte[] hashedKey = crypt(keyBytes, Bytes.toBytes(count), HMAC_ALG, BC);
         for (int i = 0, keyOffset = 0; i < length; i++) {
             if (keyOffset == HMAC_ALG.byteSize()) {
                 keyOffset = 0;
-                hashedKey = crypt(keyBytes, Bytes.fromInt(++count), HMAC_ALG, BC);
+                hashedKey = crypt(keyBytes, Bytes.toBytes(++count), HMAC_ALG, BC);
             }
             result[i + offset] = (byte) (input[i] ^ hashedKey[keyOffset++]);
         }
@@ -116,12 +116,12 @@ public class ECCryptor extends Cryptor {
                                     secure.getY().toByteArray());
         }
         int count = 1, length = input.length - offset;
-        byte[] hashedKey = crypt(keyBytes, Bytes.fromInt(count), HMAC_ALG, BC),
+        byte[] hashedKey = crypt(keyBytes, Bytes.toBytes(count), HMAC_ALG, BC),
                result = new byte[length];
         for (int i = 0, keyOffset = 0; i < length; i++) {
             if (keyOffset == HMAC_ALG.byteSize()) {
                 keyOffset = 0;
-                hashedKey = crypt(keyBytes, Bytes.fromInt(++count), HMAC_ALG, BC);
+                hashedKey = crypt(keyBytes, Bytes.toBytes(++count), HMAC_ALG, BC);
             }
             result[i] = (byte) (input[i + offset] ^ hashedKey[keyOffset++]);
         }

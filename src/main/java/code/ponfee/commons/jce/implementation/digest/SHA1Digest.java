@@ -202,7 +202,7 @@ public class SHA1Digest {
         /*for (int i = 0, j = (Long.BYTES - 1) << 3; i < Long.BYTES; i++, j -= 8) {
             this.block[PADDING_BOUNDS + i] = (byte) (dataLongBitLen >>> j);
         }*/
-        byte[] dataLongBytes = Bytes.fromLong(dataLongBitLen); // 8 byte
+        byte[] dataLongBytes = Bytes.toBytes(dataLongBitLen); // 8 byte
         System.arraycopy(dataLongBytes, 0, this.block, PADDING_BOUNDS, dataLongBytes.length);
 
         this.digestBlock(this.block);

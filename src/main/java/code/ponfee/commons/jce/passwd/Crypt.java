@@ -93,7 +93,7 @@ public class Crypt {
         Mac mac = HmacUtils.getInitializedMac(alg, provider, salt);
         password = mac.doFinal(password);
         for (int i = 1; i < rounds; i++) {
-            mac.update(Bytes.fromInt(i));
+            mac.update(Bytes.toBytes(i));
             password = mac.doFinal(password);
         }
         return password;

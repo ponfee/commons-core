@@ -60,7 +60,7 @@ public class TestOpenApi {
         long number = new Random(captcha.hashCode()).nextLong();
         System.out.println(number);
         System.out.println(captcha.hashCode());
-        number = Bytes.crc32(Bytes.fromInt(captcha.hashCode()));
+        number = Bytes.crc32(Bytes.toBytes(captcha.hashCode()));
         System.out.println(number);
     }
 }

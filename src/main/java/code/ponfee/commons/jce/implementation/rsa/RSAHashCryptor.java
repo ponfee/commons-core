@@ -52,11 +52,11 @@ public class RSAHashCryptor extends AbstractRSACryptor {
 
         // 对密钥进行HASH
         byte[] keyArray = key.toByteArray();
-        byte[] hashedKey = crypt(keyArray, Bytes.fromInt(count), HMAC_ALG, BC);
+        byte[] hashedKey = crypt(keyArray, Bytes.toBytes(count), HMAC_ALG, BC);
         for (int keyOffset = 0, i = 0; i < length; i++) {
             if (keyOffset == HMAC_ALG.byteSize()) {
                 keyOffset = 0;
-                hashedKey = crypt(keyArray, Bytes.fromInt(++count), HMAC_ALG, BC);
+                hashedKey = crypt(keyArray, Bytes.toBytes(++count), HMAC_ALG, BC);
             }
             result[keyByteLen + i] = (byte) (input[i] ^ hashedKey[keyOffset++]);
         }
@@ -76,12 +76,12 @@ public class RSAHashCryptor extends AbstractRSACryptor {
 
         // 对密钥进行HASH
         byte[] keyArray = key.toByteArray();
-        byte[] hashedKey = crypt(keyArray, Bytes.fromInt(count), HMAC_ALG, BC);
+        byte[] hashedKey = crypt(keyArray, Bytes.toBytes(count), HMAC_ALG, BC);
         byte[] result = new byte[input.length - keyByteLen];
         for (int keyOffset = 0, rLen = result.length, i = 0; i < rLen; i++) {
             if (keyOffset == HMAC_ALG.byteSize()) {
                 keyOffset = 0;
-                hashedKey = crypt(keyArray, Bytes.fromInt(++count), HMAC_ALG, BC);
+                hashedKey = crypt(keyArray, Bytes.toBytes(++count), HMAC_ALG, BC);
             }
             result[i] = (byte) (input[keyByteLen + i] ^ hashedKey[keyOffset++]);
         }
@@ -103,7 +103,7 @@ public class RSAHashCryptor extends AbstractRSACryptor {
         Bytes.tailCopy(encryptedKey, 0, encryptedKey.length, encryptedKey0, 0, keyByteLen);
 
         byte[] keyArray = key.toByteArray();
-        byte[] hashedKey = crypt(keyArray, Bytes.fromInt(count), HMAC_ALG, BC);
+        byte[] hashedKey = crypt(keyArray, Bytes.toBytes(count), HMAC_ALG, BC);
         try {
             output.write(encryptedKey0); // encrypted key
             byte[] buffer = new byte[this.getOriginBlockSize(rsaKey)];
@@ -111,7 +111,7 @@ public class RSAHashCryptor extends AbstractRSACryptor {
                 for (i = 0; i < len; i++) {
                     if (keyOffset == HMAC_ALG.byteSize()) {
                         keyOffset = 0;
-                        hashedKey = crypt(keyArray, Bytes.fromInt(++count), HMAC_ALG, BC);
+                        hashedKey = crypt(keyArray, Bytes.toBytes(++count), HMAC_ALG, BC);
                     }
                     output.write((byte) (buffer[i] ^ hashedKey[keyOffset++]));
                 }
@@ -140,12 +140,12 @@ public class RSAHashCryptor extends AbstractRSACryptor {
 
             byte[] buffer = new byte[this.getCipherBlockSize(rsaKey)];
             byte[] keyArray = key.toByteArray();
-            byte[] hashedKey = crypt(keyArray, Bytes.fromInt(count), HMAC_ALG, BC);
+            byte[] hashedKey = crypt(keyArray, Bytes.toBytes(count), HMAC_ALG, BC);
             for (int keyOffset = 0, len, i; (len = input.read(buffer)) != Files.EOF;) {
                 for (i = 0; i < len; i++) {
                     if (keyOffset == HMAC_ALG.byteSize()) {
                         keyOffset = 0;
-                        hashedKey = crypt(keyArray, Bytes.fromInt(++count), HMAC_ALG, BC);
+                        hashedKey = crypt(keyArray, Bytes.toBytes(++count), HMAC_ALG, BC);
                     }
                     output.write((byte) (buffer[i] ^ hashedKey[keyOffset++]));
                 }

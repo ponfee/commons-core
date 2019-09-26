@@ -74,7 +74,7 @@ public final class SM2 {
 
     private void nextKey() {
         SM3Digest sm3keycur = SM3Digest.getInstance(this.sm3keybase);
-        sm3keycur.update(Bytes.fromInt(count));
+        sm3keycur.update(Bytes.toBytes(count));
         sm3keycur.doFinal(key, 0); // update key
         this.keyOffset = 0;
         this.count++;

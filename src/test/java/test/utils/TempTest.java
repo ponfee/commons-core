@@ -114,7 +114,7 @@ public class TempTest {
         short svalue;
         for (int i = 0; i < 10000; i++) {
             svalue = (short) SecureRandoms.nextInt();
-            Assert.assertArrayEquals(Bytes.fromShort(svalue), fromShort(svalue));
+            Assert.assertArrayEquals(Bytes.toBytes(svalue), fromShort(svalue));
         }
         byte[] bytes;
         for (int i = 0; i < 10000; i++) {
@@ -125,7 +125,7 @@ public class TempTest {
         int ivalue;
         for (int i = 0; i < 10000; i++) {
             ivalue = SecureRandoms.nextInt();
-            Assert.assertArrayEquals(Bytes.fromInt(ivalue), fromInt(ivalue));
+            Assert.assertArrayEquals(Bytes.toBytes(ivalue), fromInt(ivalue));
         }
         for (int i = 0; i < 10000; i++) {
             bytes = SecureRandoms.nextBytes(4);
@@ -135,7 +135,7 @@ public class TempTest {
         long lvalue;
         for (int i = 0; i < 10000; i++) {
             lvalue = SecureRandoms.nextLong();
-            Assert.assertArrayEquals(Bytes.fromLong(lvalue), fromLong(lvalue));
+            Assert.assertArrayEquals(Bytes.toBytes(lvalue), fromLong(lvalue));
         }
         for (int i = 0; i < 10000; i++) {
             bytes = SecureRandoms.nextBytes(8);
@@ -150,7 +150,7 @@ public class TempTest {
         long round = 999999999L;
         Stopwatch watch = Stopwatch.createStarted();
         for (long i = 0; i < round; i++) {
-            Bytes.fromLong(value);
+            Bytes.toBytes(value);
         }
         System.out.println("Bytes.fromLong: " + watch.stop());
 
@@ -189,7 +189,7 @@ public class TempTest {
 
         watch.reset().start();
         for (long i = 0; i < round; i++) {
-            s = Bytes.hexEncode(Bytes.fromLong(most))+Bytes.hexEncode(Bytes.fromLong(least));
+            s = Bytes.hexEncode(Bytes.toBytes(most))+Bytes.hexEncode(Bytes.toBytes(least));
         }
         System.out.println("Bytes.hexEncode: " + watch.stop());
 
@@ -218,8 +218,8 @@ public class TempTest {
 
     @org.junit.Test
     public void test12() {
-        System.out.println(Bytes.toBinary(Bytes.fromInt(MAXIMUM_CAPACITY)));
-        System.out.println(Bytes.toBinary(Bytes.fromInt(Integer.MAX_VALUE)));
+        System.out.println(Bytes.toBinary(Bytes.toBytes(MAXIMUM_CAPACITY)));
+        System.out.println(Bytes.toBinary(Bytes.toBytes(Integer.MAX_VALUE)));
     }
     
     static final int MAXIMUM_CAPACITY = 1 << 30;
