@@ -65,8 +65,7 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
      * 
      *   <bean id="dsChangeAdvice" class="code.ponfee.commons.data.MultipleDataSourceAdvisor" />
      *   <aop:config proxy-target-class="true">
-     *     <aop:pointcut id="dbTxMgrPointcut" 
-     *       expression="execution(public * cn.ponfee..*.service.impl..*..*(..))" />
+     *     <aop:pointcut id="dbTxMgrPointcut" expression="execution(public * cn.ponfee..*.service.impl..*..*(..))" />
      *     <aop:advisor advice-ref="dsChangeAdvice" pointcut-ref="dbTxMgrPointcut" order="0" />
      *     <aop:advisor advice-ref="txManageAdvice" pointcut-ref="dbTxMgrPointcut" order="9" />
      *   </aop:config>
@@ -76,8 +75,10 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
      * @param invocation the MethodInvocation
      * @return target method return result
      * @throws Throwable if occur error
+     * 
+     * @deprecated 此方式事务失效
      */
-    @Override
+    @Override @Deprecated
     public Object invoke(MethodInvocation invocation) throws Throwable {
         Method method = invocation.getMethod();
         Object[] args = invocation.getArguments();

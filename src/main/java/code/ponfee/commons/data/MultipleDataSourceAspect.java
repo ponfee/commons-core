@@ -27,12 +27,14 @@ import code.ponfee.commons.exception.CheckedThrowing;
  * 
  *  }
  * 
- * 注意：与&lt;tx:advice id="txManageAdvice" transaction-manager="txManager">搭配无效，要结合`@Transactional使用，
- *     &lt;tx:annotation-driven proxy-target-class="true" transaction-manager="txManager" order="9" />
  * </pre>
+ * 
+ * @deprecated * 方式一：数据源切换无效，&lt;tx:advice id="txManageAdvice" transaction-manager="txManager"> <p>
+ *             * 方式二：事务失效，`@Transactional + &lt;tx:annotation-driven proxy-target-class="true" transaction-manager="txManager" order="9" />
  * 
  * @author Ponfee
  */
+@Deprecated
 public abstract class MultipleDataSourceAspect implements Ordered {
 
     public Object doAround(ProceedingJoinPoint pjp, DataSourceNaming dsn) throws Throwable {
