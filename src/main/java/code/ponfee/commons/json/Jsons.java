@@ -2,11 +2,7 @@ package code.ponfee.commons.json;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -14,8 +10,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import code.ponfee.commons.reflect.BeanMaps;
 
 /**
  * The json utility based jackson
@@ -244,28 +238,6 @@ public final class Jsons {
     // ----------------------------------------------------static methods
     public static String toJson(Object target) {
         return NORMAL.string(target);
-    }
-
-    public static String toJson(Object bean, String... excludeFields) {
-        if (excludeFields != null) {
-            Map<?, ?> map = BeanMaps.CGLIB.toMap(bean);
-            for (String excludeField : excludeFields) {
-                map.remove(excludeField);
-            }
-            bean = map;
-        }
-        return NORMAL.string(bean);
-    }
-
-    public static String toJson(Map<?, ?> map, String... excludeKeys) {
-        if (excludeKeys != null) {
-            map = map.entrySet().stream().filter(
-                e -> !ArrayUtils.contains(excludeKeys, e.getKey())
-            ).collect(
-                Collectors.toMap(Entry::getKey, Entry::getValue)
-            );
-        }
-        return NORMAL.string(map);
     }
 
     public static byte[] toBytes(Object target) {

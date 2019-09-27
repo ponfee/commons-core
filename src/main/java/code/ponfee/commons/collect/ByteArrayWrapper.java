@@ -7,6 +7,8 @@ import org.apache.commons.lang3.ArrayUtils;
 /**
  * The class use in byte array as hash map key
  * 
+ * For HashMap key
+ * 
  * @author Ponfee
  */
 public class ByteArrayWrapper implements 
