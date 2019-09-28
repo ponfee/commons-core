@@ -19,7 +19,8 @@ import code.ponfee.commons.io.Closeables;
 
 /**
  * 图片工具类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class ImageUtils {
 

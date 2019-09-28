@@ -12,7 +12,8 @@ public class TestCache {
 
     public static void main(String[] args) throws InterruptedException {
         Random random = new Random();
-        Cache<Void> cache = CacheBuilder.newBuilder().caseSensitiveKey(false).compressKey(true).autoReleaseInSeconds(2).build();
+        Cache<String, Void> cache = CacheBuilder.<String, Void>newBuilder()
+            .caseSensitiveKey(false).compressKey(true).autoReleaseInSeconds(2).build();
         AtomicBoolean flag = new AtomicBoolean(true);
         int n = 10;
         Thread[] threads = new Thread[n];

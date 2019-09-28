@@ -28,7 +28,7 @@ import javax.crypto.spec.PBEParameterSpec;
  * 
  * PBE Cryptors
  * 
- * @author fupf
+ * @author Ponfee
  */
 public class PBECryptor extends SymmetricCryptor {
 

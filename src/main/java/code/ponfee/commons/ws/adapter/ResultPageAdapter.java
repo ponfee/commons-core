@@ -13,7 +13,7 @@ import code.ponfee.commons.ws.adapter.model.TransitPage;
  * 
  * @see org.springframework.data.domain.jaxb.PageAdapter
  * 
- * @author fupf
+ * @author Ponfee
  */
 public abstract class ResultPageAdapter<T> extends XmlAdapter<Result<TransitPage<T>>, Result<Page<T>>> {
 

@@ -9,7 +9,8 @@ import redis.clients.jedis.ShardedJedis;
 
 /**
  * jedis操作抽象类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public abstract class JedisOperations {
 

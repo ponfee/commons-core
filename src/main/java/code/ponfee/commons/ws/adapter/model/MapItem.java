@@ -3,7 +3,8 @@ package code.ponfee.commons.ws.adapter.model;
 /**
  * cannot with generic like as <code>MapItem<K,V></code>
  * ParameterizedTypeImpl cannot be cast to TypeVariable
- * @author fupf
+ * 
+ * @author Ponfee
  */
 @SuppressWarnings("rawtypes")
 public class MapItem {

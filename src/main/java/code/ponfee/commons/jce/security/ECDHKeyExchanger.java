@@ -25,7 +25,8 @@ import code.ponfee.commons.jce.symmetric.Algorithm;
 /**
  * ECDH Key Exchange
  * Key-Agreement
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public final class ECDHKeyExchanger {
 

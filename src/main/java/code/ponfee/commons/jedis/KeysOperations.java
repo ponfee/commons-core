@@ -1,12 +1,12 @@
 package code.ponfee.commons.jedis;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -17,7 +17,8 @@ import redis.clients.jedis.ShardedJedisPipeline;
 
 /**
  * redis key（键）操作类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class KeysOperations extends JedisOperations {
 
@@ -112,6 +113,21 @@ public class KeysOperations extends JedisOperations {
         }, false, key);
     }
 
+    public Set<String> exists(String... keys) {
+        Set<String> existsKeys = new HashSet<>();
+        jedisClient.executePipelined(
+            ShardedJedisPipeline::exists, 
+            (k, v) -> {
+                Boolean val = (Boolean) v;
+                if (val != null && val) {
+                    existsKeys.add(k);
+                }
+            }, 
+            keys
+        );
+        return existsKeys;
+    }
+
     /**
      * 删除
      * @param key
@@ -139,7 +155,7 @@ public class KeysOperations extends JedisOperations {
      * @param keys
      * @return
      */
-    public Long mdel(String... keys) {
+    public Long del(String... keys) {
         return call(shardedJedis -> {
             if (keys == null || keys.length == 0) {
                 return 0L;
@@ -160,13 +176,11 @@ public class KeysOperations extends JedisOperations {
                            .filter(Objects::nonNull)
                            .reduce(0L, Long::sum);
             } else {
-                ShardedJedisPipeline pipeline = shardedJedis.pipelined();
-                Arrays.stream(keys).forEach(pipeline::del);
-                return pipeline.syncAndReturnAll()
-                               .stream()
-                               .filter(Objects::nonNull)
-                               .mapToLong(x -> (long) x) // Long::longValue
-                               .reduce(0L, Long::sum);
+                LongAdder adder = new LongAdder();
+                jedisClient.executePipelined(
+                    shardedJedis, ShardedJedisPipeline::del, (k, v) -> adder.add(v == null ? 0 : (long) v), keys
+                );
+                return adder.longValue();
 
                 /*return Stream.of(keys).map(
                     k -> CompletableFuture.supplyAsync(() -> shardedJedis.del(k), EXECUTOR)

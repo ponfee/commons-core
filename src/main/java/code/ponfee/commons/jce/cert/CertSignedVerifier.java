@@ -11,7 +11,8 @@ import java.util.List;
 
 /**
  * 证书验签（template method patterns）
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public abstract class CertSignedVerifier {
 

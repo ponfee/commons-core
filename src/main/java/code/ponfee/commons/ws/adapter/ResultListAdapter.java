@@ -15,7 +15,7 @@ import code.ponfee.commons.ws.adapter.model.ArrayItem;
  * Result<List<T>>转换器
  * @param <T>
  * 
- * @author fupf
+ * @author Ponfee
  */
 //ParameterizedTypeImpl cannot be cast to TypeVariable
 //abstract class ResultListAdapter<T> extends XmlAdapter<Result<Item<T>[]>, Result<List<T>>> {

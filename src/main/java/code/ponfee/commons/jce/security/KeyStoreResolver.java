@@ -29,7 +29,8 @@ import code.ponfee.commons.util.SecureRandoms;
 
 /**
  * 密钥库解析类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class KeyStoreResolver {
 

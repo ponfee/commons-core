@@ -63,7 +63,7 @@ public final class MultipleDataSourceContext {
     }
 
     public static List<String> listDataSourceNames() {
-        return dataSourceKeys == null 
+        return dataSourceKeys.isEmpty()
              ? Collections.emptyList() 
              : ImmutableList.copyOf(dataSourceKeys);
     }

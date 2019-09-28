@@ -29,7 +29,7 @@ public class SentinelRedisNodes extends HashSet<RedisNode> {
     }
 
     private RedisNode createNode(String node) {
-        String[] array = StringUtils.split(node, "\\:");
+        String[] array = StringUtils.split(node, "\\:", 2);
         return new RedisNode(array[0], Integer.parseInt(array[1]));
     }
 }

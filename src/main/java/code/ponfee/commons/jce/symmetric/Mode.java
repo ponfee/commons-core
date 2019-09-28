@@ -14,7 +14,8 @@ package code.ponfee.commons.jce.symmetric;
  *     也可以是n位的，CFB也是上下文相关的，CFB模式下，明文的一个错误会影响后面的密文(错误扩散)。
  * 
  * OFB：将分组密码作为同步序列密码运行，和CFB相似，不过OFB用的是前一个n位密文输出分组反馈回移位寄存器，OFB没有错误扩散问题。
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public enum Mode {
     ECB, CBC, CFB, OFB, CTR, // 

@@ -2,7 +2,8 @@ package code.ponfee.commons.xml;
 
 /**
  * xml文件异常
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class XmlException extends RuntimeException {
     private static final long serialVersionUID = 1112070147872432069L;

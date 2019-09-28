@@ -1,6 +1,7 @@
 package code.ponfee.commons.jedis;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,13 +15,18 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
+import code.ponfee.commons.collect.ByteArrayWrapper;
 import code.ponfee.commons.io.GzipProcessor;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.ShardedJedisPipeline;
 
 /**
  * redis string（字符串）操作类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class ValueOperations extends JedisOperations {
 
@@ -523,7 +529,7 @@ public class ValueOperations extends JedisOperations {
                     String value;
                     for (int i = 0; i < keys.length; i++) {
                         if ((value = values.get(i)) != null) {
-                            resultMap.putIfAbsent(keys[i], value);
+                            resultMap.put(keys[i], value);
                         }
                     }
                 })).collect(Collectors.toList());
@@ -531,15 +537,39 @@ public class ValueOperations extends JedisOperations {
                 return resultMap;
             } else { // 直接获取，不用mget方式
                 Map<String, String> result = new HashMap<>();
-                for (String key : keys) {
-                    String value = shardedJedis.get(key);
-                    if (value != null) {
-                        result.putIfAbsent(key, value);
-                    }
-                }
+                jedisClient.executePipelined(
+                    shardedJedis, ShardedJedisPipeline::get, (k, v) -> result.put(k, (String) v), keys
+                );
                 return result;
             }
         }, null, String.valueOf(keys));
+    }
+
+    /**
+     * 批量获取
+     * @param clazz
+     * @param keys
+     * @return
+     */
+    public <T> Map<ByteArrayWrapper, T> mgetObject(Class<T> clazz, boolean isCompress, byte[]... keys) {
+        Map<ByteArrayWrapper, byte[]> datas = this.mget(false, keys);
+        if (datas == null || datas.isEmpty()) {
+            return null;
+        }
+        return datas.entrySet().stream().filter(
+            e -> Objects.nonNull(e.getValue())
+        ).collect(Collectors.toMap(
+            Entry::getKey, 
+            e -> jedisClient.deserialize(e.getValue(), clazz, isCompress)
+        ));
+    }
+
+    public <T> Map<ByteArrayWrapper, T> mgetObject(Class<T> clazz, byte[]... keys) {
+        return this.mgetObject(clazz, false, keys);
+    }
+
+    public Map<ByteArrayWrapper, byte[]> mget(byte[]... keys) {
+        return this.mget(false, keys);
     }
 
     /**
@@ -548,7 +578,7 @@ public class ValueOperations extends JedisOperations {
      * @param keys
      * @return
      */
-    public Map<byte[], byte[]> mget(boolean isCompress, byte[]... keys) {
+    public Map<ByteArrayWrapper, byte[]> mget(boolean isCompress, byte[]... keys) {
         if (keys == null) {
             return null;
         }
@@ -560,14 +590,14 @@ public class ValueOperations extends JedisOperations {
             }
 
             if (jedisList.size() < keys.length / BATCH_MULTIPLE) { // key数量大于分片数量倍数，则采用mget方式
-                Map<byte[], byte[]> resultMap = new ConcurrentHashMap<>();
+                Map<ByteArrayWrapper, byte[]> resultMap = new ConcurrentHashMap<>();
                 List<CompletableFuture<Void>> list = jedisList.stream().map(
                   jedis -> CompletableFuture.supplyAsync(() -> jedis.mget(keys), EXECUTOR)
                 ).map(future -> future.thenAccept(values -> { // 同步
                     for (int i = 0; i < keys.length; i++) {
                         byte[] value;
                         if ((value = values.get(i)) != null) {
-                            resultMap.putIfAbsent(keys[i], value);
+                            resultMap.put(ByteArrayWrapper.of(keys[i]), value);
                         }
                     }
                 })).collect(Collectors.toList());
@@ -582,42 +612,33 @@ public class ValueOperations extends JedisOperations {
                  )).entrySet().stream().collect(
                      Collectors.toMap(Entry::getKey, e -> e.getValue().join())
                  );*/
-                Map<byte[], byte[]> result = new HashMap<>();
-                for (byte[] key : keys) {
-                    byte[] value = shardedJedis.get(key);
-                    if (value != null) {
-                        result.putIfAbsent(key, value);
-                    }
-                }
+                Map<ByteArrayWrapper, byte[]> result = new HashMap<>();
+                jedisClient.executePipelined(
+                   shardedJedis, ShardedJedisPipeline::get, 
+                   (k, v) -> result.put(ByteArrayWrapper.of(k), (byte[]) v), 
+                   keys
+                );
                 return result;
             }
         }, null, isCompress, keys);
     }
 
-    public Map<byte[], byte[]> mget(byte[]... keys) {
-        return this.mget(false, keys);
-    }
-
-    /**
-     * 批量获取
-     * @param clazz
-     * @param keys
-     * @return
-     */
-    public <T> Map<byte[], T> mgetObject(Class<T> clazz, boolean isCompress, byte[]... keys) {
-        Map<byte[], byte[]> datas = this.mget(false, keys);
-        if (datas == null || datas.isEmpty()) {
+    public <T> Map<String, T> mgetObject(Class<T> clazz, String... keys) {
+        if (ArrayUtils.isEmpty(keys)) {
             return null;
         }
-        return datas.entrySet().stream().filter(
-            e -> Objects.nonNull(e.getValue())
-        ).collect(Collectors.toMap(
-            Entry::getKey, 
-            e -> jedisClient.deserialize(e.getValue(), clazz, isCompress)
-        ));
+
+        Map<ByteArrayWrapper, T> result = this.mgetObject(
+            clazz, Arrays.stream(keys).map(k -> k.getBytes()).toArray(byte[][]::new)
+        );
+
+        if (MapUtils.isEmpty(result)) {
+            return null;
+        }
+
+        return result.entrySet().stream().collect(
+            Collectors.toMap(e -> new String(e.getKey().getArray()), Entry::getValue)
+        );
     }
 
-    public <T> Map<byte[], T> mgetObject(Class<T> clazz, byte[]... keys) {
-        return this.mgetObject(clazz, false, keys);
-    }
 }

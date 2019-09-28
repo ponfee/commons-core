@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -20,42 +19,45 @@ import javax.security.auth.Destroyable;
 
 import com.google.common.base.Preconditions;
 
+import code.ponfee.commons.cache.RemovalNotification.RemovalReason;
 import code.ponfee.commons.jce.digest.DigestUtils;
 import code.ponfee.commons.util.Base64UrlSafe;
 
 /**
  * 缓存类
- * @author fupf
+ * 
+ * @author Ponfee
  * @param <T>
  */
-public class Cache<T> {
+public class Cache<K extends Comparable<K>, V> {
 
     public static final long KEEPALIVE_FOREVER = 0; // 为0表示不失效
 
     private final boolean caseSensitiveKey; // 是否忽略大小写（只针对String）
     private final boolean compressKey; // 是否压缩key（只针对String）
     private final long keepAliveInMillis; // 默认的数据保存的时间
-    private final Map<Comparable<?>, CacheValue<T>> container = new ConcurrentHashMap<>(); // 缓存容器
+    private final Map<K, CacheValue<V>> container = new ConcurrentHashMap<>(); // 缓存容器
 
     private volatile boolean isDestroy = false; // 是否被销毁
     private final Lock lock = new ReentrantLock(); // 定时清理加锁
-    private ScheduledExecutorService scheduler;
+    private final ScheduledExecutorService scheduler;
+    private final RemovalListener<K, V> removalListener;
     private TimestampProvider timestampProvider = TimestampProvider.CURRENT;
 
     Cache(boolean caseSensitiveKey, boolean compressKey, long keepAliveInMillis, 
-          int autoReleaseInSeconds, ScheduledExecutorService scheduler) {
+          int autoReleaseInSeconds, ScheduledExecutorService scheduler, 
+          RemovalListener<K, V> removalListener) {
         Preconditions.checkArgument(keepAliveInMillis >= 0);
         Preconditions.checkArgument(autoReleaseInSeconds >= 0);
 
         this.caseSensitiveKey = caseSensitiveKey;
         this.compressKey = compressKey;
         this.keepAliveInMillis = keepAliveInMillis;
+        this.removalListener = removalListener;
+        this.scheduler = scheduler;
 
         if (autoReleaseInSeconds > 0) {
-
-            if (scheduler != null) {
-                this.scheduler = scheduler;
-            } else {
+            if (scheduler == null) {
                 scheduler = DISCARD_POLICY_SCHEDULER;
             }
 
@@ -69,11 +71,12 @@ public class Cache<T> {
                 long now = now();
                 try {
                     //container.entrySet().removeIf(x -> x.getValue().isExpire(now));
-                    for (Iterator<Entry<Comparable<?>, CacheValue<T>>> iter = container.entrySet().iterator(); iter.hasNext();) {
-                        CacheValue<T> cacheValue = iter.next().getValue();
+                    for (Iterator<Entry<K, CacheValue<V>>> iter = container.entrySet().iterator(); iter.hasNext();) {
+                        Entry<K, CacheValue<V>> entry = iter.next();
+                        CacheValue<V> cacheValue = entry.getValue();
                         if (cacheValue.isExpire(now)) {
                             iter.remove();
-                            closeDaemon(cacheValue);
+                            onRemoval(entry.getKey(), cacheValue, RemovalReason.EVICTED);
                         }
                     }
                 } finally {
@@ -96,6 +99,14 @@ public class Cache<T> {
         return keepAliveInMillis;
     }
 
+    public RemovalListener<K, V> getRemovalListener() {
+        return removalListener;
+    }
+
+    public ScheduledExecutorService getScheduler() {
+        return scheduler;
+    }
+
     public TimestampProvider getTimestampProvider() {
         return timestampProvider;
     }
@@ -108,12 +119,12 @@ public class Cache<T> {
         return timestampProvider.get();
     }
 
-    // --------------------------------cache value-------------------------------
-    public void set(Comparable<?> key) {
+    // ---------------------------------------------------------------cache value
+    public void set(K key) {
         set(key, null);
     }
 
-    public void set(Comparable<?> key, T value) {
+    public void set(K key, V value) {
         long expireTimeMillis;
         if (keepAliveInMillis > 0) {
             expireTimeMillis = now() + keepAliveInMillis;
@@ -124,17 +135,17 @@ public class Cache<T> {
         this.set(key, value, expireTimeMillis);
     }
 
-    public void setWithAliveInMillis(Comparable<?> key, T value, int aliveInMillis) {
+    public void setWithAliveInMillis(K key, V value, int aliveInMillis) {
         Preconditions.checkArgument(aliveInMillis > 0);
 
         this.set(key, value, now() + aliveInMillis);
     }
 
-    public void setWithNull(Comparable<?> key, long expireTimeMillis) {
+    public void setWithNull(K key, long expireTimeMillis) {
         set(key, null, expireTimeMillis);
     }
 
-    public void set(Comparable<?> key, T value, long expireTimeMillis) {
+    public void set(K key, V value, long expireTimeMillis) {
         Preconditions.checkState(!isDestroy);
 
         if (expireTimeMillis < KEEPALIVE_FOREVER) {
@@ -151,18 +162,18 @@ public class Cache<T> {
      * @param key
      * @return
      */
-    public T get(Comparable<?> key) {
+    public V get(K key) {
         if (isDestroy) {
             return null;
         }
 
         key = getEffectiveKey(key);
-        CacheValue<T> cacheValue = container.get(key);
+        CacheValue<V> cacheValue = container.get(key);
         if (cacheValue == null) {
             return null;
         } else if (cacheValue.isExpire(now())) {
             container.remove(key);
-            closeDaemon(cacheValue);
+            onRemoval(key, cacheValue, RemovalReason.EVICTED);
             return null;
         } else {
             return cacheValue.getValue();
@@ -170,40 +181,43 @@ public class Cache<T> {
     }
 
     /**
-     * Gets value by key and remove it
+     * Remove key value and return the value if exists
      * 
      * @param key the key
      */
-    public T getAndRemove(Comparable<?> key) {
+    public V remove(K key) {
         if (isDestroy) {
             return null;
         }
 
-        return Optional.ofNullable(
-            container.remove(getEffectiveKey(key))
-        ).filter(
-            v -> v.isAlive(now())
-        ).map(
-            CacheValue::getValue
-        ).orElse(null);
+        CacheValue<V> cacheValue = container.remove(getEffectiveKey(key));
+        if (cacheValue == null) {
+            return null;
+        } else if (!cacheValue.isAlive(now())) {
+            onRemoval(key, cacheValue, RemovalReason.EVICTED);
+            return cacheValue.getValue();
+        } else {
+            onRemoval(key, cacheValue, RemovalReason.INVALIDATED);
+            return null;
+        }
     }
 
     /**
      * @param key
      * @return
      */
-    public boolean containsKey(Comparable<?> key) {
+    public boolean containsKey(K key) {
         if (isDestroy) {
             return false;
         }
 
         key = getEffectiveKey(key);
-        CacheValue<T> cacheValue = container.get(key);
+        CacheValue<V> cacheValue = container.get(key);
         if (cacheValue == null) {
             return false;
         } else if (cacheValue.isExpire(now())) {
             container.remove(key);
-            closeDaemon(cacheValue);
+            onRemoval(key, cacheValue, RemovalReason.EVICTED);
             return false;
         } else {
             return true;
@@ -215,14 +229,15 @@ public class Cache<T> {
      * @param value
      * @return
      */
-    public boolean containsValue(T value) {
+    public boolean containsValue(V value) {
         if (isDestroy) {
             return false;
         }
 
-        CacheValue<T> cacheValue;
-        for (Iterator<Entry<Comparable<?>, CacheValue<T>>> i = container.entrySet().iterator(); i.hasNext();) {
-            cacheValue = i.next().getValue();
+        CacheValue<V> cacheValue;
+        for (Iterator<Entry<K, CacheValue<V>>> i = container.entrySet().iterator(); i.hasNext();) {
+            Entry<K, CacheValue<V>> entry = i.next();
+            cacheValue = entry.getValue();
             if (cacheValue.isAlive(now())) {
                 if (value == null) {
                     if (cacheValue.getValue() == null) {
@@ -233,30 +248,32 @@ public class Cache<T> {
                 }
             } else {
                 i.remove();
-                closeDaemon(cacheValue);
+                onRemoval(entry.getKey(), cacheValue, RemovalReason.EVICTED);
             }
         }
         return false;
     }
 
     /**
-     * get for value collection
+     * Gets for value collection
+     * 
      * @return  the collection of values
      */
-    public Collection<T> values() {
+    public Collection<V> values() {
         if (isDestroy) {
             return Collections.emptyList();
         }
 
-        Collection<T> values = new ArrayList<>();
-        CacheValue<T> value;
-        for (Iterator<Entry<Comparable<?>, CacheValue<T>>> i = container.entrySet().iterator(); i.hasNext();) {
-            value = i.next().getValue();
+        Collection<V> values = new ArrayList<>();
+        CacheValue<V> value;
+        for (Iterator<Entry<K, CacheValue<V>>> i = container.entrySet().iterator(); i.hasNext();) {
+            Entry<K, CacheValue<V>> entry = i.next();
+            value = entry.getValue();
             if (value.isAlive(now())) {
                 values.add(value.getValue());
             } else {
                 i.remove();
-                closeDaemon(value);
+                onRemoval(entry.getKey(), value, RemovalReason.EVICTED);
             }
         }
         return values;
@@ -308,43 +325,58 @@ public class Cache<T> {
 
     /**
      * get effective key
+     * 
      * @param key
      * @return
      */
-    private Comparable<?> getEffectiveKey(Comparable<?> key) {
+    @SuppressWarnings("unchecked")
+    private K getEffectiveKey(K key) {
         if (key instanceof CharSequence) {
+            String k = key.toString();
             if (!caseSensitiveKey) {
-                key = key.toString().toLowerCase(); // 不区分大小写（转小写）
+                k = k.toLowerCase(); // 不区分大小写（转小写）
             }
             if (compressKey) {
-                key = Base64UrlSafe.encode(
-                    DigestUtils.sha1(key.toString())
-                ); // 压缩key
+                k = Base64UrlSafe.encode(DigestUtils.sha1(k)); // 压缩key
             }
+            key = (K) k;
         }
         return key;
     }
 
     /**
-     * Deamon close the expire value
+     * Removing a value
      * 
-     * @param cacheValue the cache value
+     * @param key the key
+     * @param cacheValue the CacheValue
+     * @param removalReason the removalReason
      */
-    private void closeDaemon(CacheValue<T> cacheValue) {
-        T value = cacheValue.getValue();
-        if (value instanceof AutoCloseable) {
-            try {
-                ((AutoCloseable) value).close();
-            } catch (Exception ignored) {
-                ignored.printStackTrace();
-            }
-        }
+    private void onRemoval(K key, CacheValue<V> cacheValue, RemovalReason removalReason) {
+        V value = cacheValue.getValue();
+
+        // Closeable, Releasable, Destroyable
         if (value instanceof Destroyable) {
             try {
                 ((Destroyable) value).destroy();
             } catch (Exception ignored) {
                 ignored.printStackTrace();
             }
+        } else if (value instanceof Releasable) {
+            try {
+                ((Releasable) value).close();
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
+            }
+        } else if (value instanceof AutoCloseable) {
+            try {
+                ((AutoCloseable) value).close();
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
+            }
+        }
+
+        if (this.removalListener != null) {
+            removalListener.onRemoval(new RemovalNotification<>(key, value, removalReason));
         }
     }
 

@@ -40,8 +40,23 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
      *   </aop:config>
      * }
      * 
-     * transaction-xml       ：数据源切换正常(doAround执行六次)，事务正常
-     * transaction-annotation：数据源切换正常(doAround执行六次)，事务正常
+     *  1、transaction-xml：<aop:config proxy-target-class="true">
+     *    MultipleDataSourceAdvisor.doAround：数据源切换正常，事务正常√
+     *  
+     *  2、transaction-xml：<aop:config proxy-target-class="false">
+     *    MultipleDataSourceAdvisor.doAround：数据源切换无效，事务正常×
+     *  
+     *  3、<tx:annotation-driven proxy-target-class="true">，<aop:config proxy-target-class="true">
+     *    MultipleDataSourceAdvisor.doAround：数据源切换正常，事务正常√
+     *  
+     *  4、<tx:annotation-driven proxy-target-class="true">，<aop:config proxy-target-class="false">
+     *    MultipleDataSourceAdvisor.doAround：数据源切换正常，事务正常√
+     *  
+     *  5、<tx:annotation-driven proxy-target-class="false">，<aop:config proxy-target-class="true">
+     *    MultipleDataSourceAdvisor.doAround：数据源切换正常，事务正常√
+     *  
+     *  6、<tx:annotation-driven proxy-target-class="false">，<aop:config proxy-target-class="false">
+     *    MultipleDataSourceAdvisor.doAround：数据源切换无效，事务正常×
      * </pre>
      * 
      * @param pjp the ProceedingJoinPoint
@@ -74,8 +89,24 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
      *     <aop:advisor advice-ref="txManageAdvice" pointcut-ref="dbTxMgrPointcut" order="9" />
      *   </aop:config>
      * }
-     * transaction-xml       ：数据源切换正常(invoke  执行六次)，事务无效
-     * transaction-annotation：数据源切换正常(invoke  执行六次)，事务无效
+
+     *  1、transaction-xml：<aop:config proxy-target-class="true">
+     *    MultipleDataSourceAdvisor.invoke  ：数据源切换正常，事务无效×
+     *
+     *  2、transaction-xml：<aop:config proxy-target-class="false">
+     *    MultipleDataSourceAdvisor.invoke  ：数据源切换无效，事务无效×
+     *
+     *  3、<tx:annotation-driven proxy-target-class="true">，<aop:config proxy-target-class="true">
+     *    MultipleDataSourceAdvisor.invoke  ：数据源切换正常，事务无效×
+     *
+     *  4、<tx:annotation-driven proxy-target-class="true">，<aop:config proxy-target-class="false">
+     *    MultipleDataSourceAdvisor.invoke  ：数据源切换正常，事务无效×
+     *
+     *  5、<tx:annotation-driven proxy-target-class="false">，<aop:config proxy-target-class="true">
+     *    MultipleDataSourceAdvisor.invoke  ：数据源切换正常，事务无效×
+     *
+     *  6、<tx:annotation-driven proxy-target-class="false">，<aop:config proxy-target-class="false">
+     *    MultipleDataSourceAdvisor.invoke  ：数据源切换无效，事务无效×
      * </pre>
      * 
      * @param invocation the MethodInvocation
@@ -99,11 +130,8 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
                                 Callable<Object> call) throws Throwable {
         String name = null;
         if (dsn != null && StringUtils.isNotBlank(dsn.value())) {
-            name = PARSER.parseExpression(
-                dsn.value()
-            ).getValue(
-                new StandardEvaluationContext(args), String.class
-            );
+            name = PARSER.parseExpression(dsn.value())
+                         .getValue(new StandardEvaluationContext(args), String.class);
         }
 
         boolean changed = false;

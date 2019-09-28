@@ -2,7 +2,8 @@ package code.ponfee.commons.serial;
 
 /**
  * 序例化异常类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class SerializationException extends RuntimeException {
 

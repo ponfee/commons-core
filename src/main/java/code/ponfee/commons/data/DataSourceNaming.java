@@ -20,6 +20,7 @@ public @interface DataSourceNaming {
 
     /**
      * Specifiy string of the dataSource name
+     * Spring EL expression
      */
     String value() default "";
 }

@@ -37,7 +37,8 @@ import code.ponfee.commons.resource.Resource;
  *   <systemPath>${project.basedir}/lib/aspose.words.jdk16.jar</systemPath>
  * </dependency>
  * word转pdf
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public final class WordUtils {
 

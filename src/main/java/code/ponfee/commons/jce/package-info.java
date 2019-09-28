@@ -116,6 +116,6 @@
  * 12、Windows证书管理：
  *    当前用户的证书管理：certmgr.msc
  * 
- * @author fupf
+ * @author Ponfee
  */
 package code.ponfee.commons.jce;

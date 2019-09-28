@@ -6,7 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * color rgb and hex transform
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public final class Colors {
 

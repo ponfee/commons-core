@@ -24,7 +24,8 @@ import code.ponfee.commons.io.Files;
 
 /**
  * 基于asm的字节码工具类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public final class ClassUtils {
 

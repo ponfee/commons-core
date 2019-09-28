@@ -16,7 +16,8 @@ import javax.imageio.ImageIO;
 
 /**
  * 图片验证码生成类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class Captchas {
 

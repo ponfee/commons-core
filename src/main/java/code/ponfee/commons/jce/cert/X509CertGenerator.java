@@ -35,7 +35,8 @@ import sun.security.x509.X509CertInfo;
 
 /**
  * 证书生成工具类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 @SuppressWarnings({ "restriction" })
 public class X509CertGenerator {

@@ -13,7 +13,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 文件资源加载器
- * @author fupf
+ * 
+ * @author Ponfee
  */
 final class FileSystemResourceLoader {
 

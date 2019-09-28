@@ -7,7 +7,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * 随机法
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class RandomLoadBalance extends AbstractLoadBalance {
     private final List<String> servers;

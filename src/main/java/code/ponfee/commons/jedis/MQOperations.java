@@ -8,7 +8,8 @@ import redis.clients.jedis.JedisPubSub;
 
 /**
  * redis message queue
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class MQOperations extends JedisOperations {
 

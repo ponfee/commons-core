@@ -5,7 +5,7 @@ import code.ponfee.commons.model.Page;
 /**
  * Result<Page<?>> -> Result<json>
  * 
- * @author fupf
+ * @author Ponfee
  */
 public class ResultDataJsonPageAdapter extends ResultDataJsonAdapter<Page<?>> {
 }

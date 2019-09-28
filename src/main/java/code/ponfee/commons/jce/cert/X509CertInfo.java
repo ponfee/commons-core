@@ -19,7 +19,8 @@ package code.ponfee.commons.jce.cert;
   * </pre>
   * 
  * 证书信息枚举类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public enum X509CertInfo {
 

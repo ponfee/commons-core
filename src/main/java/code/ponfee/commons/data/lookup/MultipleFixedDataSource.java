@@ -21,9 +21,9 @@ import code.ponfee.commons.data.NamedDataSource;
  *   {@linkplain #setDefaultTargetDataSource(Object)}：设置默认的数据源 <p>
  *   {@linkplain #determineCurrentLookupKey()}：获取当前数据源， 当返回为空或无对应数据源时会使用defaultTargetDataSource <p>
  * 
- * @see MultipletScalableDataSource
- * 
  * @author Ponfee
+ * @see MultipletScalableDataSource
+ * @see MultipletCachedDataSource
  */
 public class MultipleFixedDataSource extends AbstractRoutingDataSource {
 

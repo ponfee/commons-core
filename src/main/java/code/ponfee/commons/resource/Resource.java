@@ -7,7 +7,8 @@ import code.ponfee.commons.io.Closeables;
 
 /**
  * 资源类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class Resource implements Closeable {
 

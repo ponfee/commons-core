@@ -1,7 +1,6 @@
 package code.ponfee.commons.jedis;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,7 +38,8 @@ import redis.clients.util.Pool;
  * 分片Sentinel连接池
  * http://blog.csdn.net/dc_726/article/details/48084373
  * 参考：https://github.com/warmbreeze/sharded-jedis-sentinel-pool并修复其连接池泄露的bug
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class ShardedJedisSentinelPool extends Pool<ShardedJedis> {
 
@@ -179,7 +179,7 @@ public class ShardedJedisSentinelPool extends Pool<ShardedJedis> {
             String invalid = null;
             while (!fetched && sentinelRetry < MAX_RETRY_SENTINEL) {
                 for (String sentinel : sentinels) {
-                    final HostAndPort hap = toHostAndPort(Arrays.asList(sentinel.split(":")));
+                    final HostAndPort hap = toHostAndPort(sentinel.split(":", 2));
 
                     logger.info("Connecting to Sentinel {}", hap);
 
@@ -190,7 +190,7 @@ public class ShardedJedisSentinelPool extends Pool<ShardedJedis> {
                         if (master == null) {
                             List<String> hostAndPort = jedis.sentinelGetMasterAddrByName(masterName);
                             if (hostAndPort != null && hostAndPort.size() > 0) {
-                                master = toHostAndPort(hostAndPort);
+                                master = toHostAndPort(hostAndPort.toArray(new String[hostAndPort.size()]));
                                 logger.info("Found Redis master at {}", master);
                                 shardMasters.add(master);
                                 masterMap.put(masterName, master);
@@ -241,7 +241,7 @@ public class ShardedJedisSentinelPool extends Pool<ShardedJedis> {
         if (masters.size() != 0 && masters.size() == shardMasters.size()) {
             logger.info("Starting Sentinel listeners...");
             for (String sentinel : sentinels) {
-                final HostAndPort hap = toHostAndPort(Arrays.asList(sentinel.split(":")));
+                final HostAndPort hap = toHostAndPort(sentinel.split(":", 2));
                 MasterListener masterListener = new MasterListener(masters, hap.getHost(), hap.getPort());
                 masterListeners.add(masterListener);
                 masterListener.start();
@@ -251,11 +251,8 @@ public class ShardedJedisSentinelPool extends Pool<ShardedJedis> {
         return shardMasters;
     }
 
-    private HostAndPort toHostAndPort(List<String> getMasterAddrByNameResult) {
-        String host = getMasterAddrByNameResult.get(0);
-        int port = Integer.parseInt(getMasterAddrByNameResult.get(1));
-
-        return new HostAndPort(host, port);
+    private HostAndPort toHostAndPort(String[] array) {
+        return new HostAndPort(array[0], Integer.parseInt(array[1]));
     }
 
     /**
@@ -395,7 +392,7 @@ public class ShardedJedisSentinelPool extends Pool<ShardedJedis> {
                             if (array.length > 3) {
                                 int index = masters.indexOf(array[0]);
                                 if (index >= 0) {
-                                    HostAndPort newHostMaster = toHostAndPort(Arrays.asList(array[3], array[4]));
+                                    HostAndPort newHostMaster = toHostAndPort(new String[] { array[3], array[4] });
                                     List<HostAndPort> newHostMasters = new ArrayList<>();
                                     for (int i = 0; i < masters.size(); i++) {
                                         newHostMasters.add(null);

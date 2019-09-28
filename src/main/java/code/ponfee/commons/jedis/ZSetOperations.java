@@ -9,7 +9,8 @@ import redis.clients.util.SafeEncoder;
 
 /**
  * redis sorted set（有序集合操作类）
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class ZSetOperations extends JedisOperations {
 

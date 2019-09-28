@@ -10,6 +10,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * For HashMap key
  * 
  * @author Ponfee
+ * @see org.springframework.data.redis.connection.util.ByteArrayWrapper
  */
 public class ByteArrayWrapper implements 
     java.io.Serializable, Comparable<ByteArrayWrapper> {
@@ -17,25 +18,18 @@ public class ByteArrayWrapper implements
     private static final long serialVersionUID = -8749483734287105153L;
 
     private final byte[] array;
-
-    public ByteArrayWrapper(byte[] array) {
-        if (array == null) {
-            throw new NullPointerException();
-        }
-        this.array = array;
-    }
+    private final int hashCode;
 
     public ByteArrayWrapper(Byte[] array) {
-        if (array == null) {
-            throw new NullPointerException();
-        }
-        this.array = ArrayUtils.toPrimitive(array);
+        this(ArrayUtils.toPrimitive(array));
     }
 
-    public static ByteArrayWrapper create(byte[] array) {
-        if (array == null || array.length == 0) {
-            return null;
-        }
+    public ByteArrayWrapper(byte[] array) {
+        this.array = array;
+        this.hashCode = Arrays.hashCode(this.array);
+    }
+
+    public static ByteArrayWrapper of(byte[] array) {
         return new ByteArrayWrapper(array);
     }
 
@@ -49,7 +43,7 @@ public class ByteArrayWrapper implements
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(array);
+        return hashCode;
     }
 
     @Override

@@ -34,7 +34,8 @@ import code.ponfee.commons.util.Strings;
  * ResourceLoaderFacade.getResource("file:d:/import.txt")
  * 
  * 资源文件加载门面类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public final class ResourceLoaderFacade {
 

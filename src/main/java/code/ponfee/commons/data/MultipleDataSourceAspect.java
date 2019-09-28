@@ -27,10 +27,18 @@ import code.ponfee.commons.exception.CheckedThrowing;
  * 
  *  }
  * 
- * transaction-xml       ：数据源切换无效(doAround执行一次)，事务正常
- * transaction-annotation：数据源切换正常(doAround执行一次)，事务正常
+ *  1、transaction-xml：<aop:config proxy-target-class="true">
+ *    MultipleDataSourceAspect.doAround ：数据源切换无效，事务正常×
+ *
+ *  2、transaction-xml：<aop:config proxy-target-class="false">
+ *    MultipleDataSourceAspect.doAround ：数据源切换正常，事务正常√
+ *
+ *  3、<tx:annotation-driven proxy-target-class="true">
+ *    MultipleDataSourceAspect.doAround ：数据源切换正常，事务正常√
+ *
+ *  4、<tx:annotation-driven proxy-target-class="false">
+ *    MultipleDataSourceAspect.doAround ：数据源切换正常，事务正常√
  * </pre>
- * 
  * 
  * @author Ponfee
  */

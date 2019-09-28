@@ -68,7 +68,8 @@ import code.ponfee.commons.jce.cert.X509CertUtils;
  * </pre>
  * 
  * RSA Private Key Convert
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public final class RSAPrivateKeys {
     private RSAPrivateKeys() {}

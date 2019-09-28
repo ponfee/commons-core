@@ -21,7 +21,8 @@ import code.ponfee.commons.util.ObjectUtils;
 
 /**
  * DSA签名/验签（只用于数字签名）
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public final class DSASigner {
 

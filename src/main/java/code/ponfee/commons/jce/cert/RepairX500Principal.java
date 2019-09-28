@@ -10,7 +10,8 @@ import javax.security.auth.x500.X500Principal;
 
 /**
  * 解决X500Principal乱码问题
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class RepairX500Principal implements Principal {
 

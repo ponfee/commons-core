@@ -8,7 +8,8 @@ import java.util.List;
 
 /**
  * Page转换
- * @author fupf
+ * 
+ * @author Ponfee
  * @param <T>
  */
 public class TransitPage<T> {

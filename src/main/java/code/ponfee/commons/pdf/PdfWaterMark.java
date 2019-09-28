@@ -17,7 +17,8 @@ import com.itextpdf.text.pdf.PdfStamper;
 
 /**
  * pdf加水印
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class PdfWaterMark {
 

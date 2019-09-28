@@ -19,7 +19,8 @@ import java.nio.channels.FileChannel;
 
 /**
  * 文件编码转换与文本内容替换
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class FileTransformer {
 

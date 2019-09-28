@@ -13,7 +13,8 @@ import code.ponfee.commons.collect.Collects;
 
 /**
  * 消息格式化
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public final class MessageFormats {
     private MessageFormats() {}

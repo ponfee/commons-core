@@ -16,7 +16,7 @@ import code.ponfee.commons.reflect.Fields;
  * 基于github上的mybatis分页工具
  * https://github.com/pagehelper/Mybatis-PageHelper/blob/master/wikis/zh/HowToUse.md
  * 
- * @author fupf
+ * @author Ponfee
  */
 public final class PageHandler {
 

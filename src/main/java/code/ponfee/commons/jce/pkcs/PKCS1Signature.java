@@ -9,7 +9,8 @@ import code.ponfee.commons.jce.Providers;
 
 /**
  * pkcs1方式的签名/验签工具类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class PKCS1Signature {
 

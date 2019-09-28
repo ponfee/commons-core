@@ -6,7 +6,7 @@ import code.ponfee.commons.io.GzipProcessor;
  * 
  * General Serializer
  * 
- * @author fupf
+ * @author Ponfee
  */
 public class GeneralSerializer extends Serializer {
 

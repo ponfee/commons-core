@@ -16,7 +16,8 @@ import org.joda.time.format.DateTimeFormat;
 
 /**
  * 基于joda的日期工具类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class Dates {
 

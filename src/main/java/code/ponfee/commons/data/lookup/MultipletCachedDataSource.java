@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2012 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package code.ponfee.commons.data.lookup;
 
 import java.sql.Connection;
@@ -32,28 +16,27 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.jdbc.datasource.AbstractDataSource;
 import org.springframework.util.Assert;
 
+import com.google.common.collect.ImmutableSet;
+
 import code.ponfee.commons.cache.Cache;
 import code.ponfee.commons.cache.CacheBuilder;
 import code.ponfee.commons.collect.Collects;
 import code.ponfee.commons.data.NamedDataSource;
 
 /**
- * Abstract {@link javax.sql.DataSource} implementation that routes {@link #getConnection()}
- * calls to one of various target DataSources based on a lookup key. The latter is usually
- * (but not necessarily) determined through some thread-bound transaction context.
+ * 可动态增加/移除数据源/数据源自动超时失效
  * 
- * @author Juergen Hoeller
  * @author Ponfee
- * @since 2.0.1
- * @see #setTargetDataSources
- * @see #setDefaultTargetDataSource
- * @see #determineCurrentLookupKey()
+ * @see org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource
  */
 public class MultipletCachedDataSource extends AbstractDataSource {
 
-    private final Cache<DataSource> dataSources = CacheBuilder.newBuilder()
-        .autoReleaseInSeconds(300).caseSensitiveKey(true).build();
+    private final Cache<String, DataSource> dataSources = CacheBuilder.<String, DataSource>newBuilder()
+        .autoReleaseInSeconds(300).caseSensitiveKey(true)
+        .removalListener(nf -> MultipleDataSourceContext.remove(nf.getKey()))
+        .build();
 
+    private final Set<String> unremovedDataSourceNames;
     private final DataSource defaultDataSource;
 
     public MultipletCachedDataSource(NamedDataSource dataSource) {
@@ -93,13 +76,11 @@ public class MultipletCachedDataSource extends AbstractDataSource {
             this.dataSources.set(ds.getName(), ds.getDataSource(), Cache.KEEPALIVE_FOREVER);
         }
 
+        unremovedDataSourceNames = ImmutableSet.copyOf(names);
         MultipleDataSourceContext.addAll(names);
     }
 
-    public synchronized void add(NamedDataSource ds, long expireTimeMillis) {
-        this.add(ds.getName(), ds.getDataSource(), expireTimeMillis);
-    }
-
+    // -----------------------------------------------------------------add/remove
     public synchronized void addIfAbsent(String dataSourceName, Supplier<DataSource> supplier, 
                                          long expireTimeMillis) {
         if (!this.dataSources.containsKey(dataSourceName)) {
@@ -107,7 +88,19 @@ public class MultipletCachedDataSource extends AbstractDataSource {
         }
     }
 
-    public synchronized void add(@Nonnull String dataSourceName, @Nonnull DataSource datasource,
+    public synchronized void addIfAbsent(String dataSourceName, DataSource datasource,
+                                         long expireTimeMillis) {
+        if (!this.dataSources.containsKey(dataSourceName)) {
+            this.add(dataSourceName, datasource, expireTimeMillis);
+        }
+    }
+
+    public synchronized void add(NamedDataSource ds, long expireTimeMillis) {
+        this.add(ds.getName(), ds.getDataSource(), expireTimeMillis);
+    }
+
+    public synchronized void add(@Nonnull String dataSourceName, 
+                                 @Nonnull DataSource datasource,
                                  long expireTimeMillis) {
         Assert.isTrue(expireTimeMillis > 0, "ExpireTimeMillis must greater than 0.");
         if (dataSources.containsKey(dataSourceName)) {
@@ -118,10 +111,14 @@ public class MultipletCachedDataSource extends AbstractDataSource {
     }
 
     public synchronized void remove(String dataSourceName) {
-        dataSources.getAndRemove(dataSourceName);
+        if (unremovedDataSourceNames.contains(dataSourceName)) {
+            throw new UnsupportedOperationException("Inited datasource cannot remove: " + dataSourceName);
+        }
+        dataSources.remove(dataSourceName);
         MultipleDataSourceContext.remove(dataSourceName);
     }
 
+    // -----------------------------------------------------------------override methods
     @Override
     public Connection getConnection() throws SQLException {
         return determineTargetDataSource().getConnection();

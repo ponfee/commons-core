@@ -3,9 +3,11 @@ package code.ponfee.commons.jedis;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -18,17 +20,19 @@ import code.ponfee.commons.serial.Serializer;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisShardInfo;
 import redis.clients.jedis.ShardedJedis;
+import redis.clients.jedis.ShardedJedisPipeline;
 import redis.clients.jedis.ShardedJedisPool;
 import redis.clients.jedis.exceptions.JedisException;
 import redis.clients.util.Pool;
 
 /**
  * jedis客户端
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class JedisClient implements DisposableBean {
 
-    private final static String SEPARATOR = ",";
+    private final static String SEPARATOR = "[ ,]"; // 空格或逗号分隔
     private final static int DEFAULT_TIMEOUT_MILLIS = 2000; // default 2000 millis timeout
     private static final int MAX_BYTE_LEN = 30; // max bytes length
     private static final int MAX_LEN = 40; // max str length
@@ -218,6 +222,77 @@ public class JedisClient implements DisposableBean {
      */
     public final void hook(JedisHook hook) {
         hook.hook(this);
+    }
+
+    // --------------------------------------------------------------------ShardedJedisPipeline.syncAndReturnAll()
+    @SuppressWarnings("unchecked")
+    public <T> void executePipelined(BiConsumer<ShardedJedisPipeline, T> action,
+                                     BiConsumer<T, Object> collector, T... array) {
+        this.executePipelined(action, collector, Arrays.asList(array));
+    }
+
+    public <T> void executePipelined(BiConsumer<ShardedJedisPipeline, T> action,
+                                     BiConsumer<T, Object> collector, List<T> list) {
+        valueOps.hook(sj -> executePipelined(sj, action, collector, list), list);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <K> void executePipelined(ShardedJedis shardedJedis, 
+                                     BiConsumer<ShardedJedisPipeline, K> action, 
+                                     BiConsumer<K, Object> collector, K... array) {
+        this.executePipelined(shardedJedis, action, collector, Arrays.asList(array));
+    }
+
+    /**
+     * Executed pipelined and return result
+     * 
+     * @param shardedJedis
+     * @param action
+     * @param collector
+     * @param list
+     */
+    public <T> void executePipelined(ShardedJedis shardedJedis, 
+                                     BiConsumer<ShardedJedisPipeline, T> action, 
+                                     BiConsumer<T, Object> collector, List<T> list) {
+        ShardedJedisPipeline pipeline = shardedJedis.pipelined();
+        list.forEach(elem -> action.accept(pipeline, elem));
+        List<Object> resp = pipeline.syncAndReturnAll();
+        for (int i = 0, n = list.size(); i < n; i++) {
+            // arg-elem -> redis-value
+            collector.accept(list.get(i), resp.get(i));
+        }
+    }
+
+    // --------------------------------------------------------------------ShardedJedisPipeline.sync()
+    @SuppressWarnings("unchecked")
+    public <T> void executePipelined(BiConsumer<ShardedJedisPipeline, T> action, T... array) {
+        this.executePipelined(action, Arrays.asList(array));
+    }
+
+    public <T> void executePipelined(BiConsumer<ShardedJedisPipeline, T> action, Collection<T> coll) {
+        valueOps.hook(sj -> this.executePipelined(sj, action, coll), coll);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> void executePipelined(ShardedJedis shardedJedis, 
+                                     BiConsumer<ShardedJedisPipeline, T> action, 
+                                     T... array) {
+        this.executePipelined(shardedJedis, action, Arrays.asList(array));
+    }
+
+    /**
+     * Executed pipelined 
+     * 
+     * @param shardedJedis
+     * @param action
+     * @param coll
+     */
+    public <T> void executePipelined(ShardedJedis shardedJedis, 
+                                     BiConsumer<ShardedJedisPipeline, T> action, 
+                                     Collection<T> coll) {
+        ShardedJedisPipeline pipeline = shardedJedis.pipelined();
+        coll.forEach(elem -> action.accept(pipeline, elem));
+        pipeline.sync();
     }
 
     // --------------------------------------------------------package modify methods

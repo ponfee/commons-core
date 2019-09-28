@@ -38,7 +38,7 @@ import code.ponfee.commons.util.SecureRandoms;
  * 
  * CryptoMessageSyntax可以解PKCS7Envelope加密的数字信封
  * 
- * @author fupf
+ * @author Ponfee
  */
 @SuppressWarnings("deprecation")
 public final class PKCS7Envelope {

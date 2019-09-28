@@ -5,7 +5,8 @@ import java.util.List;
 
 /**
  * redis lua script
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class ScriptOperations extends JedisOperations {
 

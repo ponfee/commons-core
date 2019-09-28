@@ -4,7 +4,8 @@ import java.util.Map;
 
 /**
  * 对应Map.Entry数据
- * @author fupf
+ * 
+ * @author Ponfee
  * @param <K>
  * @param <V>
  */

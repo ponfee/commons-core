@@ -21,7 +21,8 @@ import java.lang.annotation.Target;
  * <p>
  * 
  * 日志注解
- * @author fupf
+ * 
+ * @author Ponfee
  */
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)

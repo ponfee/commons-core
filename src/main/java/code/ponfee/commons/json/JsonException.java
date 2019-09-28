@@ -4,7 +4,8 @@ import code.ponfee.commons.exception.BasicException;
 
 /**
  * json异常类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class JsonException extends BasicException {
     private static final long serialVersionUID = 8109219010796537426L;

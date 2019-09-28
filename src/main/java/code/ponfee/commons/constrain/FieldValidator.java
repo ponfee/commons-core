@@ -41,7 +41,8 @@ import code.ponfee.commons.util.Strings;
  * GAV: net.sf.oval:oval:1.90
  * 
  * 字段校验
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class FieldValidator {
 
@@ -51,8 +52,8 @@ public class FieldValidator {
     private static final String CFG_ERR = "约束配置错误[";
     private static final String EMPTY = "";
     private static final Lock LOCK = new ReentrantLock();
-    static final Cache<String[]> METHOD_ARGSNAME = CacheBuilder.newBuilder().build();
-    private static final Cache<CacheResult> META_CFG_CACHE = CacheBuilder.newBuilder().build();
+    static final Cache<String, String[]> METHOD_ARGSNAME = CacheBuilder.<String, String[]>newBuilder().build();
+    private static final Cache<String, CacheResult> META_CFG_CACHE = CacheBuilder.<String, CacheResult>newBuilder().build();
 
     protected FieldValidator() {}
 

@@ -13,7 +13,8 @@ import java.util.regex.Pattern;
 /**
  * 正则工具类
  * http://blog.csdn.net/carechere/article/details/52315728
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public final class RegexUtils {
     private RegexUtils() {}

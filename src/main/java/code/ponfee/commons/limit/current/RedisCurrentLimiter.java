@@ -6,9 +6,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,12 +21,11 @@ import code.ponfee.commons.jedis.JedisClient;
 import code.ponfee.commons.jedis.JedisLock;
 import code.ponfee.commons.util.Bytes;
 import code.ponfee.commons.util.IdWorker;
-import redis.clients.jedis.ShardedJedisPipeline;
 
 /**
  * Redis限流器
  *
- * @author fupf
+ * @author Ponfee
  */
 public class RedisCurrentLimiter implements CurrentLimiter {
 
@@ -42,11 +41,13 @@ public class RedisCurrentLimiter implements CurrentLimiter {
     private final AsyncBatchTransmitter<Trace> transmitter;
     private final int clearBeforeMillis;
 
-    private final Cache<Long> confCache = CacheBuilder.newBuilder().keepaliveInMillis(120000L) // 2 minutes of cache alive
-                                                      .autoReleaseInSeconds(1800).build(); // 30 minutes to release expire cache
+    private final Cache<String, Long> confCache = CacheBuilder.<String, Long>newBuilder()
+        .keepaliveInMillis(120000L) // 2 minutes of cache alive
+        .autoReleaseInSeconds(1800).build(); // 30 minutes to release expire cache
 
-    private final Cache<Long> countCache = CacheBuilder.newBuilder().keepaliveInMillis(500L) // 500 millis of cache alive
-                                                       .autoReleaseInSeconds(1800).build(); // 30 minutes to release expire cache
+    private final Cache<String, Long> countCache = CacheBuilder.<String, Long>newBuilder()
+        .keepaliveInMillis(500L) // 500 millis of cache alive
+        .autoReleaseInSeconds(1800).build(); // 30 minutes to release expire cache
 
     public RedisCurrentLimiter(JedisClient jedisClient, int clearBeforeMinutes, int autoClearInSeconds) {
         this.jedisClient = jedisClient;
@@ -89,19 +90,18 @@ public class RedisCurrentLimiter implements CurrentLimiter {
                 );
                 entry.getValue().clear();
             }*/
-            jedisClient.hook(shardedJedis -> {
-                ShardedJedisPipeline pipeline = shardedJedis.pipelined();
-                for (Entry<String, Map<byte[], Double>> entry : groups.entrySet()) {
-                    if (entry.getValue().isEmpty()) {
-                        continue;
+            jedisClient.executePipelined(
+                (pipeline, e) -> {
+                    Map<byte[], Double> map = e.getValue();
+                    if (MapUtils.isNotEmpty(map)) {
+                        byte[] key = concat(TRACE_KEY_BYTES, e.getKey().getBytes(UTF_8));
+                        pipeline.zadd(key, map);
+                        pipeline.expire(key, EXPIRE_SECONDS);
+                        map.clear();
                     }
-                    byte[] key = concat(TRACE_KEY_BYTES, entry.getKey().getBytes(UTF_8));
-                    pipeline.zadd(key, entry.getValue());
-                    pipeline.expire(key, EXPIRE_SECONDS);
-                    entry.getValue().clear();
-                }
-                pipeline.sync();
-            });
+                }, 
+                groups.entrySet()
+            );
 
             groups.clear();
             traces.clear();

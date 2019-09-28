@@ -9,7 +9,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * 加权随机法
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class WeightRandomLoadBalance extends AbstractLoadBalance {
     private final List<String> servers;

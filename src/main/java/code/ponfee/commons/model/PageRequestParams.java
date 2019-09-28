@@ -17,7 +17,7 @@ import code.ponfee.commons.math.Numbers;
 /**
  * 分页请求参数封装类
  * 
- * @author fupf
+ * @author Ponfee
  */
 public class PageRequestParams implements java.io.Serializable {
 

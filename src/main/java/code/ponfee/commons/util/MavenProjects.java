@@ -13,7 +13,7 @@ import code.ponfee.commons.io.Files;
  * new File("src/main/resources/log4j2.xml");
  * new File("src/main/java/code/ponfee/commons/util/Asserts.java");
  * 
- * @author fupf
+ * @author Ponfee
  */
 public class MavenProjects {
 

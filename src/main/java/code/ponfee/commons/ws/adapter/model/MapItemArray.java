@@ -2,7 +2,8 @@ package code.ponfee.commons.ws.adapter.model;
 
 /**
  * 封装MapItem数组
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class MapItemArray {
     private MapItem[] items;

@@ -13,7 +13,7 @@ import code.ponfee.commons.util.SecureRandoms;
 /**
  * 对称加密构建类
  * 
- * @author fupf
+ * @author Ponfee
  */
 public final class SymmetricCryptorBuilder {
 

@@ -6,15 +6,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.collect.Lists;
+
 import code.ponfee.commons.math.Numbers;
 
 import java.util.Set;
 
-import redis.clients.jedis.ShardedJedisPipeline;
-
 /**
  * redis hash（哈希表）操作类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class HashOperations extends JedisOperations {
 
@@ -534,24 +537,36 @@ public class HashOperations extends JedisOperations {
 
     /**
      * 批量获取
+     * 
      * @param queryParams
      * @return
      */
-    public List<Object> hmget(Map<String, String[]> queryParams) {
+    @SuppressWarnings("unchecked")
+    public Map<String, Map<String, String>> hmget(Map<String, String[]> queryParams) {
         if (queryParams == null || queryParams.isEmpty()) {
             return null;
         }
 
-        return call(shardedJedis -> {
-            ShardedJedisPipeline pipeline = shardedJedis.pipelined();
-            //Map<String, Response<List<String>>> result = new HashMap<>();
-            for (Entry<String, String[]> entry : queryParams.entrySet()) {
-                /*Response<List<String>> resp = pipeline.hmget(entry.getKey(), entry.getValue());
-                result.put(entry.getKey(), resp);*/
-                pipeline.hmget(entry.getKey(), entry.getValue());
-            }
-            return pipeline.syncAndReturnAll();
-        }, null, queryParams);
+        Map<String, Map<String, String>> result = new HashMap<>();
+        jedisClient.executePipelined(
+            (sp, e) -> sp.hmget(e.getKey(), e.getValue()), 
+            (k, v) -> {
+                Map<String, String> map = result.get(k.getKey());
+                if (map == null) {
+                    map = new HashMap<>();
+                    result.put(k.getKey(), map);
+                }
+    
+                List<String> list = (List<String>) v;
+                String[] fields = k.getValue();
+                for (int i = 0, n = fields.length; i < n; i++) {
+                    if (StringUtils.isNotEmpty(fields[i])) {
+                        map.put(fields[i], list.get(i));
+                    }
+                }
+            }, 
+            Lists.newArrayList(queryParams.entrySet())
+        );
+        return result;
     }
-
 }

@@ -68,7 +68,7 @@ public class RedisRequestLimiter extends RequestLimiter{
             int ttl = client.keysOps().ttl(cacheKey).intValue() + 1; // calc check key ttl
             client.keysOps().expire(checkKey, ttl); // 第一次验证，设置验证标识数据的缓存失效期
         } else if (times > limit) {
-            client.keysOps().mdel(cacheKey, checkKey); // 超过验证次数，删除缓存中的验证码
+            client.keysOps().del(cacheKey, checkKey); // 超过验证次数，删除缓存中的验证码
             throw new RequestLimitException("验证错误次数过多，请重新获取！");
         }
 
@@ -78,7 +78,7 @@ public class RedisRequestLimiter extends RequestLimiter{
         }
 
         // 验证成功，删除缓存key
-        client.keysOps().mdel(cacheKey, checkKey);
+        client.keysOps().del(cacheKey, checkKey);
         return this;
     }
 

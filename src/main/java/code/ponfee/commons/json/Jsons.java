@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * The json utility based jackson
  * 
- * @author fupf
+ * @author Ponfee
  */
 public final class Jsons {
 

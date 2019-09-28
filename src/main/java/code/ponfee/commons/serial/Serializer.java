@@ -5,7 +5,7 @@ package code.ponfee.commons.serial;
  * 
  * Method template pattern
  * 
- * @author fupf
+ * @author Ponfee
  */
 public abstract class Serializer {
 

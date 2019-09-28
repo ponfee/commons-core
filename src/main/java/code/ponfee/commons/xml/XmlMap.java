@@ -11,7 +11,8 @@ import org.w3c.dom.NodeList;
 
 /**
  * xml和map相互转换工具
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public final class XmlMap extends LinkedHashMap<String, String> {
 

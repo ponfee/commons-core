@@ -7,7 +7,8 @@ import java.util.Objects;
 
 /**
  * xml构建
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public final class XmlWriter {
     private static final String XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";

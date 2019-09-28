@@ -2,7 +2,8 @@ package code.ponfee.commons.loadbalance;
 
 /**
  * server load balance algorithm
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public abstract class AbstractLoadBalance {
 

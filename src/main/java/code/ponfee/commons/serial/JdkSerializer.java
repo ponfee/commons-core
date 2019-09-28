@@ -14,7 +14,8 @@ import java.util.zip.GZIPOutputStream;
 
 /**
  * java序例化
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class JdkSerializer extends Serializer {
 

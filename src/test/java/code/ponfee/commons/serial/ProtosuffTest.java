@@ -41,6 +41,8 @@ public class ProtosuffTest {
         Stopwatch watch = Stopwatch.createStarted();
         final Protostuff ser1 = new Protostuff();
         final Protostuff ser2 = new Protostuff();
+
+        // ERROR, FIXME: Protostuff unthread safe
         MultithreadExecutor.execAsync(50, () -> {
             Assert.assertEquals("test123", ((Result<String>) ser2.deserialize(ser1.serialize(Result.success("test123")))).getData());
             Assert.assertEquals("abce", ((LogInfo) ser1.deserialize(ser2.serialize(new LogInfo("abce")))).getMethodName());
@@ -49,14 +51,30 @@ public class ProtosuffTest {
     }
 
     @Test
-    public void test4() {
+    public void test40() {
         Stopwatch watch = Stopwatch.createStarted();
         ProtostuffRedisSerializer<Object> ser1 = new ProtostuffRedisSerializer<>();
         ProtostuffRedisSerializer<Object> ser2 = new ProtostuffRedisSerializer<>();
 
-        MultithreadExecutor.execAsync(2, () -> {
+        // XXX: if Executor is CALLER_RUN_EXECUTOR and threadNumber>=33 then will be dead loop
+        MultithreadExecutor.execAsync(32, () -> {
             Assert.assertEquals("test123", ((Result<String>) ser2.deserialize(ser1.serialize(Result.success("test123")))).getData());
             Assert.assertEquals("abce", ((LogInfo) ser1.deserialize(ser2.serialize(new LogInfo("abce")))).getMethodName());
+        }, 5);
+
+        System.out.println(watch.stop());
+    }
+
+    @Test
+    public void test41() {
+        Stopwatch watch = Stopwatch.createStarted();
+        ProtostuffSerializer ser1 = new ProtostuffSerializer();
+        ProtostuffSerializer ser2 = new ProtostuffSerializer();
+
+        // XXX: if Executor is CALLER_RUN_EXECUTOR and threadNumber>=33 then will be dead loop
+        MultithreadExecutor.execAsync(33, () -> {
+            Assert.assertEquals("test123", ((Result<String>) ser2.deserialize(ser1.serialize(Result.success("test123")), Result.class)).getData());
+            Assert.assertEquals("abce", ((LogInfo) ser1.deserialize(ser2.serialize(new LogInfo("abce")), LogInfo.class)).getMethodName());
         }, 5);
 
         System.out.println(watch.stop());

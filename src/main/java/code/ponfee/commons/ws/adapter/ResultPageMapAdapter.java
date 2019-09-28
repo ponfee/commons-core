@@ -19,7 +19,7 @@ import code.ponfee.commons.ws.adapter.model.MapItem;
  * 
  * @see org.springframework.data.domain.jaxb.PageAdapter
  * 
- * @author fupf
+ * @author Ponfee
  */
 @SuppressWarnings("unchecked")
 public abstract class ResultPageMapAdapter<K, V> 

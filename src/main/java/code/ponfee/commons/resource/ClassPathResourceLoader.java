@@ -31,7 +31,8 @@ import code.ponfee.commons.io.Closeables;
 
 /**
  * 类资源加载器
- * @author fupf
+ * 
+ * @author Ponfee
  */
 final class ClassPathResourceLoader {
 

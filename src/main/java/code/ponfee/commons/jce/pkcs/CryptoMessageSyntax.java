@@ -40,7 +40,8 @@ import org.bouncycastle.util.Store;
 
 /**
  * 加密消息语法：Cryptography Message Syntax
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public final class CryptoMessageSyntax {
 

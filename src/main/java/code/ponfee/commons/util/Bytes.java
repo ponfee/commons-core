@@ -24,7 +24,7 @@ import code.ponfee.commons.math.Numbers;
  * 右移>>:      该数对应的二进制码整体右移，左边部分以原有标志位填充，右边超出的部分舍弃
  * 无符号右移>>>: 该数对应的二进制码整体右移，左边部分以0填充，右边超出的部分舍弃
  * 
- * @author fupf
+ * @author Ponfee
  */
 public final class Bytes {
 

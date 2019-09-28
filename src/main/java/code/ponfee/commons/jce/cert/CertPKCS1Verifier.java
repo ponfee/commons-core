@@ -10,7 +10,8 @@ import code.ponfee.commons.jce.Providers;
 
 /**
  * pkcs1 signature verifier
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class CertPKCS1Verifier extends CertSignedVerifier {
 

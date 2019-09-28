@@ -17,7 +17,7 @@ package code.ponfee.commons.util;
  * 计算掩码方式：(1<<bits)-1 或 -1L^(-1L<<bits)
  * 基于snowflake算法的ID生成器
  *
- * @author fupf
+ * @author Ponfee
  */
 public final class IdWorker {
 
