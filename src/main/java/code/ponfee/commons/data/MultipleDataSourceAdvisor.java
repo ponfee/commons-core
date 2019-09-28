@@ -41,7 +41,7 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
      * }
      * 
      * transaction-xml       ：数据源切换正常(doAround执行六次)，事务正常
-     * transaction-annotation：数据源切换正常(doAround执行六次)，事务无效
+     * transaction-annotation：数据源切换正常(doAround执行六次)，事务正常
      * </pre>
      * 
      * @param pjp the ProceedingJoinPoint
@@ -74,8 +74,8 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
      *     <aop:advisor advice-ref="txManageAdvice" pointcut-ref="dbTxMgrPointcut" order="9" />
      *   </aop:config>
      * }
-     * transaction-xml       ：数据源切换正常(invoke执行六次)，事务无效
-     * transaction-annotation：数据源切换正常(invoke执行六次)，事务无效
+     * transaction-xml       ：数据源切换正常(invoke  执行六次)，事务无效
+     * transaction-annotation：数据源切换正常(invoke  执行六次)，事务无效
      * </pre>
      * 
      * @param invocation the MethodInvocation
