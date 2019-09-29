@@ -112,6 +112,22 @@ public class KeysOperations extends JedisOperations {
         }, false, key);
     }
 
+    public Set<String> exists(String... keys) {
+        return call(shardedJedis -> {
+            ShardedJedisPipeline pipeline = shardedJedis.pipelined();
+            Arrays.stream(keys).forEach(pipeline::exists);
+            List<Object> result = pipeline.syncAndReturnAll();
+            Set<String> existsKeys = new HashSet<>();
+            for (int i = 0, n = result.size(); i < n; i++) {
+                Boolean res = (Boolean) result.get(i);
+                if (res != null && res) {
+                    existsKeys.add(keys[i]);
+                }
+            }
+            return existsKeys;
+        }, null, (Object[]) keys);
+    }
+
     /**
      * 删除
      * @param key

@@ -35,8 +35,8 @@ public class MultipletCachedDataSource extends AbstractDataSource {
         .autoReleaseInSeconds(300).caseSensitiveKey(true)
         .removalListener(nf -> MultipleDataSourceContext.remove(nf.getKey()))
         .build();
-    private final Set<String> initedDataSourceNames;
 
+    private final Set<String> unremovedDataSourceNames;
     private final DataSource defaultDataSource;
 
     public MultipletCachedDataSource(NamedDataSource dataSource) {
@@ -76,19 +76,27 @@ public class MultipletCachedDataSource extends AbstractDataSource {
             this.dataSources.set(ds.getName(), ds.getDataSource(), Cache.KEEPALIVE_FOREVER);
         }
 
-        initedDataSourceNames = ImmutableSet.copyOf(names);
+        unremovedDataSourceNames = ImmutableSet.copyOf(names);
         MultipleDataSourceContext.addAll(names);
     }
 
-    public synchronized void add(NamedDataSource ds, long expireTimeMillis) {
-        this.add(ds.getName(), ds.getDataSource(), expireTimeMillis);
-    }
-
+    // -----------------------------------------------------------------add/remove
     public synchronized void addIfAbsent(String dataSourceName, Supplier<DataSource> supplier, 
                                          long expireTimeMillis) {
         if (!this.dataSources.containsKey(dataSourceName)) {
             this.add(dataSourceName, supplier.get(), expireTimeMillis);
         }
+    }
+
+    public synchronized void addIfAbsent(String dataSourceName, DataSource datasource,
+                                         long expireTimeMillis) {
+        if (!this.dataSources.containsKey(dataSourceName)) {
+            this.add(dataSourceName, datasource, expireTimeMillis);
+        }
+    }
+
+    public synchronized void add(NamedDataSource ds, long expireTimeMillis) {
+        this.add(ds.getName(), ds.getDataSource(), expireTimeMillis);
     }
 
     public synchronized void add(@Nonnull String dataSourceName, 
@@ -103,13 +111,14 @@ public class MultipletCachedDataSource extends AbstractDataSource {
     }
 
     public synchronized void remove(String dataSourceName) {
-        if (initedDataSourceNames.contains(dataSourceName)) {
-            throw new IllegalArgumentException("Inited datasource cannot remove: " + dataSourceName);
+        if (unremovedDataSourceNames.contains(dataSourceName)) {
+            throw new UnsupportedOperationException("Inited datasource cannot remove: " + dataSourceName);
         }
         dataSources.remove(dataSourceName);
         MultipleDataSourceContext.remove(dataSourceName);
     }
 
+    // -----------------------------------------------------------------override methods
     @Override
     public Connection getConnection() throws SQLException {
         return determineTargetDataSource().getConnection();
