@@ -23,7 +23,6 @@ import code.ponfee.commons.collect.Collects;
 import code.ponfee.commons.data.NamedDataSource;
 
 /**
- * 
  * 可动态增加/移除数据源
  * 
  * @author Ponfee
