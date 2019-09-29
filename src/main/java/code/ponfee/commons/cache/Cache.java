@@ -345,31 +345,31 @@ public class Cache<K extends Comparable<K>, V> {
     }
 
     /**
-     * Deamon close the expire value
+     * Removing a value
      * 
-     * @param cacheValue the cache value
+     * @param key the key
+     * @param cacheValue the CacheValue
+     * @param removalReason the removalReason
      */
     private void onRemoval(K key, CacheValue<V> cacheValue, RemovalReason removalReason) {
         V value = cacheValue.getValue();
 
         // Closeable, Releasable, Destroyable
-        if (value instanceof AutoCloseable) {
+        if (value instanceof Destroyable) {
             try {
-                ((AutoCloseable) value).close();
+                ((Destroyable) value).destroy();
             } catch (Exception ignored) {
                 ignored.printStackTrace();
             }
-        }
-        if (value instanceof Releasable) {
+        } else if (value instanceof Releasable) {
             try {
                 ((Releasable) value).close();
             } catch (Exception ignored) {
                 ignored.printStackTrace();
             }
-        }
-        if (value instanceof Destroyable) {
+        } else if (value instanceof AutoCloseable) {
             try {
-                ((Destroyable) value).destroy();
+                ((AutoCloseable) value).close();
             } catch (Exception ignored) {
                 ignored.printStackTrace();
             }
