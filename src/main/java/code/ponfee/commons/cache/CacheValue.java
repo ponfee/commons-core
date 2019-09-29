@@ -2,7 +2,8 @@ package code.ponfee.commons.cache;
 
 /**
  * 缓存值
- * @author fupf
+ * 
+ * @author Ponfee
  * @param <T>
  */
 class CacheValue<T> implements java.io.Serializable {

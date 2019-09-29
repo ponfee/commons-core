@@ -42,11 +42,13 @@ public class RedisCurrentLimiter implements CurrentLimiter {
     private final AsyncBatchTransmitter<Trace> transmitter;
     private final int clearBeforeMillis;
 
-    private final Cache<Long> confCache = CacheBuilder.newBuilder().keepaliveInMillis(120000L) // 2 minutes of cache alive
-                                                      .autoReleaseInSeconds(1800).build(); // 30 minutes to release expire cache
+    private final Cache<String, Long> confCache = CacheBuilder.<String, Long>newBuilder()
+        .keepaliveInMillis(120000L) // 2 minutes of cache alive
+        .autoReleaseInSeconds(1800).build(); // 30 minutes to release expire cache
 
-    private final Cache<Long> countCache = CacheBuilder.newBuilder().keepaliveInMillis(500L) // 500 millis of cache alive
-                                                       .autoReleaseInSeconds(1800).build(); // 30 minutes to release expire cache
+    private final Cache<String, Long> countCache = CacheBuilder.<String, Long>newBuilder()
+        .keepaliveInMillis(500L) // 500 millis of cache alive
+        .autoReleaseInSeconds(1800).build(); // 30 minutes to release expire cache
 
     public RedisCurrentLimiter(JedisClient jedisClient, int clearBeforeMinutes, int autoClearInSeconds) {
         this.jedisClient = jedisClient;
