@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  * public void method(@ConstrainParam SomeBean param);
  * </pre>
  * 
- * @author fupf
+ * @author Ponfee
  */
 @Target({ ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)

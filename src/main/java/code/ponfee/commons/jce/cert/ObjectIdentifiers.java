@@ -2,8 +2,9 @@ package code.ponfee.commons.jce.cert;
 
 /**
  * 证书扩展信息
+ * 
+ * @author Ponfee
  * @see org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers
- * @author fupf
  */
 public final class ObjectIdentifiers {
 

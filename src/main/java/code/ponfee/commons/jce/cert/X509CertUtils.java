@@ -43,7 +43,8 @@ import code.ponfee.commons.jce.Providers;
 
 /**
  * 证书工具类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 @SuppressWarnings({ "deprecation" })
 public class X509CertUtils {

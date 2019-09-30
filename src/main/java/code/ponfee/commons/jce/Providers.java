@@ -25,7 +25,8 @@ import javax.net.ssl.TrustManagerFactory;
 /**
  * security providers
  * there has not any method defined except a static method
- * @author fupf
+ * 
+ * @author Ponfee
  */
 @SuppressWarnings("restriction")
 public interface Providers {

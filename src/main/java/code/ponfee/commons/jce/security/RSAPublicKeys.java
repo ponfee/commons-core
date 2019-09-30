@@ -25,7 +25,8 @@ import code.ponfee.commons.jce.cert.X509CertUtils;
  * PKCS#8 PEM：PUBLIC KEY
  * 
  * RSA Public Key convert
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public final class RSAPublicKeys {
     private RSAPublicKeys() {}

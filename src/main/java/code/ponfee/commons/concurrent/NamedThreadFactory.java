@@ -7,7 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * 线程工厂
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class NamedThreadFactory implements ThreadFactory {
 

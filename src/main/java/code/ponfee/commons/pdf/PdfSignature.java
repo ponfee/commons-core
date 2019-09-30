@@ -27,7 +27,8 @@ import sun.security.x509.AlgorithmId;
 
 /**
  * pdf签章
- * @author fupf
+ * 
+ * @author Ponfee
  */
 @SuppressWarnings("restriction")
 public class PdfSignature {

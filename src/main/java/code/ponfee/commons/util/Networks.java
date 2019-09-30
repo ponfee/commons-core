@@ -26,7 +26,7 @@ import java.util.Enumeration;
  * isMCOrgLocal       组织范围的广播地址
  * isMCSiteLocal      站点范围的广播地址
  * 
- * @author fupf
+ * @author Ponfee
  */
 public final class Networks {
     private Networks() {}
@@ -218,7 +218,7 @@ public final class Networks {
         if (!RegexUtils.isIp(ip)) {
             throw new IllegalArgumentException("invalid ip address[" + ip + "]");
         }
-        String[] ipNums = ip.split("\\.");
+        String[] ipNums = ip.split("\\.", 4);
         return (Long.parseLong(ipNums[0]) << 24) 
              + (Long.parseLong(ipNums[1]) << 16)
              + (Long.parseLong(ipNums[2]) <<  8) 

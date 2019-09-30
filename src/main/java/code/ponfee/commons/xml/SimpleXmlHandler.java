@@ -28,7 +28,8 @@ import code.ponfee.commons.io.Closeables;
 
 /**
  * xml工具类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class SimpleXmlHandler {
 

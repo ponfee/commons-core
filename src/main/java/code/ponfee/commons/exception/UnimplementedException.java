@@ -2,7 +2,8 @@ package code.ponfee.commons.exception;
 
 /**
  * 未实现（方法）的异常
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class UnimplementedException extends BasicException {
     private static final long serialVersionUID = 8031675925487573509L;

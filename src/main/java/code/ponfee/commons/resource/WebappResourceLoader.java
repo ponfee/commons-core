@@ -15,7 +15,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * webapp资源加载器
- * @author fupf
+ * 
+ * @author Ponfee
  */
 final class WebappResourceLoader {
     private static Logger logger = LoggerFactory.getLogger(WebappResourceLoader.class);

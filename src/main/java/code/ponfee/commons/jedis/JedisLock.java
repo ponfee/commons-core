@@ -61,7 +61,7 @@ import code.ponfee.commons.util.Bytes;
  * 
  * http://www.54tianzhisheng.cn/2018/04/24/Distributed_lock/
  * 
- * @author fupf
+ * @author Ponfee
  */
 public class JedisLock implements Lock, java.io.Serializable {
 

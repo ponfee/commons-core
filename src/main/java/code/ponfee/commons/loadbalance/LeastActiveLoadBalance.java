@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * 最少活跃数
  *
- * @author fupf
+ * @author Ponfee
  */
 public class LeastActiveLoadBalance extends AbstractLoadBalance {
 

@@ -7,7 +7,7 @@ import java.util.Date;
  * 
  * https://www.cnblogs.com/softidea/p/6229543.html
  *
- * @author fupf
+ * @author Ponfee
  */
 public interface CurrentLimiter {
 

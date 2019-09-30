@@ -15,7 +15,8 @@ import java.util.zip.GZIPOutputStream;
 
 /**
  * json序例化
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class JsonSerializer extends Serializer {
 

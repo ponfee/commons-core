@@ -15,7 +15,8 @@ import sun.security.pkcs.SignerInfo;
 
 /**
  * pkcs7方式验签
- * @author fupf
+ * 
+ * @author Ponfee
  */
 @SuppressWarnings("restriction")
 public class CertPKCS7Verifier extends CertSignedVerifier {

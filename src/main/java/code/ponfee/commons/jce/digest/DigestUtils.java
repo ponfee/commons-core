@@ -15,7 +15,8 @@ import code.ponfee.commons.jce.Providers;
 
 /**
  * digest算法封装
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public final class DigestUtils {
 

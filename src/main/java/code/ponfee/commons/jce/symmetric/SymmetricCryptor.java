@@ -35,7 +35,7 @@ import code.ponfee.commons.util.Base64UrlSafe;
  * 5、加密的第1轮到第9轮的轮函数一样，包括4个操作：字节代换、行位移、列混合和轮密钥加。最后一轮迭代不执行列混合。
  * 6、字节代换：把该字节的高4位作为行值，低4位作为列值，取出S盒或者逆S盒中对应的行的元素作为输出
  * 
- * @author fupf
+ * @author Ponfee
  */
 public class SymmetricCryptor {
 

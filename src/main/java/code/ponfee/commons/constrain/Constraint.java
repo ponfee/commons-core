@@ -21,7 +21,8 @@ import java.lang.annotation.Target;
  * </pre>
  *
  * 参数约束
- * @author fupf
+ * 
+ * @author Ponfee
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

@@ -47,7 +47,8 @@ import code.ponfee.commons.reflect.Fields;
  * </pre>
  * 
  * 参数校验
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public abstract class MethodValidator extends FieldValidator {
 

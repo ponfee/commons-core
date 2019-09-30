@@ -9,7 +9,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 加权轮询法
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class WeightRoundRobinLoadBalance extends AbstractLoadBalance {
 

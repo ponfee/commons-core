@@ -7,7 +7,8 @@ import java.util.Set;
 
 /**
  * redis set 集合操作
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class SetOpertions extends JedisOperations {
 

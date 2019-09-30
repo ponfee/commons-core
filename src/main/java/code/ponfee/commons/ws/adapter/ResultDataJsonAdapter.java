@@ -12,7 +12,7 @@ import code.ponfee.commons.reflect.GenericUtils;
  * Result<data> -> Result<json>
  * @param <T>
  * 
- * @author fupf
+ * @author Ponfee
  */
 public abstract class ResultDataJsonAdapter<T> extends XmlAdapter<Result<String>, Result<T>> {
 

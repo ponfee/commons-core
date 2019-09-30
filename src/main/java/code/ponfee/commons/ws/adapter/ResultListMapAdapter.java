@@ -21,7 +21,7 @@ import code.ponfee.commons.ws.adapter.model.MapItemArray;
  * @param <K>
  * @param <V>
  * 
- * @author fupf
+ * @author Ponfee
  */
 @SuppressWarnings("unchecked")
 public abstract class ResultListMapAdapter<K, V> extends XmlAdapter<Result<MapItemArray>, Result<List<Map<K, V>>>> {

@@ -39,7 +39,8 @@ import org.springframework.core.type.filter.TypeFilter;
  * </pre>
  * 
  * 资源扫描
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class ResourceScanner {
 

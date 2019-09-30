@@ -26,7 +26,7 @@ import code.ponfee.commons.reflect.ClassUtils;
  * }
  * </pre>
  * 
- * @author fupf
+ * @author Ponfee
  */
 public abstract class ParamValidator extends FieldValidator {
 

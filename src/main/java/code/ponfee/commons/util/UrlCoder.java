@@ -8,7 +8,8 @@ import code.ponfee.commons.io.Files;
 
 /**
  * url编码/解码
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public final class UrlCoder {
 

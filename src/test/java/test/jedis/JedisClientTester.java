@@ -24,6 +24,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.google.common.collect.Lists;
 
 import bean.TestBean;
+import code.ponfee.commons.collect.ByteArrayWrapper;
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.jedis.JedisClient;
 import code.ponfee.commons.jedis.ShardedJedisSentinelPool;
@@ -182,7 +183,7 @@ public class JedisClientTester {
             jedisClient.valueOps().set(key, bytes, true, 1000);
         }
         long start = System.currentTimeMillis();
-        Map<byte[], byte[]> map = jedisClient.valueOps().mget(true, keys);
+        Map<ByteArrayWrapper, byte[]> map = jedisClient.valueOps().mget(true, keys);
         System.out.println(map.size() + " mget cost: " + (System.currentTimeMillis() - start));
 
         start = System.currentTimeMillis();
@@ -190,7 +191,7 @@ public class JedisClientTester {
         byte[] v;
         for (byte[] key : keys) {
             v = jedisClient.valueOps().get(key, true);
-            if (v != null) map.put(key, v);
+            if (v != null) map.put(ByteArrayWrapper.of(key), v);
         }
         System.out.println(map.size() + " get cost: " + (System.currentTimeMillis() - start));
     }
@@ -240,7 +241,7 @@ public class JedisClientTester {
             jedisClient.valueOps().set(keys[i], keys[i]);
         }
         System.out.println("mget: "+jedisClient.valueOps().mget(keys).size());
-        System.out.println("dels: "+jedisClient.keysOps().mdel(keys));
+        System.out.println("dels: "+jedisClient.keysOps().del(keys));
         System.out.println("mget: "+jedisClient.valueOps().mget(keys).size());
     }
 

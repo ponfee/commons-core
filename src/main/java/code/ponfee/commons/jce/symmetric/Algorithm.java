@@ -33,7 +33,7 @@ package code.ponfee.commons.jce.symmetric;
  * 
  * @see org.bouncycastle.jcajce.provider.symmetric.ARC4
  * 
- * @author fupf
+ * @author Ponfee
  */
 public enum Algorithm {
 

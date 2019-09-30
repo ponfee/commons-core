@@ -17,7 +17,8 @@ import code.ponfee.commons.math.Numbers;
 
 /**
  * 字符串工具类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class Strings {
 

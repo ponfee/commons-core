@@ -5,7 +5,8 @@ import java.util.List;
 
 /**
  * redis list（列表）操作类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class ListOperations extends JedisOperations {
 

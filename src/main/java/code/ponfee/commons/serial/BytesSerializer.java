@@ -5,7 +5,8 @@ import code.ponfee.commons.reflect.ClassUtils;
 
 /**
  * 字段串序例化
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class BytesSerializer extends Serializer {
 

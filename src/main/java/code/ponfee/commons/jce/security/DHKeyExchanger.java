@@ -44,7 +44,7 @@ import code.ponfee.commons.jce.symmetric.Algorithm;
  *
  * g^(a*b) mod p = g^(b*a) mod p
  *
- * @author fupf
+ * @author Ponfee
  */
 public final class DHKeyExchanger {
 

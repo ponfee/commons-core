@@ -3,7 +3,7 @@ package code.ponfee.commons.exception;
 /**
  * 异常基础类
  * 
- * @author fupf
+ * @author Ponfee
  */
 public class BasicException extends RuntimeException {
     private static final long serialVersionUID = -5678901285130119481L;

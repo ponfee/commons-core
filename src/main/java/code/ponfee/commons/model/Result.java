@@ -14,7 +14,7 @@ import code.ponfee.commons.reflect.Fields;
  * @see org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.CREATED).build()
  * 
  * @param <T>
- * @author fupf
+ * @author Ponfee
  */
 public class Result<T> implements java.io.Serializable {
 

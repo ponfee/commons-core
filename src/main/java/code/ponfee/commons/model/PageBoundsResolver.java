@@ -5,7 +5,8 @@ import java.util.List;
 
 /**
  * 分页解析器
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public final class PageBoundsResolver {
 

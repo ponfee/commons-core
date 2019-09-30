@@ -22,7 +22,7 @@ import net.lingala.zip4j.model.enums.EncryptionMethod;
  * 
  * @see <a href="http://commons.apache.org/proper/commons-compress">apache commons-compress</a>
  * 
- * @author fupf
+ * @author Ponfee
  */
 public class ZipUtils {
 

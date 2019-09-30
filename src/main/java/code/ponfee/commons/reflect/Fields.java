@@ -6,7 +6,8 @@ import sun.misc.Unsafe;
 
 /**
  * 高效的反射工具类（基于sun.misc.Unsafe）
- * @author fupf
+ * 
+ * @author Ponfee
  */
 @SuppressWarnings("restriction")
 public final class Fields {

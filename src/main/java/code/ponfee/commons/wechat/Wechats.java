@@ -14,7 +14,8 @@ import code.ponfee.commons.util.ObjectUtils;
 /**
  * 微信工具类
  * https://www.cnblogs.com/txw1958/p/weixin76-user-info.html
- * @author fupf
+ * 
+ * @author Ponfee
  */
 @SuppressWarnings("unchecked")
 public class Wechats {

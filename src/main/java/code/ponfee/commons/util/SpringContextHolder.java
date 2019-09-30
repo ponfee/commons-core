@@ -32,7 +32,8 @@ import code.ponfee.commons.reflect.Fields;
  * </pre>
  * 
  * spring上下文持有类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class SpringContextHolder implements ApplicationContextAware/*, BeanFactoryAware*/, DisposableBean {
 

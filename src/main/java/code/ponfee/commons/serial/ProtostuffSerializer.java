@@ -13,7 +13,7 @@ import io.protostuff.runtime.RuntimeSchema;
 /**
  * Protostuff Serializer
  * 
- * @author fupf
+ * @author Ponfee
  */
 public class ProtostuffSerializer extends Serializer {
 

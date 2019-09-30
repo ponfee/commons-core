@@ -15,7 +15,8 @@ import java.lang.annotation.Target;
  * </pre>
  * 
  * 方法参数校验器
- * @author fupf
+ * 
+ * @author Ponfee
  */
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)

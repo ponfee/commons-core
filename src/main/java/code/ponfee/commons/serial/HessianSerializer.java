@@ -18,7 +18,8 @@ import code.ponfee.commons.reflect.ClassUtils;
 
 /**
  * hessian序例化
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class HessianSerializer extends Serializer {
 

@@ -2,7 +2,8 @@ package code.ponfee.commons.jce;
 
 /**
  * RSA签名算法
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public enum RSASignAlgorithms {
 

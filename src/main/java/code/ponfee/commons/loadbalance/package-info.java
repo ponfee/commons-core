@@ -1,5 +1,6 @@
 /**
  * server load balance
- * @author fupf
+ * 
+ * @author Ponfee
  */
 package code.ponfee.commons.loadbalance;

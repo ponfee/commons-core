@@ -2,7 +2,8 @@ package code.ponfee.commons.ws.adapter.model;
 
 /**
  * 封装数组对象
- * @author fupf
+ * 
+ * @author Ponfee
  * @param <T>
  */
 public class ArrayItem<T> {

@@ -8,7 +8,7 @@ import code.ponfee.commons.reflect.ClassUtils;
 /**
  * Fst Serializer
  * 
- * @author fupf
+ * @author Ponfee
  */
 public class FstSerializer extends Serializer {
 

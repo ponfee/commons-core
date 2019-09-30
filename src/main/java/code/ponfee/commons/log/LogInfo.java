@@ -4,7 +4,8 @@ import code.ponfee.commons.log.LogAnnotation.LogType;
 
 /**
  * 日志信息
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class LogInfo implements java.io.Serializable {
     private static final long serialVersionUID = -4824757481106145723L;

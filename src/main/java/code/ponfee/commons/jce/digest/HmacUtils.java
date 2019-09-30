@@ -30,7 +30,8 @@ import code.ponfee.commons.jce.Providers;
  * </code>
  * 其中：H为散列函数，K为密钥，text为数据，
  *     B表示数据块的字长（the blocksize is that of the underlying hash function）
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public final class HmacUtils {
 

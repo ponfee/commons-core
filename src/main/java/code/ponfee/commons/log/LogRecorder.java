@@ -28,7 +28,8 @@ import code.ponfee.commons.util.ObjectUtils;
  * </pre>
  * 
  * 日志记录切处理
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public abstract class LogRecorder {
 

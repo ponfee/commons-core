@@ -16,7 +16,8 @@ import code.ponfee.commons.util.ObjectUtils;
 
 /**
  * 泛型工具类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public final class GenericUtils {
     private GenericUtils() {}

@@ -25,7 +25,7 @@ import code.ponfee.commons.io.Files;
  * 
  * the bean class must include default no-arg constructor
  * 
- * @author fupf
+ * @author Ponfee
  */
 public class KryoSerializer extends Serializer {
 

@@ -28,7 +28,8 @@ import code.ponfee.commons.jce.RSASignAlgorithms;
  * RSA Cryptor
  * 加/解密
  * 签名/验签
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public final class RSACryptor {
     private RSACryptor() {}

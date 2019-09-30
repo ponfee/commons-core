@@ -4,7 +4,8 @@ import redis.clients.jedis.ShardedJedis;
 
 /**
  * 回调函数（无返回值时使用）
- * @author fupf
+ * 
+ * @author Ponfee
  */
 @FunctionalInterface
 public interface JedisHook {

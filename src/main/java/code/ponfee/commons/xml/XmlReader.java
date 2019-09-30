@@ -17,7 +17,8 @@ import code.ponfee.commons.io.Closeables;
 
 /**
  * xml读取
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public final class XmlReader {
 

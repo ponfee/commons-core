@@ -41,7 +41,8 @@ import code.ponfee.commons.util.Strings;
  * GAV: net.sf.oval:oval:1.90
  * 
  * 字段校验
- * @author fupf
+ * 
+ * @author Ponfee
  */
 public class FieldValidator {
 

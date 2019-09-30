@@ -6,7 +6,7 @@ package code.ponfee.commons.jce;
  * 
  * @see org.bouncycastle.jcajce.provider.asymmetric.rsa.CipherSpi
  * 
- * @author fupf
+ * @author Ponfee
  */
 public enum RSACipherPaddings {
 

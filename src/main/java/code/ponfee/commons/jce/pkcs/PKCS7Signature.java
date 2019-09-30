@@ -21,7 +21,8 @@ import sun.security.x509.X500Name;
 
 /**
  * pkcs7工具类
- * @author fupf
+ * 
+ * @author Ponfee
  */
 @SuppressWarnings("restriction")
 public class PKCS7Signature {
