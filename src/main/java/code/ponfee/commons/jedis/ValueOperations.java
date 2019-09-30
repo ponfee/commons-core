@@ -1,6 +1,7 @@
 package code.ponfee.commons.jedis;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,6 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 import code.ponfee.commons.collect.ByteArrayWrapper;
 import code.ponfee.commons.io.GzipProcessor;
@@ -618,6 +621,24 @@ public class ValueOperations extends JedisOperations {
                 return result;
             }
         }, null, isCompress, keys);
+    }
+
+    public <T> Map<String, T> mgetObject(Class<T> clazz, String... keys) {
+        if (ArrayUtils.isEmpty(keys)) {
+            return null;
+        }
+
+        Map<ByteArrayWrapper, T> result = this.mgetObject(
+            clazz, Arrays.stream(keys).map(k -> k.getBytes()).toArray(byte[][]::new)
+        );
+
+        if (MapUtils.isEmpty(result)) {
+            return null;
+        }
+
+        return result.entrySet().stream().collect(
+            Collectors.toMap(e -> new String(e.getKey().getArray()), Entry::getValue)
+        );
     }
 
 }
