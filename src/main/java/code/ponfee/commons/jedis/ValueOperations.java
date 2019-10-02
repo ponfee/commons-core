@@ -274,12 +274,10 @@ public class ValueOperations extends JedisOperations {
      */
     public Long incrByEX(String key, int step, int seconds) {
         return call(sj -> {
-            byte[] _key     = key.getBytes(), 
-                   _step    = Integer.toString(step).getBytes(), 
-                   _seconds = Integer.toString(getActualExpire(seconds)).getBytes();
-            return (Long) sj.getShard(_key).eval(
-                INCRBY_SCRIPT, 1, _key, _step, _seconds
-            );
+            byte[] k = key.getBytes(), 
+                   v = Integer.toString(step).getBytes(), 
+                   s = Integer.toString(getActualExpire(seconds)).getBytes();
+            return (Long) sj.getShard(k).eval(INCRBY_SCRIPT, 1, k, v, s);
         }, null, key, step, seconds);
     }
 

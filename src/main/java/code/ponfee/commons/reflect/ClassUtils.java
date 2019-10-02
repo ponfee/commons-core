@@ -3,14 +3,19 @@ package code.ponfee.commons.reflect;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.asm.ClassReader;
 import org.springframework.asm.ClassVisitor;
@@ -21,6 +26,7 @@ import org.springframework.asm.Opcodes;
 import org.springframework.asm.Type;
 
 import code.ponfee.commons.io.Files;
+import code.ponfee.commons.model.Null;
 
 /**
  * 基于asm的字节码工具类
@@ -28,8 +34,9 @@ import code.ponfee.commons.io.Files;
  * @author Ponfee
  */
 public final class ClassUtils {
-
     private ClassUtils() {}
+
+    private static final Map<Class<?>, Constructor<?>> CONSTRUCTOR_CACHE = new HashMap<>();
 
     /**
      * 获取方法的参数名（编译未清除）<p>
@@ -282,6 +289,61 @@ public final class ClassUtils {
             }
         }
         return true;
+    }
+
+    // -----------------------------------------------------------------------------new instance
+    public static <T> T newInstance(Class<T> type) {
+        return newInstance(type, ArrayUtils.EMPTY_CLASS_ARRAY, ArrayUtils.EMPTY_OBJECT_ARRAY);
+    }
+
+    public static <T> T newInstance(Class<T> type, Object... args) {
+        Class<?>[] parameterTypes = null;
+        if (ArrayUtils.isNotEmpty(args)) {
+            parameterTypes = new Class<?>[args.length];
+            for (int i = 0, n = args.length; i < n; i++) {
+                parameterTypes[i] = args[i].getClass();
+            }
+        }
+        return newInstance(type, parameterTypes, args);
+    }
+
+    public static <T> T newInstance(Class<T> type, Class<?> parameterType, Object arg) {
+        return newInstance(type, new Class[] { parameterType }, new Object[] { arg });
+    }
+
+    public static <T> T newInstance(Class<T> type, Class<?>[] parameterTypes, Object[] args) {
+        Constructor<T> constructor = getConstructor(type, parameterTypes);
+        if (constructor == null) {
+            throw new UnsupportedOperationException(
+                "Not such " + Arrays.toString(parameterTypes) + " argument constructor."
+            );
+        }
+        try {
+            return ArrayUtils.isEmpty(args) ? constructor.newInstance() : constructor.newInstance(args);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Constructor<T> getConstructor(Class<T> type, Class<?>... parameterTypes) {
+        Constructor<T> constructor = (Constructor<T>) CONSTRUCTOR_CACHE.get(type);
+        if (constructor == null) {
+            synchronized (CONSTRUCTOR_CACHE) {
+                if ((constructor = (Constructor<T>) CONSTRUCTOR_CACHE.get(type)) == null) {
+                    try {
+                        constructor = ArrayUtils.isEmpty(parameterTypes)
+                                    ? type.getDeclaredConstructor()
+                                    : type.getDeclaredConstructor(parameterTypes);
+                    } catch (NoSuchMethodException | SecurityException ignored) {
+                        // Not such arguments constructor
+                        constructor = (Constructor<T>) Null.NONE_CONSTRUCTOR;
+                    }
+                    CONSTRUCTOR_CACHE.put(type, constructor);
+                }
+            }
+        }
+        return constructor == Null.NONE_CONSTRUCTOR ? null : constructor;
     }
 
 }

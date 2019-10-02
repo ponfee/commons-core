@@ -50,8 +50,7 @@ public class ProtostuffSerializer extends Serializer {
         Schema<T> schema = (Schema<T>) SCHEMA_CACHE.get(type);
         if (schema == null) {
             synchronized (SCHEMA_CACHE) {
-                schema = (Schema<T>) SCHEMA_CACHE.get(type);
-                if (schema == null) {
+                if ((schema = (Schema<T>) SCHEMA_CACHE.get(type)) == null) {
                     SCHEMA_CACHE.put(type, schema = RuntimeSchema.createFrom(type));
                 }
             }

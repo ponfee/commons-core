@@ -12,7 +12,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * @author Ponfee
  * @see org.springframework.data.redis.connection.util.ByteArrayWrapper
  */
-public class ByteArrayWrapper implements 
+public final class ByteArrayWrapper implements
     java.io.Serializable, Comparable<ByteArrayWrapper> {
 
     private static final long serialVersionUID = -8749483734287105153L;

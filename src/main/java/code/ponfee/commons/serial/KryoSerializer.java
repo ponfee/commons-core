@@ -30,6 +30,7 @@ import code.ponfee.commons.io.Files;
 public class KryoSerializer extends Serializer {
 
     private static Logger logger = LoggerFactory.getLogger(KryoSerializer.class);
+    public static final KryoSerializer INSTANCE = new KryoSerializer();
 
     private final KryoPool kryoPool = new KryoPool.Builder(Kryo::new).softReferences().build();
 

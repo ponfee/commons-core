@@ -8,7 +8,7 @@ import code.ponfee.commons.reflect.ClassUtils;
  * 
  * @author Ponfee
  */
-public class BytesSerializer extends Serializer {
+public class ByteArraySerializer extends Serializer {
 
     @Override
     protected byte[] serialize0(Object obj, boolean compress) {

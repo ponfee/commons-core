@@ -20,10 +20,10 @@ public class ByteArrayTraitSerializer extends Serializer {
             );
         }
 
-        byte[] bytes = ((ByteArrayTrait) obj).toByteArray();
-        return compress ? GzipProcessor.compress(bytes) : bytes;
+        return serialize((ByteArrayTrait) obj, compress);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected <T> T deserialize0(byte[] bytes, Class<T> clazz, boolean compress) {
         if (!ByteArrayTrait.class.isAssignableFrom(clazz)) {
@@ -35,12 +35,13 @@ public class ByteArrayTraitSerializer extends Serializer {
         if (compress) {
             bytes = GzipProcessor.decompress(bytes);
         }
-        try {
-            //return clazz.getDeclaredMethod("fromByteArray", byte[].class).invoke(null, bytes);
-            return clazz.getConstructor(byte[].class).newInstance(bytes);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Class<? extends ByteArrayTrait> type = (Class<? extends ByteArrayTrait>) clazz;
+        return (T) ofBytes(bytes, type);
+    }
+
+    public static <T extends ByteArrayTrait> T ofBytes(byte[] bytes, Class<T> type) {
+        //return clazz.getDeclaredMethod("fromByteArray", byte[].class).invoke(null, bytes);
+        return ClassUtils.newInstance(type, byte[].class, bytes);
     }
 
     // ----------------------------------------------------------------------

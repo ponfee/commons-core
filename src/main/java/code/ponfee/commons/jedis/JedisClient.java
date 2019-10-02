@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -415,13 +416,10 @@ public class JedisClient implements DisposableBean {
         if (array == null) {
             return null;
         }
-        List<String> list = new ArrayList<>(array.length);
-        for (String str : array) {
-            if (StringUtils.isNotBlank(str)) {
-                list.add(str.trim());
-            }
-        }
-        return list;
+        return Arrays.stream(array)
+                     .filter(StringUtils::isNotBlank)
+                     .map(String::trim)
+                     .collect(Collectors.toList());
     }
 
 }
