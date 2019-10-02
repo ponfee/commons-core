@@ -8,6 +8,8 @@
 
 package code.ponfee.commons.model;
 
+import java.lang.reflect.Constructor;
+
 /**
  * 
  * The {@code Null} class is representing unable instance object
@@ -15,6 +17,15 @@ package code.ponfee.commons.model;
  * @author Ponfee
  */
 public final class Null {
+
+    public static final Constructor<Null> NONE_CONSTRUCTOR;
+    static {
+        try {
+            NONE_CONSTRUCTOR = Null.class.getDeclaredConstructor();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private Null() {
         throw new AssertionError("Null cannot create instance.");

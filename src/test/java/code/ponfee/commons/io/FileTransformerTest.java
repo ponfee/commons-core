@@ -10,5 +10,10 @@ public class FileTransformerTest {
         transformer.setReplaceEach(new String[] { "cn.ponfee.web.framework." }, new String[] { "com.sf.framework." });
         transformer.transform();
         System.out.println(transformer.getTransformLog());
+        
+        
+        /*FileTransformer t = new FileTransformer("D:\\test\\code", "D:\\test\\target", "UTF-8");
+        t.setReplaceEach(new String[] {"code.ponfee.commons."}, new String[] {"com.sf.ddt.cache."});
+        t.transform();*/
     }
 }

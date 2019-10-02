@@ -1,4 +1,4 @@
-package test.serial;
+package code.ponfee.commons.serial;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

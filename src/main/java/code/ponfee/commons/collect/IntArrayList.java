@@ -9,25 +9,20 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * The primitive int array of list
+ * The primitive int array to list
+ * 
  * @author Ponfee
  */
 public class IntArrayList extends AbstractArrayList<Integer> {
 
-    private static final long serialVersionUID = 6521891130670645647L;
+    private static final long serialVersionUID = -1601389928083241185L;
 
     private final int[] array;
 
-    public IntArrayList(int[] array) {
+    public IntArrayList(int... array) {
         this(array, 0, array.length);
     }
 
-    /**
-     * Construct a IntArrayList
-     * @param array
-     * @param start inclusive
-     * @param end   exclusive
-     */
     public IntArrayList(int[] array, int start, int end) {
         super(start, end);
         Objects.requireNonNull(array);
@@ -36,41 +31,23 @@ public class IntArrayList extends AbstractArrayList<Integer> {
 
     @Override
     public Integer get(int index) {
-        checkElementIndex(index, size());
+        checkElementIndex(index, size);
         return array[start + index];
     }
 
     @Override
-    public boolean contains(Object target) {
-        return (target instanceof Integer)
-            && indexOf(array, (Integer) target, start, end) != -1;
-    }
-
-    @Override
     public int indexOf(Object target) {
-        if (target instanceof Integer) {
-            int i = indexOf(array, (Integer) target, start, end);
-            if (i >= 0) {
-                return i - start;
-            }
-        }
-        return -1;
+        return (target instanceof Integer) ? indexOf((int) target) : INDEX_NOT_FOUND;
     }
 
     @Override
     public int lastIndexOf(Object target) {
-        if (target instanceof Integer) {
-            int i = lastIndexOf(array, (Integer) target, start, end);
-            if (i >= 0) {
-                return i - start;
-            }
-        }
-        return -1;
+        return (target instanceof Integer) ? lastIndexOf((int) target) : INDEX_NOT_FOUND;
     }
 
     @Override
     public Integer set(int index, Integer element) {
-        checkElementIndex(index, size());
+        checkElementIndex(index, size);
         int oldValue = array[start + index];
         array[start + index] = Objects.requireNonNull(element);
         return oldValue;
@@ -78,7 +55,6 @@ public class IntArrayList extends AbstractArrayList<Integer> {
 
     @Override
     public List<Integer> subList(int fromIndex, int toIndex) {
-        int size = size();
         checkPositionIndexes(fromIndex, toIndex, size);
         if (fromIndex == toIndex) {
             return Collections.emptyList();
@@ -93,12 +69,11 @@ public class IntArrayList extends AbstractArrayList<Integer> {
         }
         if (object instanceof IntArrayList) {
             IntArrayList that = (IntArrayList) object;
-            int size = size();
-            if (that.size() != size) {
+            if (this.size != that.size) {
                 return false;
             }
             for (int i = 0; i < size; i++) {
-                if (array[start + i] != that.array[that.start + i]) {
+                if (this.array[this.start + i] != that.array[that.start + i]) {
                     return false;
                 }
             }
@@ -111,14 +86,14 @@ public class IntArrayList extends AbstractArrayList<Integer> {
     public int hashCode() {
         int result = 1;
         for (int i = start; i < end; i++) {
-            result = 31 * result + array[i];
+            result = 31 * result + (int) array[i];
         }
         return result;
     }
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder(size() * 6);
+        StringBuilder builder = new StringBuilder(size << 2);
         builder.append('[').append(array[start]);
         for (int i = start + 1; i < end; i++) {
             builder.append(",").append(array[i]);
@@ -126,25 +101,27 @@ public class IntArrayList extends AbstractArrayList<Integer> {
         return builder.append(']').toString();
     }
 
-    public int[] toIntArray() {
+    public int[] getArray() {
         return Arrays.copyOfRange(array, start, end);
     }
 
-    private static int indexOf(int[] array, int target, int start, int end) {
-        for (int i = start; i < end; i++) {
-            if (array[i] == target) {
+    // ----------------------------------------------------------others methods
+    public int indexOf(int target) {
+        for (int i = 0; i < size; i++) {
+            if (array[i + start] == target) {
                 return i;
             }
         }
-        return -1;
+        return INDEX_NOT_FOUND;
     }
 
-    private static int lastIndexOf(int[] array, int target, int start, int end) {
-        for (int i = end - 1; i >= start; i--) {
-            if (array[i] == target) {
+    public int lastIndexOf(int target) {
+        for (int i = size - 1; i >= 0; i--) {
+            if (array[i + start] == target) {
                 return i;
             }
         }
-        return -1;
+        return INDEX_NOT_FOUND;
     }
+
 }

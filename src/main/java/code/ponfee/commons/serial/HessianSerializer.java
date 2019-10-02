@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +15,6 @@ import com.caucho.hessian.io.HessianSerializerOutput;
 
 import code.ponfee.commons.io.Closeables;
 import code.ponfee.commons.io.ExtendedGZIPOutputStream;
-import code.ponfee.commons.reflect.ClassUtils;
 
 /**
  * hessian序例化
@@ -55,7 +55,7 @@ public class HessianSerializer extends Serializer {
                     logger.error("close hessian exception", e);
                 }
             }
-            Closeables.closeLog(gzout, "close GZIPOutputStream exception");
+            Closeables.log(gzout, "close GZIPOutputStream exception");
         }
     }
 
@@ -73,9 +73,10 @@ public class HessianSerializer extends Serializer {
                 hessian = new HessianSerializerInput(bais);
             }
             T t = (T) hessian.readObject();
-            if (!clazz.isInstance(t)) {
-                throw new ClassCastException(ClassUtils.getClassName(t.getClass())
-                         + " can't be cast to " + ClassUtils.getClassName(clazz));
+            if (t != null && !ClassUtils.isAssignable(t.getClass(), clazz)) {
+                throw new ClassCastException(
+                    ClassUtils.getName(t.getClass()) + " can't be cast to " + ClassUtils.getName(clazz)
+                );
             }
             return t;
         } catch (IOException e) {
@@ -88,7 +89,7 @@ public class HessianSerializer extends Serializer {
                     logger.error("close hessian exception", e);
                 }
             }
-            Closeables.closeLog(gzin, "close GZIPInputStream exception");
+            Closeables.log(gzin, "close GZIPInputStream exception");
         }
     }
 

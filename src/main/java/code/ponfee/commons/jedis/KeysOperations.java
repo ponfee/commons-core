@@ -172,22 +172,19 @@ public class KeysOperations extends JedisOperations {
                  ).collect(Collectors.toList());
 
                 //return list.stream().mapToLong(c -> ObjectUtils.orElse(c.join(), 0L)).sum()
-                return list.stream().map(CompletableFuture::join)
+                return list.stream()
+                           .map(CompletableFuture::join)
                            .filter(Objects::nonNull)
                            .reduce(0L, Long::sum);
             } else {
                 LongAdder adder = new LongAdder();
                 jedisClient.executePipelined(
-                    shardedJedis, ShardedJedisPipeline::del, (k, v) -> adder.add(v == null ? 0 : (long) v), keys
+                    shardedJedis, 
+                    ShardedJedisPipeline::del, 
+                    (k, v) -> adder.add(v == null ? 0 : (long) v), 
+                    keys
                 );
                 return adder.longValue();
-
-                /*return Stream.of(keys).map(
-                    k -> CompletableFuture.supplyAsync(() -> shardedJedis.del(k), EXECUTOR)
-                ).collect(Collectors.toList())
-                 .stream().map(CompletableFuture::join)
-                 .filter(Objects::nonNull)
-                 .reduce(0L, Long::sum);*/
             }
         }, null, (Object[]) keys);
     }

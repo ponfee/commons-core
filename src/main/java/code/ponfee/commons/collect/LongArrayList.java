@@ -9,16 +9,17 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * The primitive long array of list
+ * The primitive long array to list
+ * 
  * @author Ponfee
  */
 public class LongArrayList extends AbstractArrayList<Long> {
 
-    private static final long serialVersionUID = -2989143269776168553L;
+    private static final long serialVersionUID = 1648346699558392015L;
 
     private final long[] array;
 
-    public LongArrayList(long[] array) {
+    public LongArrayList(long... array) {
         this(array, 0, array.length);
     }
 
@@ -30,41 +31,23 @@ public class LongArrayList extends AbstractArrayList<Long> {
 
     @Override
     public Long get(int index) {
-        checkElementIndex(index, size());
+        checkElementIndex(index, size);
         return array[start + index];
     }
 
     @Override
-    public boolean contains(Object target) {
-        return (target instanceof Long)
-            && indexOf(array, (Long) target, start, end) != -1;
-    }
-
-    @Override
     public int indexOf(Object target) {
-        if (target instanceof Long) {
-            int i = indexOf(array, (Long) target, start, end);
-            if (i >= 0) {
-                return i - start;
-            }
-        }
-        return -1;
+        return (target instanceof Long) ? indexOf((long) target) : INDEX_NOT_FOUND;
     }
 
     @Override
     public int lastIndexOf(Object target) {
-        if (target instanceof Long) {
-            int i = lastIndexOf(array, (Long) target, start, end);
-            if (i >= 0) {
-                return i - start;
-            }
-        }
-        return -1;
+        return (target instanceof Long) ? lastIndexOf((long) target) : INDEX_NOT_FOUND;
     }
 
     @Override
     public Long set(int index, Long element) {
-        checkElementIndex(index, size());
+        checkElementIndex(index, size);
         long oldValue = array[start + index];
         array[start + index] = Objects.requireNonNull(element);
         return oldValue;
@@ -72,7 +55,6 @@ public class LongArrayList extends AbstractArrayList<Long> {
 
     @Override
     public List<Long> subList(int fromIndex, int toIndex) {
-        int size = size();
         checkPositionIndexes(fromIndex, toIndex, size);
         if (fromIndex == toIndex) {
             return Collections.emptyList();
@@ -87,12 +69,11 @@ public class LongArrayList extends AbstractArrayList<Long> {
         }
         if (object instanceof LongArrayList) {
             LongArrayList that = (LongArrayList) object;
-            int size = size();
-            if (that.size() != size) {
+            if (this.size != that.size) {
                 return false;
             }
             for (int i = 0; i < size; i++) {
-                if (array[start + i] != that.array[that.start + i]) {
+                if (this.array[this.start + i] != that.array[that.start + i]) {
                     return false;
                 }
             }
@@ -105,14 +86,14 @@ public class LongArrayList extends AbstractArrayList<Long> {
     public int hashCode() {
         int result = 1;
         for (int i = start; i < end; i++) {
-            result = 31 * result + Long.hashCode(array[i]);
+            result = 31 * result + (int) array[i];
         }
         return result;
     }
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder(size() * 10);
+        StringBuilder builder = new StringBuilder(size << 2);
         builder.append('[').append(array[start]);
         for (int i = start + 1; i < end; i++) {
             builder.append(",").append(array[i]);
@@ -120,25 +101,27 @@ public class LongArrayList extends AbstractArrayList<Long> {
         return builder.append(']').toString();
     }
 
-    public long[] toLongArray() {
+    public long[] getArray() {
         return Arrays.copyOfRange(array, start, end);
     }
 
-    private static int indexOf(long[] array, long target, int start, int end) {
-        for (int i = start; i < end; i++) {
-            if (array[i] == target) {
+    // ----------------------------------------------------------others methods
+    public int indexOf(long target) {
+        for (int i = 0; i < size; i++) {
+            if (array[i + start] == target) {
                 return i;
             }
         }
-        return -1;
+        return INDEX_NOT_FOUND;
     }
 
-    private static int lastIndexOf(long[] array, long target, int start, int end) {
-        for (int i = end - 1; i >= start; i--) {
-            if (array[i] == target) {
+    public int lastIndexOf(long target) {
+        for (int i = size - 1; i >= 0; i--) {
+            if (array[i + start] == target) {
                 return i;
             }
         }
-        return -1;
+        return INDEX_NOT_FOUND;
     }
+
 }

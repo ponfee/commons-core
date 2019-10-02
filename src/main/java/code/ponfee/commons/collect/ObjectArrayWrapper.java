@@ -17,33 +17,30 @@ public class ObjectArrayWrapper<T> implements
     private static final long serialVersionUID = -8749483734287105153L;
 
     private final T[] array;
+    private final int hashCode;
 
-    public ObjectArrayWrapper(T[] array) {
-        if (array == null) {
-            throw new NullPointerException();
-        }
+    @SuppressWarnings("unchecked")
+    public ObjectArrayWrapper(T... array) {
         this.array = array;
+        this.hashCode = Arrays.hashCode(array);
     }
 
     @SafeVarargs
-    public static <T> ObjectArrayWrapper<T> create(T... array) {
-        if (array == null || array.length == 0) {
-            return null;
-        }
+    public static <T> ObjectArrayWrapper<T> of(T... array) {
         return new ObjectArrayWrapper<>(array);
     }
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof ObjectArrayWrapper)) {
-            return false;
+        if (other instanceof ObjectArrayWrapper) {
+            return Arrays.equals(array, ((ObjectArrayWrapper<?>) other).array);
         }
-        return Arrays.equals(array, ((ObjectArrayWrapper<?>) other).array);
+        return false;
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(array);
+        return hashCode;
         /*int result = array[0].hashCode();
         for (int i = 1, n = array.length; i < n; i++) {
             result ^= array[i].hashCode();
@@ -70,7 +67,7 @@ public class ObjectArrayWrapper<T> implements
 
     @Override
     public String toString() {
-        return "ObjectArrayWrapper[" + (array == null ? "null" : "array.length=" + array.length) + "]";
+        return "ObjectArrayWrapper[" + (array == null ? "null" : array.length) + "]";
     }
 
 }

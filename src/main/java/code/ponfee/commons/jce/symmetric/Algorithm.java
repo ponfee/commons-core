@@ -40,7 +40,6 @@ public enum Algorithm {
     AES, DES, DESede, Blowfish, RC2, RC4, // RC4: ARC4, ARCFOUR
     RC5, IDEA, TEA, TDEA, Camellia, CAST5, //
     GOST, GOST3411, GOST28147, SEED, //
-    Serpent, SHACAL2, Twofish, SM4, //
-    ;
+    Serpent, SHACAL2, Twofish, SM4 //
 
 }

@@ -223,7 +223,7 @@ public class WechatTokenManager implements DisposableBean {
     private JedisLock getLock(String lockKey, int timeout) {
         JedisLock lock = JEDIS_LOCKS.get(lockKey);
         if (lock == null) {
-            synchronized (WechatTokenManager.class) {
+            synchronized (JEDIS_LOCKS) {
                 lock = JEDIS_LOCKS.computeIfAbsent(
                     lockKey, k -> new JedisLock(jedisClient, k, timeout)
                 );

@@ -114,7 +114,7 @@ public final class PKCS7Envelope {
         } catch (Exception e) {
             throw new SecurityException(e);
         } finally {
-            Closeables.closeConsole(dout);
+            Closeables.console(dout);
         }
     }
 
@@ -185,7 +185,7 @@ public final class PKCS7Envelope {
         } catch (Exception e) {
             throw new SecurityException(e);
         } finally {
-            Closeables.closeConsole(input);
+            Closeables.console(input);
         }
     }
 

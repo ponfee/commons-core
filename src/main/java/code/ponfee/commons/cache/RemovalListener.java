@@ -8,6 +8,6 @@ package code.ponfee.commons.cache;
  * @param <V> cache value
  */
 @FunctionalInterface
-public interface RemovalListener<K, V> {
+public interface RemovalListener<K, V> /*extends Consumer<RemovalNotification<K, V>>*/ {
     void onRemoval(RemovalNotification<K, V> notification);
 }

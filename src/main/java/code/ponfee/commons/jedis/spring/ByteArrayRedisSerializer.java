@@ -7,7 +7,7 @@ import org.springframework.data.redis.serializer.RedisSerializer;
  * 
  * @author Ponfee
  */
-public class BytesRedisSerializer implements RedisSerializer<byte[]> {
+public class ByteArrayRedisSerializer implements RedisSerializer<byte[]> {
 
     @Override
     public byte[] serialize(byte[] bytes) {

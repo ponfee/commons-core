@@ -41,7 +41,7 @@ public class Resource implements Closeable {
 
     @Override
     public void close() {
-        Closeables.closeConsole(stream);
+        Closeables.console(stream);
         stream = null;
     }
 

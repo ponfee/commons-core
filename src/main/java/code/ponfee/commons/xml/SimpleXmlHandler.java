@@ -128,7 +128,7 @@ public class SimpleXmlHandler {
         } catch (DocumentException e) {
             throw new IllegalArgumentException("invalid xml data", e);
         } finally {
-            Closeables.closeConsole(xml);
+            Closeables.console(xml);
         }
     }
 

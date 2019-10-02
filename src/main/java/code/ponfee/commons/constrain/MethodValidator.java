@@ -68,12 +68,11 @@ public abstract class MethodValidator extends FieldValidator {
         }
 
         Method method = ((MethodSignature) pjp.getSignature()).getMethod();
-        String methodSign = method.toGenericString();
-        String[] argsName = METHOD_ARGSNAME.get(methodSign);
+        String[] argsName = METHOD_ARGSNAME.get(method);
         if (argsName == null) {
             // 要用到asm字节码操作，消耗性能，所以缓存
             argsName = ClassUtils.getMethodParamNames(method);
-            METHOD_ARGSNAME.set(methodSign, argsName);
+            METHOD_ARGSNAME.set(method, argsName);
         }
 
         // 校验开始
@@ -95,7 +94,7 @@ public abstract class MethodValidator extends FieldValidator {
                 } else if (StringUtils.isEmpty(cst.field())) {
                     // 验证参数对象
                     fieldName = argsName[cst.index()];
-                    builder.append(constrain(methodSign, fieldName, fieldVal, cst, fieldType));
+                    builder.append(constrain(method, fieldName, fieldVal, cst, fieldType));
                 } else if (fieldVal == null) {
                     // 不可为空，则抛出异常
                     String msg;
@@ -130,7 +129,7 @@ public abstract class MethodValidator extends FieldValidator {
                         }
                     }
                     fieldName = argsName[cst.index()] + "." + cst.field();
-                    builder.append(constrain(methodSign, fieldName, fieldVal, cst, fieldType));
+                    builder.append(constrain(method, fieldName, fieldVal, cst, fieldType));
                 }
 
                 if (builder.length() > MAX_MSG_SIZE) {
@@ -144,7 +143,7 @@ public abstract class MethodValidator extends FieldValidator {
             builder.append("参数约束校验异常：").append(e.getMessage());
         }
 
-        return process(builder, pjp, method, args, methodSign);
+        return process(builder, pjp, method, args);
     }
 
     // -------------------------------------------------------------------------private methods

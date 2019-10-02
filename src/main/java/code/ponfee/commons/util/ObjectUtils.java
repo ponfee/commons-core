@@ -3,6 +3,7 @@ package code.ponfee.commons.util;
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,7 +43,7 @@ public final class ObjectUtils {
 
     private static final String[] DATE_PATTERN = { 
         "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyyMMdd", "yyyyMMddHHmmss", 
-        "yyyyMMddHHmmssSSS", "yyyy-MM-dd HH:mm:ss.SSS" 
+        "yyyyMMddHHmmssSSS", "yyyy-MM-dd HH:mm:ss.SSS", "yyyy-MM-dd HH:mm:ss.SSS" 
     };
 
     /**
@@ -94,15 +95,16 @@ public final class ObjectUtils {
     /**
      * Gets the target's name value
      * 
-     * @param obj
+     * @param obj  the object
+     * @param name the field name
      * @return a value
      */
     public static Object getValue(Object obj, String name) {
         if (obj == null) {
             return null;
-        } else if (Map.class.isInstance(obj)) {
+        } else if (obj instanceof Map) {
             return ((Map<?, ?>) obj).get(name);
-        } else if (Dictionary.class.isInstance(obj)) {
+        } else if (obj instanceof Dictionary) {
             return ((Dictionary<?, ?>) obj).get(name);
         } else {
             return Fields.get(obj, name);
@@ -169,7 +171,6 @@ public final class ObjectUtils {
                 if (value instanceof Number) {
                     value = type.getEnumConstants()[((Number) value).intValue()];
                 } else {
-                    //value = EnumUtils.getEnum((Class<Enum>) type, value.toString());
                     value = EnumUtils.getEnumIgnoreCase((Class<Enum>) type, value.toString());
                 }
             } else if (Date.class == type) {
@@ -189,19 +190,21 @@ public final class ObjectUtils {
                 } else {
                     throw new IllegalArgumentException("Illegal date time: " + value);
                 }
-            } else if (CharSequence.class.isAssignableFrom(type)) {
-                // Construct a CharSequence
-                // e.g. new String(value.toString()) and new StringBuilder(value.toString())
-                try {
-                    value = type.getConstructor(String.class).newInstance(value.toString());
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
             } else {
-                throw new ClassCastException(ClassUtils.getClassName(value.getClass())
-                              + " cannot be cast to " + ClassUtils.getClassName(type));
+                Constructor<T> constructor = ClassUtils.getConstructor(type, String.class);
+                if (constructor == null) {
+                    throw new ClassCastException(
+                        ClassUtils.getClassName(value.getClass()) + " cannot be cast to " + ClassUtils.getClassName(type)
+                    );
+                }
+                try {
+                    // e.g. new String(value.toString()) or new StringBuilder(value.toString())
+                    return constructor.newInstance(value.toString());
+                } catch (Exception e) {
+                    throw new IllegalStateException(e);
+                }
             }
-        } //else { /*nothing to do: value is null or type.isInstance(value)*/ }
+        } // else { Nothing to do: value is null or type.isInstance(value) }
         return (T) value;
     }
 
@@ -335,6 +338,11 @@ public final class ObjectUtils {
             return (T) new ArrayList<>();
         } else if (Dictionary.class == type) { // abstract
             return (T) new Hashtable<>();
+        } else if (type.isPrimitive()) {
+            Class<?> wrapper = org.apache.commons.lang3.ClassUtils.primitiveToWrapper(type);
+            return (T) ClassUtils.newInstance(wrapper, String.class, "0"); // Boolean: false
+        } else if (org.apache.commons.lang3.ClassUtils.isPrimitiveWrapper(type)) {
+            return ClassUtils.newInstance(type, String.class, "0");
         } else {
             return ObjenesisHelper.newInstance(type);
         }
@@ -351,6 +359,7 @@ public final class ObjectUtils {
             return false;
         }
         return !org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper(type)
+            && !CharSequence.class.isAssignableFrom(type) 
             && !Map.class.isAssignableFrom(type) 
             && !Dictionary.class.isAssignableFrom(type) 
             && !Collection.class.isAssignableFrom(type);

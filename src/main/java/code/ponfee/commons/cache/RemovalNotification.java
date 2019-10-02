@@ -10,7 +10,9 @@ package code.ponfee.commons.cache;
 public class RemovalNotification<K, V> {
 
     public enum RemovalReason {
-        REPLACED, INVALIDATED, EVICTED
+        REPLACED, // value was replaced by the user
+        EVICTED, // manually removed by the user
+        EXPIRED // expiration timestamp has passed
     }
 
     private final K key;

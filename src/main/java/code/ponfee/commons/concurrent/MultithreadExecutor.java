@@ -44,8 +44,9 @@ public class MultithreadExecutor {
         Stopwatch watch = Stopwatch.createStarted();
         AtomicBoolean flag = new AtomicBoolean(true);
 
-        // CALLER_RUN_EXECUTOR：caller run will be dead loop
-        // caller thread will be loop exec command, can't to run the after code
+        // code.ponfee.commons.concurrent.ThreadPoolExecutors.CALLER_RUN_EXECUTOR: caller run will be dead loop
+        // caller thread will be loop exec command, can't to run the after code{flag.set(false)}
+        // threadNumber > 32
         CompletableFuture<?>[] futures = IntStream.range(0, threadNumber).mapToObj(
             x -> CompletableFuture.runAsync(() -> {
                 while (flag.get() && !Thread.currentThread().isInterrupted()) {

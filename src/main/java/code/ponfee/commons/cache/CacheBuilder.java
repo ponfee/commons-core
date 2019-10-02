@@ -7,7 +7,7 @@ import java.util.concurrent.ScheduledExecutorService;
  * 
  * @author Ponfee
  */
-public final class CacheBuilder<K extends Comparable<K>, V> {
+public final class CacheBuilder<K, V> {
     private CacheBuilder() {}
 
     private boolean caseSensitiveKey = true; // （默认）区分大小写
@@ -52,7 +52,7 @@ public final class CacheBuilder<K extends Comparable<K>, V> {
                            autoReleaseInSeconds, executor, removalListener);
     }
 
-    public static <K extends Comparable<K>, V> CacheBuilder<K, V>  newBuilder() {
+    public static <K, V> CacheBuilder<K, V>  newBuilder() {
         return new CacheBuilder<>();
     }
 }

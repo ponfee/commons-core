@@ -202,7 +202,7 @@ public final class RSACryptor {
         } catch (Exception e) {
             throw new SecurityException(e);
         } finally {
-            Closeables.closeConsole(input);
+            Closeables.console(input);
         }
     }
 

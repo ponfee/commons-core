@@ -200,7 +200,7 @@ public class RedisCurrentLimiter implements CurrentLimiter {
         confCache.destroy();
         countCache.destroy();
         transmitter.end();
-        synchronized (RedisCurrentLimiter.class) {
+        synchronized (LOCK_MAP) {
             LOCK_MAP.clear();
         }
     }
@@ -209,7 +209,7 @@ public class RedisCurrentLimiter implements CurrentLimiter {
         // get the lock for access redis
         Object lock = LOCK_MAP.get(key);
         if (lock == null) {
-            synchronized (RedisCurrentLimiter.class) {
+            synchronized (LOCK_MAP) {
                 lock = LOCK_MAP.computeIfAbsent(key, k -> new Object());
             }
         }

@@ -15,7 +15,7 @@ public enum Padding {
     ISO10126_2Padding("ISO10126-2Padding"), // 
     ISO7816_4Padding("ISO7816-4Padding"), // 
     X9_23Padding("X9.23Padding"), TBCPadding, //
-    CS1Padding, CS2Padding, CS3Padding, // 
+    CS1Padding, CS2Padding, CS3Padding // CS1Padding, CS2Padding may cannot support
 
     ;
 

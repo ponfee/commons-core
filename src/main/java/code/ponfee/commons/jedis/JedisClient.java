@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -49,34 +50,26 @@ public class JedisClient implements DisposableBean {
     private ScriptOperations scriptOps;
     private MQOperations mqOps;
 
-    // -----------------------------------ShardedJedisPool（分片模式）-----------------------------------
-    public JedisClient(GenericObjectPoolConfig poolCfg, String hosts) {
-        this(poolCfg, hosts, DEFAULT_TIMEOUT_MILLIS, null);
-    }
-
-    public JedisClient(GenericObjectPoolConfig poolCfg, String hosts, int timeout) {
-        this(poolCfg, hosts, timeout, null);
-    }
-
-    public JedisClient(GenericObjectPoolConfig poolCfg, String hosts, Serializer serializer) {
-        this(poolCfg, hosts, DEFAULT_TIMEOUT_MILLIS, serializer);
-    }
-
+    // ----------------------------------------------------------------------ShardedJedisPool（分片模式）
     /**
      * <pre>
      *  ShardedJedis注入格式：
      *   host1:port1,host2:port2,host3:port3
      *   host1:port1:password1,host2:port2:password2,host3:port3:password3
      * </pre>
-     * @param poolCfg
-     * @param hosts
-     * @param timeout
-     * @param serializer
+     * @param poolCfg    连接池
+     * @param nodes      redis各分片节点信息，多个逗号分隔
+     * @param timeout    超时时间 
+     * @param serializer 序列化方式
      */
-    public JedisClient(GenericObjectPoolConfig poolCfg, String hosts, 
-                       int timeout, Serializer serializer) {
+    public JedisClient(GenericObjectPoolConfig poolCfg, String nodes, 
+                       Integer timeout, Serializer serializer) {
+        if (timeout == null || timeout < 1) {
+            timeout = DEFAULT_TIMEOUT_MILLIS;
+        }
+
         List<JedisShardInfo> infos = new ArrayList<>();
-        for (String str : hosts.split(SEPARATOR)) {
+        for (String str : nodes.split(SEPARATOR)) {
             if (StringUtils.isBlank(str)) {
                 continue;
             }
@@ -97,38 +90,13 @@ public class JedisClient implements DisposableBean {
             }
         }
         if (infos.isEmpty()) {
-            throw new IllegalArgumentException("invalid hosts config[" + hosts + "]");
+            throw new IllegalArgumentException("invalid nodes config[" + nodes + "]");
         }
 
         initClient(new ShardedJedisPool(poolCfg, infos), serializer);
     }
 
-    // -----------------------------------ShardedJedisSentinelPool（哨兵+分片）-----------------------------------
-    public JedisClient(GenericObjectPoolConfig poolCfg, 
-                       String masters, String sentinels) {
-        this(poolCfg, masters, sentinels, null, DEFAULT_TIMEOUT_MILLIS, null);
-    }
-
-    public JedisClient(GenericObjectPoolConfig poolCfg, String masters, 
-                       String sentinels, int timeout) {
-        this(poolCfg, masters, sentinels, null, timeout, null);
-    }
-
-    public JedisClient(GenericObjectPoolConfig poolCfg, String masters, 
-                       String sentinels, Serializer serializer) {
-        this(poolCfg, masters, sentinels, null, DEFAULT_TIMEOUT_MILLIS, serializer);
-    }
-
-    public JedisClient(GenericObjectPoolConfig poolCfg, String masters, 
-                       String sentinels, String password) {
-        this(poolCfg, masters, sentinels, password, DEFAULT_TIMEOUT_MILLIS, null);
-    }
-
-    public JedisClient(GenericObjectPoolConfig poolCfg, String masters,
-                       String sentinels, String password, Serializer serializer) {
-        this(poolCfg, masters, sentinels, password, DEFAULT_TIMEOUT_MILLIS, serializer);
-    }
-
+    // ----------------------------------------------------------------------ShardedJedisSentinelPool（哨兵+分片）
     /**
      * @param poolCfg    连接池
      * @param masters    哨兵mastername名称，多个以“,”分隔，如：sen_redis_master1,sen_redis_master2
@@ -138,7 +106,11 @@ public class JedisClient implements DisposableBean {
      * @param serializer 序列化对象
      */
     public JedisClient(GenericObjectPoolConfig poolCfg, String masters, String sentinels, 
-                       String password, int timeout, Serializer serializer) {
+                       String password, Integer timeout, Serializer serializer) {
+        if (timeout == null || timeout < 1) {
+            timeout = DEFAULT_TIMEOUT_MILLIS;
+        }
+
         List<String> master = asList(masters.split(SEPARATOR));
         Set<String> sentinel = new HashSet<>(asList(sentinels.split(SEPARATOR)));
 
@@ -415,13 +387,10 @@ public class JedisClient implements DisposableBean {
         if (array == null) {
             return null;
         }
-        List<String> list = new ArrayList<>(array.length);
-        for (String str : array) {
-            if (StringUtils.isNotBlank(str)) {
-                list.add(str.trim());
-            }
-        }
-        return list;
+        return Arrays.stream(array)
+                     .filter(StringUtils::isNotBlank)
+                     .map(String::trim)
+                     .collect(Collectors.toList());
     }
 
 }

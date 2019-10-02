@@ -137,8 +137,8 @@ final class ClassPathResourceLoader {
             logger.error("load resource from jar file occur error", e);
             return null;
         } finally {
-            Closeables.closeConsole(jar);
-            Closeables.closeConsole(zip);
+            Closeables.console(jar);
+            Closeables.console(zip);
         }
     }
 
@@ -246,8 +246,8 @@ final class ClassPathResourceLoader {
             logger.error("load resource from jar file occur error", e);
             return list;
         } finally {
-            Closeables.closeConsole(jar);
-            Closeables.closeConsole(zip);
+            Closeables.console(jar);
+            Closeables.console(zip);
         }
     }
 
@@ -283,7 +283,7 @@ final class ClassPathResourceLoader {
         try {
             return new ByteArrayInputStream(IOUtils.toByteArray(input));
         } finally {
-            Closeables.closeConsole(input);
+            Closeables.console(input);
         }
     }
 

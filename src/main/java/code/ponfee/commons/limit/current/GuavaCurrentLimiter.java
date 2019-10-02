@@ -31,7 +31,7 @@ public class GuavaCurrentLimiter implements CurrentLimiter {
 
         RateLimiter limiter = LIMITER_MAP.get(key);
         if (limiter == null) {
-            synchronized (GuavaCurrentLimiter.class) {
+            synchronized (LIMITER_MAP) {
                 if ((limiter = LIMITER_MAP.get(key)) == null) {
                     limiter = RateLimiter.create(requestThreshold);
                     LIMITER_MAP.put(key, limiter);
@@ -63,7 +63,7 @@ public class GuavaCurrentLimiter implements CurrentLimiter {
 
         RateLimiter limiter = LIMITER_MAP.get(key);
         if (limiter == null) {
-            synchronized (GuavaCurrentLimiter.class) {
+            synchronized (LIMITER_MAP) {
                 if ((limiter = LIMITER_MAP.get(key)) == null) {
                     limiter = RateLimiter.create(threshold);
                     LIMITER_MAP.put(key, limiter);

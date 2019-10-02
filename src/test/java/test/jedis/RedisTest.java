@@ -7,6 +7,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import code.ponfee.commons.jedis.JedisClient;
+import code.ponfee.commons.jedis.ShardedSentinelJedisClientBuilder;
 import code.ponfee.commons.serial.KryoSerializer;
 import redis.clients.jedis.JedisPoolConfig;
 
@@ -15,13 +16,12 @@ public class RedisTest {
 
     @BeforeClass
     public static void setUp() {
-        client = new JedisClient(
+        client = ShardedSentinelJedisClientBuilder.newBuilder(
             buildDefaultPool(), 
             "INC_BUPP_CORE_REDIS_C01", 
-            "inc-bupp-core1.cachesit.sfdc.com.cn:8001 inc-bupp-core2.cachesit.sfdc.com.cn:8001 inc-bupp-core3.cachesit.sfdc.com.cn:8001", 
-            "jpyuffv2msdtk3ep", 
-            new KryoSerializer()
-        );
+            "inc-bupp-core1.cachesit.sfdc.com.cn:8001 inc-bupp-core2.cachesit.sfdc.com.cn:8001 inc-bupp-core3.cachesit.sfdc.com.cn:8001"
+        )
+        .password("jpyuffv2msdtk3ep").serializer(new KryoSerializer()).build();
     }
 
     @Test

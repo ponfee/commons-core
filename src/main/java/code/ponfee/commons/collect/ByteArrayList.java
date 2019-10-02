@@ -9,7 +9,12 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * The primitive byte array of list
+ * The primitive byte array to list
+ * 
+ * Error  : Arrays.asList(new byte[] {4,5,6,7})
+ * Correct: new ByteArrayList(new byte[] {4,5,6,7})
+ * 
+ * IntStream.of(new int[] { 1, 2, 3, 4 }).boxed().collect(Collectors.toList())
  * 
  * @author Ponfee
  */
@@ -19,7 +24,7 @@ public class ByteArrayList extends AbstractArrayList<Byte> {
 
     private final byte[] array;
 
-    public ByteArrayList(byte[] array) {
+    public ByteArrayList(byte... array) {
         this(array, 0, array.length);
     }
 
@@ -31,41 +36,23 @@ public class ByteArrayList extends AbstractArrayList<Byte> {
 
     @Override
     public Byte get(int index) {
-        checkElementIndex(index, size());
+        checkElementIndex(index, size);
         return array[start + index];
     }
 
     @Override
-    public boolean contains(Object target) {
-        return (target instanceof Byte)
-            && indexOf(array, (Byte) target, start, end) != -1;
-    }
-
-    @Override
     public int indexOf(Object target) {
-        if (target instanceof Byte) {
-            int i = indexOf(array, (Byte) target, start, end);
-            if (i >= 0) {
-                return i - start;
-            }
-        }
-        return -1;
+        return (target instanceof Byte) ? indexOf((byte) target) : INDEX_NOT_FOUND;
     }
 
     @Override
     public int lastIndexOf(Object target) {
-        if (target instanceof Byte) {
-            int i = lastIndexOf(array, (Byte) target, start, end);
-            if (i >= 0) {
-                return i - start;
-            }
-        }
-        return -1;
+        return (target instanceof Byte) ? lastIndexOf((byte) target) : INDEX_NOT_FOUND;
     }
 
     @Override
     public Byte set(int index, Byte element) {
-        checkElementIndex(index, size());
+        checkElementIndex(index, size);
         byte oldValue = array[start + index];
         array[start + index] = Objects.requireNonNull(element);
         return oldValue;
@@ -73,7 +60,6 @@ public class ByteArrayList extends AbstractArrayList<Byte> {
 
     @Override
     public List<Byte> subList(int fromIndex, int toIndex) {
-        int size = size();
         checkPositionIndexes(fromIndex, toIndex, size);
         if (fromIndex == toIndex) {
             return Collections.emptyList();
@@ -88,12 +74,11 @@ public class ByteArrayList extends AbstractArrayList<Byte> {
         }
         if (object instanceof ByteArrayList) {
             ByteArrayList that = (ByteArrayList) object;
-            int size = size();
-            if (that.size() != size) {
+            if (this.size != that.size) {
                 return false;
             }
             for (int i = 0; i < size; i++) {
-                if (array[start + i] != that.array[that.start + i]) {
+                if (this.array[this.start + i] != that.array[that.start + i]) {
                     return false;
                 }
             }
@@ -113,7 +98,7 @@ public class ByteArrayList extends AbstractArrayList<Byte> {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder(size() << 2);
+        StringBuilder builder = new StringBuilder(size << 2);
         builder.append('[').append(array[start]);
         for (int i = start + 1; i < end; i++) {
             builder.append(",").append(array[i]);
@@ -121,26 +106,27 @@ public class ByteArrayList extends AbstractArrayList<Byte> {
         return builder.append(']').toString();
     }
 
-    public byte[] toByteArray() {
+    public byte[] getArray() {
         return Arrays.copyOfRange(array, start, end);
     }
 
-    private static int indexOf(byte[] array, byte target, int start, int end) {
-        for (int i = start; i < end; i++) {
-            if (array[i] == target) {
+    // ----------------------------------------------------------others methods
+    public int indexOf(byte target) {
+        for (int i = 0; i < size; i++) {
+            if (array[i + start] == target) {
                 return i;
             }
         }
-        return -1;
+        return INDEX_NOT_FOUND;
     }
 
-    private static int lastIndexOf(byte[] array, byte target, int start, int end) {
-        for (int i = end - 1; i >= start; i--) {
-            if (array[i] == target) {
+    public int lastIndexOf(byte target) {
+        for (int i = size - 1; i >= 0; i--) {
+            if (array[i + start] == target) {
                 return i;
             }
         }
-        return -1;
+        return INDEX_NOT_FOUND;
     }
 
 }
