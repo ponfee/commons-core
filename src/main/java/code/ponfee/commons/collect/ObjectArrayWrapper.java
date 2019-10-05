@@ -26,7 +26,7 @@ public class ObjectArrayWrapper<T> implements
     }
 
     @SafeVarargs
-    public static <T> ObjectArrayWrapper<T> create(T... array) {
+    public static <T> ObjectArrayWrapper<T> of(T... array) {
         if (array == null || array.length == 0) {
             return null;
         }

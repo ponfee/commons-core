@@ -35,8 +35,7 @@ public class ByteArrayTraitSerializer extends Serializer {
         if (compress) {
             bytes = GzipProcessor.decompress(bytes);
         }
-        Class<? extends ByteArrayTrait> type = (Class<? extends ByteArrayTrait>) clazz;
-        return (T) ofBytes(bytes, type);
+        return (T) ofBytes(bytes, (Class<? extends ByteArrayTrait>) clazz);
     }
 
     public static <T extends ByteArrayTrait> T ofBytes(byte[] bytes, Class<T> type) {

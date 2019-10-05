@@ -47,17 +47,15 @@ public abstract class ParamValidator extends FieldValidator {
         StringBuilder builder = new StringBuilder();
         String[] argsName;
         Method method = null;
-        String methodSign = null;
         try {
             // 缓存方法参数名
             MethodSignature mSign = (MethodSignature) joinPoint.getSignature();
             method = joinPoint.getTarget().getClass()
                               .getMethod(mSign.getName(), mSign.getParameterTypes());
-            methodSign = method.toGenericString();
-            argsName = METHOD_ARGSNAME.get(methodSign);
+            argsName = METHOD_ARGSNAME.get(method);
             if (argsName == null) {
                 argsName = ClassUtils.getMethodParamNames(method);
-                METHOD_ARGSNAME.set(methodSign, argsName);
+                METHOD_ARGSNAME.set(method, argsName);
             }
 
             // 方法参数注解校验
@@ -86,6 +84,6 @@ public abstract class ParamValidator extends FieldValidator {
             builder.append(Throwables.getStackTrace(e));
         }
 
-        return super.process(builder, joinPoint, method, args, methodSign);
+        return super.process(builder, joinPoint, method, args);
     }
 }

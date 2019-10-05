@@ -31,9 +31,7 @@ public class CglibUtils {
         /*Long beanKey = ((long) System.identityHashCode(source.getClass()) << 32) 
                        | System.identityHashCode(target.getClass());*/
         Class<?> sclass = source.getClass(), tclass = target.getClass();
-        ObjectArrayWrapper<Class<?>> beanKey = ObjectArrayWrapper.create(
-            sclass, tclass
-        );
+        ObjectArrayWrapper<Class<?>> beanKey = ObjectArrayWrapper.of(sclass, tclass);
         BeanCopier copier = COPIER_CACHE.get(beanKey);
         if (copier == null) {
             synchronized (COPIER_CACHE) {

@@ -27,9 +27,10 @@ import code.ponfee.commons.util.Base64UrlSafe;
  * 缓存类
  * 
  * @author Ponfee
- * @param <T>
+ * @param <K>
+ * @param <V>
  */
-public class Cache<K extends Comparable<K>, V> {
+public class Cache<K, V> {
 
     public static final long KEEPALIVE_FOREVER = 0; // 为0表示不失效
 

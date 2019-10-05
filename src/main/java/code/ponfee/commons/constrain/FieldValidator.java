@@ -5,6 +5,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.text.ParseException;
@@ -13,8 +14,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -25,8 +24,8 @@ import org.slf4j.LoggerFactory;
 
 import code.ponfee.commons.cache.Cache;
 import code.ponfee.commons.cache.CacheBuilder;
+import code.ponfee.commons.collect.ObjectArrayWrapper;
 import code.ponfee.commons.model.Result;
-import code.ponfee.commons.reflect.ClassUtils;
 import code.ponfee.commons.reflect.Fields;
 import code.ponfee.commons.util.ObjectUtils;
 import code.ponfee.commons.util.RegexUtils;
@@ -51,9 +50,8 @@ public class FieldValidator {
     static final int MAX_MSG_SIZE = 500;
     private static final String CFG_ERR = "约束配置错误[";
     private static final String EMPTY = "";
-    private static final Lock LOCK = new ReentrantLock();
-    static final Cache<String, String[]> METHOD_ARGSNAME = CacheBuilder.<String, String[]>newBuilder().build();
-    private static final Cache<String, CacheResult> META_CFG_CACHE = CacheBuilder.<String, CacheResult>newBuilder().build();
+    static final Cache<Method, String[]> METHOD_ARGSNAME = CacheBuilder.<Method, String[]>newBuilder().build();
+    private static final Cache<ObjectArrayWrapper<Object>, CacheResult> META_CFG_CACHE = CacheBuilder.<ObjectArrayWrapper<Object>, CacheResult>newBuilder().build();
 
     protected FieldValidator() {}
 
@@ -80,8 +78,7 @@ public class FieldValidator {
                 }
 
                 builder.append(constrain(
-                    ClassUtils.getClassName(clazz), field.getName(), 
-                    Fields.get(bean, field), cst, field.getType()
+                    clazz, field.getName(), Fields.get(bean, field), cst, field.getType()
                 ));
             }
             clazz = clazz.getSuperclass();
@@ -93,7 +90,7 @@ public class FieldValidator {
     }
 
     protected Object process(StringBuilder builder, ProceedingJoinPoint pjp,
-        Method method, Object[] args, String methodSign) throws Throwable {
+                             Method method, Object[] args) throws Throwable {
         if (builder.length() == 0) {
             return pjp.proceed(); // 校验成功，调用方法
         }
@@ -107,7 +104,7 @@ public class FieldValidator {
         if (logger.isInfoEnabled()) {
             logger.info(
                 "[args check not pass]-[{}]-{}-[{}]", 
-                methodSign, ObjectUtils.toString(args), errMsg
+                method.toGenericString(), ObjectUtils.toString(args), errMsg
             );
         }
 
@@ -122,26 +119,23 @@ public class FieldValidator {
         }
     }
 
-    protected final String constrain(String name, String field, Object value, 
-                                     Constraint cst, Class<?> type) {
-        name = new StringBuilder(name).append('@').append(field).toString();
-        CacheResult result = META_CFG_CACHE.get(name);
+    protected final String constrain(GenericDeclaration typeOrMethod, String field, 
+                                     Object value, Constraint cst, Class<?> type) {
+        ObjectArrayWrapper<Object> key = ObjectArrayWrapper.of(typeOrMethod, field);
+        CacheResult result = META_CFG_CACHE.get(key);
         if (result == null) {
-            LOCK.lock();
-            try {
-                if ((result = META_CFG_CACHE.get(name)) == null) {
+            synchronized (META_CFG_CACHE) {
+                if ((result = META_CFG_CACHE.get(key)) == null) {
                     try {
                         verifyMeta(field, cst, type);
                         result = new CacheResult(true);
-                        META_CFG_CACHE.set(name, result);
+                        META_CFG_CACHE.set(key, result);
                     } catch (Exception e) {
                         result = new CacheResult(false, e.getMessage());
-                        META_CFG_CACHE.set(name, result);
+                        META_CFG_CACHE.set(key, result);
                         throw e;
                     }
                 }
-            } finally {
-                LOCK.unlock();
             }
         }
 
