@@ -16,6 +16,7 @@ import org.junit.Test;
 import code.ponfee.commons.cache.Cache;
 import code.ponfee.commons.cache.CacheBuilder;
 import code.ponfee.commons.collect.ByteArrayWrapper;
+import code.ponfee.commons.model.Result;
 import code.ponfee.commons.reflect.ClassUtils;
 
 /**
@@ -64,5 +65,11 @@ public class ClassUtilsTest {
                 System.out.println(Arrays.toString(argsName));
             }
         }
+    }
+    
+    @Test
+    public void test5() throws Exception {
+        System.out.println(ClassUtils.class.getMethod("newInstance", Class.class, Class.class, Object.class).equals(ClassUtils.class.getMethod("newInstance", Class.class, Class.class, Object.class)));
+        System.out.println(Result.class.getDeclaredField("code").equals(Result.class.getDeclaredField("code")));
     }
 }

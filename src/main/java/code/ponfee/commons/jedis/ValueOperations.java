@@ -600,16 +600,9 @@ public class ValueOperations extends JedisOperations {
                     }
                 })).collect(Collectors.toList());
 
-                //CompletableFuture.allOf(list.toArray(new CompletableFuture[list.size()])).join();
                 list.forEach(CompletableFuture::join);
                 return resultMap;
             } else { // 直接获取，不用mget方式
-                /*return Stream.of(keys).collect(Collectors.toMap(
-                     Function.identity(), 
-                     k -> CompletableFuture.supplyAsync(() -> shardedJedis.get(k), EXECUTOR)
-                 )).entrySet().stream().collect(
-                     Collectors.toMap(Entry::getKey, e -> e.getValue().join())
-                 );*/
                 Map<ByteArrayWrapper, byte[]> result = new HashMap<>();
                 jedisClient.executePipelined(
                    shardedJedis, ShardedJedisPipeline::get, 

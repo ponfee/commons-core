@@ -18,6 +18,8 @@ import java.util.Map;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,8 +52,12 @@ public class FieldValidator {
     static final int MAX_MSG_SIZE = 500;
     private static final String CFG_ERR = "约束配置错误[";
     private static final String EMPTY = "";
-    static final Cache<Method, String[]> METHOD_ARGSNAME = CacheBuilder.<Method, String[]>newBuilder().build();
-    private static final Cache<ObjectArrayWrapper<Object>, CacheResult> META_CFG_CACHE = CacheBuilder.<ObjectArrayWrapper<Object>, CacheResult>newBuilder().build();
+
+    static final Cache<Method, String[]> METHOD_ARGSNAME =
+        CacheBuilder.<Method, String[]> newBuilder().build();
+
+    private static final Cache<ObjectArrayWrapper<Object>, Pair<Boolean, String>> META_CFG_CACHE =
+        CacheBuilder.<ObjectArrayWrapper<Object>, Pair<Boolean, String>> newBuilder().build();
 
     protected FieldValidator() {}
 
@@ -77,9 +83,9 @@ public class FieldValidator {
                     continue;
                 }
 
-                builder.append(constrain(
-                    clazz, field.getName(), Fields.get(bean, field), cst, field.getType()
-                ));
+                builder.append(
+                    constrain(clazz, field.getName(), Fields.get(bean, field), cst, field.getType())
+                );
             }
             clazz = clazz.getSuperclass();
         }
@@ -119,19 +125,19 @@ public class FieldValidator {
         }
     }
 
-    protected final String constrain(GenericDeclaration typeOrMethod, String field, 
+    protected final String constrain(GenericDeclaration classOrMethod, String field, 
                                      Object value, Constraint cst, Class<?> type) {
-        ObjectArrayWrapper<Object> key = ObjectArrayWrapper.of(typeOrMethod, field);
-        CacheResult result = META_CFG_CACHE.get(key);
+        ObjectArrayWrapper<Object> key = ObjectArrayWrapper.of(classOrMethod, field);
+        Pair<Boolean, String> result = META_CFG_CACHE.get(key);
         if (result == null) {
             synchronized (META_CFG_CACHE) {
                 if ((result = META_CFG_CACHE.get(key)) == null) {
                     try {
                         verifyMeta(field, cst, type);
-                        result = new CacheResult(true);
+                        result = ImmutablePair.of(true, null);
                         META_CFG_CACHE.set(key, result);
                     } catch (Exception e) {
-                        result = new CacheResult(false, e.getMessage());
+                        result = ImmutablePair.of(false, e.getMessage());
                         META_CFG_CACHE.set(key, result);
                         throw e;
                     }
@@ -140,8 +146,8 @@ public class FieldValidator {
         }
 
         // 配置验证
-        if (!result.flag) {
-            throw new UnsupportedOperationException(result.msg);
+        if (!result.getLeft()) {
+            throw new UnsupportedOperationException(result.getRight());
         }
 
         // 参数验证
@@ -345,20 +351,6 @@ public class FieldValidator {
         }
 
         return EMPTY;
-    }
-
-    private static final class CacheResult {
-        final boolean flag;
-        final String msg;
-
-        CacheResult(boolean flag, String msg) {
-            this.flag = flag;
-            this.msg = msg;
-        }
-
-        CacheResult(boolean flag) {
-            this(flag, null);
-        }
     }
 
 }

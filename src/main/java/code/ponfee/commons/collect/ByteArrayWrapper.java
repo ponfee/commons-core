@@ -20,25 +20,25 @@ public final class ByteArrayWrapper implements
     private final byte[] array;
     private final int hashCode;
 
-    public ByteArrayWrapper(Byte[] array) {
+    public ByteArrayWrapper(Byte... array) {
         this(ArrayUtils.toPrimitive(array));
     }
 
-    public ByteArrayWrapper(byte[] array) {
+    public ByteArrayWrapper(byte... array) {
         this.array = array;
-        this.hashCode = Arrays.hashCode(this.array);
+        this.hashCode = Arrays.hashCode(array);
     }
 
-    public static ByteArrayWrapper of(byte[] array) {
+    public static ByteArrayWrapper of(byte... array) {
         return new ByteArrayWrapper(array);
     }
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof ByteArrayWrapper)) {
-            return false;
+        if (other instanceof ByteArrayWrapper) {
+            return Arrays.equals(array, ((ByteArrayWrapper) other).array);
         }
-        return Arrays.equals(array, ((ByteArrayWrapper) other).array);
+        return false;
     }
 
     @Override
@@ -68,8 +68,7 @@ public final class ByteArrayWrapper implements
 
     @Override
     public String toString() {
-        return new StringBuilder("ByteArrayWrapper [")
-            .append(array.length).append(']').toString();
+        return "ByteArrayWrapper[" + (array == null ? "null" : array.length) + "]";
     }
 
 }
