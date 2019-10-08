@@ -59,8 +59,8 @@ public class KryoSerializer extends Serializer {
             throw new SerializationException(e);
         } finally {
             this.releaseKryo(kryo);
-            Closeables.closeLog(output, "close Output exception");
-            Closeables.closeLog(gzout, "close GZIPOutputStream exception");
+            Closeables.log(output, "close Output exception");
+            Closeables.log(gzout, "close GZIPOutputStream exception");
         }
     }
 
@@ -81,8 +81,8 @@ public class KryoSerializer extends Serializer {
             throw new SerializationException(e);
         } finally {
             this.releaseKryo(kryo);
-            Closeables.closeLog(input, "close Input exception");
-            Closeables.closeLog(gzin, "close GZIPInputStream exception");
+            Closeables.log(input, "close Input exception");
+            Closeables.log(gzin, "close GZIPInputStream exception");
         }
     }
 

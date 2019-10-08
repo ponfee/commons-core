@@ -42,9 +42,9 @@ public class WrappedBufferedReader extends Reader {
 
     @Override
     public void close() {
-        Closeables.closeConsole(buffer);
-        Closeables.closeConsole(reader);
-        Closeables.closeConsole(input);
+        Closeables.console(buffer);
+        Closeables.console(reader);
+        Closeables.console(input);
         buffer = null;
         reader = null;
         input = null;

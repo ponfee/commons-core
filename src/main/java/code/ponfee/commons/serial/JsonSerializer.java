@@ -44,7 +44,7 @@ public class JsonSerializer extends Serializer {
         } catch (IOException e) {
             throw new SerializationException(e);
         } finally {
-            Closeables.closeLog(gzout, "close GZIPOutputStream exception");
+            Closeables.log(gzout, "close GZIPOutputStream exception");
         }
     }
 
@@ -60,7 +60,7 @@ public class JsonSerializer extends Serializer {
         } catch (IOException e) {
             throw new SerializationException(e);
         } finally {
-            Closeables.closeLog(gzin, "close GZIPInputStream exception");
+            Closeables.log(gzin, "close GZIPInputStream exception");
         }
     }
 

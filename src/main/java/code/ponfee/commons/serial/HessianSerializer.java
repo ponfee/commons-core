@@ -55,7 +55,7 @@ public class HessianSerializer extends Serializer {
                     logger.error("close hessian exception", e);
                 }
             }
-            Closeables.closeLog(gzout, "close GZIPOutputStream exception");
+            Closeables.log(gzout, "close GZIPOutputStream exception");
         }
     }
 
@@ -88,7 +88,7 @@ public class HessianSerializer extends Serializer {
                     logger.error("close hessian exception", e);
                 }
             }
-            Closeables.closeLog(gzin, "close GZIPInputStream exception");
+            Closeables.log(gzin, "close GZIPInputStream exception");
         }
     }
 

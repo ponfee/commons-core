@@ -50,9 +50,9 @@ public class ExcelExtractor<T> extends DataExtractor<T> {
         try {
             extract(workbook = createWorkbook(), processor);
         } finally {
-            Closeables.closeConsole(workbook);
+            Closeables.console(workbook);
             if (dataSource instanceof InputStream) {
-                Closeables.closeConsole((InputStream) dataSource);
+                Closeables.console((InputStream) dataSource);
             }
         }
     }

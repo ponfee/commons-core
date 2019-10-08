@@ -36,7 +36,7 @@ public class ImageUtils {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            Closeables.closeConsole(input);
+            Closeables.console(input);
         }
     }
 

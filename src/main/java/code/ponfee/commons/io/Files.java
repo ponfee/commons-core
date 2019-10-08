@@ -408,8 +408,8 @@ public final class Files {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            Closeables.closeConsole(bos);
-            Closeables.closeConsole(output);
+            Closeables.console(bos);
+            Closeables.console(output);
         }
     }
 
@@ -445,8 +445,8 @@ public final class Files {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            Closeables.closeConsole(bos);
-            Closeables.closeConsole(output);
+            Closeables.console(bos);
+            Closeables.console(output);
         }
     }
 

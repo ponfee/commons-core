@@ -87,9 +87,9 @@ public class WrappedBufferedWriter extends Writer {
 
     @Override
     public void close() {
-        Closeables.closeConsole(buffer);
-        Closeables.closeConsole(writer);
-        Closeables.closeConsole(output);
+        Closeables.console(buffer);
+        Closeables.console(writer);
+        Closeables.console(output);
         buffer = null;
         writer = null;
         output = null;

@@ -379,7 +379,8 @@ public class ShardedJedisSentinelPool extends Pool<ShardedJedis> {
                 && this.host.equals(other.host) && this.port == other.port;
         }
 
-        public @Override void run() {
+        @Override
+        public void run() {
             running.set(true);
             while (running.get()) {
                 jedis = new Jedis(host, port);

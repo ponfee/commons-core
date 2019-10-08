@@ -99,7 +99,7 @@ public class X509CertUtils {
                 se.setStackTrace(ArrayUtils.addAll(e.getStackTrace(), ex.getStackTrace()));
                 throw se;
             } finally {
-                Closeables.closeConsole(input);
+                Closeables.console(input);
             }
         }
     }
@@ -359,7 +359,7 @@ public class X509CertUtils {
                 return false;
             }
         } finally {
-            Closeables.closeConsole(inputstream);
+            Closeables.console(inputstream);
         }
     }
 
@@ -400,7 +400,7 @@ public class X509CertUtils {
                 return Base64.getDecoder().decode(builder.toString());
             }
         } finally {
-            Closeables.closeConsole(inputstream);
+            Closeables.console(inputstream);
         }
     }
 

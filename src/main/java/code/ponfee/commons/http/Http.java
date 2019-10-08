@@ -366,7 +366,7 @@ public final class Http {
             }
         } finally {
             disconnect(request);
-            Closeables.closeConsole(bos);
+            Closeables.console(bos);
         }
     }
 

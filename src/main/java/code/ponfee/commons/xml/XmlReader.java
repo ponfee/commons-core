@@ -51,7 +51,7 @@ public final class XmlReader {
         } catch (Exception e) {
             throw new XmlException("Xmls create fail", e);
         } finally {
-            Closeables.closeConsole(inputStream);
+            Closeables.console(inputStream);
         }
     }
 

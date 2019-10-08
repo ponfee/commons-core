@@ -45,8 +45,8 @@ public class JdkSerializer extends Serializer {
             // 先打开的后关闭，后打开的先关闭
             // 看依赖关系，如果流a依赖流b，应该先关闭流a，再关闭流b
             // 处理流a依赖节点流b，应该先关闭处理流a，再关闭节点流b
-            Closeables.closeLog(oos, "close ObjectOutputStream exception");
-            Closeables.closeLog(gzout, "close GZIPOutputStream exception");
+            Closeables.log(oos, "close ObjectOutputStream exception");
+            Closeables.log(gzout, "close GZIPOutputStream exception");
         }
     }
 
@@ -73,8 +73,8 @@ public class JdkSerializer extends Serializer {
         } catch (IOException | ClassNotFoundException e) {
             throw new SerializationException(e);
         } finally {
-            Closeables.closeLog(ois, "close ObjectInputStream exception");
-            Closeables.closeLog(gzin, "close GZIPInputStream exception");
+            Closeables.log(ois, "close ObjectInputStream exception");
+            Closeables.log(gzin, "close GZIPInputStream exception");
         }
     }
 

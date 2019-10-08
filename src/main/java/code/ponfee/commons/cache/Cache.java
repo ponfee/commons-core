@@ -20,6 +20,7 @@ import javax.security.auth.Destroyable;
 import com.google.common.base.Preconditions;
 
 import code.ponfee.commons.cache.RemovalNotification.RemovalReason;
+import code.ponfee.commons.io.Closeables;
 import code.ponfee.commons.jce.digest.DigestUtils;
 import code.ponfee.commons.util.Base64UrlSafe;
 
@@ -77,7 +78,7 @@ public class Cache<K, V> {
                         CacheValue<V> cacheValue = entry.getValue();
                         if (cacheValue.isExpire(now)) {
                             iter.remove();
-                            onRemoval(entry.getKey(), cacheValue, RemovalReason.EVICTED);
+                            onRemoval(entry.getKey(), cacheValue, RemovalReason.EXPIRED);
                         }
                     }
                 } finally {
@@ -154,7 +155,9 @@ public class Cache<K, V> {
         }
 
         if (expireTimeMillis == KEEPALIVE_FOREVER || expireTimeMillis > now()) {
-            container.put(getEffectiveKey(key), new CacheValue<>(value, expireTimeMillis));
+            CacheValue<V> newly = new CacheValue<>(value, expireTimeMillis);
+            CacheValue<V> former = container.replace(getEffectiveKey(key), newly);
+            onRemoval(key, former, RemovalReason.REPLACED);
         }
     }
 
@@ -174,7 +177,7 @@ public class Cache<K, V> {
             return null;
         } else if (cacheValue.isExpire(now())) {
             container.remove(key);
-            onRemoval(key, cacheValue, RemovalReason.EVICTED);
+            onRemoval(key, cacheValue, RemovalReason.EXPIRED);
             return null;
         } else {
             return cacheValue.getValue();
@@ -194,11 +197,11 @@ public class Cache<K, V> {
         CacheValue<V> cacheValue = container.remove(getEffectiveKey(key));
         if (cacheValue == null) {
             return null;
-        } else if (!cacheValue.isAlive(now())) {
-            onRemoval(key, cacheValue, RemovalReason.EVICTED);
+        } else if (cacheValue.isExpire(now())) {
+            onRemoval(key, cacheValue, RemovalReason.EXPIRED);
             return cacheValue.getValue();
         } else {
-            onRemoval(key, cacheValue, RemovalReason.INVALIDATED);
+            onRemoval(key, cacheValue, RemovalReason.EVICTED);
             return null;
         }
     }
@@ -218,7 +221,7 @@ public class Cache<K, V> {
             return false;
         } else if (cacheValue.isExpire(now())) {
             container.remove(key);
-            onRemoval(key, cacheValue, RemovalReason.EVICTED);
+            onRemoval(key, cacheValue, RemovalReason.EXPIRED);
             return false;
         } else {
             return true;
@@ -249,7 +252,7 @@ public class Cache<K, V> {
                 }
             } else {
                 i.remove();
-                onRemoval(entry.getKey(), cacheValue, RemovalReason.EVICTED);
+                onRemoval(entry.getKey(), cacheValue, RemovalReason.EXPIRED);
             }
         }
         return false;
@@ -274,7 +277,7 @@ public class Cache<K, V> {
                 values.add(value.getValue());
             } else {
                 i.remove();
-                onRemoval(entry.getKey(), value, RemovalReason.EVICTED);
+                onRemoval(entry.getKey(), value, RemovalReason.EXPIRED);
             }
         }
         return values;
@@ -353,27 +356,18 @@ public class Cache<K, V> {
      * @param removalReason the removalReason
      */
     private void onRemoval(K key, CacheValue<V> cacheValue, RemovalReason removalReason) {
-        V value = cacheValue.getValue();
+        V value;
+        if (cacheValue == null || (value = cacheValue.getValue()) == null) {
+            return;
+        }
 
         // Closeable, Releasable, Destroyable
         if (value instanceof Destroyable) {
-            try {
-                ((Destroyable) value).destroy();
-            } catch (Exception ignored) {
-                ignored.printStackTrace();
-            }
+            Closeables.log((Destroyable) value);
         } else if (value instanceof Releasable) {
-            try {
-                ((Releasable) value).close();
-            } catch (Exception ignored) {
-                ignored.printStackTrace();
-            }
+            Closeables.log((Releasable) value);
         } else if (value instanceof AutoCloseable) {
-            try {
-                ((AutoCloseable) value).close();
-            } catch (Exception ignored) {
-                ignored.printStackTrace();
-            }
+            Closeables.log((AutoCloseable) value);
         }
 
         if (this.removalListener != null) {

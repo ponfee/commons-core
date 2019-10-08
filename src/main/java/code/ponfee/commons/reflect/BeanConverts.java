@@ -1,4 +1,4 @@
-package code.ponfee.commons.collect;
+package code.ponfee.commons.reflect;
 
 import java.util.List;
 import java.util.Map;

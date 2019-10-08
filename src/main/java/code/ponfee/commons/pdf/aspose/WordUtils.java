@@ -85,7 +85,7 @@ public final class WordUtils {
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
-            Closeables.closeConsole(words);
+            Closeables.console(words);
         }
     }
 
