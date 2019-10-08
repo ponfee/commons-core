@@ -108,7 +108,6 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
             return (T) source;
         }
 
-        //target = targetType.getConstructor().newInstance();
         T target = ObjectUtils.newInstance(targetType);
 
         copy(source, target, copier);

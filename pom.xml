@@ -414,11 +414,6 @@
       <artifactId>jackson-databind</artifactId>
       <version>2.10.0</version>
     </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <version>2.10.0</version>
-    </dependency>
     <dependency><!-- hessian -->
       <groupId>com.caucho</groupId>
       <artifactId>hessian</artifactId>

@@ -2,6 +2,7 @@ package code.ponfee.commons.reflect;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -10,7 +11,7 @@ import com.google.common.collect.ImmutableMap;
 import code.ponfee.commons.reflect.Fields;
 
 /**
- * Converts bean to array, list and map
+ * Extract bean to array, list and map
  * 
  * @author Ponfee
  */
@@ -72,7 +73,9 @@ public final class BeanConverts {
         if (bean == null) {
             return null;
         }
-        return ImmutableMap.of((K) Fields.get(bean, keyField), (V) Fields.get(bean, valueField));
+        return ImmutableMap.of(
+            (K) Fields.get(bean, keyField), (V) Fields.get(bean, valueField)
+        );
     }
 
     @SuppressWarnings("unchecked")
@@ -83,6 +86,17 @@ public final class BeanConverts {
         return beans.stream().collect(Collectors.toMap(
             bean -> (K) Fields.get(bean, keyField), 
             bean -> (V) Fields.get(bean, valueField)
+        ));
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <K, E> Map<K, E> toMap(List<E> beans, String keyField) {
+        if (beans == null) {
+            return null;
+        }
+        return beans.stream().collect(Collectors.toMap(
+            bean -> (K) Fields.get(bean, keyField), 
+            Function.identity()
         ));
     }
 

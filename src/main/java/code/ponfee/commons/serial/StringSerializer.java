@@ -37,8 +37,7 @@ public class StringSerializer extends Serializer {
             );
         }
 
-        byte[] bytes = ((String) obj).getBytes(charset);
-        return compress ? GzipProcessor.compress(bytes) : bytes;
+        return serialize((String) obj, compress);
     }
 
     @Override
@@ -50,10 +49,7 @@ public class StringSerializer extends Serializer {
             );
         }
 
-        if (compress) {
-            bytes = GzipProcessor.decompress(bytes);
-        }
-        return (T) new String(bytes, charset);
+        return (T) deserialize(bytes, compress);
     }
 
     // ----------------------------------------------------------------------

@@ -1,9 +1,9 @@
 package code.ponfee.commons.serial;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.nustaq.serialization.FSTConfiguration;
 
 import code.ponfee.commons.io.GzipProcessor;
-import code.ponfee.commons.reflect.ClassUtils;
 
 /**
  * Fst Serializer
@@ -30,9 +30,10 @@ public class FstSerializer extends Serializer {
         }
 
         T obj = (T) FST_CFG.get().asObject(bytes);
-        if (!clazz.isInstance(obj)) {
-            throw new ClassCastException(ClassUtils.getClassName(obj.getClass())
-                       + " can't be cast to " + ClassUtils.getClassName(clazz));
+        if (obj != null && !ClassUtils.isAssignable(obj.getClass(), clazz)) {
+            throw new ClassCastException(
+                ClassUtils.getName(obj.getClass()) + " can't be cast to " + ClassUtils.getName(clazz)
+            );
         }
         return obj;
     }

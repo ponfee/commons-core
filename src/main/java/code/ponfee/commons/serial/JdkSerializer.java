@@ -1,9 +1,5 @@
 package code.ponfee.commons.serial;
 
-import code.ponfee.commons.io.Closeables;
-import code.ponfee.commons.io.ExtendedGZIPOutputStream;
-import code.ponfee.commons.reflect.ClassUtils;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,6 +7,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+
+import org.apache.commons.lang3.ClassUtils;
+
+import code.ponfee.commons.io.Closeables;
+import code.ponfee.commons.io.ExtendedGZIPOutputStream;
 
 /**
  * java序例化
@@ -65,9 +66,10 @@ public class JdkSerializer extends Serializer {
             }
 
             T t = (T) ois.readObject();
-            if (!clazz.isInstance(t)) {
-                throw new ClassCastException(ClassUtils.getClassName(t.getClass())
-                         + " can't be cast to " + ClassUtils.getClassName(clazz));
+            if (t != null && !ClassUtils.isAssignable(t.getClass(), clazz)) {
+                throw new ClassCastException(
+                    ClassUtils.getName(t.getClass()) + " can't be cast to " + ClassUtils.getName(clazz)
+                );
             }
             return t;
         } catch (IOException | ClassNotFoundException e) {

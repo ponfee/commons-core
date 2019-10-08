@@ -25,8 +25,10 @@ import org.springframework.asm.MethodVisitor;
 import org.springframework.asm.Opcodes;
 import org.springframework.asm.Type;
 
+import code.ponfee.commons.collect.ObjectArrayWrapper;
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.model.Null;
+import code.ponfee.commons.util.ObjectUtils;
 
 /**
  * 基于asm的字节码工具类
@@ -36,7 +38,7 @@ import code.ponfee.commons.model.Null;
 public final class ClassUtils {
     private ClassUtils() {}
 
-    private static final Map<Class<?>, Constructor<?>> CONSTRUCTOR_CACHE = new HashMap<>();
+    private static final Map<ObjectArrayWrapper<Class<?>>, Constructor<?>> CONSTRUCTOR_CACHE = new HashMap<>();
 
     /**
      * 获取方法的参数名（编译未清除）<p>
@@ -292,11 +294,11 @@ public final class ClassUtils {
     }
 
     // -----------------------------------------------------------------------------new instance
-    public static <T> T newInstance(Class<T> type) {
-        return newInstance(type, ArrayUtils.EMPTY_CLASS_ARRAY, ArrayUtils.EMPTY_OBJECT_ARRAY);
-    }
-
     public static <T> T newInstance(Class<T> type, Object... args) {
+        if (ArrayUtils.isEmpty(args)) {
+            return ObjectUtils.newInstance(type);
+        }
+
         Class<?>[] parameterTypes = null;
         if (ArrayUtils.isNotEmpty(args)) {
             parameterTypes = new Class<?>[args.length];
@@ -325,21 +327,29 @@ public final class ClassUtils {
         }
     }
 
+    // -----------------------------------------------------------------------------get constructor
     @SuppressWarnings("unchecked")
     public static <T> Constructor<T> getConstructor(Class<T> type, Class<?>... parameterTypes) {
-        Constructor<T> constructor = (Constructor<T>) CONSTRUCTOR_CACHE.get(type);
+        Class<?>[] array;
+        if (ArrayUtils.isEmpty(parameterTypes)) {
+            array = new Class<?>[] { type };
+        } else {
+            array = ArrayUtils.insert(0, parameterTypes, type);
+        }
+        ObjectArrayWrapper<Class<?>> key = ObjectArrayWrapper.of(array);
+        Constructor<T> constructor = (Constructor<T>) CONSTRUCTOR_CACHE.get(key);
         if (constructor == null) {
             synchronized (CONSTRUCTOR_CACHE) {
-                if ((constructor = (Constructor<T>) CONSTRUCTOR_CACHE.get(type)) == null) {
+                if ((constructor = (Constructor<T>) CONSTRUCTOR_CACHE.get(key)) == null) {
                     try {
                         constructor = ArrayUtils.isEmpty(parameterTypes)
-                                    ? type.getDeclaredConstructor()
-                                    : type.getDeclaredConstructor(parameterTypes);
+                                    ? type.getConstructor() // getDeclaredConstructor
+                                    : type.getConstructor(parameterTypes);
                     } catch (NoSuchMethodException | SecurityException ignored) {
                         // Not such arguments constructor
                         constructor = (Constructor<T>) Null.NONE_CONSTRUCTOR;
                     }
-                    CONSTRUCTOR_CACHE.put(type, constructor);
+                    CONSTRUCTOR_CACHE.put(key, constructor);
                 }
             }
         }

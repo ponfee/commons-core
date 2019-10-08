@@ -5,7 +5,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.HashMap;
@@ -168,7 +167,7 @@ public final class Serializations {
             return null;
         }
         //return Bytes.toBytes(value.ordinal());
-        return serialize(((Enum<?>) value).name());
+        return Serializers.STRING.toBytes(((Enum<?>) value).name());
     }
 
     /**
@@ -198,13 +197,9 @@ public final class Serializations {
         } else if (value instanceof Enum) {
             //return Bytes.toBytes(((Enum<?>) value).ordinal());
             return serialize(((Enum<?>) value).name());
-        } else if (value instanceof Serializable) {
+        } else /*if (value instanceof Serializable)*/ {
             //org.apache.commons.lang3.SerializationUtils.serialize(value);
             return KryoSerializer.INSTANCE.serialize(value);
-        } else {
-            throw new UnsupportedOperationException(
-                "Unsupport serialize type: " + ClassUtils.getClassName(value.getClass())
-            );
         }
     }
 
@@ -238,13 +233,9 @@ public final class Serializations {
         } else if (type.isEnum()) {
             //return type.getEnumConstants()[Bytes.toInt(value)];
             return (T) Enums.ofIgnoreCase((Class<Enum>) type, Serializers.STRING.ofBytes(value));
-        } else if (Serializable.class.isAssignableFrom(type)) {
+        } else /*if (Serializable.class.isAssignableFrom(type))*/ {
             return KryoSerializer.INSTANCE.deserialize(value, type);
             //return (T) SerializationUtils.deserialize(value);
-        } else {
-            throw new UnsupportedOperationException(
-                "Unsupport deserialize type: " + ClassUtils.getClassName(type)
-            );
         }
     }
 
