@@ -2,6 +2,7 @@ package test.log;
 
 import code.ponfee.commons.concurrent.MultithreadExecutor;
 import code.ponfee.commons.jedis.JedisClient;
+import code.ponfee.commons.jedis.ShardedJedisClientBuilder;
 import code.ponfee.commons.limit.current.RedisCurrentLimiter;
 import code.ponfee.commons.serial.JdkSerializer;
 
@@ -29,7 +30,7 @@ public class FreqTester {
         poolCfg.setMinEvictableIdleTimeMillis(60000);
         poolCfg.setTimeBetweenEvictionRunsMillis(30000);
         //jedisClient = new JedisClient(poolCfg, "local1:127.0.0.1:6379", new KryoSerializer());
-        jedisClient = new JedisClient(poolCfg, "127.0.0.1:6379;", new JdkSerializer());
+        jedisClient = ShardedJedisClientBuilder.newBuilder(poolCfg, "127.0.0.1:6379;").serializer(new JdkSerializer()).build();
     }
 
     // zcount "cir:bre:abc" 0 99999999999999

@@ -21,14 +21,12 @@ import java.util.stream.Stream;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import code.ponfee.commons.model.Page;
 import code.ponfee.commons.model.PageHandler;
 import code.ponfee.commons.model.Result;
-import code.ponfee.commons.reflect.Fields;
 import code.ponfee.commons.util.ObjectUtils;
 
 /**
@@ -128,94 +126,59 @@ public final class Collects {
         return source.copy(source.getData().transform(map -> map2array(map, fields)));
     }
 
-    // ----------------------------------------------------------------flat map
+    // ----------------------------------------------------------------to List, Map and Array
     /**
-     * 指定对象字段keyField的值作为key，字段valueField的值作为value
-     * 
-     * @param bean
-     * @param keyField
-     * @param valueField
+     * 转map
+     * @param kv
+     * @return
+     */
+    public static Map<String, Object> toMap(Object... kv) {
+        if (kv == null) {
+            return null;
+        }
+
+        int length = kv.length;
+        if ((length & 0x01) != 0) { // length % 2
+            throw new IllegalArgumentException("args must be pair.");
+        }
+
+        Map<String, Object> map = new LinkedHashMap<>(length);
+        for (int i = 0; i < length; i += 2) {
+            map.put((String) kv[i], kv[i + 1]);
+        }
+        return map;
+    }
+
+    /**
+     * 转数组
+     * @param args
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static <K, V, E> Map<K, V> flatMap(E bean, String keyField, String valueField) {
-        if (bean == null) {
-            return null;
-        }
-        return ImmutableMap.of((K) Fields.get(bean, keyField), (V) Fields.get(bean, valueField));
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <K, V, E> Map<K, V> flatMap(List<E> beans, String keyField, String valueField) {
-        if (beans == null) {
-            return null;
-        }
-        return beans.stream().collect(Collectors.toMap(
-            bean -> (K) Fields.get(bean, keyField), 
-            bean -> (V) Fields.get(bean, valueField)
-        ));
-    }
-
-    // ----------------------------------------------------------------flat list
-    /**
-     * 获取对象指定字段的值
-     * 
-     * @param beans
-     * @param field
-     * @return
-     */
-    @SuppressWarnings({ "unchecked" })
-    public static <T, E> List<T> flatList(List<E> beans, String field) {
-        if (beans == null) {
-            return null;
-        }
-        return beans.stream().map(
-            bean -> (T) Fields.get(bean, field)
-        ).collect(Collectors.toList());
-    }
-
-    public static <E> List<Object[]> flatList(List<E> beans, String... fields) {
-        if (beans == null || fields == null || fields.length == 0) {
-            return null;
-        }
-
-        return beans.stream().map(
-            b -> Stream.of(fields).map(f -> Fields.get(b, f)).toArray()
-        ).collect(Collectors.toList());
-    }
-
-    // ----------------------------------------------------------------of ...
-    /**
-     * 将对象指定字段转为map
-     * 
-     * @param bean
-     * @param fields
-     * @return
-     */
-    public static <E> Map<String, Object> ofMap(E bean, String... fields) {
-        if (bean == null || fields == null) {
-            return null;
-        }
-        return Stream.of(fields).collect(Collectors.toMap(
-            Function.identity(), 
-            field -> Fields.get(bean, field)
-        ));
+    public static <T> T[] toArray(T... args) {
+        return args;
     }
 
     /**
-     * 将对象指定字段转为map
-     * 
-     * @param bean
-     * @param fields
-     * @return
+     * object to list
+     * @param obj of elements
+     * @return list with the same elements
      */
-    public static <E> Object[] ofArray(E bean, String... fields) {
-        if (bean == null || fields == null) {
+    public static List<Object> toList(Object obj) {
+        if (obj == null) {
             return null;
+        } else if (obj.getClass().isArray()) {
+            int length = Array.getLength(obj);
+            List<Object> result = new ArrayList<>(length);
+            for (int i = 0; i < length; i++) {
+                result.add(Array.get(obj, i));
+            }
+            return result;
+        } else if (obj instanceof Collection) {
+            return new ArrayList<>((Collection<?>) obj);
+        } else {
+            return Collections.singletonList(obj);
         }
-        return Stream.of(fields).map(
-            field -> Fields.get(bean, field)
-        ).toArray();
     }
 
     // -----------------------------the collection of intersect, union and different operations
@@ -279,28 +242,6 @@ public final class Collects {
     }
 
     /**
-     * Returns the duplicates elements for list
-     * 
-     * @param list the list
-     * @return a set of duplicates elements for list
-     */
-    public static <T> Set<T> duplicate(List<T> list) {
-        if (CollectionUtils.isEmpty(list)) {
-            return Collections.emptySet();
-        }
-
-        return list.stream().collect(
-            Collectors.groupingBy(Function.identity(), Collectors.counting())
-        ).entrySet().stream().filter(
-            e -> (e.getValue() > 1)
-        ).map(
-            Entry::getKey
-        ).collect(
-            Collectors.toSet()
-        );
-    }
-
-    /**
      * The two set different elements
      * 
      * @param set1
@@ -332,57 +273,25 @@ public final class Collects {
     }
 
     /**
-     * 转map
-     * @param kv
-     * @return
+     * Returns the duplicates elements for list
+     * 
+     * @param list the list
+     * @return a set of duplicates elements for list
      */
-    public static Map<String, Object> toMap(Object... kv) {
-        if (kv == null) {
-            return null;
+    public static <T> Set<T> duplicate(List<T> list) {
+        if (CollectionUtils.isEmpty(list)) {
+            return Collections.emptySet();
         }
 
-        int length = kv.length;
-        if ((length & 0x01) != 0) { // length % 2
-            throw new IllegalArgumentException("args must be pair.");
-        }
-
-        Map<String, Object> map = new LinkedHashMap<>(length);
-        for (int i = 0; i < length; i += 2) {
-            map.put((String) kv[i], kv[i + 1]);
-        }
-        return map;
-    }
-
-    /**
-     * 转数组
-     * @param args
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> T[] toArray(T... args) {
-        return args;
-    }
-
-    /**
-     * object to list
-     * @param obj of elements
-     * @return list with the same elements
-     */
-    public static List<Object> toList(Object obj) {
-        if (obj == null) {
-            return null;
-        } else if (obj.getClass().isArray()) {
-            int length = Array.getLength(obj);
-            List<Object> result = new ArrayList<>(length);
-            for (int i = 0; i < length; i++) {
-                result.add(Array.get(obj, i));
-            }
-            return result;
-        } else if (obj instanceof Collection) {
-            return new ArrayList<>((Collection<?>) obj);
-        } else {
-            return Collections.singletonList(obj);
-        }
+        return list.stream().collect(
+            Collectors.groupingBy(Function.identity(), Collectors.counting())
+        ).entrySet().stream().filter(
+            e -> (e.getValue() > 1)
+        ).map(
+            Entry::getKey
+        ).collect(
+            Collectors.toSet()
+        );
     }
 
     /**
@@ -457,11 +366,11 @@ public final class Collects {
      * @param obj the element
      */
     public static <T> void set(List<T> list, int index, T obj) {
-        int size;
-        if (index == (size = list.size())) {
-            list.add(obj);
-        } else if (index < size) {
+        int size = list.size();
+        if (index < size) {
             list.set(index, obj);
+        } else if (index == size) {
+            list.add(obj);
         } else {
             for (int i = size; i < index; i++) {
                 list.add(null);
@@ -491,8 +400,8 @@ public final class Collects {
     /**
      * Swaps x[a] with x[b].
      */
-    public static void swap(Object[] x, int a, int b) {
-        Object t = x[a];
+    public static <T> void swap(T[] x, int a, int b) {
+        T t = x[a];
         x[a] = x[b];
         x[b] = t;
     }
