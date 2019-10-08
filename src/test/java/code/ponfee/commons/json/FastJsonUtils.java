@@ -1,4 +1,4 @@
-package test.utils;
+package code.ponfee.commons.json;
 
 import java.io.IOException;
 import java.lang.reflect.Type;

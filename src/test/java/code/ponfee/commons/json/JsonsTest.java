@@ -1,4 +1,4 @@
-package test.jsons;
+package code.ponfee.commons.json;
 
 import java.util.Map;
 
