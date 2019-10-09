@@ -58,7 +58,7 @@ public final class SymmetricCryptorBuilder {
     }
 
     public static SymmetricCryptorBuilder newBuilder(Algorithm algorithm, byte[] key, Provider provider) {
-        return new SymmetricCryptorBuilder(algorithm, key, null);
+        return new SymmetricCryptorBuilder(algorithm, key, provider);
     }
 
     public SymmetricCryptorBuilder mode(Mode mode) {

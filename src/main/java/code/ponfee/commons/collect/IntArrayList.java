@@ -37,12 +37,12 @@ public class IntArrayList extends AbstractArrayList<Integer> {
 
     @Override
     public int indexOf(Object target) {
-        return (target instanceof Integer) ? indexOf((int) target) : NOT_FOUND;
+        return (target instanceof Integer) ? indexOf((int) target) : INDEX_NOT_FOUND;
     }
 
     @Override
     public int lastIndexOf(Object target) {
-        return (target instanceof Integer) ? lastIndexOf((int) target) : NOT_FOUND;
+        return (target instanceof Integer) ? lastIndexOf((int) target) : INDEX_NOT_FOUND;
     }
 
     @Override
@@ -112,7 +112,7 @@ public class IntArrayList extends AbstractArrayList<Integer> {
                 return i;
             }
         }
-        return NOT_FOUND;
+        return INDEX_NOT_FOUND;
     }
 
     public int lastIndexOf(int target) {
@@ -121,7 +121,7 @@ public class IntArrayList extends AbstractArrayList<Integer> {
                 return i;
             }
         }
-        return NOT_FOUND;
+        return INDEX_NOT_FOUND;
     }
 
 }

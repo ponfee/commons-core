@@ -3,11 +3,9 @@ package code.ponfee.commons.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import code.ponfee.commons.concurrent.MultithreadExecutor;
-import code.ponfee.commons.log.LogInfo;
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.reflect.ClassUtils;
 
@@ -30,14 +28,12 @@ public class ObjectUtilsTest {
             ClassUtils.newInstance(Result.class);
         }
     }
-
+    
     @Test
-    public void test3() {
-        Byte b1 = 127;
-        Byte b2 = 127;
-        Byte b3 = new Byte((byte) 127);
-        System.out.println(b1 == b2);
-        System.out.println(b3 == b2);
+    public void test3() throws Exception {
+        for (int i = 0; i < round; i++) {
+            Result.class.getConstructor().newInstance();
+        }
     }
 
     @Test
@@ -48,9 +44,18 @@ public class ObjectUtilsTest {
         System.out.println(b1 == b2);
         System.out.println(b3 == b2);
     }
-    
+
     @Test
     public void test5() {
+        Byte b1 = 127;
+        Byte b2 = 127;
+        Byte b3 = new Byte((byte) 127);
+        System.out.println(b1 == b2);
+        System.out.println(b3 == b2);
+    }
+    
+    @Test
+    public void test6() {
         // XXX: if Executor is CALLER_RUN_EXECUTOR and threadNumber>=33 then will be dead loop
         MultithreadExecutor.execAsync(32, () -> {
             get("123");
@@ -58,7 +63,7 @@ public class ObjectUtilsTest {
     }
     
     @Test
-    public void test6() {
+    public void test7() {
         // XXX: if Executor is CALLER_RUN_EXECUTOR and threadNumber>=33 then will be dead loop
         MultithreadExecutor.execAsync(32, () -> {
             Singleton.getInstance();
@@ -91,6 +96,30 @@ public class ObjectUtilsTest {
                 }
             }
             return instance;
+        }
+    }
+    
+    class Helper {}
+    class Foo {
+        /** 
+         * If perThreadInstance.get() returns a non-null value, this thread
+         * has done synchronization needed to see initialization
+         * of helper 
+         */
+        private final ThreadLocal perThreadInstance = new ThreadLocal();
+        private Helper helper = null;
+
+        public Helper getHelper() {
+            if (perThreadInstance.get() == null) createHelper();
+            return helper;
+        }
+
+        private final void createHelper() {
+            synchronized (this) {
+                if (helper == null) helper = new Helper();
+            }
+            // Any non-null value would do as the argument here
+            perThreadInstance.set(perThreadInstance);
         }
     }
 }

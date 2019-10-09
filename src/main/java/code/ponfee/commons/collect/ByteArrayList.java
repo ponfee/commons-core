@@ -42,12 +42,12 @@ public class ByteArrayList extends AbstractArrayList<Byte> {
 
     @Override
     public int indexOf(Object target) {
-        return (target instanceof Byte) ? indexOf((byte) target) : NOT_FOUND;
+        return (target instanceof Byte) ? indexOf((byte) target) : INDEX_NOT_FOUND;
     }
 
     @Override
     public int lastIndexOf(Object target) {
-        return (target instanceof Byte) ? lastIndexOf((byte) target) : NOT_FOUND;
+        return (target instanceof Byte) ? lastIndexOf((byte) target) : INDEX_NOT_FOUND;
     }
 
     @Override
@@ -117,7 +117,7 @@ public class ByteArrayList extends AbstractArrayList<Byte> {
                 return i;
             }
         }
-        return NOT_FOUND;
+        return INDEX_NOT_FOUND;
     }
 
     public int lastIndexOf(byte target) {
@@ -126,7 +126,7 @@ public class ByteArrayList extends AbstractArrayList<Byte> {
                 return i;
             }
         }
-        return NOT_FOUND;
+        return INDEX_NOT_FOUND;
     }
 
 }

@@ -37,12 +37,12 @@ public class LongArrayList extends AbstractArrayList<Long> {
 
     @Override
     public int indexOf(Object target) {
-        return (target instanceof Long) ? indexOf((long) target) : NOT_FOUND;
+        return (target instanceof Long) ? indexOf((long) target) : INDEX_NOT_FOUND;
     }
 
     @Override
     public int lastIndexOf(Object target) {
-        return (target instanceof Long) ? lastIndexOf((long) target) : NOT_FOUND;
+        return (target instanceof Long) ? lastIndexOf((long) target) : INDEX_NOT_FOUND;
     }
 
     @Override
@@ -112,7 +112,7 @@ public class LongArrayList extends AbstractArrayList<Long> {
                 return i;
             }
         }
-        return NOT_FOUND;
+        return INDEX_NOT_FOUND;
     }
 
     public int lastIndexOf(long target) {
@@ -121,7 +121,7 @@ public class LongArrayList extends AbstractArrayList<Long> {
                 return i;
             }
         }
-        return NOT_FOUND;
+        return INDEX_NOT_FOUND;
     }
 
 }

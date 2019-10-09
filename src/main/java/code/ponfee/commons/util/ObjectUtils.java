@@ -95,15 +95,16 @@ public final class ObjectUtils {
     /**
      * Gets the target's name value
      * 
-     * @param obj
+     * @param obj  the object
+     * @param name the field name
      * @return a value
      */
     public static Object getValue(Object obj, String name) {
         if (obj == null) {
             return null;
-        } else if (Map.class.isInstance(obj)) {
+        } else if (obj instanceof Map) {
             return ((Map<?, ?>) obj).get(name);
-        } else if (Dictionary.class.isInstance(obj)) {
+        } else if (obj instanceof Dictionary) {
             return ((Dictionary<?, ?>) obj).get(name);
         } else {
             return Fields.get(obj, name);
@@ -203,7 +204,7 @@ public final class ObjectUtils {
                     throw new IllegalStateException(e);
                 }
             }
-        } // else { /*nothing to do: value is null or type.isInstance(value)*/ }
+        } // else { Nothing to do: value is null or type.isInstance(value) }
         return (T) value;
     }
 
@@ -358,6 +359,7 @@ public final class ObjectUtils {
             return false;
         }
         return !org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper(type)
+            && !CharSequence.class.isAssignableFrom(type) 
             && !Map.class.isAssignableFrom(type) 
             && !Dictionary.class.isAssignableFrom(type) 
             && !Collection.class.isAssignableFrom(type);

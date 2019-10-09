@@ -21,7 +21,7 @@ public abstract class AbstractArrayList<E> extends AbstractList<E>
     implements RandomAccess, Serializable {
 
     private static final long serialVersionUID = -964514644899401684L;
-    static final int NOT_FOUND = -1;
+    static final int INDEX_NOT_FOUND = -1;
 
     protected final int start;
     protected final int end;
@@ -46,7 +46,7 @@ public abstract class AbstractArrayList<E> extends AbstractList<E>
 
     @Override
     public final boolean contains(Object target) {
-        return indexOf(target) != NOT_FOUND;
+        return indexOf(target) != INDEX_NOT_FOUND;
     }
 
     @Override
