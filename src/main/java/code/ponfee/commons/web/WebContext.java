@@ -5,15 +5,12 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.annotation.WebInitParam;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -154,8 +151,8 @@ public final class WebContext {
     /**
      * 过滤器：根据filterName的属性值的首字母排序的顺序执行
      */
-    @WebFilter(
-       filterName = "0.code.ponfee.commons.web.WebContext$WebContextFilter",
+    /*@WebFilter(
+       filterName = "0000.code.ponfee.commons.web.WebContext$WebContextFilter",
        dispatcherTypes = {
            DispatcherType.REQUEST,
            DispatcherType.FORWARD,
@@ -166,7 +163,7 @@ public final class WebContext {
         urlPatterns = { "/*" }, 
         initParams = { @WebInitParam(name = "cors", value = "true") },
         asyncSupported = true // 支持异步Servlet
-    )
+    )*/
     public static class WebContextFilter implements Filter {
         private boolean cors;
 
