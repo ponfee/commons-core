@@ -20,7 +20,6 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.aspectj.lang.ProceedingJoinPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,18 +94,13 @@ public class FieldValidator {
         }
     }
 
-    protected Object process(StringBuilder builder, ProceedingJoinPoint pjp,
-                             Method method, Object[] args) throws Throwable {
-        if (builder.length() == 0) {
-            return pjp.proceed(); // 校验成功，调用方法
-        }
-
+    protected Object processError(StringBuilder errorMsgBuilder, Method method, Object[] args) throws Throwable {
         // 校验失败，不调用方法，进入失败处理
-        if (builder.length() > MAX_MSG_SIZE) {
-            builder.setLength(MAX_MSG_SIZE - 3);
-            builder.append("...");
+        if (errorMsgBuilder.length() > MAX_MSG_SIZE) {
+            errorMsgBuilder.setLength(MAX_MSG_SIZE - 3);
+            errorMsgBuilder.append("...");
         }
-        String errMsg = builder.toString();
+        String errMsg = errorMsgBuilder.toString();
         if (logger.isInfoEnabled()) {
             logger.info(
                 "[args check not pass]-[{}]-{}-[{}]", 

@@ -1,23 +1,18 @@
 package code.ponfee.commons.web;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.annotation.WebInitParam;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
 import code.ponfee.commons.io.Files;
@@ -99,8 +94,8 @@ public final class WebContext {
         }
     }
 
-    public String getBodyAsText() {
-        return getBodyAsText(Files.UTF_8);
+    public String getText() {
+        return getText(Files.DEFAULT_CHARSET_NAME);
     }
 
     /**
@@ -110,12 +105,8 @@ public final class WebContext {
      * @param charset the string encoding
      * @return string
      */
-    public String getBodyAsText(String charset) {
-        try (InputStream input = getRequest().getInputStream()) {
-            return IOUtils.toString(input, charset);
-        } catch (Exception e) {
-            throw new RuntimeException("read request input stream error", e);
-        }
+    public String getText(String charset) {
+        return WebUtils.getText(getRequest(), charset);
     }
 
     /**
@@ -154,8 +145,8 @@ public final class WebContext {
     /**
      * 过滤器：根据filterName的属性值的首字母排序的顺序执行
      */
-    @WebFilter(
-       filterName = "0.code.ponfee.commons.web.WebContext$WebContextFilter",
+    /*@WebFilter(
+       filterName = "0000.code.ponfee.commons.web.WebContext$WebContextFilter",
        dispatcherTypes = {
            DispatcherType.REQUEST,
            DispatcherType.FORWARD,
@@ -166,7 +157,7 @@ public final class WebContext {
         urlPatterns = { "/*" }, 
         initParams = { @WebInitParam(name = "cors", value = "true") },
         asyncSupported = true // 支持异步Servlet
-    )
+    )*/
     public static class WebContextFilter implements Filter {
         private boolean cors;
 

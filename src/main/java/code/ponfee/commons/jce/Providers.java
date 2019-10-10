@@ -256,16 +256,18 @@ public interface Providers {
     Provider BC         = get(org.bouncycastle.jce.provider.BouncyCastleProvider.class);
     Provider BC_PQC     = get(org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider.class);
     Provider BC_JSSE    = get(org.bouncycastle.jsse.provider.BouncyCastleJsseProvider.class);
+    Provider SunJSSE    = get(com.sun.net.ssl.internal.ssl.Provider.class);
+    Provider SunJCE     = get(com.sun.crypto.provider.SunJCE.class);
+    Provider SunSASL    = get(com.sun.security.sasl.Provider.class);
+    /*
+    Provider XMLDSig    = get(org.jcp.xml.dsig.internal.dom.XMLDSigRI.class);
     Provider SUN        = get(sun.security.provider.Sun.class);
     Provider SunRsaSign = get(sun.security.rsa.SunRsaSign.class);
     Provider SunEC      = get(sun.security.ec.SunEC.class);
-    Provider SunJSSE    = get(com.sun.net.ssl.internal.ssl.Provider.class);
-    Provider SunJCE     = get(com.sun.crypto.provider.SunJCE.class);
     Provider SunJGSS    = get(sun.security.jgss.SunProvider.class);
-    Provider SunSASL    = get(com.sun.security.sasl.Provider.class);
-    Provider XMLDSig    = get(org.jcp.xml.dsig.internal.dom.XMLDSigRI.class);
     Provider SunPCSC    = get(sun.security.smartcardio.SunPCSC.class);
     Provider SunMSCAPI  = get(sun.security.mscapi.SunMSCAPI.class);
+    */
 
     /**
      * provider holder

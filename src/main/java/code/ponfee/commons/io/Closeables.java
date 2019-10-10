@@ -6,8 +6,6 @@ import javax.security.auth.Destroyable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import code.ponfee.commons.cache.Releasable;
-
 /**
  * 
  * Close the AutoCloseable utility
@@ -107,39 +105,4 @@ public final class Closeables {
         }
     }
 
-    // ---------------------------------------------------------------------------Releasable
-    /**
-     * Release with console if occur exception
-     * 
-     * @param releasable the Releasable
-     */
-    public static void console(@Nullable Releasable releasable) {
-        if (releasable != null) {
-            try {
-                releasable.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static void log(@Nullable Releasable releasable) {
-        log(releasable, "");
-    }
-
-    /**
-     * Release the Releasable, if occur exception then log error message
-     * 
-     * @param releasable the Releasable
-     * @param errMsg     the error message
-     */
-    public static void log(@Nullable Releasable releasable, String errMsg) {
-        if (releasable != null) {
-            try {
-                releasable.close();
-            } catch (Exception e) {
-                logger.error(errMsg, e);
-            }
-        }
-    }
 }

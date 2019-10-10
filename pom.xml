@@ -78,7 +78,8 @@
       </activation>
       <distributionManagement>
         <repository>
-          <!-- <servers>
+          <!-- 添加到maven的安装目录的settings.xml中
+          <servers>
             <server>
               <id>repos-snapshots</id>
               <username>username</username>
@@ -99,7 +100,8 @@
       <id>prod</id>
       <distributionManagement>
         <repository>
-          <!-- <servers>
+          <!-- 添加到maven的安装目录的settings.xml中
+          <servers>
             <server>
               <id>repos-releases</id>
               <username>username</username>
@@ -254,6 +256,18 @@
       <artifactId>javax.servlet-api</artifactId>
       <version>4.0.1</version>
       <scope>provided</scope>
+    </dependency>
+
+    <!-- jsr303 -->
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <version>2.0.1.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate.validator</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <version>6.0.17.Final</version>
     </dependency>
 
     <!-- dom4j -->
@@ -474,6 +488,11 @@
 
 
     <!-- ====================mybatis==================== -->
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>druid</artifactId>
+      <version>1.1.20</version>
+    </dependency>
     <dependency>
       <groupId>org.mybatis</groupId>
       <artifactId>mybatis</artifactId>

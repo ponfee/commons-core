@@ -346,7 +346,7 @@ public final class ClassUtils {
                                     ? type.getConstructor() // getDeclaredConstructor
                                     : type.getConstructor(parameterTypes);
                     } catch (NoSuchMethodException | SecurityException ignored) {
-                        // Not such arguments constructor
+                        // Not such constructor
                         constructor = (Constructor<T>) Null.NONE_CONSTRUCTOR;
                     }
                     CONSTRUCTOR_CACHE.put(key, constructor);

@@ -143,7 +143,7 @@ public final class ObjectUtils {
                 value = Numbers.toDouble(value);
             } else {
                 // cannot happened
-                throw new UnsupportedOperationException("unknow primitive class: " + type.toString());
+                throw new UnsupportedOperationException("Unknow primitive type: " + type.toString());
             }
         } else if (value != null && !type.isInstance(value)) { // 类型不一致时
             if (   org.apache.commons.lang3.ClassUtils.isPrimitiveWrapper(type)

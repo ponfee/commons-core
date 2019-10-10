@@ -50,9 +50,6 @@ public class ObjectArrayWrapper<T> implements
 
     @Override
     public int compareTo(ObjectArrayWrapper<T> o) {
-        if (o == null) {
-            return 1;
-        }
         return new CompareToBuilder().append(array, o.array).toComparison();
     }
 

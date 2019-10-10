@@ -15,7 +15,6 @@ import io.protostuff.runtime.RuntimeSchema;
  * 
  * @author Ponfee
  */
-
 public class ProtostuffRedisSerializer<T> implements RedisSerializer<T> {
 
     public static final class ProtostuffWrapper implements Serializable, Cloneable {
@@ -56,6 +55,9 @@ public class ProtostuffRedisSerializer<T> implements RedisSerializer<T> {
 
     @SuppressWarnings("unchecked")
     public T deserialize(byte[] bytes) throws SerializationException {
+        if (bytes == null || bytes.length == 0) {
+            return null;
+        }
         ProtostuffWrapper wrapper = new ProtostuffWrapper();
         ProtostuffIOUtil.mergeFrom(bytes, wrapper, SCHEMA);
         return (T) wrapper.value;

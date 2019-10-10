@@ -134,13 +134,13 @@ public class Cache<K, V> {
             expireTimeMillis = KEEPALIVE_FOREVER;
         }
 
-        this.set(key, value, expireTimeMillis);
+        set(key, value, expireTimeMillis);
     }
 
     public void setWithAliveInMillis(K key, V value, int aliveInMillis) {
         Preconditions.checkArgument(aliveInMillis > 0);
 
-        this.set(key, value, now() + aliveInMillis);
+        set(key, value, now() + aliveInMillis);
     }
 
     public void setWithNull(K key, long expireTimeMillis) {
@@ -156,7 +156,7 @@ public class Cache<K, V> {
 
         if (expireTimeMillis == KEEPALIVE_FOREVER || expireTimeMillis > now()) {
             CacheValue<V> newly = new CacheValue<>(value, expireTimeMillis);
-            CacheValue<V> former = container.replace(getEffectiveKey(key), newly);
+            CacheValue<V> former = container.put(getEffectiveKey(key), newly);
             onRemoval(key, former, RemovalReason.REPLACED);
         }
     }
@@ -364,8 +364,6 @@ public class Cache<K, V> {
         // Closeable, Releasable, Destroyable
         if (value instanceof Destroyable) {
             Closeables.log((Destroyable) value);
-        } else if (value instanceof Releasable) {
-            Closeables.log((Releasable) value);
         } else if (value instanceof AutoCloseable) {
             Closeables.log((AutoCloseable) value);
         }

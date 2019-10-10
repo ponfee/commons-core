@@ -2,16 +2,13 @@ package code.ponfee.commons.data.lookup;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.sql.DataSource;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.jdbc.datasource.AbstractDataSource;
 import org.springframework.util.Assert;
@@ -20,7 +17,6 @@ import com.google.common.collect.ImmutableSet;
 
 import code.ponfee.commons.cache.Cache;
 import code.ponfee.commons.cache.CacheBuilder;
-import code.ponfee.commons.collect.Collects;
 import code.ponfee.commons.data.NamedDataSource;
 
 /**
@@ -36,7 +32,7 @@ public class MultipletCachedDataSource extends AbstractDataSource {
         .removalListener(nf -> MultipleDataSourceContext.remove(nf.getKey()))
         .build();
 
-    private final Set<String> unremovedDataSourceNames;
+    private final Set<String> immutableDataSourceNames;
     private final DataSource defaultDataSource;
 
     public MultipletCachedDataSource(NamedDataSource dataSource) {
@@ -53,31 +49,21 @@ public class MultipletCachedDataSource extends AbstractDataSource {
 
     public MultipletCachedDataSource(String defaultName, DataSource defaultDataSource, 
                                      NamedDataSource... othersDataSource) {
-        if (othersDataSource == null) {
-            othersDataSource = new NamedDataSource[0];
-        }
-        List<String> names = Arrays.stream(othersDataSource)
-                                   .map(NamedDataSource::getName)
-                                   .collect(Collectors.toList());
-        names.add(0, defaultName); // default data source at the first
+        List<NamedDataSource> dataSources = MultipleDataSourceContext.process(
+            defaultName, defaultDataSource, othersDataSource
+        );
 
-        // checks whether duplicate datasource name
-        Set<String> duplicates = Collects.duplicate(names);
-        if (CollectionUtils.isNotEmpty(duplicates)) {
-            throw new IllegalArgumentException("Duplicated data source name: " + duplicates.toString());
-        }
-
-        // if determineCurrentLookupKey not get, then use this default
+        // set the default data source
         this.defaultDataSource = defaultDataSource;
 
-        // 设置数据源集（初始设置的数据源永不失效）
-        this.dataSources.set(defaultName, defaultDataSource, Cache.KEEPALIVE_FOREVER);
-        for (NamedDataSource ds : othersDataSource) {
-            this.dataSources.set(ds.getName(), ds.getDataSource(), Cache.KEEPALIVE_FOREVER);
-        }
+        // set all the data sources to cache container(inited data sources not expire)
+        dataSources.stream().forEach(
+            ds -> this.dataSources.set(ds.getName(), ds.getDataSource(), Cache.KEEPALIVE_FOREVER)
+        );
 
-        unremovedDataSourceNames = ImmutableSet.copyOf(names);
-        MultipleDataSourceContext.addAll(names);
+        this.immutableDataSourceNames = ImmutableSet.copyOf(
+            dataSources.stream().map(NamedDataSource::getName).toArray(String[]::new)
+        );
     }
 
     // -----------------------------------------------------------------add/remove
@@ -102,8 +88,8 @@ public class MultipletCachedDataSource extends AbstractDataSource {
     public synchronized void add(@Nonnull String dataSourceName, 
                                  @Nonnull DataSource datasource,
                                  long expireTimeMillis) {
-        Assert.isTrue(expireTimeMillis > 0, "ExpireTimeMillis must greater than 0.");
-        if (dataSources.containsKey(dataSourceName)) {
+        Assert.isTrue(expireTimeMillis >= 0, "ExpireTimeMillis must be >= 0.");
+        if (dataSources.containsKey(dataSourceName)) { // check the datasource name not exists
             throw new IllegalArgumentException("Duplicated name: " + dataSourceName);
         }
         dataSources.set(dataSourceName, datasource, expireTimeMillis);
@@ -111,8 +97,8 @@ public class MultipletCachedDataSource extends AbstractDataSource {
     }
 
     public synchronized void remove(String dataSourceName) {
-        if (unremovedDataSourceNames.contains(dataSourceName)) {
-            throw new UnsupportedOperationException("Inited datasource cannot remove: " + dataSourceName);
+        if (immutableDataSourceNames.contains(dataSourceName)) {
+            throw new UnsupportedOperationException("Immutable datasource cannot remove: " + dataSourceName);
         }
         dataSources.remove(dataSourceName);
         MultipleDataSourceContext.remove(dataSourceName);

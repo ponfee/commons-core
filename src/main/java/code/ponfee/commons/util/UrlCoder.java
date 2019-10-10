@@ -14,7 +14,7 @@ import code.ponfee.commons.io.Files;
 public final class UrlCoder {
 
     public static String encodeURI(String url) {
-        return encodeURI(url, Files.UTF_8);
+        return encodeURI(url, Files.DEFAULT_CHARSET_NAME);
     }
 
     /**
@@ -51,8 +51,9 @@ public final class UrlCoder {
         return builder.toString();
     }
 
+    @SuppressWarnings("deprecation")
     public static String decodeURI(String url) {
-        return decodeURI(url, Files.UTF_8);
+        return URLDecoder.decode(url);
     }
 
     /**
@@ -69,8 +70,10 @@ public final class UrlCoder {
         }
     }
 
+    // ------------------------------------------------------------------------------encode/decode uri component
+    @SuppressWarnings("deprecation")
     public static String encodeURIComponent(String url) {
-        return encodeURIComponent(url, Files.UTF_8);
+        return URLEncoder.encode(url);
     }
 
     /**
@@ -91,7 +94,7 @@ public final class UrlCoder {
     }
 
     public static String decodeURIComponent(String url) {
-        return decodeURIComponent(url, Files.UTF_8);
+        return decodeURI(url);
     }
 
     /**

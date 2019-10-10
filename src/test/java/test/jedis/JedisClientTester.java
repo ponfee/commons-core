@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -27,15 +26,10 @@ import bean.TestBean;
 import code.ponfee.commons.collect.ByteArrayWrapper;
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.jedis.JedisClient;
-import code.ponfee.commons.jedis.ShardedJedisSentinelPool;
 import code.ponfee.commons.util.Bytes;
 import code.ponfee.commons.util.MavenProjects;
 import code.ponfee.commons.util.ObjectUtils;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.JedisPubSub;
-import redis.clients.jedis.ScanParams;
-import redis.clients.jedis.ScanResult;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:jedis-cfg.xml" })
@@ -361,51 +355,6 @@ public class JedisClientTester {
         System.out.println( jedisClient.valueOps().incrBy(key));
         System.out.println(jedisClient.valueOps().getLong(key));
         System.out.println(jedisClient.valueOps().getLong(key));
-    }
-
-    @Test
-    public void testScan() {
-        List<String> masters = Arrays.asList("DDT_CORE_CNSZ22_REDIS_CACHE");
-        Set<String> sentinels = new HashSet<>(Arrays.asList("10.202.40.105:8001", "10.202.40.105:8002", "10.202.40.107:8001"));
-        String password = "admin.123";
-        int timeout = 300000;
-        JedisPoolConfig cfg = new JedisPoolConfig();
-        cfg.setMaxTotal(5);
-        cfg.setMaxIdle(1);
-        cfg.setMinIdle(0);
-        cfg.setMaxWaitMillis(timeout);
-        cfg.setTestOnBorrow(false);
-        cfg.setTestOnReturn(false);
-        cfg.setTestWhileIdle(false);
-        cfg.setNumTestsPerEvictionRun(-1);
-        cfg.setMinEvictableIdleTimeMillis(timeout);
-        cfg.setTimeBetweenEvictionRunsMillis(timeout);
-
-        ShardedJedisSentinelPool pool = new ShardedJedisSentinelPool(cfg, masters, sentinels, password, timeout);
-
-        for (Jedis jedis : pool.getResource().getAllShards()) {
-            scan(jedis);
-            jedis.del("task:payment:scanTest");
-        }
-        pool.close();
-    }
-
-    private static void scan(Jedis jedis) {
-        ScanParams scanParams = new ScanParams();
-        scanParams.count(2000); // 设置每次scan个数
-        scanParams.match("task:payment:*");
-        String ok = "0", cursor = ok;
-        try {
-            do {
-                ScanResult<String> result = jedis.scan(cursor, scanParams);
-                cursor = result.getStringCursor();
-                for (String key : result.getResult()) {
-                    System.out.println(key + "\t" + jedis.ttl(key));
-                }
-            } while (!cursor.equals(ok));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 }

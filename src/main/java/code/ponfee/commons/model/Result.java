@@ -74,8 +74,9 @@ public class Result<T> implements java.io.Serializable {
 
     // ---------------------------------static methods/failure methods
     public static <T> Result<T> failure(Enum<?> em) {
-        return failure((int) Fields.get(em, "code"), 
-                       (String) Fields.get(em, "msg"), null);
+        return failure(
+            (int) Fields.get(em, "code"), (String) Fields.get(em, "msg"), null
+        );
     }
 
     public static <T> Result<T> failure(ResultCode code) {
@@ -91,8 +92,9 @@ public class Result<T> implements java.io.Serializable {
     }
 
     public static <T> Result<T> failure(int code, String msg, T data) {
-        Preconditions.checkState(code != SUCCESS.getCode(), 
-                                 "invalid failure code: " + code);
+        Preconditions.checkState(
+            code != SUCCESS.getCode(), "invalid failure code: " + code
+        );
         return new Result<>(code, msg, data);
     }
 
@@ -153,7 +155,7 @@ public class Result<T> implements java.io.Serializable {
     }
 
     public String toJson() {
-        return Jsons.toJson(this);
+        return Jsons.NON_NULL.string(this);
     }
 
     /**

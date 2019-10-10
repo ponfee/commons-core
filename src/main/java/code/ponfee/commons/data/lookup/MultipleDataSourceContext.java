@@ -1,15 +1,21 @@
 package code.ponfee.commons.data.lookup;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
+
+import javax.sql.DataSource;
 
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.google.common.collect.ImmutableList;
 
 import code.ponfee.commons.collect.Collects;
+import code.ponfee.commons.data.NamedDataSource;
 
 /**
  * Multiple DataSource Context
@@ -62,6 +68,35 @@ public final class MultipleDataSourceContext {
         dataSourceKeys.remove(key);
     }
 
+    static List<NamedDataSource> process(String defaultName, DataSource defaultDataSource,
+                                         NamedDataSource... othersDataSource) {
+        if (othersDataSource == null) {
+            othersDataSource = new NamedDataSource[0];
+        }
+        List<String> names = Arrays.stream(othersDataSource)
+                                   .map(NamedDataSource::getName)
+                                   .collect(Collectors.toList());
+        names.add(0, defaultName); // default data source at the first
+
+        // checks whether duplicate datasource name
+        Set<String> duplicates = Collects.duplicate(names);
+        if (CollectionUtils.isNotEmpty(duplicates)) {
+            throw new IllegalArgumentException("Duplicated data source name: " + duplicates.toString());
+        }
+
+        addAll(names); // add data source keys 
+
+        List<NamedDataSource> dataSources = new ArrayList<>();
+        dataSources.add(new NamedDataSource(defaultName, defaultDataSource));
+        dataSources.addAll(Arrays.asList(othersDataSource));
+        return dataSources;
+    }
+
+    /**
+     * Provides gets the list of data source name to external
+     * 
+     * @return a list of data source name string
+     */
     public static List<String> listDataSourceNames() {
         return dataSourceKeys.isEmpty()
              ? Collections.emptyList() 

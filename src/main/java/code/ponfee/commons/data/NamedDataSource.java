@@ -17,6 +17,10 @@ public class NamedDataSource {
         this.dataSource = dataSource;
     }
 
+    public static NamedDataSource of(String name, DataSource dataSource) {
+        return new NamedDataSource(name, dataSource);
+    }
+
     public String getName() {
         return name;
     }
