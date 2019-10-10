@@ -39,10 +39,9 @@ public class WebExceptionHandler {
     /**
      * 400 - Bad Request
      */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    @ResponseBody
-    public Result<Void> handle(HttpMessageNotReadableException e) {
+    @ExceptionHandler({ TypeMismatchException.class, HttpMessageNotReadableException.class, ServletRequestBindingException.class })
+    @ResponseBody @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Result<Void> handle(Exception e) {
         logger.debug("Bad request", e);
         return Result.failure(ResultCode.BAD_REQUEST, e.getMessage());
     }
@@ -50,9 +49,8 @@ public class WebExceptionHandler {
     /**
      * 405 - Method Not Allowed
      */
-    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    @ResponseBody
+    @ResponseBody @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     public Result<Void> handle(HttpRequestMethodNotSupportedException e) {
         logger.debug("Method not allowed", e);
         return Result.failure(ResultCode.NOT_ALLOWED, e.getMessage());
@@ -61,9 +59,8 @@ public class WebExceptionHandler {
     /**
      * 415 - Unsupported Media Type
      */
-    @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    @ResponseBody
+    @ResponseBody @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
     public Result<Void> handle(HttpMediaTypeNotSupportedException e) {
         logger.debug("Unsupported media type", e);
         return Result.failure(ResultCode.UNSUPPORT_MEDIA, e.getMessage());
@@ -72,8 +69,8 @@ public class WebExceptionHandler {
     /**
      * 500 - Internal Server Error
      */
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Throwable.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public void handle(HttpServletRequest req, HttpServletResponse resp, Throwable t) {
         if (t instanceof IllegalArgumentException) {
             logger.debug("", t);
@@ -82,11 +79,7 @@ public class WebExceptionHandler {
             logger.info("", t);
             handleException(req, resp, ((BasicException) t).getCode(), t.getMessage());
         } else {
-            if ((t instanceof ServletRequestBindingException) || (t instanceof TypeMismatchException)) {
-                logger.debug("Server error", t);
-            } else {
-                logger.error("Server error", t);
-            }
+            logger.error("Server error", t);
             handleException(
                 req, resp, ResultCode.SERVER_ERROR.getCode(), 
                 logger.isDebugEnabled() ? Throwables.getStackTraceAsString(t) : ERROR_MSG
