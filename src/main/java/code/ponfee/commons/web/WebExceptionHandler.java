@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -39,7 +41,10 @@ public class WebExceptionHandler {
     /**
      * 400 - Bad Request
      */
-    @ExceptionHandler({ TypeMismatchException.class, HttpMessageNotReadableException.class, ServletRequestBindingException.class })
+    @ExceptionHandler({ 
+        TypeMismatchException.class, HttpMessageNotReadableException.class, 
+        MethodArgumentNotValidException.class, ServletRequestBindingException.class, 
+    })
     @ResponseBody @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Result<Void> handle(Exception e) {
         logger.debug("Bad request", e);
