@@ -1,27 +1,41 @@
 package test.jedis;
 
+import java.text.MessageFormat;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.tuple.Triple;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import code.ponfee.commons.jedis.JedisClient;
 import code.ponfee.commons.jedis.ShardedSentinelJedisClientBuilder;
-import code.ponfee.commons.serial.KryoSerializer;
+import code.ponfee.commons.serial.JdkSerializer;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.ScanParams;
+import redis.clients.jedis.ScanResult;
 
 public class RedisTest {
+    private static final String masters = "DDT_CORE_CNSZ22_REDIS_CACHE";
+    private static final String servers = "10.202.40.105:8001 10.202.40.105:8002 10.202.40.107:8001";
+    private static final String password = "admin.123";
     private static JedisClient client;
 
     @BeforeClass
     public static void setUp() {
-        client = ShardedSentinelJedisClientBuilder.newBuilder(
-            buildDefaultPool(), 
-            "INC_BUPP_CORE_REDIS_C01", 
-            "inc-bupp-core1.cachesit.sfdc.com.cn:8001 inc-bupp-core2.cachesit.sfdc.com.cn:8001 inc-bupp-core3.cachesit.sfdc.com.cn:8001"
-        )
-        .password("jpyuffv2msdtk3ep").serializer(new KryoSerializer()).build();
+        client = ShardedSentinelJedisClientBuilder
+            .newBuilder(buildDefaultPool(), masters, servers)
+            .password(password)
+            .serializer(new JdkSerializer())
+            .build();
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        client.destroy();
     }
 
     @Test
@@ -59,12 +73,99 @@ public class RedisTest {
         System.out.println(client.valueOps().mget(keys2));
     }
 
-    @AfterClass
-    public static void tearDown() {
-        client.destroy();
+    @Test
+    public void testGetObj() {
+        String redisKeyPrefix = "waybill", newbill = "abcd1234", packageNo = "12333333333";
+        client.valueOps().setObject(redisKeyPrefix + newbill, packageNo, 86400);
+        System.out.println(client.valueOps().getObject(redisKeyPrefix + newbill, String.class));
     }
 
-    public static JedisPoolConfig buildDefaultPool() {
+    @Test
+    public void testMgetObj() {
+        String prefix = "test5:str:";
+        int n = 100;
+        String[] keys = new String[n];
+        for (int i = 0; i < n; i++) {
+            String key = keys[i] = prefix + i;
+            client.valueOps().set(key, RandomStringUtils.randomAlphanumeric(10), 86400);
+        }
+
+        System.out.println(client.valueOps().mgetObject(String.class, keys));
+    }
+
+    @Test
+    public void testMgetObj2() {
+        String prefix = "test5:str:";
+        int n = 100;
+        String[] keys = new String[n];
+        for (int i = 0; i < n; i++) {
+            String key = keys[i] = prefix + i;
+            client.valueOps().set(key, RandomStringUtils.randomAlphanumeric(10), 86400);
+        }
+
+        System.out.println(client.valueOps().mget(keys));
+    }
+
+    @Test 
+    public void testScan() {
+        client.hook(shardedJedis -> {
+            for (Jedis jedis : shardedJedis.getAllShards()) {
+                scan(jedis, 10, "o:w:r:p:*");
+            }
+        });
+    }
+
+    private void scan(Jedis jedis, int pageSize, String keyWildcard) {
+        ScanParams scanParams = new ScanParams().count(pageSize).match(keyWildcard); // 设置每次scan个数
+        String cursor = ScanParams.SCAN_POINTER_START;
+        do {
+            ScanResult<String> result = jedis.scan(cursor, scanParams);
+            for (String key : result.getResult()) {
+                Triple<String, String, Long> res = getAsString(jedis, key.getBytes());
+                System.out.println(MessageFormat.format(
+                    "key: {0}, type: {1}, value: {2}, ttl: {3}", 
+                    key, res.getLeft(), res.getMiddle(), String.valueOf(res.getRight())
+                ));
+            }
+            cursor = result.getStringCursor();
+        } while (!ScanParams.SCAN_POINTER_START.equals(cursor)); // cursor is "0" -> scan end
+    }
+
+    /**
+     * TTL：INFINITY=-1；EXPIRED=-2；
+     * 
+     * @see org.springframework.data.redis.connection.DataType
+     * 
+     * @param jedis
+     * @param key
+     * @return
+     */
+    private Triple<String, String, Long> getAsString(Jedis jedis, byte[] key) {
+        String type = null, value = null;
+        long ttl;
+        try {
+            type = jedis.type(key);
+            if ("none".equals(type)) {
+                value = "[NOT EXISTS]";
+                ttl = -2; // 
+            } else if ("string".equals(type)) {
+                byte[] bytes = jedis.get(key);
+                value = bytes != null ? new String(bytes) : null;
+                ttl = jedis.ttl(key);
+            } else {
+                value = "[NOT STRING TYPE: " + type + "]";
+                ttl = jedis.ttl(key);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            type = Optional.ofNullable(type).orElse("ERROR");
+            value = Optional.ofNullable(value).orElse("[ERROR: " + e.getMessage() + "]");
+            ttl = -9; // mark ERROR
+        }
+        return Triple.of(type, value, ttl);
+    }
+
+    private static JedisPoolConfig buildDefaultPool() {
         JedisPoolConfig poolCfg = new JedisPoolConfig();
         poolCfg.setMaxTotal(20);
         poolCfg.setMaxIdle(5);
@@ -78,4 +179,5 @@ public class RedisTest {
         poolCfg.setMinEvictableIdleTimeMillis(300000);
         return poolCfg;
     }
+    
 }
