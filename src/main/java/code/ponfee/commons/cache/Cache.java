@@ -156,7 +156,7 @@ public class Cache<K, V> {
 
         if (expireTimeMillis == KEEPALIVE_FOREVER || expireTimeMillis > now()) {
             CacheValue<V> newly = new CacheValue<>(value, expireTimeMillis);
-            CacheValue<V> former = container.replace(getEffectiveKey(key), newly);
+            CacheValue<V> former = container.put(getEffectiveKey(key), newly);
             onRemoval(key, former, RemovalReason.REPLACED);
         }
     }
