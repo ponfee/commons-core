@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
@@ -329,18 +330,29 @@ public final class Collects {
      */
     public static <T> List<List<T>> splinter(Collection<T> coll, int batchSize) {
         List<List<T>> result = new ArrayList<>(PageHandler.computeTotalPages(coll.size(), batchSize));
+        splinter(coll, batchSize, result::add);
+        return result;
+    }
+
+    /**
+     * Splinter the collection to batch
+     * 
+     * @param coll      the collection
+     * @param batchSize the batch size
+     * @param action    the Consumer for process eatch batch
+     */
+    public static <T> void splinter(Collection<T> coll, int batchSize, Consumer<List<T>> action) {
         List<T> batch = new ArrayList<>(batchSize);
         for (T item : coll) {
             batch.add(item);
             if (batch.size() == batchSize) {
-                result.add(batch);
+                action.accept(batch);
                 batch = new ArrayList<>(batchSize);
             }
         }
         if (!batch.isEmpty()) {
-            result.add(batch);
+            action.accept(batch);
         }
-        return result;
     }
 
     /**
@@ -352,10 +364,21 @@ public final class Collects {
      */
     public static <T> List<List<T>> splinter(List<T> list, int batchSize) {
         List<List<T>> result = new ArrayList<>(PageHandler.computeTotalPages(list.size(), batchSize));
-        for (int i = 0, n = list.size(); i < n; i += batchSize) {
-            result.add(list.subList(i, Math.min(i + batchSize, n)));
-        }
+        splinter(list, batchSize, result::add);
         return result;
+    }
+
+    /**
+     * Splinter the List to batch
+     * 
+     * @param list the collection
+     * @param batchSize the batch size
+     * @param action    process each batch data
+     */
+    public static <T> void splinter(List<T> list, int batchSize, Consumer<List<T>> action) {
+        for (int i = 0, n = list.size(); i < n; i += batchSize) {
+            action.accept(list.subList(i, Math.min(i + batchSize, n)));
+        }
     }
 
     /**
@@ -382,16 +405,16 @@ public final class Collects {
     /**
      * Compute cartesian product
      * 
-     * @param list1 the list of type A
-     * @param list2 the list of type B
-     * @param funcs convert A and B to T
+     * @param x the list of type A
+     * @param y the list of type B
+     * @param fun convert A and B to T
      * @return a list of type T
      */
-    public static <A, B, T> List<T> cartesian(List<A> list1, List<B> list2, BiFunction<A, B, T> funcs) {
-        List<T> product = new ArrayList<>(list1.size() * list2.size());
-        for (A a : list1) {
-            for (B b : list2) {
-                product.add(funcs.apply(a, b));
+    public static <A, B, T> List<T> cartesian(List<A> x, List<B> y, BiFunction<A, B, T> fun) {
+        List<T> product = new ArrayList<>(x.size() * y.size());
+        for (A a : x) {
+            for (B b : y) {
+                product.add(fun.apply(a, b));
             }
         }
         return product;
@@ -399,6 +422,8 @@ public final class Collects {
 
     /**
      * Swaps x[a] with x[b].
+     * 
+     * @see org.apache.commons.lang3.ArrayUtils#swap(Object[], int, int)
      */
     public static <T> void swap(T[] x, int a, int b) {
         T t = x[a];

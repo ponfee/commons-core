@@ -33,6 +33,7 @@ import code.ponfee.commons.util.UrlCoder;
 public final class WebUtils {
 
     private final static Pattern PATTERN_SUFFIX = Pattern.compile("\\S*[?]\\S*");
+    public static final String INCLUDE_CONTEXT_PATH_ATTRIBUTE = "javax.servlet.include.context_path";
 
     /*private static final Pattern PATTERN_MOBILE = Pattern.compile(
         "\\b(ip(hone|od)|android|opera m(ob|in)i|windows (phone|ce)|blackberry|s(ymbian|eries60|amsung)"
@@ -467,30 +468,6 @@ public final class WebUtils {
     }
 
     /**
-     * Returns the string of web application context path
-     *
-     * @param request the HttpServletRequest
-     * @return web application context path
-     */
-    public static String getContextPath(HttpServletRequest request) {
-        return getContextPath(request.getServletContext());
-    }
-
-    /**
-     * Returns the string of web application context path
-     *
-     * @param context the ServletContext
-     * @return web application context path
-     */
-    public static String getContextPath(ServletContext context) {
-        /*if (context.getMajorVersion() == 2 && context.getMinorVersion() < 5) {
-            return null;
-        }*/
-        String contextPath = context.getContextPath();
-        return StringUtils.isEmpty(contextPath) ? "/" : contextPath;
-    }
-
-    /**
      * 会话跟踪
      */
     public static void setSessionTrace(HttpServletResponse response, String token) {
@@ -517,7 +494,125 @@ public final class WebUtils {
         return WebUtils.getHeader(request, AUTH_HEADER); // from header;
     }
 
-    // ----------------------------------private methods----------------------------------
+    public static String getContextPath(ServletContext context) {
+        String contextPath = normalize(UrlCoder.decodeURI(context.getContextPath()));
+        if ("/".equals(contextPath)) {
+            contextPath = "";
+        }
+        return contextPath;
+    }
+
+    /**
+     * Return the context path for the given request, detecting an include request
+     * URL if called within a RequestDispatcher include.
+     * <p>As the value returned by <code>request.getContextPath()</code> is <i>not</i>
+     * decoded by the servlet container, this method will decode it.
+     *
+     * @param request current HTTP request
+     * @return the context path
+     */
+    public static String getContextPath(HttpServletRequest request) {
+        //String contextPath = request.getContextPath();
+        //return StringUtils.isEmpty(contextPath) ? "/" : contextPath;
+
+        String contextPath = (String) request.getAttribute(INCLUDE_CONTEXT_PATH_ATTRIBUTE);
+        if (contextPath == null) {
+            contextPath = request.getContextPath();
+        }
+
+        String encoding = request.getCharacterEncoding();
+        contextPath = (encoding == null) 
+                    ? UrlCoder.decodeURI(contextPath) 
+                    : UrlCoder.decodeURI(contextPath, encoding);
+
+        contextPath = normalize(contextPath);
+        if ("/".equals(contextPath)) {
+            contextPath = ""; // the normalize method will return a "/" and includes on Jetty, will also be a "/".
+        }
+        return contextPath;
+    }
+
+    /**
+     * Normalize a relative URI path that may have relative values ("/./",
+     * "/../", and so on ) it it.  <strong>WARNING</strong> - This method is
+     * useful only for normalizing application-generated paths.  It does not
+     * try to perform security checks for malicious input.
+     * Normalize operations were was happily taken from org.apache.catalina.util.RequestUtil in
+     * Tomcat trunk, r939305
+     *
+     * @param path Relative path to be normalized
+     * @return normalized path
+     */
+    public static String normalize(String path) {
+        return normalize(path, true);
+    }
+
+    /**
+     * Normalize a relative URI path that may have relative values ("/./",
+     * "/../", and so on ) it it.  <strong>WARNING</strong> - This method is
+     * useful only for normalizing application-generated paths.  It does not
+     * try to perform security checks for malicious input.
+     * Normalize operations were was happily taken from org.apache.catalina.util.RequestUtil in
+     * Tomcat trunk, r939305
+     *
+     * @param path             Relative path to be normalized
+     * @param replaceBackSlash Should '\\' be replaced with '/'
+     * @return normalized path
+     */
+    private static String normalize(String path, boolean replaceBackSlash) {
+        if (path == null) {
+            return null;
+        }
+
+        // Create a place for the normalized path
+        String normalized = path;
+
+        if (replaceBackSlash && normalized.indexOf('\\') >= 0)
+            normalized = normalized.replace('\\', '/');
+
+        if (normalized.equals("/."))
+            return "/";
+
+        // Add a leading "/" if necessary
+        if (!normalized.startsWith("/"))
+            normalized = "/" + normalized;
+
+        // Resolve occurrences of "//" in the normalized path
+        while (true) {
+            int index = normalized.indexOf("//");
+            if (index < 0)
+                break;
+            normalized = normalized.substring(0, index) +
+                    normalized.substring(index + 1);
+        }
+
+        // Resolve occurrences of "/./" in the normalized path
+        while (true) {
+            int index = normalized.indexOf("/./");
+            if (index < 0)
+                break;
+            normalized = normalized.substring(0, index) +
+                    normalized.substring(index + 2);
+        }
+
+        // Resolve occurrences of "/../" in the normalized path
+        while (true) {
+            int index = normalized.indexOf("/../");
+            if (index < 0)
+                break;
+            if (index == 0)
+                return (null);  // Trying to go outside our context
+            int index2 = normalized.lastIndexOf('/', index - 1);
+            normalized = normalized.substring(0, index2) +
+                    normalized.substring(index + 3);
+        }
+
+        // Return the normalized path that we have completed
+        return (normalized);
+
+    }
+
+    // --------------------------------------------------------------------private methods
     /**
      * to json string
      * @param data

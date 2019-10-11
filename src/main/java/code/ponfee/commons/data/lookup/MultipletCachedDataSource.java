@@ -36,7 +36,7 @@ public class MultipletCachedDataSource extends AbstractDataSource {
         .removalListener(nf -> MultipleDataSourceContext.remove(nf.getKey()))
         .build();
 
-    private final Set<String> unremovedDataSourceNames;
+    private final Set<String> immutableDataSourceNames;
     private final DataSource defaultDataSource;
 
     public MultipletCachedDataSource(NamedDataSource dataSource) {
@@ -76,7 +76,7 @@ public class MultipletCachedDataSource extends AbstractDataSource {
             this.dataSources.set(ds.getName(), ds.getDataSource(), Cache.KEEPALIVE_FOREVER);
         }
 
-        unremovedDataSourceNames = ImmutableSet.copyOf(names);
+        immutableDataSourceNames = ImmutableSet.copyOf(names);
         MultipleDataSourceContext.addAll(names);
     }
 
@@ -103,7 +103,7 @@ public class MultipletCachedDataSource extends AbstractDataSource {
                                  @Nonnull DataSource datasource,
                                  long expireTimeMillis) {
         Assert.isTrue(expireTimeMillis > 0, "ExpireTimeMillis must greater than 0.");
-        if (dataSources.containsKey(dataSourceName)) {
+        if (dataSources.containsKey(dataSourceName)) { // check the datasource name not exists
             throw new IllegalArgumentException("Duplicated name: " + dataSourceName);
         }
         dataSources.set(dataSourceName, datasource, expireTimeMillis);
@@ -111,8 +111,8 @@ public class MultipletCachedDataSource extends AbstractDataSource {
     }
 
     public synchronized void remove(String dataSourceName) {
-        if (unremovedDataSourceNames.contains(dataSourceName)) {
-            throw new UnsupportedOperationException("Inited datasource cannot remove: " + dataSourceName);
+        if (immutableDataSourceNames.contains(dataSourceName)) {
+            throw new UnsupportedOperationException("Immutable datasource cannot remove: " + dataSourceName);
         }
         dataSources.remove(dataSourceName);
         MultipleDataSourceContext.remove(dataSourceName);
