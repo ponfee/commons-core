@@ -66,7 +66,7 @@ public abstract class ParamValidator extends FieldValidator {
                 for (Annotation ann : anns[i]) {
                     if (ann instanceof ConstrainParam) {
                         try {
-                            super.constrain(args[i]);
+                            constrain(args[i]);
                         } catch (IllegalArgumentException e) {
                             builder.append("[").append(argsName[i]).append("]")
                                    .append(e.getMessage());
@@ -84,6 +84,6 @@ public abstract class ParamValidator extends FieldValidator {
             builder.append(Throwables.getStackTrace(e));
         }
 
-        return super.process(builder, joinPoint, method, args);
+        return builder.length() == 0 ? joinPoint.proceed() : processError(builder, method, args);
     }
 }

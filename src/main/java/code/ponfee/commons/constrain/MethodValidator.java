@@ -143,7 +143,7 @@ public abstract class MethodValidator extends FieldValidator {
             builder.append("参数约束校验异常：").append(e.getMessage());
         }
 
-        return process(builder, pjp, method, args);
+        return builder.length() == 0 ? pjp.proceed() : processError(builder, method, args);
     }
 
     // -------------------------------------------------------------------------private methods
