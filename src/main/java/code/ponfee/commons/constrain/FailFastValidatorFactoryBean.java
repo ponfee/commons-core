@@ -7,16 +7,16 @@ import org.hibernate.validator.HibernateValidator;
 import org.springframework.beans.factory.FactoryBean;
 
 /**
- * For fast failed validator factory bean
+ * For fail fast validator factory bean
  * 
  * @author Ponfee
  */
-public class FastFailValidatorFactoryBean implements FactoryBean<Validator> {
+public class FailFastValidatorFactoryBean implements FactoryBean<Validator> {
 
     private final Validator validator;
     private final Class<? extends Validator> validatorType;
 
-    public FastFailValidatorFactoryBean() {
+    public FailFastValidatorFactoryBean() {
         this.validator = Validation
             .byProvider(HibernateValidator.class)
             .configure()

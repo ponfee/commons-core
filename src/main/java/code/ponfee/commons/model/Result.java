@@ -153,7 +153,7 @@ public class Result<T> implements java.io.Serializable {
     }
 
     public String toJson() {
-        return Jsons.toJson(this);
+        return Jsons.NON_NULL.string(this);
     }
 
     /**

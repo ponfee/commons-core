@@ -15,7 +15,7 @@ import code.ponfee.commons.model.Result;
  * 基于JSR303的Web端参数校验统一处理
  * 
  * Controller的方法中有BindingResult参数，则spring框架会进入Controller的方法内
- * public Result<Article> createArticle2(@Valid Article article, BindingResult result) {}
+ * public Result<Void> testValidate(@Valid Article article, BindingResult result) {}
  * 
  * @author Ponfee
  */

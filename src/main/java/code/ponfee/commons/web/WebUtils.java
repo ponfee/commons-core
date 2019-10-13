@@ -194,7 +194,7 @@ public final class WebUtils {
     }
 
     public static void respJson(HttpServletResponse resp, Object data, String charset) {
-        response(resp, "application/json", toJson(data), charset);
+        response(resp, ContentType.APPLICATION_JSON.value(), toJson(data), charset);
     }
 
     public static void respJsonp(HttpServletResponse response, 
@@ -621,7 +621,7 @@ public final class WebUtils {
     private static String toJson(Object data) {
         return (data instanceof CharSequence)
                ? data.toString()
-               : Jsons.toJson(data);
+               : Jsons.NON_NULL.string(data);
     }
 
     private static void respStream(HttpServletResponse resp, long size,
@@ -629,7 +629,7 @@ public final class WebUtils {
         filename = UrlCoder.encodeURIComponent(filename, charset); // others web browse
         //filename = new String(filename.getBytes(StandardCharsets.UTF_8), 
         //                      StandardCharsets.ISO_8859_1); // firefox web browse
-        resp.setContentType("application/octet-stream");
+        resp.setContentType(ContentType.APPLICATION_OCTET_STREAM.value());
         resp.setHeader("Content-Length", Long.toString(size));
         resp.setHeader("Content-Disposition", "form-data; name=\"attachment\";filename=\"" + filename + "\"");
         resp.setCharacterEncoding(charset);
