@@ -94,15 +94,17 @@ public final class RSAPrivateKeys {
     /**
      * 对于某些jdk不支持私钥加密及验签，所以要反转私钥为公钥
      * 私钥伪造公钥来支持加密及验签
+     * 
      * @param privateKey
      * @return
      */
     public static RSAPublicKey inverse(RSAPrivateKey privateKey) {
-        return RSAPublicKeys.toRSAPublicKey(privateKey.getModulus(), 
-                                            privateKey.getPrivateExponent());
+        return RSAPublicKeys.toRSAPublicKey(
+            privateKey.getModulus(), privateKey.getPrivateExponent()
+        );
     }
 
-    // ----------------------------------EXTRACT PUBLIC KEY FROM PRIVATE KEY-----------------------------------
+    // ------------------------------------------------------------EXTRACT PUBLIC KEY FROM PRIVATE KEY
     /**
      * extract public key from private key
      * 
@@ -115,11 +117,10 @@ public final class RSAPrivateKeys {
                                        + "but is " + privateKey.getClass().getCanonicalName());
         }
         RSAPrivateCrtKey key = (RSAPrivateCrtKey) privateKey;
-        return RSAPublicKeys.toRSAPublicKey(key.getModulus(), 
-                                            key.getPublicExponent());
+        return RSAPublicKeys.toRSAPublicKey(key.getModulus(), key.getPublicExponent());
     }
 
-    // ----------------------------------PRIVATE KEY PKCS1 FORMAT-----------------------------------
+    // ------------------------------------------------------------PRIVATE KEY PKCS1 FORMAT
     /**
      * MIICXAIBAAKBgQCo20qAU4iyZIInpu2XzNXYHhFv6FVC/N1vsfz4ZrwX3VQaFsXf720QBkuP34Y31jy/6B+OB7DzklDBTnJXltCX2XdHyBY5WQYMX9rsQrfbvUL47u676FD1T8o1/e+cEOGS75mKQIQjyt1zCZOl26Hy6x4TPeBSdVzFNYSr7KNjLQIDAQABAoGALFd51v0YtpACRdtmJSjbNyeeOJ7wVOkGVWCOJ8UCu9mZTkiQqd+76itdCGkQW/VceqDAOJH4e93+auTozeuC1w/srrUuPASUsE/5VLwPBvR90kToC28B59wAdl31nD0KM8COq/9EdrkVkz6XO7KAik9gr3PLHCXu4i7tzf9djlkCQQDhagX7hsjJZ554Pr0uBhXHwMmhiLPOK1b3884Wc1rHTMShVGF3DJH6stJV5hXwzjXBwSA8zCbxGDsqVdmbQBkPAkEAv8Sv4GtdXCucN0GsZcRhvOmGhNkhQU7W3qkPqLaAvBzfCzT/Kty4YEWTlF+sCP1+/Chl7AHf4FQ+3ivNkftoAwJAEZ0YRJQ+okY/gsPcQnllQEuXNdEZw7VtQUjCxMxUvpgIEVcnmobX7VAF0YJ+GmfymWY+36FQNaygCunUbCYxDwJAQaKxS8+Tmbt3cVYyCnbnuP/4wbmLb03rrzQQHv+wGjKLiMtv1pzLInBN7ce9Gyqgbu/oypltpdtP1T0K1D9HPwJBAKskq4+amIGnJ7FxGiPXAi0+Y96QPbAR/WjXiIaLRvwRa4Jwy8U6E6HHfYYTeuuB7h1ga6kyzfB7nUeGyeWSSkI=
      * 
@@ -160,7 +161,7 @@ public final class RSAPrivateKeys {
         }
     }
 
-    // ----------------------------------PRIVATE KEY PKCS1 PEM FORMAT-----------------------------------
+    // ------------------------------------------------------------PRIVATE KEY PKCS1 PEM FORMAT
     /**
      * -----BEGIN RSA PRIVATE KEY-----
      * MIICXAIBAAKBgQCo20qAU4iyZIInpu2XzNXYHhFv6FVC/N1vsfz4ZrwX3VQaFsXf
@@ -207,7 +208,7 @@ public final class RSAPrivateKeys {
         }
     }
 
-    // ----------------------------------PRIVATE KEY PKCS8 FORMAT-----------------------------------
+    // ------------------------------------------------------------PRIVATE KEY PKCS8 FORMAT
     /**
      * MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAKjbSoBTiLJkgiem7ZfM1dgeEW/oVUL83W+x/PhmvBfdVBoWxd/vbRAGS4/fhjfWPL/oH44HsPOSUMFOcleW0JfZd0fIFjlZBgxf2uxCt9u9Qvju7rvoUPVPyjX975wQ4ZLvmYpAhCPK3XMJk6XbofLrHhM94FJ1XMU1hKvso2MtAgMBAAECgYAsV3nW/Ri2kAJF22YlKNs3J544nvBU6QZVYI4nxQK72ZlOSJCp37vqK10IaRBb9Vx6oMA4kfh73f5q5OjN64LXD+yutS48BJSwT/lUvA8G9H3SROgLbwHn3AB2XfWcPQozwI6r/0R2uRWTPpc7soCKT2Cvc8scJe7iLu3N/12OWQJBAOFqBfuGyMlnnng+vS4GFcfAyaGIs84rVvfzzhZzWsdMxKFUYXcMkfqy0lXmFfDONcHBIDzMJvEYOypV2ZtAGQ8CQQC/xK/ga11cK5w3QaxlxGG86YaE2SFBTtbeqQ+otoC8HN8LNP8q3LhgRZOUX6wI/X78KGXsAd/gVD7eK82R+2gDAkARnRhElD6iRj+Cw9xCeWVAS5c10RnDtW1BSMLEzFS+mAgRVyeahtftUAXRgn4aZ/KZZj7foVA1rKAK6dRsJjEPAkBBorFLz5OZu3dxVjIKdue4//jBuYtvTeuvNBAe/7AaMouIy2/WnMsicE3tx70bKqBu7+jKmW2l20/VPQrUP0c/AkEAqySrj5qYgacnsXEaI9cCLT5j3pA9sBH9aNeIhotG/BFrgnDLxToTocd9hhN664HuHWBrqTLN8HudR4bJ5ZJKQg==
      * 
@@ -234,7 +235,7 @@ public final class RSAPrivateKeys {
         }
     }
 
-    // ----------------------------------Transform PRIVATE KEY ENCRYPTED PKCS8 PEM FORMAT
+    // ------------------------------------------------------------Transform PRIVATE KEY ENCRYPTED PKCS8 PEM FORMAT
     /**
      * -----BEGIN ENCRYPTED PRIVATE KEY-----
      * MIICrjAoBgoqhkiG9w0BDAEDMBoEFA4ymXPHyGS9n5BRIibZHRkJ+idqAgIEAASC
@@ -329,7 +330,7 @@ public final class RSAPrivateKeys {
         }
     }
 
-    // --------------------------------------------------Parse PRIVATE KEY ENCRYPTED PKCS8 PEM FORMAT
+    // ------------------------------------------------------------Parse PRIVATE KEY ENCRYPTED PKCS8 PEM FORMAT
     /**
      * Parse private key from encrypted pem format
      * 
@@ -404,14 +405,4 @@ public final class RSAPrivateKeys {
         }
     }
 
-    // --------------------------------------------------Get the rsa key bit length
-    /**
-     * Gets the rsa key length
-     * 
-     * @param privateKey the privateKey
-     * @return rsa key bit length
-     */
-    public static int getKeyLength(RSAPrivateKey privateKey) {
-        return privateKey.getModulus().bitLength();
-    }
 }

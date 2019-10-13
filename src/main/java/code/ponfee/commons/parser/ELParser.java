@@ -67,6 +67,18 @@ public class ELParser {
         return result;
     }
 
+    /**
+     * SPEL Java: parser.parseExpression("T(java.lang.Math).PI").getValue(double.class);
+     *            parser.parseExpression("T(java.lang.Math).random()").getValue(double.class)
+     *            parser.parseExpression("'Hi,everybody'").getValue(String.class)
+     * 
+     * SPEL Xml : parser.parseExpression("#{T(java.lang.Math).PI}").getValue(double.class);
+     *            parser.parseExpression("#{T(java.lang.Math).random()}").getValue(double.class)
+     *            parser.parseExpression("#{'Hi,everybody'}").getValue(String.class)
+     * @param text
+     * @param params
+     * @return
+     */
     @SuppressWarnings("unchecked")
     private static String parseSpel(String text, Map<String, ?> params) {
         if (MapUtils.isEmpty(params)) {

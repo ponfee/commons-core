@@ -1,7 +1,6 @@
 package code.ponfee.commons.web;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +13,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
 import code.ponfee.commons.io.Files;
@@ -96,8 +94,8 @@ public final class WebContext {
         }
     }
 
-    public String getBodyAsText() {
-        return getBodyAsText(Files.UTF_8);
+    public String getText() {
+        return getText(Files.DEFAULT_CHARSET_NAME);
     }
 
     /**
@@ -107,12 +105,8 @@ public final class WebContext {
      * @param charset the string encoding
      * @return string
      */
-    public String getBodyAsText(String charset) {
-        try (InputStream input = getRequest().getInputStream()) {
-            return IOUtils.toString(input, charset);
-        } catch (Exception e) {
-            throw new RuntimeException("read request input stream error", e);
-        }
+    public String getText(String charset) {
+        return WebUtils.getText(getRequest(), charset);
     }
 
     /**

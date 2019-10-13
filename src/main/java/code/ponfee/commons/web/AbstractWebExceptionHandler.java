@@ -44,6 +44,12 @@ import code.ponfee.commons.model.ResultCode;
  */
 public abstract class AbstractWebExceptionHandler {
 
+    public static final int UNAUTHORIZED     = ResultCode.UNAUTHORIZED.getCode();
+    public static final int BAD_REQUEST      = ResultCode.BAD_REQUEST.getCode();
+    public static final int NOT_ALLOWED      = ResultCode.NOT_ALLOWED.getCode();
+    public static final int UNSUPPORT_MEDIA  = ResultCode.UNSUPPORT_MEDIA.getCode();
+    public static final int SERVER_ERROR     = ResultCode.SERVER_ERROR.getCode();
+
     public final String unauthorizedPage;
     public final String serverErrorPage;
     public final String defaultErrorMsg;
@@ -54,7 +60,9 @@ public abstract class AbstractWebExceptionHandler {
         this("/page/401.html", "/page/500.html", "Server error.");
     }
 
-    public AbstractWebExceptionHandler(String unauthorizedPage, String serverErrorPage, String defaultErrorMsg) {
+    public AbstractWebExceptionHandler(String unauthorizedPage, 
+                                       String serverErrorPage, 
+                                       String defaultErrorMsg) {
         this.unauthorizedPage = unauthorizedPage;
         this.serverErrorPage = serverErrorPage;
         this.defaultErrorMsg = defaultErrorMsg;
@@ -66,9 +74,9 @@ public abstract class AbstractWebExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     //@ResponseBody @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public void handle(HttpServletRequest req, HttpServletResponse resp, UnauthorizedException e) {
-        LOGGER.debug("Unauthorized.", e);
-        int code = e.getCode() == null ? ResultCode.UNAUTHORIZED.getCode() : e.getCode();
-        handle(req, resp, unauthorizedPage, code, e.getMessage());
+        LOGGER.debug("Unauthorized", e);
+        Integer code = e.getCode();
+        handle(req, resp, unauthorizedPage, code == null ? UNAUTHORIZED : code, e.getMessage());
     }
 
     /**
@@ -84,8 +92,8 @@ public abstract class AbstractWebExceptionHandler {
     @ExceptionHandler(BindException.class)
     //@ResponseBody @ResponseStatus(HttpStatus.BAD_REQUEST)
     public void handle(HttpServletRequest req, HttpServletResponse resp, BindException e) {
-        LOGGER.debug("Bind failed.", e);
-        handle(req, resp, serverErrorPage, e.getAllErrors());
+        LOGGER.debug("Bind failed", e);
+        handle(req, resp, e.getAllErrors());
     }
 
     /**
@@ -102,9 +110,10 @@ public abstract class AbstractWebExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     //@ResponseBody @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public void handleMethod(HttpServletRequest req, HttpServletResponse resp, MethodArgumentNotValidException e) {
-        LOGGER.debug("Method argument not valid.", e);
-        handle(req, resp, serverErrorPage, e.getBindingResult().getAllErrors());
+    public void handleMethod(HttpServletRequest req, HttpServletResponse resp, 
+                             MethodArgumentNotValidException e) {
+        LOGGER.debug("Method argument not valid", e);
+        handle(req, resp, e.getBindingResult().getAllErrors());
     }
 
     /**
@@ -115,16 +124,19 @@ public abstract class AbstractWebExceptionHandler {
      *     <property name="validator"><bean class="code.ponfee.commons.constrain.FastFailValidatorFactoryBean" /></property>
      *   </bean>
      * 2、必须在Controller类中注解@org.springframework.validation.annotation.Validated
-     * 3、public Result testValidate3(@Range(min = 1, max = 9, message = "年级只能从1-9") @RequestParam(name = "grade", required = true) int grade) {}
+     * 3、public `@NotNull Result testValidate3(@Range(min = 1, max = 9, message = "年级只能从1-9") @RequestParam(name = "grade", required = true) int grade) {}
+     * 4、若是接口实现类，则参数约束注解只能放在接口方法参数上（返回值可放在实现类方法上）
      */
     @ExceptionHandler(ConstraintViolationException.class)
     //@ResponseBody @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public void handle(HttpServletRequest req, HttpServletResponse resp, ConstraintViolationException e) {
-        LOGGER.debug("Constraint violation.", e);
-        String message = e.getConstraintViolations().stream()
-                                                    .map(ConstraintViolation::getMessage)
-                                                    .collect(Collectors.joining(",", "[", "]"));
-        handle(req, resp, serverErrorPage, ResultCode.BAD_REQUEST.getCode(), message);
+    public void handle(HttpServletRequest req, HttpServletResponse resp, 
+                       ConstraintViolationException e) {
+        LOGGER.debug("Constraint violation", e);
+        String message = e.getConstraintViolations()
+                          .stream()
+                          .map(ConstraintViolation::getMessage)
+                          .collect(Collectors.joining(",", "[", "]"));
+        handle(req, resp, null, BAD_REQUEST, message);
     }
 
     /**
@@ -137,8 +149,8 @@ public abstract class AbstractWebExceptionHandler {
     })
     //@ResponseBody @ResponseStatus(HttpStatus.BAD_REQUEST)
     public void handle(HttpServletRequest req, HttpServletResponse resp, Exception e) {
-        LOGGER.debug("Bad request.", e);
-        handle(req, resp, serverErrorPage, ResultCode.BAD_REQUEST.getCode(), e.getMessage());
+        LOGGER.debug("Bad request", e);
+        handle(req, resp, null, BAD_REQUEST, e.getMessage());
     }
 
     /**
@@ -146,9 +158,10 @@ public abstract class AbstractWebExceptionHandler {
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     //@ResponseBody @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-    public void handle(HttpServletRequest req, HttpServletResponse resp, HttpRequestMethodNotSupportedException e) {
-        LOGGER.debug("Request method not supported.", e);
-        handle(req, resp, serverErrorPage, ResultCode.NOT_ALLOWED.getCode(), e.getMessage());
+    public void handle(HttpServletRequest req, HttpServletResponse resp, 
+                       HttpRequestMethodNotSupportedException e) {
+        LOGGER.debug("Request method not supported", e);
+        handle(req, resp, null, NOT_ALLOWED, e.getMessage());
     }
 
     /**
@@ -156,9 +169,10 @@ public abstract class AbstractWebExceptionHandler {
      */
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     //@ResponseBody @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-    public void handle(HttpServletRequest req, HttpServletResponse resp, HttpMediaTypeNotSupportedException e) {
-        LOGGER.debug("Media type not supported.", e);
-        handle(req, resp, serverErrorPage, ResultCode.UNSUPPORT_MEDIA.getCode(), e.getMessage());
+    public void handle(HttpServletRequest req, HttpServletResponse resp, 
+                       HttpMediaTypeNotSupportedException e) {
+        LOGGER.debug("Media type not supported", e);
+        handle(req, resp, null, UNSUPPORT_MEDIA, e.getMessage());
     }
 
     /**
@@ -167,10 +181,9 @@ public abstract class AbstractWebExceptionHandler {
     @ExceptionHandler(BasicException.class)
     //@ResponseBody @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public void handle(HttpServletRequest req, HttpServletResponse resp, BasicException e) {
-        LOGGER.debug("Biz operate failure.", e);
+        LOGGER.debug("Biz operate failure", e);
         Integer code = ((BasicException) e).getCode();
-        code = code == null ? ResultCode.SERVER_ERROR.getCode() : code;
-        handle(req, resp, serverErrorPage, code, e.getMessage());
+        handle(req, resp, null, code == null ? SERVER_ERROR : code, e.getMessage());
     }
 
     /**
@@ -179,31 +192,34 @@ public abstract class AbstractWebExceptionHandler {
     @ExceptionHandler(Throwable.class)
     //@ResponseBody @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public void handle(HttpServletRequest req, HttpServletResponse resp, Throwable t) {
-        LOGGER.error("Server error.", t);
+        LOGGER.error("Server error", t);
         String message = LOGGER.isDebugEnabled() ? Throwables.getStackTraceAsString(t) : defaultErrorMsg;
-        handle(req, resp, serverErrorPage, ResultCode.SERVER_ERROR.getCode(), message);
+        handle(req, resp, serverErrorPage, SERVER_ERROR, message);
     }
 
     private void handle(HttpServletRequest req, HttpServletResponse resp,
-                        String page, List<ObjectError> errors) {
+                        List<ObjectError> errors) {
         String message = errors.stream()
                                .map(ObjectError::getDefaultMessage)
                                .collect(Collectors.joining(",", "[", "]"));
-        handle(req, resp, serverErrorPage, ResultCode.BAD_REQUEST.getCode(), message);
+        handle(req, resp, null, BAD_REQUEST, message);
     }
 
     protected void handle(HttpServletRequest req, HttpServletResponse resp,
                           String page, int code, String message) {
-        if (LOGGER.isDebugEnabled() || WebUtils.isAjax(req)) {
+        if (page == null || LOGGER.isDebugEnabled() || WebUtils.isAjax(req)) {
             WebUtils.respJson(resp, new Result<>(code, message)); // resp.setStatus(code);
         } else {
-            try {
-                req.getRequestDispatcher(page).forward(req, resp);
-                //resp.sendRedirect(resp.encodeRedirectURL(WebUtils.getContextPath(req) + page));
-            } catch (IOException | ServletException e) {
-                LOGGER.error("Forward page occur error.", e);
-            }
+            handErrorPage(req, resp, page);
         }
     }
 
+    protected void handErrorPage(HttpServletRequest req, HttpServletResponse resp, String page) {
+        try {
+            req.getRequestDispatcher(page).forward(req, resp);
+            //resp.sendRedirect(resp.encodeRedirectURL(WebUtils.getContextPath(req) + page));
+        } catch (IOException | ServletException e) {
+            LOGGER.error("Forward page occur error.", e);
+        }
+    }
 }

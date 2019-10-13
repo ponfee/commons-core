@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.cert.Certificate;
+import java.security.interfaces.RSAKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
@@ -60,15 +61,17 @@ public final class RSAPublicKeys {
     /**
      * 对于某些jdk不支持公钥解密及签名，所以要反转公钥为私钥
      * 公钥伪造成私钥来支持解密及签名
+     * 
      * @param publicKey
      * @return
      */
     public static RSAPrivateKey inverse(RSAPublicKey publicKey) {
-        return RSAPrivateKeys.toRSAPrivateKey(publicKey.getModulus(), 
-                                              publicKey.getPublicExponent());
+        return RSAPrivateKeys.toRSAPrivateKey(
+            publicKey.getModulus(), publicKey.getPublicExponent()
+        );
     }
 
-    // ----------------------------------PUBLIC KEY PKCS1 FORMAT-----------------------------------
+    // ------------------------------------------------------------PUBLIC KEY PKCS1 FORMAT
     /**
      * MIGJAoGBAKVpbo/Wum3G5ciustuKNGvPX/rgkdZw33QGqBR5UOKUoD5/h/IeQlS7ladX+oa+ciVCXyP854Zq+0RVQ7x87DfAohLmyXlIGOJ7KLJZkUWDYSG0WsPbnTOEmxQcRzqEV5g9pVHIjgPH6N/j6HHKRs5xDEd3pVpoRBZKEncbZ85xAgMBAAE=
      * <p>
@@ -105,7 +108,7 @@ public final class RSAPublicKeys {
         }
     }
 
-    // ----------------------------------PUBLIC KEY X509 PKCS8 FORMAT-----------------------------------
+    // ------------------------------------------------------------PUBLIC KEY X509 PKCS8 FORMAT
     /**
      * MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQClaW6P1rptxuXIrrLbijRrz1/64JHWcN90BqgUeVDilKA+f4fyHkJUu5WnV/qGvnIlQl8j/OeGavtEVUO8fOw3wKIS5sl5SBjieyiyWZFFg2EhtFrD250zhJsUHEc6hFeYPaVRyI4Dx+jf4+hxykbOcQxHd6VaaEQWShJ3G2fOcQIDAQAB
      * 
@@ -135,7 +138,7 @@ public final class RSAPublicKeys {
         }
     }
 
-    // ----------------------------------PUBLIC KEY X509 PKCS8 PEM FORMAT-----------------------------------
+    // ------------------------------------------------------------PUBLIC KEY X509 PKCS8 PEM FORMAT
     /**
      * -----BEGIN PUBLIC KEY-----
      * MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQClaW6P1rptxuXIrrLbijRrz1/6
@@ -174,11 +177,12 @@ public final class RSAPublicKeys {
     }
 
     /**
-     * get the rsa key length
-     * @param publicKey
-     * @return
+     * Gets the rsa key length
+     * 
+     * @param rsaKey the rsa key
+     * @return a int number of key bit length
      */
-    public static int getKeyLength(RSAPublicKey publicKey) {
-        return publicKey.getModulus().bitLength();
+    public static int getKeyLength(RSAKey rsaKey) {
+        return rsaKey.getModulus().bitLength();
     }
 }

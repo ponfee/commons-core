@@ -48,9 +48,6 @@ public final class ByteArrayWrapper implements
 
     @Override
     public int compareTo(ByteArrayWrapper o) {
-        if (o == null) {
-            return 1;
-        }
         return ByteArrayComparator.compareTo(array, o.array);
         /*return Bytes.toBigInteger(array).compareTo(
             Bytes.toBigInteger(o.array)
