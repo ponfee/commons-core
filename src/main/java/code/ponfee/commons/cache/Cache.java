@@ -19,7 +19,6 @@ import javax.security.auth.Destroyable;
 
 import com.google.common.base.Preconditions;
 
-import code.ponfee.commons.base.Releasable;
 import code.ponfee.commons.cache.RemovalNotification.RemovalReason;
 import code.ponfee.commons.io.Closeables;
 import code.ponfee.commons.jce.digest.DigestUtils;
@@ -365,8 +364,6 @@ public class Cache<K, V> {
         // Closeable, Releasable, Destroyable
         if (value instanceof Destroyable) {
             Closeables.log((Destroyable) value);
-        } else if (value instanceof Releasable) {
-            Closeables.log((Releasable) value);
         } else if (value instanceof AutoCloseable) {
             Closeables.log((AutoCloseable) value);
         }
