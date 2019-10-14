@@ -6,7 +6,7 @@ import javax.security.auth.Destroyable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import code.ponfee.commons.cache.Releasable;
+import code.ponfee.commons.base.Releasable;
 
 /**
  * 

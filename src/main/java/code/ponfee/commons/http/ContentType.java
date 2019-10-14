@@ -21,6 +21,10 @@ public enum ContentType {
     TEXT_HTML("text/html"), //
     TEXT_PLAIN("text/plain"), //
 
+    IMAGE_JPEG("image/jpeg"), //
+    IMAGE_PNG("image/png"), //
+    IMAGE_BMP("image/bmp"), //
+
     WILDCARD("*/*"), //
     ;
 

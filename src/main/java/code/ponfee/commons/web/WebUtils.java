@@ -51,16 +51,16 @@ public final class WebUtils {
     public static final String AUTH_PARAME = "authToken";
 
     /**
-     * get the http servlet request parameters
+     * Gets the http servlet request parameters
      * the parameter value is {@link java.lang.String} type
      * if is array parameter, then the value is based-join on "," as String
+     * 
      * @param request
      * @return Map<String, String>, the array param value use "," to join
      */
     public static Map<String, String> getParams(HttpServletRequest request) {
-        Map<String, String[]> requestParams = request.getParameterMap();
         Map<String, String> params = new TreeMap<>();
-        for (Entry<String, String[]> entry : requestParams.entrySet()) {
+        for (Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
             params.put(entry.getKey(), StringUtils.join(entry.getValue(), ","));
         }
         return params;
@@ -288,6 +288,8 @@ public final class WebUtils {
 
     /**
      * 响应数据流，如图片数据
+     * 
+     * response(resp, image_byte_array, ContentType.IMAGE_JPEG.value(), false);
      * 
      * @param resp the HttpServletResponse
      * @param data the byte array data

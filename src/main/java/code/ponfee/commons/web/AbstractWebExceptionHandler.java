@@ -50,11 +50,11 @@ public abstract class AbstractWebExceptionHandler {
     public static final int UNSUPPORT_MEDIA  = ResultCode.UNSUPPORT_MEDIA.getCode();
     public static final int SERVER_ERROR     = ResultCode.SERVER_ERROR.getCode();
 
-    public final String unauthorizedPage;
-    public final String serverErrorPage;
-    public final String defaultErrorMsg;
-
     protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractWebExceptionHandler.class);
+
+    private final String unauthorizedPage;
+    private final String serverErrorPage;
+    private final String defaultErrorMsg;
 
     public AbstractWebExceptionHandler() {
         this("/page/401.html", "/page/500.html", "Server error.");
@@ -136,7 +136,7 @@ public abstract class AbstractWebExceptionHandler {
                           .stream()
                           .map(ConstraintViolation::getMessage)
                           .collect(Collectors.joining(",", "[", "]"));
-        handle(req, resp, null, BAD_REQUEST, message);
+        handle(req, resp, BAD_REQUEST, message);
     }
 
     /**
@@ -150,7 +150,7 @@ public abstract class AbstractWebExceptionHandler {
     //@ResponseBody @ResponseStatus(HttpStatus.BAD_REQUEST)
     public void handle(HttpServletRequest req, HttpServletResponse resp, Exception e) {
         LOGGER.debug("Bad request", e);
-        handle(req, resp, null, BAD_REQUEST, e.getMessage());
+        handle(req, resp, BAD_REQUEST, e.getMessage());
     }
 
     /**
@@ -161,7 +161,7 @@ public abstract class AbstractWebExceptionHandler {
     public void handle(HttpServletRequest req, HttpServletResponse resp, 
                        HttpRequestMethodNotSupportedException e) {
         LOGGER.debug("Request method not supported", e);
-        handle(req, resp, null, NOT_ALLOWED, e.getMessage());
+        handle(req, resp, NOT_ALLOWED, e.getMessage());
     }
 
     /**
@@ -172,7 +172,7 @@ public abstract class AbstractWebExceptionHandler {
     public void handle(HttpServletRequest req, HttpServletResponse resp, 
                        HttpMediaTypeNotSupportedException e) {
         LOGGER.debug("Media type not supported", e);
-        handle(req, resp, null, UNSUPPORT_MEDIA, e.getMessage());
+        handle(req, resp, UNSUPPORT_MEDIA, e.getMessage());
     }
 
     /**
@@ -183,7 +183,7 @@ public abstract class AbstractWebExceptionHandler {
     public void handle(HttpServletRequest req, HttpServletResponse resp, BasicException e) {
         LOGGER.debug("Biz operate failure", e);
         Integer code = ((BasicException) e).getCode();
-        handle(req, resp, null, code == null ? SERVER_ERROR : code, e.getMessage());
+        handle(req, resp, code == null ? SERVER_ERROR : code, e.getMessage());
     }
 
     /**
@@ -202,13 +202,19 @@ public abstract class AbstractWebExceptionHandler {
         String message = errors.stream()
                                .map(ObjectError::getDefaultMessage)
                                .collect(Collectors.joining(",", "[", "]"));
-        handle(req, resp, null, BAD_REQUEST, message);
+        handle(req, resp, BAD_REQUEST, message);
+    }
+
+    private void handle(HttpServletRequest req, HttpServletResponse resp,
+                        int code, String message) {
+        handle(req, resp, null, code, message);
     }
 
     protected void handle(HttpServletRequest req, HttpServletResponse resp,
                           String page, int code, String message) {
         if (page == null || LOGGER.isDebugEnabled() || WebUtils.isAjax(req)) {
-            WebUtils.respJson(resp, new Result<>(code, message)); // resp.setStatus(code);
+            // resp.setStatus(code); HttpStatus.valueOf(code);
+            WebUtils.respJson(resp, new Result<>(code, message));
         } else {
             handErrorPage(req, resp, page);
         }

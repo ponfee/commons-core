@@ -121,14 +121,15 @@ public enum BeanMaps {
                     }
 
                     String name0 = name;
-                    if (!sourceMap.containsKey(name)
+                    if (   !sourceMap.containsKey(name)
                         && !sourceMap.containsKey(name = LOWER_UNDERSCORE.to(LOWER_CAMEL, name0))
-                        && !sourceMap.containsKey(name = LOWER_CAMEL.to(LOWER_UNDERSCORE, name0))) {
+                        && !sourceMap.containsKey(name = LOWER_CAMEL.to(LOWER_UNDERSCORE, name0))
+                    ) {
                         continue;
                     }
 
                     value = sourceMap.get(name);
-                    if ((type = prop.getPropertyType()).isPrimitive() && Strings.isEmpty(value)) {
+                    if ((type = prop.getPropertyType()).isPrimitive() && Strings.isBlank(value)) {
                         continue; // 原始类型时：value为null或为空字符串时跳过
                     }
 

@@ -19,6 +19,7 @@ import javax.security.auth.Destroyable;
 
 import com.google.common.base.Preconditions;
 
+import code.ponfee.commons.base.Releasable;
 import code.ponfee.commons.cache.RemovalNotification.RemovalReason;
 import code.ponfee.commons.io.Closeables;
 import code.ponfee.commons.jce.digest.DigestUtils;

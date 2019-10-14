@@ -1,4 +1,4 @@
-package code.ponfee.commons.cache;
+package code.ponfee.commons.base;
 
 import java.io.Closeable;
 
