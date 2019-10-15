@@ -58,6 +58,7 @@ public enum DataSourceType {
             ds.setTestOnReturn(getBoolean(props, "testOnReturn", DEFAULT_TEST_ON_RETURN));
             ds.setPoolPreparedStatements(getBoolean(props, "poolPreparedStatements", false));
             ds.setMaxOpenPreparedStatements(getInteger(props, "maxOpenPreparedStatements", 10));
+            ds.setBreakAfterAcquireFailure(getBoolean(props, "breakAfterAcquireFailure", false)); // 尝试连接失败后是否中断连接
 
             // filters and monitor
             try {
