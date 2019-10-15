@@ -1,18 +1,14 @@
 package code.ponfee.commons.data.lookup;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
-import code.ponfee.commons.collect.Collects;
 import code.ponfee.commons.data.NamedDataSource;
 
 /**
@@ -41,31 +37,17 @@ public class MultipleFixedDataSource extends AbstractRoutingDataSource {
 
     public MultipleFixedDataSource(String defaultName, DataSource defaultDataSource, 
                                    NamedDataSource... othersDataSource) {
-        if (othersDataSource == null) {
-            othersDataSource = new NamedDataSource[0];
-        }
-        List<String> names = Arrays.stream(othersDataSource)
-                                   .map(NamedDataSource::getName)
-                                   .collect(Collectors.toList());
-        names.add(0, defaultName); // default data source at the first
-
-        // checks whether duplicate datasource name
-        Set<String> duplicates = Collects.duplicate(names);
-        if (CollectionUtils.isNotEmpty(duplicates)) {
-            throw new IllegalArgumentException("Duplicated data source name: " + duplicates.toString());
-        }
+        List<NamedDataSource> dataSources = MultipleDataSourceContext.process(
+            defaultName, defaultDataSource, othersDataSource
+        );
 
         // if determineCurrentLookupKey not get, then use this default
         super.setDefaultTargetDataSource(defaultDataSource);
 
-        // set datasources
-        Map<Object, Object> dataSources = Arrays.stream(othersDataSource).collect(
+        // set all the data sources
+        super.setTargetDataSources(dataSources.stream().collect(
             Collectors.toMap(NamedDataSource::getName, NamedDataSource::getDataSource)
-        );
-        dataSources.put(defaultName, defaultDataSource);
-        super.setTargetDataSources(dataSources);
-
-        MultipleDataSourceContext.addAll(names);
+        ));
     }
 
     @Override

@@ -134,13 +134,13 @@ public class Cache<K, V> {
             expireTimeMillis = KEEPALIVE_FOREVER;
         }
 
-        this.set(key, value, expireTimeMillis);
+        set(key, value, expireTimeMillis);
     }
 
     public void setWithAliveInMillis(K key, V value, int aliveInMillis) {
         Preconditions.checkArgument(aliveInMillis > 0);
 
-        this.set(key, value, now() + aliveInMillis);
+        set(key, value, now() + aliveInMillis);
     }
 
     public void setWithNull(K key, long expireTimeMillis) {

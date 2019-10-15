@@ -2,24 +2,19 @@ package code.ponfee.commons.data.lookup;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.sql.DataSource;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.jdbc.datasource.AbstractDataSource;
 
-import code.ponfee.commons.collect.Collects;
 import code.ponfee.commons.data.NamedDataSource;
 
 /**
@@ -47,30 +42,17 @@ public class MultipletScalableDataSource extends AbstractDataSource {
 
     public MultipletScalableDataSource(String defaultName, DataSource defaultDataSource, 
                                        NamedDataSource... othersDataSource) {
-        if (othersDataSource == null) {
-            othersDataSource = new NamedDataSource[0];
-        }
-        List<String> names = Arrays.stream(othersDataSource)
-                                   .map(NamedDataSource::getName)
-                                   .collect(Collectors.toList());
-        names.add(0, defaultName); // default data source at the first
+        List<NamedDataSource> dataSources = MultipleDataSourceContext.process(
+            defaultName, defaultDataSource, othersDataSource
+        );
 
-        // checks whether duplicate datasource name
-        Set<String> duplicates = Collects.duplicate(names);
-        if (CollectionUtils.isNotEmpty(duplicates)) {
-            throw new IllegalArgumentException("Duplicated data source name: " + duplicates.toString());
-        }
-
-        // if determineCurrentLookupKey not get, then use this default
+        // set the default data source
         this.defaultDataSource = defaultDataSource;
 
-        // 设置数据源集
-        this.dataSources.put(defaultName, defaultDataSource);
-        for (NamedDataSource ds : othersDataSource) {
-            this.dataSources.put(ds.getName(), ds.getDataSource());
-        }
-
-        MultipleDataSourceContext.addAll(names);
+        // set all the data sources
+        dataSources.stream().forEach(
+            ds -> this.dataSources.put(ds.getName(), ds.getDataSource())
+        );
     }
 
     public synchronized void add(NamedDataSource ds) {

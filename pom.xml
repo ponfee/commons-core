@@ -78,7 +78,8 @@
       </activation>
       <distributionManagement>
         <repository>
-          <!-- <servers>
+          <!-- 添加到maven的安装目录的settings.xml中
+          <servers>
             <server>
               <id>repos-snapshots</id>
               <username>username</username>
@@ -99,7 +100,8 @@
       <id>prod</id>
       <distributionManagement>
         <repository>
-          <!-- <servers>
+          <!-- 添加到maven的安装目录的settings.xml中
+          <servers>
             <server>
               <id>repos-releases</id>
               <username>username</username>

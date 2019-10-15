@@ -5,7 +5,6 @@ package code.ponfee.commons.base;
  * 
  * @author Ponfee
  */
-@FunctionalInterface
 public interface Initializable {
     void init();
 }
