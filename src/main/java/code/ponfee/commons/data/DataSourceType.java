@@ -17,6 +17,7 @@ import static com.alibaba.druid.pool.DruidAbstractDataSource.DEFAULT_WHILE_IDLE;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import javax.annotation.Nonnull;
 import javax.sql.DataSource;
 
 import com.alibaba.druid.pool.DruidDataSource;
@@ -32,41 +33,41 @@ public enum DataSourceType {
 
     DruidDataSource("com.alibaba.druid.pool.DruidDataSource") {
         @Override
-        protected DataSource createDataSourceInternal(String dsName, Properties props) {
+        protected DataSource createDataSourceInternal(String dsName, Properties props, String prefix) {
             DruidDataSource ds = new DruidDataSource();
-            ds.setUrl(getString(props, dsName + ".url"));
-            ds.setUsername(getString(props, dsName + ".username"));
-            ds.setPassword(getString(props, dsName + ".password"));
+            ds.setDriverClassName(getString(props, prefix + dsName + ".driver-class-name"));
+            ds.setUrl(getString(props, prefix + dsName + ".url"));
+            ds.setUsername(getString(props, prefix + dsName + ".username"));
+            ds.setPassword(getString(props, prefix + dsName + ".password"));
             return ds;
         }
 
         @Override
-        protected void configDataSourceInternal(DataSource dataSource, Properties props) {
+        protected void configDataSourceInternal(DataSource dataSource, Properties props, String prefix) {
             DruidDataSource ds = (DruidDataSource) dataSource;
-            ds.setDriverClassName(getString(props, "driver-class-name"));
-            ds.setMaxActive(getInteger(props, "maxActive", DEFAULT_MAX_ACTIVE_SIZE));
-            ds.setInitialSize(getInteger(props, "initialSize", DEFAULT_INITIAL_SIZE));
-            ds.setMinIdle(getInteger(props, "minIdle", DEFAULT_MIN_IDLE));
-            ds.setMaxWait(getInteger(props, "maxWait", DEFAULT_MAX_WAIT));
-            ds.setTimeBetweenEvictionRunsMillis(getLong(props, "timeBetweenEvictionRunsMillis", DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS));
-            ds.setMinEvictableIdleTimeMillis(getLong(props, "minEvictableIdleTimeMillis", DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS));
-            ds.setRemoveAbandonedTimeoutMillis(getInteger(props, "removeAbandonedTimeoutMillis", 300000));
-            ds.setValidationQuery(getString(props, "validationQuery"));
+            ds.setMaxActive(getInteger(props, prefix + "maxActive", DEFAULT_MAX_ACTIVE_SIZE));
+            ds.setInitialSize(getInteger(props, prefix + "initialSize", DEFAULT_INITIAL_SIZE));
+            ds.setMinIdle(getInteger(props, prefix + "minIdle", DEFAULT_MIN_IDLE));
+            ds.setMaxWait(getInteger(props, prefix + "maxWait", DEFAULT_MAX_WAIT));
+            ds.setTimeBetweenEvictionRunsMillis(getLong(props, prefix + "timeBetweenEvictionRunsMillis", DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS));
+            ds.setMinEvictableIdleTimeMillis(getLong(props, prefix + "minEvictableIdleTimeMillis", DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS));
+            ds.setRemoveAbandonedTimeoutMillis(getInteger(props, prefix + "removeAbandonedTimeoutMillis", 300000));
+            ds.setValidationQuery(getString(props, prefix + "validationQuery"));
 
-            ds.setTestWhileIdle(getBoolean(props, "testWhileIdle", DEFAULT_WHILE_IDLE));
-            ds.setTestOnBorrow(getBoolean(props, "testOnBorrow", DEFAULT_TEST_ON_BORROW));
-            ds.setTestOnReturn(getBoolean(props, "testOnReturn", DEFAULT_TEST_ON_RETURN));
-            ds.setPoolPreparedStatements(getBoolean(props, "poolPreparedStatements", false));
-            ds.setMaxOpenPreparedStatements(getInteger(props, "maxOpenPreparedStatements", 10));
-            ds.setBreakAfterAcquireFailure(getBoolean(props, "breakAfterAcquireFailure", false)); // 尝试连接失败后是否中断连接
+            ds.setTestWhileIdle(getBoolean(props, prefix + "testWhileIdle", DEFAULT_WHILE_IDLE));
+            ds.setTestOnBorrow(getBoolean(props, prefix + "testOnBorrow", DEFAULT_TEST_ON_BORROW));
+            ds.setTestOnReturn(getBoolean(props, prefix + "testOnReturn", DEFAULT_TEST_ON_RETURN));
+            ds.setPoolPreparedStatements(getBoolean(props, prefix + "poolPreparedStatements", false));
+            ds.setMaxOpenPreparedStatements(getInteger(props, prefix + "maxOpenPreparedStatements", 10));
+            ds.setBreakAfterAcquireFailure(getBoolean(props, prefix + "breakAfterAcquireFailure", false)); // 尝试连接失败后是否中断连接
 
             // filters and monitor
             try {
-                ds.setFilters(getString(props, "filters"));
+                ds.setFilters(getString(props, prefix + "filters"));
             } catch (SQLException e) {
                 throw new IllegalArgumentException(e);
             }
-            ds.setConnectionProperties(getString(props, "connectionProperties"));
+            ds.setConnectionProperties(getString(props, prefix + "connectionProperties"));
         }
     };
 
@@ -74,20 +75,24 @@ public enum DataSourceType {
         this.type = type;
     }
 
-    public final DataSource createDataSource(String dsName, Properties props) {
-        DataSource ds = createDataSourceInternal(dsName, props);
-        configDataSourceInternal(ds, props);
+    public final DataSource createDataSource(String dsName, Properties props, @Nonnull String prefix) {
+        DataSource ds = createDataSourceInternal(dsName, props, prefix);
+        configDataSourceInternal(ds, props, prefix);
         return ds;
     }
 
-    protected abstract DataSource createDataSourceInternal(String dsName, Properties props);
+    protected abstract DataSource createDataSourceInternal(String dsName, Properties props, String prefix);
 
-    protected abstract void configDataSourceInternal(DataSource ds, Properties props);
+    protected abstract void configDataSourceInternal(DataSource ds, Properties props, String prefix);
 
     private final String type;
 
     public String type() {
         return this.type;
+    }
+
+    public static DataSourceType ofType(Class<?> type) {
+        return ofName(type.getName());
     }
 
     public static DataSourceType ofType(String type) {
