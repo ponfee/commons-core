@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.CaseFormat;
@@ -27,6 +28,7 @@ public class Strings {
     public static final String WINDOWS_FOLDER_SEPARATOR = "\\";
     public static final String TOP_PATH = "..";
     public static final String CURRENT_PATH = ".";
+    public static final char[] REGEX_SPECIALS = { '\\', '$', '(', ')', '*', '+', '.', '[', ']', '?', '^', '{', '}', '|' };
 
     /**
      * 解析参数
@@ -498,6 +500,29 @@ public class Strings {
             return null;
         }
         return StringUtils.replace(str, "'", "''");
+    }
+
+    /** 
+     * Escape the regex characters: $()*+.[]?\^{},|
+     *  
+     * @param text the text string
+     * @return a new String, escaped for regex
+     */
+    public static String escapeRegex(String text) {
+        if (StringUtils.isBlank(text)) {
+            return text;
+        }
+
+        StringBuilder escaped = new StringBuilder(text.length() + 8);
+        char c;
+        for (int i = 0, n = text.length(); i < n; i++) {
+            c = text.charAt(i);
+            if (ArrayUtils.contains(REGEX_SPECIALS, c)) {
+                escaped.append('\\');
+            }
+            escaped.append(c);
+        }
+        return escaped.toString();
     }
 
     /**

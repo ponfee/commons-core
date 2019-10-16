@@ -13,38 +13,50 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.alibaba.druid.pool.DruidDataSource;
 
 import code.ponfee.commons.base.Initializable;
 import code.ponfee.commons.data.DataSourceType;
 import code.ponfee.commons.data.NamedDataSource;
 import code.ponfee.commons.io.Closeables;
+import code.ponfee.commons.util.Strings;
 
 /**
- * NamedDataSource array by properties configuration
+ * NamedDataSource array from properties configuration
  * 
  * @author Ponfee
  */
 public class PropertiedNamedDataSourceArray implements Initializable, Closeable {
 
-    private static final Pattern PATTERN = Pattern.compile("^(\\w+)\\.url$");
     private final NamedDataSource[] array;
 
     public PropertiedNamedDataSourceArray(Properties props) {
+        this(null, props);
+    }
+
+    public PropertiedNamedDataSourceArray(String prefix, Properties props) {
+        prefix = StringUtils.isBlank(prefix) ? "" : prefix.trim() + ".";
+        Pattern pattern = Pattern.compile("^" + Strings.escapeRegex(prefix) + "(\\w+)\\.url$");
+
         List<String> names = props.keySet().stream().map(key -> {
-            Matcher matcher = PATTERN.matcher(key.toString());
+            Matcher matcher = pattern.matcher(key.toString());
             return matcher.find() ? matcher.group(1) : null;
         }).filter(Objects::nonNull).collect(Collectors.toList());
 
-        String defaultDsName = getString(props, "default", names.get(0));
-        DataSourceType dst = DataSourceType.ofType(getString(props, "type"));
+        String defaultDsName = getString(props, prefix + "default", names.get(0));
+        String type = getString(props, prefix + "type");
+        DataSourceType dst = DataSourceType.ofType(type);
         if (dst == null) {
-            throw new UnsupportedOperationException("Unknown dataSource type: " + getString(props, "type"));
+            throw new UnsupportedOperationException("Unknown dataSource type: " + type);
         }
 
         List<NamedDataSource> dataSources = new ArrayList<>();
         for (String name : names) {
-            NamedDataSource namedDs = NamedDataSource.of(name, dst.createDataSource(name, props));
+            NamedDataSource namedDs = NamedDataSource.of(
+                name, dst.createDataSource(name, props, prefix)
+            );
             if (defaultDsName.equals(name)) {
                 dataSources.add(0, namedDs); // default ds at index 0
             } else {

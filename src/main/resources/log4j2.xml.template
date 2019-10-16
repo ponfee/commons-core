@@ -4,7 +4,7 @@
 <Configuration status="WARN" monitorInterval="30" strict="true" name="commons-core-log">
 
   <properties>
-    <!-- 系统配置变量 -->
+    <!-- 系统属性变量：System.getProperty("log.home")，${variable_name:-default_value} -->
     <property name="LOG_HOME">${log.home:-../logs}</property>
     <!-- <property name="LOG_HOME">${log.home}</property> 可由maven配置变量 -->
     <property name="LOG_FILE_NAME">commons-core</property>

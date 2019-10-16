@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import org.springframework.util.CollectionUtils;
@@ -31,7 +31,7 @@ public class Table<E> implements Serializable {
     private String comment; // 注释说明
     private Map<CellStyleOptions, Object> options; // 其它特殊配置项，如：{HIGHLIGHT:{\"cells\":[[2,15],[2,16]],\"color\":\"#f00\"}}
 
-    private final Queue<E> tbody = new LinkedBlockingQueue<>(); // 表体
+    private final LinkedBlockingQueue<E> tbody = new LinkedBlockingQueue<>(); // 表体：不指定容量，默认为Integer.MAX_VALUE，也就是无界队列
     private volatile boolean empty = true;
     private volatile boolean end = false;
 
@@ -53,7 +53,7 @@ public class Table<E> implements Serializable {
 
     public Table(List<BaseNode<Integer, Thead>> list, 
                  Function<E, Object[]> converter) {
-        this.thead = TreeNode.<Integer, Thead>createRoot(ROOT_PID, null, 0)
+        this.thead = TreeNode.<Integer, Thead>of(ROOT_PID)
                              .mount(list).bfsFlat();
         this.converter = converter;
     }
@@ -65,9 +65,9 @@ public class Table<E> implements Serializable {
     public Table(String[] names, Function<E, Object[]> converter) {
         List<BaseNode<Integer, Thead>> list = new ArrayList<>(names.length);
         for (int i = 1; i <= names.length; i++) {
-            list.add(new BaseNode<>(i, ROOT_PID, i, true, new Thead(names[i - 1])));
+            list.add(new BaseNode<>(i, ROOT_PID, true, new Thead(names[i - 1])));
         }
-        this.thead = TreeNode.<Integer, Thead>createRoot(ROOT_PID, null, 0)
+        this.thead = TreeNode.<Integer, Thead>of(ROOT_PID)
                              .mount(list).bfsFlat();
         this.converter = converter;
     }
@@ -131,7 +131,9 @@ public class Table<E> implements Serializable {
             return;
         }
         for (E row : rows) {
-            tbody.offer(row);
+            if (!tbody.offer(row)) {
+                throw new RuntimeException("Offer a element to queue failed.");
+            }
         }
         empty = false;
     }
@@ -145,7 +147,9 @@ public class Table<E> implements Serializable {
         if (row == null) {
             return;
         }
-        tbody.offer(row);
+        if (!tbody.offer(row)) {
+            throw new RuntimeException("Offer a element to queue failed.");
+        }
         empty = false;
     }
 
@@ -168,8 +172,8 @@ public class Table<E> implements Serializable {
         return empty && isEnd();
     }
 
-    E poll() {
-        return tbody.poll();
+    E getRow(long timeoutMillis) throws InterruptedException {
+        return tbody.poll(timeoutMillis, TimeUnit.MILLISECONDS);
     }
 
 }

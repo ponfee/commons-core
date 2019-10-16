@@ -18,7 +18,7 @@ import org.apache.commons.collections4.CollectionUtils;
  * 
  * @author Ponfee
  */
-public final class FlatNode<T extends java.io.Serializable & Comparable<T>, A extends Serializable>
+public final class FlatNode<T extends Serializable & Comparable<T>, A extends Serializable>
     extends BaseNode<T, A> {
 
     private static final long serialVersionUID = 5191371614061952661L;
@@ -26,17 +26,16 @@ public final class FlatNode<T extends java.io.Serializable & Comparable<T>, A ex
     private final boolean leaf; // 是否叶子节点
 
     public FlatNode(TreeNode<T, A> nt) {
-        super(nt.getNid(), nt.getPid(), nt.getOrders(), 
-              nt.isEnabled(), nt.getAttach());
+        super(nt.getNid(), nt.getPid(), nt.isEnabled(), nt.getAttach());
 
         super.available = nt.isAvailable();
-        super.level = nt.getLevel();
-        super.path = nt.getPath();
+        super.level     = nt.getLevel();
+        super.path      = nt.getPath();
 
-        super.treeNodeCount = nt.treeNodeCount;
+        super.treeNodeCount  = nt.treeNodeCount;
         super.childLeafCount = nt.childLeafCount;
-        super.leftLeafCount = nt.leftLeafCount;
-        super.treeMaxDepth = nt.treeMaxDepth;
+        super.leftLeafCount  = nt.leftLeafCount;
+        super.treeMaxDepth   = nt.treeMaxDepth;
 
         this.leaf = CollectionUtils.isEmpty(nt.getChildren());
     }

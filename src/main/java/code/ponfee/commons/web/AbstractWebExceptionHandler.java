@@ -10,9 +10,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
+import org.apache.commons.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
@@ -173,6 +175,13 @@ public abstract class AbstractWebExceptionHandler {
                        HttpMediaTypeNotSupportedException e) {
         LOGGER.debug("Media type not supported", e);
         handle(req, resp, UNSUPPORT_MEDIA, e.getMessage());
+    }
+
+    @ExceptionHandler(FileUploadException.class)
+    //@ResponseBody @ResponseStatus(HttpStatus.PAYLOAD_TOO_LARGE)
+    public void handle(HttpServletRequest req, HttpServletResponse resp, FileUploadException e) {
+        LOGGER.debug("File upload fail.", e);
+        handle(req, resp, HttpStatus.PAYLOAD_TOO_LARGE.value(), e.getMessage());
     }
 
     /**

@@ -1,7 +1,6 @@
 package code.ponfee.commons.io;
 
 import code.ponfee.commons.math.Maths;
-import code.ponfee.commons.math.Numbers;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
@@ -296,12 +295,20 @@ public final class Files {
      * @return
      */
     public static String human(long size) {
-        if (size <= 0) {
-            return "0";
+        if (size == 0) {
+            return "0B";
+        }
+        String signed = "";
+        if (size < 0) {
+            signed = "-";
+            size = -size;
         }
 
         int digit = (int) Maths.log(size, 1024); // log1024(size)
-        return new DecimalFormat("#,##0.##").format(size / Math.pow(1024, digit)) + FILE_UNITS[digit];
+
+        return signed 
+             + new DecimalFormat("#,##0.##").format(size / Math.pow(1024, digit)) 
+             + FILE_UNITS[digit];
     }
 
     private static final long UNIT = 1024, KB = UNIT;
@@ -315,57 +322,36 @@ public final class Files {
     public static long parseHuman(String humanSize) {
         long factor = 1L;
         switch (humanSize.charAt(0)) {
-            case '+':
-                humanSize = humanSize.substring(1);
-                break;
-            case '-':
-                factor = -1L;
-                humanSize = humanSize.substring(1);
-                break;
-            default:
-                break;
+            case '+': humanSize = humanSize.substring(1);               break;
+            case '-': humanSize = humanSize.substring(1); factor = -1L; break;
         }
 
-        int trim = 1;
+        int trim = 0;
         // last character isn't a digit
         char c = humanSize.charAt(humanSize.length() - 1);
         if (c == 'B') {
+            trim++;
             c = humanSize.charAt(humanSize.length() - 2);
         }
         if (!Character.isDigit(c)) {
             trim++;
             switch (c) {
-                case 'K':
-                    factor *= KB;
-                    break;
-                case 'M':
-                    factor *= MB;
-                    break;
-                case 'G':
-                    factor *= GB;
-                    break;
-                case 'T':
-                    factor *= TB;
-                    break;
-                case 'P':
-                    factor *= PB;
-                    break;
-                case 'E':
-                    factor *= EB;
-                    break;
-                //case 'Z':
-                //    factor *= ZB;
-                //    break;
-                //case 'Y':
-                //    factor *= YB;
-                //    break;
-                default:
-                    throw new RuntimeException("Invalid unit " + c); // cannot happened
+                case 'K': factor *= KB; break;
+                case 'M': factor *= MB; break;
+                case 'G': factor *= GB; break;
+                case 'T': factor *= TB; break;
+                case 'P': factor *= PB; break;
+                case 'E': factor *= EB; break;
+                //case 'Z': factor *= ZB; break;
+                //case 'Y': factor *= YB; break;
+                default: throw new RuntimeException("Invalid unit " + c); // cannot happened
             }
         }
-        humanSize = humanSize.substring(0, humanSize.length() - trim);
+        if (trim > 0) {
+            humanSize = humanSize.substring(0, humanSize.length() - trim);
+        }
         try {
-            return factor * Numbers.toLong(humanSize);
+            return (long) (factor * Double.parseDouble(humanSize));
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Failed to parse \"" + humanSize + "\"", e);
         }

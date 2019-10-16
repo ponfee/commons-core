@@ -1,5 +1,7 @@
 package code.ponfee.commons.extract.streaming.xls;
 
+import static code.ponfee.commons.extract.streaming.xls.HSSFStreamingWorkbook.AWAIT_MILLIS;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -7,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.poi.ss.usermodel.AutoFilter;
 import org.apache.poi.ss.usermodel.Cell;
@@ -27,7 +30,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.PaneInformation;
-
 /**
  * The version for 2003 or early XSL excel file 
  * streaming reader
@@ -111,21 +113,18 @@ public class HSSFStreamingSheet implements Sheet {
 
         @Override
         public boolean hasNext() {
-            while (!sheet.isEnd()) {
-                if (   (currentRow == null)
-                    && ((currentRow = sheet.rows.poll()) != null)
-                ) {
-                    return true;
+            try {
+                while (!sheet.isEnd()) {
+                    if (   currentRow == null
+                        && (currentRow = sheet.rows.poll(AWAIT_MILLIS, TimeUnit.MILLISECONDS)) != null
+                    ) {
+                        return true;
+                    }
                 }
-
-                try {
-                    // to sleep for prevent endless loop
-                    Thread.sleep(HSSFStreamingWorkbook.AWAIT_MILLIS);
-                } catch (InterruptedException ignored) {
-                    ignored.printStackTrace();
-                }
+                return false;
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
-            return false;
         }
 
         @Override

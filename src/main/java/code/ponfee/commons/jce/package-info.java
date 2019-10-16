@@ -3,6 +3,7 @@
  * 以及 Message Authentication Code（MAC）算法的实现<p>
  * 
  * http://www.freebuf.com/articles/others-articles/136742.html
+ * https://www.jianshu.com/p/b10a892879a0
  * 
  * 1、密码：
  *   你知道什么：口令（密码）、口令摘要、质询/响应
@@ -115,6 +116,10 @@
  * 
  * 12、Windows证书管理：
  *    当前用户的证书管理：certmgr.msc
+ * 
+ * 13、TOP：基于时间的一次性密码（Time-based One-time Password），如动态口令
+ *    TC = floor((unixtime(now) − unixtime(T0)) / TS) // unixtime(now)：当前unix时间戳，unixtime(T0)：约定的起始时间点的时间戳，TS：哈希有效期的时间长度
+ *    TOTP = HASH(SecretKey, TC)
  * 
  * @author Ponfee
  */

@@ -347,13 +347,13 @@ public final class ClassUtils {
                                     : type.getConstructor(parameterTypes);
                     } catch (NoSuchMethodException | SecurityException ignored) {
                         // Not such constructor
-                        constructor = (Constructor<T>) Null.NONE_CONSTRUCTOR;
+                        constructor = (Constructor<T>) Null.UNCONSTRUCTOR;
                     }
                     CONSTRUCTOR_CACHE.put(key, constructor);
                 }
             }
         }
-        return constructor == Null.NONE_CONSTRUCTOR ? null : constructor;
+        return constructor == Null.UNCONSTRUCTOR ? null : constructor;
     }
 
 }

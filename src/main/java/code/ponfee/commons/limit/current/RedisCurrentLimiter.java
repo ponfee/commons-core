@@ -127,8 +127,11 @@ public class RedisCurrentLimiter implements CurrentLimiter {
         }
 
         // 超过频率
-        return requestThreshold >= countByLastTime(key, 1, TimeUnit.MINUTES)
-            && transmitter.put(new Trace(key, System.currentTimeMillis()));
+        boolean flag = requestThreshold >= countByLastTime(key, 1, TimeUnit.MINUTES);
+        if (flag) {
+            transmitter.put(new Trace(key, System.currentTimeMillis()));
+        }
+        return flag;
     }
 
     public long countByLastTime(String key, int time, TimeUnit unit) {

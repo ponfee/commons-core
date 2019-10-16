@@ -177,54 +177,101 @@ public final class Bytes {
         return out;
     }
 
-    // -----------------------------------------------------------------toCharArray/fromCharArray
+    // -----------------------------------------------------------------String
     /**
-     * convert byte array to char array
+     * Converts byte array to String
+     * 
      * @param bytes the byte array
-     * @return char array
+     * @return a string
      */
-    public static char[] toCharArray(byte[] bytes) {
-        return toCharArray(bytes, StandardCharsets.US_ASCII.name());
+    public static String toString(byte[] bytes) {
+        return new String(bytes);
     }
 
     /**
-     * convert byte array to char array
+     * Converts byte array to String
+     * 
      * @param bytes the byte array
-     * @param charset the encoding of char array
-     * @return char array
+     * @param charset the Charset
+     * @return a string
      */
-    public static char[] toCharArray(byte[] bytes, String charset) {
-        //return new String(bytes, Charset.forName(charset)).toCharArray();
+    public static String toString(byte[] bytes, Charset charset) {
+        return new String(bytes, charset);
+    }
+
+    /**
+     * Converts String to byte array
+     * 
+     * @param value the string value
+     * @return a byte array
+     */
+    public static byte[] toBytes(String value) {
+        return value.getBytes();
+    }
+
+    /**
+     * Converts string to byte array
+     * 
+     * @param value the string value
+     * @param charset the charset
+     * @return a byte array
+     */
+    public static byte[] toBytes(String value, Charset charset) {
+        return value.getBytes(charset);
+    }
+
+    // -----------------------------------------------------------------char array
+    /**
+     * Converts byte array to char array
+     * 
+     * @param bytes the byte array
+     * @return a char array
+     */
+    public static char[] toCharArray(byte[] bytes) {
+        return toCharArray(bytes, StandardCharsets.US_ASCII);
+    }
+
+    /**
+     * Converts byte array to char array
+     * 
+     * @param bytes the byte array
+     * @param charset the charset
+     * @return a char array
+     */
+    public static char[] toCharArray(byte[] bytes, Charset charset) {
+        //return new String(bytes, charset).toCharArray();
         ByteBuffer buffer = ByteBuffer.allocate(bytes.length);
         buffer.put(bytes);
         buffer.flip();
-        return Charset.forName(charset).decode(buffer).array();
+        return charset.decode(buffer).array();
     }
 
     /**
-     * convert char array to byte array
+     * Converts char array to byte array
+     * 
      * @param chars the char array
-     * @return byte array
+     * @return a byte array
      */
     public static byte[] toBytes(char[] chars) {
         return toBytes(chars, StandardCharsets.US_ASCII);
     }
 
     /**
-     * convert char array to byte array
+     * Converts char array to byte array
+     * 
      * @param chars the char array
      * @param charset the charset
-     * @return byte array
+     * @return a byte array
      */
     public static byte[] toBytes(char[] chars, Charset charset) {
-        //return new String(chars).getBytes(Charset.forName(charset));
+        //return new String(chars).getBytes(charset);
         CharBuffer buffer = CharBuffer.allocate(chars.length);
         buffer.put(chars);
         buffer.flip();
         return charset.encode(buffer).array();
     }
 
-    // -----------------------------------------number convert to byte array
+    // -----------------------------------------------------------------short
     public static byte[] toBytes(short value) {
         return new byte[] {
             (byte) (value >>> 8), (byte) value
@@ -247,6 +294,25 @@ public final class Bytes {
         //return buffer.getShort();
     }
 
+    // -----------------------------------------------------------------char
+    public static byte[] toBytes(char value) {
+        return new byte[] {
+            (byte) (value >>> 8), (byte) value
+        };
+    }
+
+    public static char toChar(byte[] bytes) {
+        return toChar(bytes, 0);
+    }
+
+    public static char toChar(byte[] bytes, int fromIdx) {
+        return (char) (
+            (bytes[  fromIdx]       ) << 8
+          | (bytes[++fromIdx] & 0xFF)
+      );
+    }
+
+    // -----------------------------------------------------------------int
     public static byte[] toBytes(int value) {
         return new byte[] {
             (byte) (value >>> 24), (byte) (value >>> 16),
@@ -265,6 +331,7 @@ public final class Bytes {
              | (bytes[++fromIdx] & 0xFF);
     }
 
+    // -----------------------------------------------------------------long
     /**
      * convert long value to byte array
      * @param value the long number
@@ -305,7 +372,7 @@ public final class Bytes {
         return toLong(bytes, 0);
     }
 
-    // ----------------------------------------float/double convert to byte array
+    // -----------------------------------------------------------------float
     public static byte[] toBytes(float value) {
         return toBytes(Float.floatToIntBits(value));
     }
@@ -318,6 +385,7 @@ public final class Bytes {
         return Float.intBitsToFloat(toInt(bytes, fromIdx));
     }
 
+    // -----------------------------------------------------------------double
     public static byte[] toBytes(double value) {
         return toBytes(Double.doubleToLongBits(value));
     }
@@ -328,24 +396,6 @@ public final class Bytes {
 
     public static double toDouble(byte[] bytes, int fromIdx) {
         return Double.longBitsToDouble(toLong(bytes, fromIdx));
-    }
-
-    // ----------------------------------------char convert to byte array
-    public static byte[] toBytes(char value) {
-        return new byte[] {
-            (byte) (value >>> 8), (byte) value
-        };
-    }
-
-    public static char toChar(byte[] bytes) {
-        return toChar(bytes, 0);
-    }
-
-    public static char toChar(byte[] bytes, int fromIdx) {
-        return (char) (
-            (bytes[  fromIdx]       ) << 8
-          | (bytes[++fromIdx] & 0xFF)
-      );
     }
 
     // ---------------------------------------------------------BigDecimal

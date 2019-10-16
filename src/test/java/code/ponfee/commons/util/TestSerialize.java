@@ -13,7 +13,7 @@ import java.util.Date;
 
 import code.ponfee.commons.reflect.ClassUtils;
 import code.ponfee.commons.reflect.Fields;
-import code.ponfee.commons.serial.Serializations;
+import code.ponfee.commons.serial.WrappedSerializer;
 
 /**
  * 
@@ -116,8 +116,9 @@ public class TestSerialize {
     }
 
     public static void main(String[] args) {
-        byte[] data = Serializations.serialize(1);
-        System.out.println(Serializations.deserialize(data, int.class));
+        WrappedSerializer serializer = WrappedSerializer.WRAPPED_KRYO_SERIALIZER;
+        byte[] data = serializer.serialize(1);
+        System.out.println(serializer.deserialize(data, int.class));
         
         
         
@@ -127,13 +128,13 @@ public class TestSerialize {
         System.out.println(target);
 
         for (Field field : ClassUtils.listFields(TestSerialize.class)) {
-            byte[] value = Serializations.serialize(Fields.get(source, field));
-            Fields.put(target, field, Serializations.deserialize(value, field.getType()));
+            byte[] value = serializer.serialize(Fields.get(source, field));
+            Fields.put(target, field, serializer.deserialize(value, field.getType()));
         }
         System.out.println(target);
 
         for (Field field : ClassUtils.listFields(TestSerialize.class)) {
-            Fields.put(target, field, Serializations.deserialize(null, field.getType()));
+            Fields.put(target, field, serializer.deserialize(null, field.getType()));
         }
         System.out.println(target);
     }

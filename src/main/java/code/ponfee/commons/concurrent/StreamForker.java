@@ -73,7 +73,7 @@ public class StreamForker<T> {
     }
 
     private Future<?> getOperationResult(List<BlockingQueue<T>> queues, Function<Stream<T>, ?> f) {
-        BlockingQueue<T> queue = new LinkedBlockingQueue<>();
+        LinkedBlockingQueue<T> queue = new LinkedBlockingQueue<>();
         queues.add(queue);
         Stream<T> source = StreamSupport.stream(new BlockingQueueSpliterator<>(queue), false);
         return CompletableFuture.supplyAsync(() -> f.apply(source));

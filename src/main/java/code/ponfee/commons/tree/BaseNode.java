@@ -32,7 +32,6 @@ public class BaseNode<T extends Serializable & Comparable<T>, A extends Serializ
 
     protected final T nid; // node id
     protected final T pid; // parent node id
-    protected final int orders; // 节点次序（在兄弟节点间的排序中使用到）
     protected final boolean enabled; // 状态（业务相关）：false无效；true有效；
     protected final A attach; // 附加信息（与业务相关）
 
@@ -45,16 +44,14 @@ public class BaseNode<T extends Serializable & Comparable<T>, A extends Serializ
     protected int treeNodeCount;  // 整棵树的节点数量（包括根节点）
     protected int treeMaxDepth;   // 节点树的最大深度（包括自身层级）
 
-    public BaseNode(T nid, T pid, int orders, A attach) {
-        this(nid, pid, orders, true, attach);
+    public BaseNode(T nid, T pid, A attach) {
+        this(nid, pid, true, attach);
     }
 
-    public BaseNode(T nid, T pid, int orders, 
-                    boolean enabled, A attach) {
+    public BaseNode(T nid, T pid, boolean enabled, A attach) {
         Preconditions.checkArgument(!Strings.isBlank(nid), "节点编号不能为空");
         this.nid = nid;
         this.pid = pid;
-        this.orders = orders;
         this.enabled = enabled;
         this.available = enabled;
         this.attach = attach;
@@ -72,10 +69,6 @@ public class BaseNode<T extends Serializable & Comparable<T>, A extends Serializ
 
     public T getNid() {
         return nid;
-    }
-
-    public int getOrders() {
-        return orders;
     }
 
     public boolean isEnabled() {

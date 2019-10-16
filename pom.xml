@@ -62,11 +62,10 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <spring.version>4.3.25.RELEASE</spring.version>
-    <!-- 2.12.1[2.8.2] -> Error scanning entry META-INF/versions/9/org/apache/logging/log4j/util/ProcessIdUtil.class from jar -->
     <slf4j.version>1.7.28</slf4j.version>
-    <log4j2.version>2.12.1</log4j2.version>
-    <!-- Java 9 Modular: 1.63[1.60] -->
-    <bouncycastle.version>1.63</bouncycastle.version>
+    <log4j2.version>2.12.1</log4j2.version><!-- Java 9 Modular: 2.12.1[2.8.2] -->
+    <bouncycastle.version>1.63</bouncycastle.version><!-- Java 9 Modular: 1.63[1.60] -->
+    <jackson.version>2.10.0</jackson.version><!-- Java 9 Modular: 2.10.0[2.9.10.1] -->
   </properties>
 
   <profiles>
@@ -91,7 +90,7 @@
         </repository>
       </distributionManagement>
       <properties>
-        <publish.version>1.16-SNAPSHOT</publish.version>
+        <publish.version>2.0-SNAPSHOT</publish.version>
         <separator>;</separator>
       </properties>
     </profile>
@@ -113,7 +112,7 @@
         </repository>
       </distributionManagement>
       <properties>
-        <publish.version>1.16</publish.version>
+        <publish.version>2.0</publish.version>
         <separator>;</separator>
         <!-- <separator>:</separator> -->
       </properties>
@@ -141,7 +140,7 @@
     </dependency> -->
 
 
-    <!-- =================================================logger================================================= -->
+    <!-- ====================logger==================== -->
     <!-- slf4j api -->
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -214,7 +213,49 @@
       <version>${log4j2.version}</version>
       <scope>runtime</scope>
     </dependency> -->
-    <!-- =================================================logger================================================= -->
+    <!-- ====================logger==================== -->
+
+
+    <!-- ====================本地jar依赖==================== -->
+    <!-- world to pdf -->
+    <dependency>
+      <groupId>aspose</groupId>
+      <artifactId>words-jdk16</artifactId>
+      <version>1.0</version>
+      <!-- <scope>system</scope>
+      <systemPath>${pom.basedir}/lib/aspose-words-jdk16-1.0.jar</systemPath> -->
+    </dependency>
+
+    <!-- 文件编码探测 -->
+    <dependency>
+      <groupId>antlr</groupId>
+      <artifactId>antlr</artifactId>
+      <version>2.7.7</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mozilla.intl</groupId>
+      <artifactId>chardet</artifactId>
+      <version>1.0</version>
+      <!-- <scope>system</scope>
+      <systemPath>${pom.basedir}/lib/chardet-1.0.jar</systemPath> -->
+    </dependency>
+    <dependency>
+      <groupId>cpdetector</groupId>
+      <artifactId>cpdetector</artifactId>
+      <version>1.0.10</version>
+      <!-- <scope>system</scope>
+      <systemPath>${pom.basedir}/lib/cpdetector-1.0.10.jar</systemPath> -->
+    </dependency>
+
+    <!-- 数字信封 -->
+    <dependency>
+      <groupId>third-jce</groupId>
+      <artifactId>third-jce</artifactId>
+      <version>1.0</version>
+      <!-- <scope>system</scope>
+      <systemPath>${pom.basedir}/lib/third-jce-1.0.jar</systemPath> -->
+    </dependency>
+    <!-- ====================本地jar依赖==================== -->
 
 
     <!-- commons -->
@@ -426,8 +467,14 @@
     <dependency><!-- jackson -->
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.10.0</version>
+      <version>${jackson.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+
     <dependency><!-- hessian -->
       <groupId>com.caucho</groupId>
       <artifactId>hessian</artifactId>
@@ -461,7 +508,7 @@
     <dependency>
       <groupId>com.alibaba</groupId>
       <artifactId>fastjson</artifactId>
-      <version>1.2.61</version>
+      <version>1.2.62</version>
     </dependency>
     <!-- ====================序列化==================== -->
 
@@ -524,39 +571,7 @@
       <artifactId>itext-asian</artifactId>
       <version>5.2.0</version>
     </dependency> -->
-
-    <!-- world to pdf -->
-    <dependency>
-      <groupId>aspose</groupId>
-      <artifactId>words-jdk16</artifactId>
-      <version>1.0</version>
-      <!-- <scope>system</scope>
-      <systemPath>${pom.basedir}/lib/aspose.words.jdk16.jar</systemPath> -->
-    </dependency>
     <!-- ====================pdf相关==================== -->
-
-
-    <!-- ====================文件编码探测==================== -->
-    <dependency>
-      <groupId>antlr</groupId>
-      <artifactId>antlr</artifactId>
-      <version>2.7.7</version>
-    </dependency>
-    <dependency>
-      <groupId>org.mozilla.intl</groupId>
-      <artifactId>chardet</artifactId>
-      <version>1.0</version>
-      <!-- <scope>system</scope>
-      <systemPath>${pom.basedir}/lib/chardet-1.0.jar</systemPath> -->
-    </dependency>
-    <dependency>
-      <groupId>cpdetector</groupId>
-      <artifactId>cpdetector</artifactId>
-      <version>1.0.10</version>
-      <!-- <scope>system</scope>
-      <systemPath>${pom.basedir}/lib/cpdetector-1.0.10.jar</systemPath> -->
-    </dependency>
-    <!-- ====================文件编码探测==================== -->
 
 
     <!-- ====================文件类型处理==================== -->
@@ -603,21 +618,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!-- <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <version>2.11.0</version>
-    </dependency>
-    <dependency>
-      <groupId>xml-apis</groupId>
-      <artifactId>xml-apis</artifactId>
-      <version>2.0.2</version>
-    </dependency>
-    <dependency>
-      <groupId>xml-apis</groupId>
-      <artifactId>xmlParserAPIs</artifactId>
-      <version>2.0.2</version>
-    </dependency> -->
     <!-- ====================文件类型处理==================== -->
 
 
@@ -647,18 +647,10 @@
       <artifactId>commons-codec</artifactId>
       <version>1.13</version>
     </dependency>
-
-    <!-- 数字信封 -->
-    <dependency>
-      <groupId>third-jce</groupId>
-      <artifactId>third-jce</artifactId>
-      <version>1.0</version>
-      <!-- <scope>system</scope>
-      <systemPath>${pom.basedir}/lib/third-jce-1.0.0.jar</systemPath> -->
-    </dependency>
     <!-- ====================加解密==================== -->
 
-    <!-- =============================only use in testing============================= -->
+
+    <!-- ====================only use in testing==================== -->
     <dependency>
       <groupId>org.redisson</groupId>
       <artifactId>redisson</artifactId>
@@ -855,7 +847,7 @@
       <!-- <plugin>
         <groupId>com.github.wvengen</groupId>
         <artifactId>proguard-maven-plugin</artifactId>
-        <version>2.0.14</version>
+        <version>2.2.0</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -868,6 +860,7 @@
           <obfuscate>true</obfuscate>
           <addMavenDescriptor>false</addMavenDescriptor>
           <inFilter>!application.properties</inFilter>
+          <injarNotExistsSkip>true</injarNotExistsSkip>
 
           <injar>classes</injar>
           <attach>false</attach>
@@ -899,7 +892,7 @@
           <dependency>
             <groupId>net.sf.proguard</groupId>
             <artifactId>proguard-base</artifactId>
-            <version>6.1.0</version>
+            <version>6.2.0</version>
           </dependency>
         </dependencies>
       </plugin> -->

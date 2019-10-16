@@ -26,6 +26,8 @@ nbdist/
 /**/.gradle/
 gradle/
 
+# SBT
+
 # STS
 /**/.apt_generated
 /**/.factorypath
@@ -49,4 +51,5 @@ dist/
 # rebel.xml
 /**/rebel.xml
 /**/.cache-main
+/**/.cache-tests
 /**/dependency-reduced-pom.xml

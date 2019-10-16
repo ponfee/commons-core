@@ -50,6 +50,8 @@ public final class WebUtils {
     public static final String AUTH_COOKIE = "auth_token";
     public static final String AUTH_PARAME = "authToken";
 
+    public static final String COOKIE_ROOT_PATH = "/";
+
     /**
      * Gets the http servlet request parameters
      * the parameter value is {@link java.lang.String} type
@@ -90,9 +92,9 @@ public final class WebUtils {
      * @return
      */
     public static String getClientIp(HttpServletRequest req) {
-        boolean invalid = true;
+        boolean invalid;
         String ip = req.getHeader("x-forwarded-for");
-        if (invalid && (invalid = isInvalidIp(ip))) {
+        if (invalid = isInvalidIp(ip)) {
             ip = req.getHeader("Proxy-Client-IP");
         }
         if (invalid && (invalid = isInvalidIp(ip))) {
@@ -385,14 +387,21 @@ public final class WebUtils {
         return null;
     }
 
+    public static void delCookie(HttpServletRequest req, HttpServletResponse resp, String name) {
+        delCookie(req, resp, COOKIE_ROOT_PATH, name);
+    }
+
     /**
      * Delete the cookie by spec name
-     * @param req
-     * @param resp
-     * @param name
+     * 
+     * @param req  the HttpServletRequest
+     * @param resp the HttpServletResponse
+     * @param path the cookie path
+     * @param name the cookie name
      */
     public static void delCookie(HttpServletRequest req, 
-                                 HttpServletResponse resp, String name) {
+                                 HttpServletResponse resp, 
+                                 String path, String name) {
         Cookie[] cookies = req.getCookies();
         if (cookies == null) {
             return;
@@ -400,8 +409,9 @@ public final class WebUtils {
 
         for (Cookie cookie : cookies) {
             if (name.equals(cookie.getName())) {
+                cookie.setPath(path); 
                 cookie.setMaxAge(0);
-                cookie.setValue(null);
+                cookie.setValue("");
                 resp.addCookie(cookie);
                 return;
             }
@@ -426,7 +436,7 @@ public final class WebUtils {
      */
     public static void addCookie(HttpServletResponse response, 
                                  String name, String value) {
-        addCookie(response, name, value, "/", 24 * 60 * 60);
+        addCookie(response, name, value, COOKIE_ROOT_PATH, 24 * 60 * 60);
     }
 
     /**
@@ -443,12 +453,13 @@ public final class WebUtils {
     }
 
     /**
-     * 创建cookie
+     * Creates a cookie
+     * 
      * @param name
      * @param value
      * @param path
      * @param maxAge
-     * @return
+     * @return an object of cookie
      */
     public static Cookie createCookie(String name, String value, 
                                       String path, int maxAge) {
@@ -475,7 +486,7 @@ public final class WebUtils {
     public static void setSessionTrace(HttpServletResponse response, String token) {
         int maxAge = (token == null) ? 0 : 86400;
         //result.setAuthToken(token); // to response body
-        WebUtils.addCookie(response, AUTH_COOKIE, token, "/", maxAge); // to cookie
+        WebUtils.addCookie(response, AUTH_COOKIE, token, COOKIE_ROOT_PATH, maxAge); // to cookie
         WebUtils.addHeader(response, AUTH_HEADER, token); // to header
     }
 

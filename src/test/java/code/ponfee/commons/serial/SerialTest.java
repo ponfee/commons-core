@@ -24,7 +24,7 @@ import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.log.LogInfo;
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.reflect.ClassUtils;
-import code.ponfee.commons.serial.Serializations.Serializers;
+import code.ponfee.commons.util.Convertors;
 import code.ponfee.commons.util.SecureRandoms;
 
 /**
@@ -51,13 +51,14 @@ public class SerialTest {
     
     @Test
     public void test2() {
-        //Assert.assertNotNull(Serializations.deserialize(Serializations.serialize(true), boolean.class));
-        //Assert.assertNotNull(Serializations.deserialize(Serializations.serialize(1), int.class));
-        //Assert.assertNotNull(Serializations.deserialize(Serializations.serialize(ByteArrayWrapper.of(SecureRandoms.nextBytes(10))), ByteArrayWrapper.class));
-        //Assert.assertNotNull(Serializations.deserialize(Serializations.serialize(new Date()), Date.class));
-        //Assert.assertNotNull(Serializations.deserialize(Serializations.serialize("abc"), String.class));
-        Assert.assertNotNull(Serializations.deserialize(Serializations.serialize(Serializers.BOOLEAN), Serializers.class));
-        //Assert.assertNotNull(Serializations.deserialize(Serializations.serialize(Result.SUCCESS), Result.class));
+        Serializer serializer = WrappedSerializer.WRAPPED_KRYO_SERIALIZER;
+        //Assert.assertNotNull(serializer.deserialize(serializer.serialize(true), boolean.class));
+        //Assert.assertNotNull(serializer.deserialize(serializer.serialize(1), int.class));
+        //Assert.assertNotNull(serializer.deserialize(serializer.serialize(ByteArrayWrapper.of(SecureRandoms.nextBytes(10))), ByteArrayWrapper.class));
+        //Assert.assertNotNull(serializer.deserialize(serializer.serialize(new Date()), Date.class));
+        //Assert.assertNotNull(serializer.deserialize(serializer.serialize("abc"), String.class));
+        Assert.assertNotNull(serializer.deserialize(serializer.serialize(Serializers.BOOLEAN), Serializers.class));
+        //Assert.assertNotNull(serializer.deserialize(serializer.serialize(Result.SUCCESS), Result.class));
     }
 
     @Test
@@ -138,8 +139,8 @@ public class SerialTest {
     @Test
     public void testGeneral() {
         Stopwatch watch = Stopwatch.createStarted();
-        GeneralSerializer ser1 = new GeneralSerializer();
-        GeneralSerializer ser2 = new GeneralSerializer();
+        WrappedSerializer ser1 = WrappedSerializer.WRAPPED_KRYO_SERIALIZER;
+        WrappedSerializer ser2 = WrappedSerializer.WRAPPED_KRYO_SERIALIZER;
 
         // XXX: if Executor is CALLER_RUN_EXECUTOR and threadNumber>=33 then will be dead loop
         MultithreadExecutor.execAsync(33, () -> {
@@ -169,7 +170,7 @@ public class SerialTest {
         Map<String, Object> data = Jsons.fromJson("{\"destName\":\"深圳市\",\"consignedTime\":1568891175000,\"paymentTypeCode\":\"1\",\"limitTypeCode\":\"T4\",\"addresseeDeptCode\":\"755U\",\"paymentType\":\"寄付\",\"senderArea\":\"福田区\",\"consNamesStr\":\"按摩椅\",\"custNo\":\"9999999999\",\"expressType\":\"快件\",\"consNames\":[\"按摩椅\"],\"senderProvince\":\"广东省\",\"receiverArea\":\"福田区\",\"consignedDate\":\"2019-09-19\",\"limitType\":\"标准快递\",\"destProvince\":\"广东省\",\"consQty\":0.0,\"senderContact\":\"赵小薇\",\"expressTypeCode\":\"B1\",\"consignorDeptCode\":\"755U\",\"senderDeptName\":\"兰天路速运营业部\",\"sendPartName\":\"兰天路速运营业部\",\"sourceName\":\"深圳市\",\"subSize\":0,\"waybillNo\":\"444145693922\",\"flag\":true}", Map.class);
         System.out.println(data);
         
-        GeneralSerializer GeneralSerializer = new GeneralSerializer();
+        WrappedSerializer generalSerializer = WrappedSerializer.WRAPPED_KRYO_SERIALIZER;
         KryoSerializer KryoSerializer = new KryoSerializer();
         FstSerializer FstSerializer = new FstSerializer();
         JdkSerializer JdkSerializer = new JdkSerializer();
@@ -177,7 +178,7 @@ public class SerialTest {
         ProtostuffSerializer ProtostuffSerializer = new ProtostuffSerializer();
         JsonSerializer JsonSerializer = new JsonSerializer();
 
-        System.out.println(GeneralSerializer.serialize(data).length);
+        System.out.println(generalSerializer.serialize(data).length);
         System.out.println(KryoSerializer.serialize(data).length);
         System.out.println(FstSerializer.serialize(data).length);
         System.out.println(JdkSerializer.serialize(data).length);
@@ -188,7 +189,7 @@ public class SerialTest {
         
         
         System.out.println();
-        System.out.println(GeneralSerializer.deserialize(GeneralSerializer.serialize(data), HashMap.class)); // KryoException: Class cannot be created (missing no-arg constructor): java.util.Map
+        System.out.println(generalSerializer.deserialize(generalSerializer.serialize(data), HashMap.class)); // KryoException: Class cannot be created (missing no-arg constructor): java.util.Map
         System.out.println(KryoSerializer.deserialize(KryoSerializer.serialize(data), HashMap.class));
         System.out.println(FstSerializer.deserialize(FstSerializer.serialize(data), Map.class));
         System.out.println(JdkSerializer.deserialize(JdkSerializer.serialize(data), Map.class));
@@ -203,7 +204,7 @@ public class SerialTest {
         long data = Long.MAX_VALUE;
         System.out.println(data);
         
-        GeneralSerializer GeneralSerializer = new GeneralSerializer();
+        WrappedSerializer generalSerializer = WrappedSerializer.WRAPPED_KRYO_SERIALIZER;
         KryoSerializer KryoSerializer = new KryoSerializer();
         FstSerializer FstSerializer = new FstSerializer();
         JdkSerializer JdkSerializer = new JdkSerializer();
@@ -212,7 +213,7 @@ public class SerialTest {
         JsonSerializer JsonSerializer = new JsonSerializer();
         ToStringSerializer ToStringSerializer = new ToStringSerializer();
 
-        System.out.println(GeneralSerializer.serialize(data).length);
+        System.out.println(generalSerializer.serialize(data).length);
         System.out.println(KryoSerializer.serialize(data).length);
         System.out.println(FstSerializer.serialize(data).length);
         System.out.println(JdkSerializer.serialize(data).length);
@@ -224,7 +225,7 @@ public class SerialTest {
         
         
         System.out.println();
-        System.out.println(GeneralSerializer.deserialize(GeneralSerializer.serialize(data), long.class));
+        System.out.println(generalSerializer.deserialize(generalSerializer.serialize(data), long.class));
         System.out.println(KryoSerializer.deserialize(KryoSerializer.serialize(data), long.class));
         System.out.println(FstSerializer.deserialize(FstSerializer.serialize(data), long.class));
         System.out.println(JdkSerializer.deserialize(JdkSerializer.serialize(data), long.class));
@@ -239,5 +240,12 @@ public class SerialTest {
         ToStringSerializer ser = new ToStringSerializer();
         System.out.println(ser.deserialize(ser.serialize(1), int.class));
         System.out.println(ser.deserialize(ser.serialize(true), boolean.class));
+    }
+    
+    @Test
+    public void test7() {
+        System.out.println(Serializers.of(int.class));
+        System.out.println(Convertors.of(int.class));
+        
     }
 }

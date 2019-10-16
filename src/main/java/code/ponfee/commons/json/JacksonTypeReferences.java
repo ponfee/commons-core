@@ -11,8 +11,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
  *  
  * @author Ponfee
  */
-public final class TypeReferences {
-    private TypeReferences() {}
+public final class JacksonTypeReferences {
+    private JacksonTypeReferences() {}
 
     public static final TypeReference<Map<String, Object>> MAP_NORMAL = new TypeReference<Map<String, Object>>() {};
     public static final TypeReference<Map<String, String>> MAP_STRING = new TypeReference<Map<String, String>>() {};

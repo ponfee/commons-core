@@ -6,7 +6,6 @@ import java.util.function.Function;
 import com.google.common.base.Preconditions;
 
 import code.ponfee.commons.json.Jsons;
-import code.ponfee.commons.reflect.Fields;
 
 /**
  * 返回结果数据结构体封装类
@@ -38,12 +37,12 @@ public class Result<T> implements java.io.Serializable {
         this.data = data;
     }
 
-    public Result(ResultCode code, String msg) {
-        this(code.getCode(), msg, null);
+    public Result(CodeMsg cm, String msg) {
+        this(cm.getCode(), msg, null);
     }
 
-    public Result(ResultCode code) {
-        this(code.getCode(), code.getMsg(), null);
+    public Result(CodeMsg cm) {
+        this(cm.getCode(), cm.getMsg(), null);
     }
 
     @SuppressWarnings("unchecked")
@@ -55,8 +54,8 @@ public class Result<T> implements java.io.Serializable {
         return new Result<>(code, msg, data);
     }
 
-    public <E> Result<E> transform(Function<T, E> transformer) {
-        return new Result<>(code, msg, transformer.apply(data));
+    public <E> Result<E> map(Function<T, E> mapper) {
+        return new Result<>(code, msg, mapper.apply(data));
     }
 
     // ---------------------------------static methods/success methods
@@ -72,19 +71,24 @@ public class Result<T> implements java.io.Serializable {
         return new Result<>(SUCCESS.getCode(), msg, data);
     }
 
-    // ---------------------------------static methods/failure methods
-    public static <T> Result<T> failure(Enum<?> em) {
-        return failure(
-            (int) Fields.get(em, "code"), (String) Fields.get(em, "msg"), null
+    public static <T> Result<T> success(CodeMsg cm, T data) {
+        return success(cm.getCode(), cm.getMsg(), data);
+    }
+
+    public static <T> Result<T> success(int code, String msg, T data) {
+        Preconditions.checkState(
+            ResultCode.isSuccessCode(code), "Invalid success code: " + code
         );
+        return new Result<>(code, msg, data);
     }
 
-    public static <T> Result<T> failure(ResultCode code) {
-        return failure(code.getCode(), code.getMsg(), null);
+    // ---------------------------------static methods/failure methods
+    public static <T> Result<T> failure(CodeMsg cm) {
+        return failure(cm.getCode(), cm.getMsg(), null);
     }
 
-    public static <T> Result<T> failure(ResultCode code, String msg) {
-        return failure(code.getCode(), msg, null);
+    public static <T> Result<T> failure(CodeMsg cm, String msg) {
+        return failure(cm.getCode(), msg, null);
     }
 
     public static <T> Result<T> failure(int code, String msg) {
@@ -93,18 +97,26 @@ public class Result<T> implements java.io.Serializable {
 
     public static <T> Result<T> failure(int code, String msg, T data) {
         Preconditions.checkState(
-            code != SUCCESS.getCode(), "invalid failure code: " + code
+            !ResultCode.isSuccessCode(code), "Invalid failure code: " + code
         );
         return new Result<>(code, msg, data);
     }
 
-    // ----------------------------------------------of operations
-    public static Result<Void> of(boolean status, ResultCode resultCode) {
-        return status ? SUCCESS : failure(resultCode);
+    // -----------------------------------------------of operations
+    public static Result<Void> of(CodeMsg cm) {
+        return new Result<>(cm);
     }
 
-    public static <T> Result<T> of(boolean status, ResultCode resultCode, T data) {
-        return status ? success(data) : failure(resultCode);
+    public static <T> Result<T> of(CodeMsg cm, T data) {
+        return new Result<>(cm.getCode(), cm.getMsg(), data);
+    }
+
+    public static <T> Result<T> of(int code, String msg) {
+        return new Result<>(code, msg);
+    }
+
+    public static <T> Result<T> of(int code, String msg, T data) {
+        return new Result<>(code, msg, data);
     }
 
     // -----------------------------------------------database update or delete affected rows
@@ -113,7 +125,7 @@ public class Result<T> implements java.io.Serializable {
     }
 
     public static Result<Void> assertAffectedRows(int actualAffectedRows, int exceptAffectedRows) {
-        return of(actualAffectedRows == exceptAffectedRows, ResultCode.OPS_CONFLICT);
+        return actualAffectedRows == exceptAffectedRows ? SUCCESS : failure(ResultCode.OPS_CONFLICT);
     }
 
     // -------------------------------------------------getter/setter
@@ -141,11 +153,13 @@ public class Result<T> implements java.io.Serializable {
         this.data = data;
     }
 
-    public @Transient boolean isSuccess() {
+    @Transient
+    public boolean isSuccess() {
         return ResultCode.isSuccessCode(code);
     }
 
-    public @Transient boolean isFailure() {
+    @Transient
+    public boolean isFailure() {
         return !isSuccess();
     }
 

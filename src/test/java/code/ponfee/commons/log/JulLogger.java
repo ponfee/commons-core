@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
+ * 
  */
 public class JulLogger {
     private static Logger logger = Logger.getLogger(JulLogger.class.getSimpleName());

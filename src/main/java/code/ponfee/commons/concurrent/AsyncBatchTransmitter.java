@@ -2,7 +2,6 @@ package code.ponfee.commons.concurrent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.BiFunction;
@@ -17,7 +16,7 @@ import com.google.common.base.Preconditions;
 public final class AsyncBatchTransmitter<T> {
 
     // 单消费者用LinkedBlockingQueue，多消费者用ConcurrentLinkedQueue
-    private final BlockingQueue<T> queue = new LinkedBlockingQueue<>(); // capacity: Integer.MAX_VALUE
+    private final LinkedBlockingQueue<T> queue = new LinkedBlockingQueue<>(); // capacity: Integer.MAX_VALUE
     private final AsyncBatchThread batch;
     private volatile boolean isEnd = false;
 
@@ -49,8 +48,10 @@ public final class AsyncBatchTransmitter<T> {
      * @param t
      * @return
      */
-    public boolean put(T t) {
-        return this.queue.offer(t);
+    public void put(T t) {
+        if (!this.queue.offer(t)) {
+            throw new RuntimeException("Offer a element to queue failed.");
+        }
     }
 
     /**
@@ -59,16 +60,16 @@ public final class AsyncBatchTransmitter<T> {
      * @return
      */
     @SafeVarargs
-    public final boolean put(T... ts) {
+    public final void put(T... ts) {
         if (ts == null || ts.length == 0) {
-            return false;
+            return;
         }
 
-        boolean flag = true;
         for (T t : ts) {
-            flag &= this.queue.offer(t);
+            if (!this.queue.offer(t)) {
+                throw new RuntimeException("Offer a element to queue failed.");
+            }
         }
-        return flag;
     }
 
     /**
@@ -76,16 +77,16 @@ public final class AsyncBatchTransmitter<T> {
      * @param list
      * @return
      */
-    public boolean put(List<T> list) {
+    public void put(List<T> list) {
         if (list == null || list.isEmpty()) {
-            return false;
+            return;
         }
 
-        boolean flag = true;
         for (T t : list) {
-            flag &= this.queue.offer(t);
+            if (!this.queue.offer(t)) {
+                throw new RuntimeException("Offer a element to queue failed.");
+            }
         }
-        return flag;
     }
 
     /**

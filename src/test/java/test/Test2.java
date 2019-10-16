@@ -8,6 +8,7 @@
 
 package test;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -144,5 +145,51 @@ public class Test2 {
             Argon2Factory.create().hash(8, 65536, 1, "findIterations".toCharArray());
         }
         System.out.println(stopwatch.stop().toString());
+    }
+    
+    @Test
+    public void test10() throws IOException {
+        Map<String, Object> map = new HashMap<>();
+        System.out.println(map.replace("xx", 1));
+        System.out.println(map);
+        System.out.println(map.put("a", 1));
+        System.out.println(map);
+        System.out.println(map.put("a", 2));
+        System.out.println(map);
+    }
+
+    @Test
+    public void test11() throws IOException {
+        File source = new File("D:\\test\\test1\\CentOS-6.6-x86_64-bin-DVD1.iso");
+        File target = new File("D:\\test\\test1\\CentOS-6.6-x86_64-bin-DVD2.iso");
+
+        Stopwatch watch = Stopwatch.createStarted();
+        Files.move(source.toPath(), target.toPath());
+        System.out.println("move cost: " + watch.stop());
+
+        watch.reset().start();
+        source = target;
+        target = new File("D:\\test\\test1\\CentOS-6.6-x86_64-bin-DVD3.iso");
+        boolean f = source.renameTo(target);
+        System.out.println(f);
+        System.out.println("move cost: " + watch.stop());
+    }
+    
+    @Test
+    public void test12() throws IOException {
+        System.out.println(code.ponfee.commons.io.Files.human(-12345678));
+        System.out.println(code.ponfee.commons.io.Files.human(0));
+        System.out.println(code.ponfee.commons.io.Files.human(-0));
+        System.out.println(code.ponfee.commons.io.Files.human(5));
+        System.out.println(code.ponfee.commons.io.Files.human(-5));
+        System.out.println(code.ponfee.commons.io.Files.human(98745612));
+        
+        System.out.println("\n===============================");
+        System.out.println(code.ponfee.commons.io.Files.parseHuman("-1KB"));
+        System.out.println(code.ponfee.commons.io.Files.parseHuman("0B"));
+        System.out.println(code.ponfee.commons.io.Files.parseHuman("-0B"));
+        System.out.println(code.ponfee.commons.io.Files.parseHuman("123B"));
+        System.out.println(code.ponfee.commons.io.Files.parseHuman("-123B"));
+        System.out.println(code.ponfee.commons.io.Files.parseHuman("6MB"));
     }
 }

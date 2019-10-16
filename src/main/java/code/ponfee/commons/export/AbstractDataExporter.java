@@ -2,11 +2,12 @@ package code.ponfee.commons.export;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
+import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -21,7 +22,7 @@ import code.ponfee.commons.tree.FlatNode;
  */
 public abstract class AbstractDataExporter<T> implements DataExporter<T> {
 
-    public static final int AWAIT_TIME_MILLIS = 7;
+    public static final int AWAIT_TIME_MILLIS = 47;
 
     private boolean empty = true;
     private String name; // report name: non thread safe
@@ -44,45 +45,40 @@ public abstract class AbstractDataExporter<T> implements DataExporter<T> {
         return name;
     }
 
-    protected final <E> void rollingTbody(Table<E> table,
-        BiConsumer<Object[], Integer> action) {
+    protected final <E> void rollingTbody(Table<E> table, BiConsumer<Object[], Integer> action) {
         try {
             E data; Function<E, Object[]> converter;
             if ((converter = table.getConverter()) != null) {
                 for (int i = 0; table.isNotEnd();) {
-                    if ((data = table.poll()) != null) {
+                    if ((data = table.getRow(AWAIT_TIME_MILLIS)) != null) {
                         action.accept(converter.apply(data), i++);
-                    } else {
-                        Thread.sleep(AWAIT_TIME_MILLIS);
                     }
                 }
             } else {
-                String[] fields = getLeafThead(
-                    table.getThead()
-                ).stream().map(
-                    Thead::getField
-                ).toArray(
-                    String[]::new
-                );
+                String[] fields = table.getThead()
+                                       .stream()
+                                       .filter(FlatNode::isLeaf)
+                                       .map(f -> f.getAttach().getField())
+                                       .toArray(String[]::new);
                 Object[] array;
                 for (int i = 0; table.isNotEnd();) {
-                    if ((data = table.poll()) != null) {
+                    if ((data = table.getRow(AWAIT_TIME_MILLIS)) != null) {
                         if (data instanceof Object[]) {
                             array = (Object[]) data;
+                        } else if (data.getClass().isArray()) {
+                            array = covariantArray(data);
                         } else if (data instanceof Collection<?>) {
                             array = collection2array((Collection<?>) data);
                         } else if (data instanceof Iterator<?>) {
                             array = iterator2array((Iterator<?>) data);
-                        } else if (data.getClass().isArray()) {
-                            array = covariantArray(data);
                         } else if (data instanceof Map<?, ?>) {
                             array = map2array((Map<?, ?>) data);
+                        } else if (data instanceof Dictionary<?, ?>) {
+                            array = dictionary2array((Dictionary<?, ?>) data);
                         } else {
                             array = bean2array(data, fields);
                         }
                         action.accept(array, i++);
-                    } else {
-                        Thread.sleep(AWAIT_TIME_MILLIS);
                     }
                 }
             }
@@ -91,8 +87,7 @@ public abstract class AbstractDataExporter<T> implements DataExporter<T> {
         }
     }
 
-    protected final List<Thead> getLeafThead(
-        List<FlatNode<Integer, Thead>> thead) {
+    protected final List<Thead> getLeafThead(List<FlatNode<Integer, Thead>> thead) {
         return thead.stream()
                     .filter(FlatNode::isLeaf)
                     .map(FlatNode::getAttach)
@@ -126,7 +121,18 @@ public abstract class AbstractDataExporter<T> implements DataExporter<T> {
     }
 
     private static Object[] map2array(Map<?, ?> map) {
-        return map.entrySet().stream().map(Entry::getValue).toArray();
+        List<Object> list = new LinkedList<>();
+        map.forEach((k, v) -> list.add(v));
+        return list.toArray();
+    }
+
+    private static Object[] dictionary2array(Dictionary<?, ?> dic) {
+        List<Object> list = new LinkedList<>();
+        Enumeration<?> enu = dic.elements();
+        while (enu.hasMoreElements()) {
+            list.add(enu.nextElement());
+        }
+        return list.toArray();
     }
 
     private static Object[] bean2array(Object bean, String[] fields) {

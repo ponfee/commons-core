@@ -234,11 +234,12 @@ public class ECParameters implements java.io.Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof ECParameters)) {
-            return false;
-        }
         if (this == obj) {
             return true;
+        }
+
+        if (!(obj instanceof ECParameters)) {
+            return false;
         }
 
         ECParameters other = (ECParameters) obj;

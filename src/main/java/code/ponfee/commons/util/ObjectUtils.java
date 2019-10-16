@@ -3,7 +3,6 @@ package code.ponfee.commons.util;
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,7 +22,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.objenesis.ObjenesisHelper;
 
 import com.google.common.base.Preconditions;
@@ -40,11 +38,6 @@ public final class ObjectUtils {
 
     private static final char[] URL_SAFE_BASE64_CODES = 
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_".toCharArray();
-
-    private static final String[] DATE_PATTERN = { 
-        "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyyMMdd", "yyyyMMddHHmmss", 
-        "yyyyMMddHHmmssSSS", "yyyy-MM-dd HH:mm:ss.SSS", "yyyy-MM-dd HH:mm:ss.SSS" 
-    };
 
     /**
      * Returns object toString
@@ -116,96 +109,45 @@ public final class ObjectUtils {
      * 
      * @param value source object
      * @param type  target object type
-     * @return a object of type 
-     * @throws Exception if occur error
+     * @return a this type object
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> T convert(Object value, Class<T> type) {
-        if (type.isPrimitive()) {
-            // 原始类型
-            //type = org.apache.commons.lang3.ClassUtils.primitiveToWrapper(type);
-            //org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper(type)
-            if (boolean.class == type) {
-                value = Numbers.toBoolean(value);
-            } else if (byte.class == type) {
-                value = Numbers.toByte(value);
-            } else if (short.class == type) {
-                value = Numbers.toShort(value);
-            } else if (char.class == type) {
-                value = Numbers.toChar(value);
-            } else if (int.class == type) {
-                value = Numbers.toInt(value);
-            } else if (long.class == type) {
-                value = Numbers.toLong(value);
-            } else if (float.class == type) {
-                value = Numbers.toFloat(value);
-            } else if (double.class == type) {
-                value = Numbers.toDouble(value);
-            } else {
-                // cannot happened
-                throw new UnsupportedOperationException("Unknow primitive type: " + type.toString());
+        if (type.isInstance(value)) {
+            return (T) value;
+        }
+
+        Convertors convertor = Convertors.of(type);
+        if (convertor != null) {
+            return convertor.to(value);
+        }
+
+        if (value == null) {
+            return null;
+        }
+
+        if (type.isEnum()) {
+            return (value instanceof Number)
+                ? type.getEnumConstants()[((Number) value).intValue()]
+                : (T) EnumUtils.getEnumIgnoreCase((Class<Enum>) type, value.toString());
+        }
+
+        if (Date.class == type) {
+            if (value instanceof Number) {
+                return (T) new Date(((Number) value).longValue());
             }
-        } else if (value != null && !type.isInstance(value)) { // 类型不一致时
-            if (   org.apache.commons.lang3.ClassUtils.isPrimitiveWrapper(type)
-                && Strings.isEmpty(value)
-            ) {
-                value = null; // 原始包装类型且value为空或为空字符串则设置为null
-            } else if (Boolean.class == type) {
-                value = Numbers.toWrapBoolean(value);
-            } else if (Byte.class == type) {
-                value = Numbers.toWrapByte(value);
-            } else if (Short.class == type) {
-                value = Numbers.toWrapShort(value);
-            } else if (Character.class == type) {
-                value = Numbers.toWrapChar(value);
-            } else if (Integer.class == type) {
-                value = Numbers.toWrapInt(value);
-            } else if (Long.class == type) {
-                value = Numbers.toWrapLong(value);
-            } else if (Float.class == type) {
-                value = Numbers.toWrapFloat(value);
-            } else if (Double.class == type) {
-                value = Numbers.toWrapDouble(value);
-            } else if (type.isEnum()) {
-                // enum class
-                if (value instanceof Number) {
-                    value = type.getEnumConstants()[((Number) value).intValue()];
-                } else {
-                    value = EnumUtils.getEnumIgnoreCase((Class<Enum>) type, value.toString());
-                }
-            } else if (Date.class == type) {
-                if (value instanceof Number) {
-                    value = new Date(((Number) value).longValue());
-                } else if (value instanceof CharSequence) {
-                    String str = value.toString();
-                    if (StringUtils.isNumeric(str) && !RegexUtils.isDatePattern(str)) {
-                        value = new Date(Numbers.toLong(str));
-                    } else {
-                        try {
-                            value = DateUtils.parseDate(str, DATE_PATTERN);
-                        } catch (ParseException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                } else {
-                    throw new IllegalArgumentException("Illegal date time: " + value);
-                }
-            } else {
-                Constructor<T> constructor = ClassUtils.getConstructor(type, String.class);
-                if (constructor == null) {
-                    throw new ClassCastException(
-                        ClassUtils.getClassName(value.getClass()) + " cannot be cast to " + ClassUtils.getClassName(type)
-                    );
-                }
-                try {
-                    // e.g. new String(value.toString()) or new StringBuilder(value.toString())
-                    return constructor.newInstance(value.toString());
-                } catch (Exception e) {
-                    throw new IllegalStateException(e);
-                }
+            String text = value.toString();
+            if (StringUtils.isNumeric(text) && !RegexUtils.isDatePattern(text)) {
+                return (T) new Date(Numbers.toLong(text));
             }
-        } // else { Nothing to do: value is null or type.isInstance(value) }
-        return (T) value;
+            try {
+                return (T) WrappedFastDateFormat.NORMAL.parse(text);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return ClassUtils.newInstance(type, value.toString());
     }
 
     /**

@@ -4,7 +4,6 @@ import static java.util.Collections.singletonList;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -25,6 +24,7 @@ import code.ponfee.commons.jedis.JedisOperations;
 import code.ponfee.commons.jedis.ValueOperations;
 import code.ponfee.commons.math.Numbers;
 import code.ponfee.commons.util.Bytes;
+import code.ponfee.commons.util.ObjectUtils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.ShardedJedis;
 
@@ -166,7 +166,7 @@ public class SpringRedisLock implements Lock, java.io.Serializable {
     @Override
     public boolean tryLock() {
         return redisTemplate.execute((RedisCallback<Boolean>) conn -> {
-            byte[] lockValue = generateValue();
+            byte[] lockValue = ObjectUtils.uuid();
             String result = getJedis(conn, lockKey).set(
                 lockKey, lockValue, NX_BYTES, EX_BYTES, timeoutSeconds
             );
@@ -208,15 +208,16 @@ public class SpringRedisLock implements Lock, java.io.Serializable {
     @Override
     public void unlock() {
         final byte[] lockValue = LOCK_VALUE.get();
-        if (lockValue != null) {
-            redisTemplate.execute((RedisCallback<Boolean>) conn -> {
-                Object result = getJedis(conn, lockKey).eval(
-                    UNLOCK_SCRIPT_BYTES, singletonList(lockKey), singletonList(lockValue)
-                );
-                LOCK_VALUE.remove();
-                return UNLOCK_SUCCESS.equals(result);
-            });
+        if (lockValue == null) {
+            return;
         }
+        redisTemplate.execute((RedisCallback<Boolean>) conn -> {
+            Object result = getJedis(conn, lockKey).eval(
+                UNLOCK_SCRIPT_BYTES, singletonList(lockKey), singletonList(lockValue)
+            );
+            LOCK_VALUE.remove();
+            return UNLOCK_SUCCESS.equals(result);
+        });
     }
 
     @Override
@@ -274,28 +275,6 @@ public class SpringRedisLock implements Lock, java.io.Serializable {
         } else {
             throw new UnsupportedOperationException("Unsupported " + object.getClass());
         }
-    }
-
-    /**
-     * 获取锁值
-     * @return
-     */
-    private byte[] generateValue() {
-        UUID uuid = UUID.randomUUID();
-        long most  = uuid.getMostSignificantBits(), 
-             least = uuid.getLeastSignificantBits();
-
-        return new byte[] {
-            (byte) (most  >>> 56), (byte) (most  >>> 48),
-            (byte) (most  >>> 40), (byte) (most  >>> 32),
-            (byte) (most  >>> 24), (byte) (most  >>> 16),
-            (byte) (most  >>>  8), (byte) (most        ),
-
-            (byte) (least >>> 56), (byte) (least >>> 48),
-            (byte) (least >>> 40), (byte) (least >>> 32),
-            (byte) (least >>> 24), (byte) (least >>> 16),
-            (byte) (least >>>  8), (byte) (least       )
-        };
     }
 
 }

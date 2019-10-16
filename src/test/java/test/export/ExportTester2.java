@@ -25,7 +25,7 @@ public class ExportTester2 {
        4, 16, 120, 0, "test"
     );
 
-    @Test
+    @Test // 19.5
     public void testExcel1() throws IOException {
         AbstractDataExporter excel = new ExcelExporter();
 
@@ -56,7 +56,7 @@ public class ExportTester2 {
     }
 
     
-    @Test
+    @Test // 18.5
     public void testExcel2() throws IOException {
         AbstractDataExporter excel = new ExcelExporter();
 
@@ -84,7 +84,7 @@ public class ExportTester2 {
         System.out.println(watch.stop());
     }
 
-    @Test
+    @Test // 11
     public void testCsv1() throws IOException {
         CsvFileExporter excel = new CsvFileExporter("E:/test.csv", true);
 
@@ -111,7 +111,7 @@ public class ExportTester2 {
         System.out.println(watch.stop());
     }
     
-    @Test
+    @Test // 1.485 min
     public void testSplitExcel() throws IOException {
         Table table = new Table("a,b,c,d,e".split(","));
         table.setCaption("title");
@@ -138,7 +138,7 @@ public class ExportTester2 {
         System.out.println(watch.stop());
     }
     
-    @Test
+    @Test // 1.485 min
     public void testSplitCsv() throws IOException {
         Table table = new Table("中国,人,c,d,e".split(","));
         table.setCaption("title");

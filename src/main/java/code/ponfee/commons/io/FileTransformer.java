@@ -1,5 +1,13 @@
 package code.ponfee.commons.io;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import info.monitorenter.cpdetector.io.ASCIIDetector;
 import info.monitorenter.cpdetector.io.ByteOrderMarkDetector;
 import info.monitorenter.cpdetector.io.CodepageDetectorProxy;
@@ -7,15 +15,6 @@ import info.monitorenter.cpdetector.io.ICodepageDetector;
 import info.monitorenter.cpdetector.io.JChardetFacade;
 import info.monitorenter.cpdetector.io.ParsingDetector;
 import info.monitorenter.cpdetector.io.UnicodeDetector;
-import org.apache.commons.lang3.StringUtils;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.channels.FileChannel;
 
 /**
  * 文件编码转换与文本内容替换
@@ -26,10 +25,11 @@ public class FileTransformer {
 
     private static final int FIX_LENGTH = 85;
 
-    private String includeFileExtensions = "(?i)^(.+\\.)(" + StringUtils.join(new String[] { "java", "txt",
-         "properties", "xml", "sql", "html", "htm", "jsp", "css", "js", "log", "bak", "ini", "csv" }, "|") + ")$";
+    private String includeFileExtensions = regexExtensions(
+        "java", "txt", "properties", "xml", "sql", "html", "htm", "jsp", 
+        "css", "js", "log", "bak", "ini", "csv", "yml", "yaml"
+    );
 
-    private final File source;
     private final String sourcePath;
     private final String targetPath;
     private final String encoding;
@@ -42,19 +42,18 @@ public class FileTransformer {
     }
 
     public FileTransformer(String source, String target, String encoding) {
-        this.source = new File(source);
-        this.sourcePath = this.source.getAbsolutePath();
-        File targetDir = Files.mkdir(target);
-        this.targetPath = targetDir.getAbsolutePath();
+        this.sourcePath = new File(source).getAbsolutePath();
+        this.targetPath = Files.mkdir(target).getAbsolutePath();
         this.encoding = encoding;
     }
 
     /**
      * 文件后缀名，不加“.”
+     * 
      * @param includeFileExtensions
      */
     public void setIncludeFileExtensions(String... includeFileExtensions) {
-        this.includeFileExtensions = "(?i)^(.+\\.)(" + StringUtils.join(includeFileExtensions, "|") + ")$";
+        this.includeFileExtensions = regexExtensions(includeFileExtensions);
     }
 
     public void setReplaceEach(String[] searchList, String[] replacementList) {
@@ -66,7 +65,7 @@ public class FileTransformer {
      * 转换（移）
      */
     public void transform() {
-        transform(this.source);
+        transform(new File(sourcePath));
     }
 
     public String getTransformLog() {
@@ -85,24 +84,24 @@ public class FileTransformer {
             }
         } else {
             String filepath = file.getAbsolutePath(), charset;
-            File dest = Files.touch(targetPath + filepath.substring(sourcePath.length()));
+            File dest = new File(targetPath + filepath.substring(sourcePath.length()));
             boolean isMatch = file.getName().matches(includeFileExtensions);
 
-            if (   StringUtils.isNotEmpty(encoding) 
-                && isMatch 
+            if (   isMatch 
+                && StringUtils.isNotEmpty(encoding) 
                 && (charset = guessEncoding(filepath)) != null
                 && !"void".equalsIgnoreCase(charset) 
                 && !encoding.equalsIgnoreCase(charset)
             ) {
-                log.append("转换　[").append(charset).append("]").append(StringUtils.rightPad(filepath, FIX_LENGTH)).append("　-->　");
+                log.append("转换：[").append(charset).append("]").append(StringUtils.rightPad(filepath, FIX_LENGTH)).append("  -->  ");
                 transform(file, dest, charset, encoding, searchList, replacementList);
                 log.append("[").append(encoding).append("]").append(dest.getAbsolutePath()).append("\n");
-            } else if (isMatch && searchList != null && searchList.length > 0) {
-                log.append("替换　").append(StringUtils.rightPad(filepath, FIX_LENGTH)).append("　-->　");
+            } else if (isMatch && ArrayUtils.isNotEmpty(searchList)) {
+                log.append("替换：").append(StringUtils.rightPad(filepath, FIX_LENGTH)).append("  -->  ");
                 transform(file, dest, searchList, replacementList);
                 log.append(dest.getAbsolutePath()).append("\n");
             } else {
-                log.append("复制　").append(StringUtils.rightPad(filepath, FIX_LENGTH)).append("　-->　");
+                log.append("复制：").append(StringUtils.rightPad(filepath, FIX_LENGTH)).append("  -->  ");
                 transform(file, dest);
                 log.append(dest.getAbsolutePath()).append("\n");
             }
@@ -111,16 +110,15 @@ public class FileTransformer {
 
     /**
      * 采用nio方式转移
+     * 
      * @param source
      * @param target
      */
     public static void transform(File source, File target) {
-        try ( FileInputStream sourceFile = new FileInputStream(source);
-              FileChannel sourceChannel = sourceFile.getChannel();
-              FileOutputStream targetFile = new FileOutputStream(target);
-              FileChannel targetChannel = targetFile.getChannel()
-        ) {
-            sourceChannel.transferTo(0, sourceChannel.size(), targetChannel);
+        try {
+            target.getParentFile().mkdirs();
+            //com.google.common.io.Files.copy(source, source);
+            java.nio.file.Files.copy(source.toPath(), target.toPath());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -134,6 +132,7 @@ public class FileTransformer {
      */
     public static void transform(File source, File target,
                                  String[] searchList, String[] replacementList) {
+        Files.touch(target);
         try (WrappedBufferedReader reader = new WrappedBufferedReader(source);
              WrappedBufferedWriter writer = new WrappedBufferedWriter(target)
         ) {
@@ -151,7 +150,8 @@ public class FileTransformer {
      * @param fromCharset
      * @param toCharset
      */
-    public static void transform(File source, File target, String fromCharset, String toCharset) {
+    public static void transform(File source, File target, 
+                                 String fromCharset, String toCharset) {
         transform(source, target, fromCharset, toCharset, null, null);
     }
 
@@ -163,8 +163,10 @@ public class FileTransformer {
      * @param searchList  the Strings to search for, no-op if null
      * @param replacementList  the Strings to replace them with, no-op if null
      */
-    public static void transform(File source, File target, String fromCharset, String toCharset,
+    public static void transform(File source, File target, 
+                                 String fromCharset, String toCharset,
                                  String[] searchList, String[] replacementList) {
+        Files.touch(target);
         try (WrappedBufferedReader reader = new WrappedBufferedReader(source, fromCharset);
              WrappedBufferedWriter writer = new WrappedBufferedWriter(target, toCharset)
         ) {
@@ -234,13 +236,18 @@ public class FileTransformer {
         String line;
         if (searchList != null && searchList.length > 0) {
             while ((line = reader.readLine()) != null) {
-                writer.writeln(StringUtils.replaceEach(line, searchList, replacementList));
+                writer.write(StringUtils.replaceEach(line, searchList, replacementList));
+                writer.write(Files.UNIX_LINE_SEPARATOR);
             }
         } else {
             while ((line = reader.readLine()) != null) {
-                writer.writeln(line);
+                writer.write(line);
+                writer.write(Files.UNIX_LINE_SEPARATOR);
             }
         }
     }
 
+    private static String regexExtensions(String... fileExtensions) {
+        return "(?i)^(.+\\.)(" + String.join("|", fileExtensions) + ")$";
+    }
 }

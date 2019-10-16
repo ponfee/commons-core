@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * 
  */
 public class Slf4jLogger {
     private static Logger logger = LoggerFactory.getLogger(Slf4jLogger.class);
@@ -16,7 +17,7 @@ public class Slf4jLogger {
         logger.error("Slf4jLogger");
 
         //SystemClassloader==APPClassloader
-        // -classpath
+        // 加载-classpath(-cp)参数的指定的jar包
         Enumeration<URL> r = ClassLoader.getSystemResources("org/slf4j/impl/StaticLoggerBinder.class");
         while (r.hasMoreElements()) {
             URL url = (URL) r.nextElement();

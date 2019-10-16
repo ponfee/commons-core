@@ -9,8 +9,8 @@ import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import code.ponfee.commons.collect.Collects;
-import code.ponfee.commons.json.JsonPropertyFilter;
-import code.ponfee.commons.json.JsonPropertyFilter.FilterType;
+import code.ponfee.commons.json.FastjsonPropertyFilter;
+import code.ponfee.commons.json.FastjsonPropertyFilter.FilterType;
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.model.Result;
 
@@ -46,13 +46,13 @@ public class JsonsTest {
     public void test3() {
         Map<?, ?> map = Collects.toMap("a", "xx", "b", 1, "c", 1.2D, "d", null);
         System.out.println(JSONObject.toJSONString(map));
-        System.out.println(JSONObject.toJSONString(map, new JsonPropertyFilter(FilterType.INCLUDES, "a", "b")));
-        System.out.println(JSONObject.toJSONString(map, new JsonPropertyFilter(FilterType.EXCLUDES, "a", "b")));
+        System.out.println(JSONObject.toJSONString(map, new FastjsonPropertyFilter(FilterType.INCLUDES, "a", "b")));
+        System.out.println(JSONObject.toJSONString(map, new FastjsonPropertyFilter(FilterType.EXCLUDES, "a", "b")));
 
         Result<String> result = Result.success("xx");
         System.out.println(JSONObject.toJSONString(result));
-        System.out.println(JSONObject.toJSONString(result, new JsonPropertyFilter(FilterType.INCLUDES, "msg")));
-        System.out.println(JSONObject.toJSONString(result, new JsonPropertyFilter(FilterType.EXCLUDES, "msg")));
+        System.out.println(JSONObject.toJSONString(result, new FastjsonPropertyFilter(FilterType.INCLUDES, "msg")));
+        System.out.println(JSONObject.toJSONString(result, new FastjsonPropertyFilter(FilterType.EXCLUDES, "msg")));
     }
 
     @Test

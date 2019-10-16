@@ -37,7 +37,7 @@ public abstract class SpringBaseTest<T> {
     @Before
     public final void setUp() {
         Class<T> type = GenericUtils.getActualTypeArgument(this.getClass());
-        if (Object.class != type) {
+        if (Void.class != type) {
             if (beanName != null && beanName.length() > 0) {
                 bean = SpringContextHolder.getBean(beanName, type);
             } else {
