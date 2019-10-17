@@ -34,5 +34,6 @@ public interface DataExporter<T> extends Closeable {
      * 关闭资源
      * not throw Exception
      */
-    @Override void close();
+    @Override
+    void close();
 }

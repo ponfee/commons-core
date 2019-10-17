@@ -1,8 +1,6 @@
 package test.extract;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -39,32 +37,4 @@ public class TestHSSFStreaming {
         }
     }
 
-    public static void add(List<String> list, int index, String s) {
-        int size;
-        if (index == (size = list.size())) {
-            list.add(s);
-        } else if (index < size) {
-            list.set(index, s);
-        } else {
-            for (int i = size; i < index; i++) {
-                list.add(null);
-            }
-            list.add(s  );
-        }
-    }
-    
-    public static void main(String[] args) {
-        List<String> list = new ArrayList<>();
-        add(list, 0, "a");
-        System.out.println(list);
-        
-        add(list, 5, "b");
-        System.out.println(list);
-        
-        add(list, 4, "c");
-        System.out.println(list);
-        
-        add(list, 4, "c");
-        System.out.println(list);
-    }
 }

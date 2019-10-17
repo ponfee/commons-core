@@ -361,7 +361,7 @@ public class Cache<K, V> {
             return;
         }
 
-        // Closeable, Releasable, Destroyable
+        // Closeable, Destroyable
         if (value instanceof Destroyable) {
             Closeables.log((Destroyable) value);
         } else if (value instanceof AutoCloseable) {

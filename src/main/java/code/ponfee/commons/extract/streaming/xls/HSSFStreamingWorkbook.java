@@ -51,7 +51,7 @@ import org.apache.poi.ss.usermodel.Workbook;
  */
 public class HSSFStreamingWorkbook implements Workbook, Closeable {
 
-    public static final int AWAIT_MILLIS = 7;
+    public static final int AWAIT_MILLIS = 47;
 
     private volatile boolean allSheetReadied = false;
     private final List<Sheet> sheets = new ArrayList<>();
