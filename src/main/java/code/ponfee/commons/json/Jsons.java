@@ -42,6 +42,14 @@ public final class Jsons {
         // 反序列化时忽略不存在于对象中的属性
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
+        // 反序列化扩展日期格式支持（经测试无效）
+        //mapper.setConfig(mapper.getDeserializationConfig().with(mapper.getDateFormat()));
+
+        // 反序列化扩展日期格式支持
+        /*SimpleModule module = new SimpleModule();
+        module.addDeserializer(java.util.Date.class, new JacksonDateDeserializer("yyyy-MM-dd"));
+        mapper.registerModule(module);*/
+
         /*mapper.enable(com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES);
         mapper.enable(com.fasterxml.jackson.core.JsonGenerator.Feature.QUOTE_FIELD_NAMES);
         //mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);

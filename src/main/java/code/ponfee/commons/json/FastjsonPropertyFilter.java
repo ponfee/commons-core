@@ -21,12 +21,12 @@ import com.alibaba.fastjson.serializer.PropertyFilter;
  * 
  * @author Ponfee
  */
-public class JsonPropertyFilter implements PropertyFilter {
+public class FastjsonPropertyFilter implements PropertyFilter {
 
     private final boolean isIncludes;
     private final String[] fields;
 
-    public JsonPropertyFilter(@Nonnull FilterType type, @Nonnull String... fields) {
+    public FastjsonPropertyFilter(@Nonnull FilterType type, @Nonnull String... fields) {
         this.isIncludes = type == FilterType.INCLUDES;
         this.fields = fields;
     }
