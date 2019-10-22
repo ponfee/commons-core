@@ -12,8 +12,8 @@ import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.util.ObjectUtils;
 
 /**
- * 微信工具类
- * https://www.cnblogs.com/txw1958/p/weixin76-user-info.html
+ * 微信工具类：https://www.cnblogs.com/txw1958/p/weixin76-user-info.html
+ * OAuth2.0：https://www.jianshu.com/p/6392420faf99
  * 
  * @author Ponfee
  */
@@ -38,11 +38,11 @@ public class Wechats {
      * @param charset the charset for params encoding
      * 
      * @param state 在发送state之后，可以把state保存到Session以便用于后续回调时的比较。
-     *              这样做的目的是防止应用接受任意伪造的授权码。
+     *              这样做的目的是防止应用接受任意伪造的授权码（CSRF）。
      * 
      * @param scope snsapi_base    ：不弹出授权页面，直接跳转，只能获取用户openid<p>
      *              snsapi_userinfo：弹出授权页面，可通过openid拿到昵称、性别、所在地。并且，即使在未关注的情况下，只要用户授权，也能获取其信息<p>
-     *              snsapi_login：登录
+     *              snsapi_login   ：登录
      *                               
      * @param redirect the service url
      * 
@@ -84,6 +84,9 @@ public class Wechats {
      * </pre>
      * 
      * 获取微信openID及授权access_token
+     * 
+     * 
+     * password模式：https://api.oauth2server.com/token?grant_type=password&username=USERNAME&password=PASSWORD&client_id=CLIENT_ID
      * 
      * @param appid
      * @param secret

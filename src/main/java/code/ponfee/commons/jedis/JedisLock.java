@@ -2,7 +2,6 @@ package code.ponfee.commons.jedis;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -15,6 +14,7 @@ import com.google.common.base.Preconditions;
 
 import code.ponfee.commons.math.Numbers;
 import code.ponfee.commons.util.Bytes;
+import code.ponfee.commons.util.ObjectUtils;
 
 /**
  * <pre>
@@ -153,7 +153,7 @@ public class JedisLock implements Lock, java.io.Serializable {
      */
     @Override
     public boolean tryLock() {
-        byte[] lockValue = generateValue();
+        byte[] lockValue = ObjectUtils.uuid();
         if (jedisClient.valueOps().setnx(lockKey, lockValue, timeoutSeconds)) {
             LOCK_VALUE.set(lockValue);
             return true;
@@ -239,29 +239,6 @@ public class JedisLock implements Lock, java.io.Serializable {
 
     public void forceUnlock() {
         jedisClient.keysOps().del(lockKey);
-    }
-
-    // ---------------------------------------------------------------------private methods
-    /**
-     * 获取锁值
-     * @return
-     */
-    private byte[] generateValue() {
-        UUID uuid = UUID.randomUUID();
-        long most  = uuid.getMostSignificantBits(), 
-             least = uuid.getLeastSignificantBits();
-
-        return new byte[] {
-            (byte) (most  >>> 56), (byte) (most  >>> 48),
-            (byte) (most  >>> 40), (byte) (most  >>> 32),
-            (byte) (most  >>> 24), (byte) (most  >>> 16),
-            (byte) (most  >>>  8), (byte) (most        ),
-
-            (byte) (least >>> 56), (byte) (least >>> 48),
-            (byte) (least >>> 40), (byte) (least >>> 32),
-            (byte) (least >>> 24), (byte) (least >>> 16),
-            (byte) (least >>>  8), (byte) (least       )
-        };
     }
 
 }

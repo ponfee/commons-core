@@ -22,11 +22,11 @@ public class JacksonDateDeserializer extends JsonDeserializer<Date> {
     private final WrappedFastDateFormat format;
 
     public JacksonDateDeserializer(String pattern) {
-        this(pattern, true);
+        this(pattern, false);
     }
 
-    public JacksonDateDeserializer(String pattern, boolean unifyParse) {
-        this(new WrappedFastDateFormat(pattern, unifyParse));
+    public JacksonDateDeserializer(String pattern, boolean strict) {
+        this(new WrappedFastDateFormat(pattern, strict));
     }
 
     public JacksonDateDeserializer(WrappedFastDateFormat format) {

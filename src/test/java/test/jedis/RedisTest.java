@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.AfterClass;
@@ -19,9 +20,9 @@ import redis.clients.jedis.ScanParams;
 import redis.clients.jedis.ScanResult;
 
 public class RedisTest {
-    private static final String masters = "DDT_CORE_CNSZ22_REDIS_CACHE";
-    private static final String servers = "10.202.40.105:8001 10.202.40.105:8002 10.202.40.107:8001";
-    private static final String password = "admin.123";
+    private static final String masters = "";
+    private static final String servers = "";
+    private static final String password = "";
     private static JedisClient client;
 
     @BeforeClass
@@ -104,6 +105,15 @@ public class RedisTest {
         }
 
         System.out.println(client.valueOps().mget(keys));
+    }
+
+    @Test
+    public void testsetbytes() {
+        System.out.println("".getBytes().length);
+        System.out.println(ArrayUtils.EMPTY_BYTE_ARRAY.length);
+        byte[] key = "xxx".getBytes();
+        client.valueOps().set(key, "".getBytes(), 9999);
+        System.out.println(client.valueOps().get(key).length);
     }
 
     @Test 

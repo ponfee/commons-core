@@ -22,48 +22,53 @@ import org.apache.commons.lang3.time.FastDateFormat;
 public class WrappedFastDateFormat extends DateFormat {
 
     private static final long serialVersionUID = 6837172676882367405L;
-    private static final FastDateFormat PARSER1 = FastDateFormat.getInstance("yyyyMMdd");
-    private static final FastDateFormat PARSER2 = FastDateFormat.getInstance("yyyy-MM-dd");
-    private static final FastDateFormat PARSER3 = FastDateFormat.getInstance("yyyyMMddHHmmss");
-    private static final FastDateFormat PARSER4 = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
-    private static final FastDateFormat PARSER5 = FastDateFormat.getInstance("yyyyMMddHHmmssSSS");
-    private static final FastDateFormat PARSER6 = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss.SSS");
-    private static final FastDateFormat PARSER7 = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-    private static final FastDateFormat PARSER8 = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    private static final FastDateFormat PARSER01 = FastDateFormat.getInstance("yyyy");
+    private static final FastDateFormat PARSER02 = FastDateFormat.getInstance("yyyyMM");
+    private static final FastDateFormat PARSER03 = FastDateFormat.getInstance("yyyy-MM");
+    private static final FastDateFormat PARSER04 = FastDateFormat.getInstance("yyyyMMdd");
+    private static final FastDateFormat PARSER05 = FastDateFormat.getInstance("yyyy-MM-dd");
+    private static final FastDateFormat PARSER06 = FastDateFormat.getInstance("yyyyMMddHHmmss");
+    private static final FastDateFormat PARSER07 = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
+    private static final FastDateFormat PARSER08 = FastDateFormat.getInstance("yyyyMMddHHmmssSSS");
+    private static final FastDateFormat PARSER09 = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss.SSS");
+    private static final FastDateFormat PARSER10 = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+    private static final FastDateFormat PARSER11 = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
     private final FastDateFormat format;
-    private final boolean unifyParse;
+    private final boolean strict;
 
     private final Calendar calendar;
     private final NumberFormat numberFormat;
 
     public WrappedFastDateFormat(String pattern) {
-        this(FastDateFormat.getInstance(pattern), true);
+        this(FastDateFormat.getInstance(pattern), false);
     }
 
-    public WrappedFastDateFormat(String pattern, boolean unifyParse) {
-        this(FastDateFormat.getInstance(pattern), unifyParse);
+    public WrappedFastDateFormat(String pattern, boolean strict) {
+        this(pattern, null, null, strict);
     }
 
     public WrappedFastDateFormat(String pattern, TimeZone timeZone, Locale locale) {
-        this(FastDateFormat.getInstance(pattern, timeZone, locale), true);
+        this(pattern, timeZone, locale, false);
     }
 
-    public WrappedFastDateFormat(String pattern, TimeZone timeZone, Locale locale, boolean unifyParse) {
-        this(FastDateFormat.getInstance(pattern, timeZone, locale), unifyParse);
+    public WrappedFastDateFormat(String pattern, TimeZone timeZone, 
+                                 Locale locale, boolean strict) {
+        this(FastDateFormat.getInstance(pattern, timeZone, locale), strict);
     }
 
-    public WrappedFastDateFormat(FastDateFormat format, boolean unifyParse) {
+    public WrappedFastDateFormat(FastDateFormat format, boolean strict) {
         this.format = format;
         this.calendar = Calendar.getInstance(format.getTimeZone(), format.getLocale());
 
         this.numberFormat = NumberFormat.getIntegerInstance(format.getLocale());
         this.numberFormat.setGroupingUsed(false);
-        this.unifyParse = unifyParse;
+        this.strict = strict;
     }
 
     @Override
-    public StringBuffer format(Date date, StringBuffer toAppendTo, FieldPosition fieldPosition) {
+    public StringBuffer format(Date date, StringBuffer toAppendTo, 
+                               FieldPosition fieldPosition) {
         return this.format.format(date, toAppendTo, fieldPosition);
     }
 
@@ -73,24 +78,23 @@ public class WrappedFastDateFormat extends DateFormat {
             return null;
         }
 
-        if (!unifyParse) {
+        if (strict) {
             return this.format.parse(source, pos);
         }
 
-        try {
-            switch (source.length()) {
-                case  8: return PARSER1.parse(source, pos);
-                case 10: return PARSER2.parse(source, pos);
-                case 14: return PARSER3.parse(source, pos);
-                case 19: return PARSER4.parse(source, pos);
-                case 17: return PARSER5.parse(source, pos);
-                case 23: return PARSER6.parse(source, pos);
-                case 28: return PARSER7.parse(source, pos);
-                case 24: return PARSER8.parse(source, pos);
-                default: return this.format.parse(source, pos);
-            }
-        } catch (Exception e) {
-            return this.format.parse(source, pos);
+        switch (source.length()) {
+            case  4: return PARSER01.parse(source, pos);
+            case  6: return PARSER02.parse(source, pos);
+            case  7: return PARSER03.parse(source, pos);
+            case  8: return PARSER04.parse(source, pos);
+            case 10: return PARSER05.parse(source, pos);
+            case 14: return PARSER06.parse(source, pos);
+            case 19: return PARSER07.parse(source, pos);
+            case 17: return PARSER08.parse(source, pos);
+            case 23: return PARSER09.parse(source, pos);
+            case 28: return PARSER10.parse(source, pos);
+            case 24: return PARSER11.parse(source, pos);
+            default: return this.format.parse(source, pos);
         }
     }
 
@@ -100,24 +104,23 @@ public class WrappedFastDateFormat extends DateFormat {
             return null;
         }
 
-        if (!unifyParse) {
+        if (strict) {
             return this.format.parse(source);
         }
 
-        try {
-            switch (source.length()) {
-                case  8: return PARSER1.parse(source);
-                case 10: return PARSER2.parse(source);
-                case 14: return PARSER3.parse(source);
-                case 19: return PARSER4.parse(source);
-                case 17: return PARSER5.parse(source);
-                case 23: return PARSER6.parse(source);
-                case 28: return PARSER7.parse(source);
-                case 24: return PARSER8.parse(source);
-                default: return this.format.parse(source);
-            }
-        } catch (Exception e) {
-            return this.format.parse(source);
+        switch (source.length()) {
+            case  4: return PARSER01.parse(source);
+            case  6: return PARSER02.parse(source);
+            case  7: return PARSER03.parse(source);
+            case  8: return PARSER04.parse(source);
+            case 10: return PARSER05.parse(source);
+            case 14: return PARSER06.parse(source);
+            case 19: return PARSER07.parse(source);
+            case 17: return PARSER08.parse(source);
+            case 23: return PARSER09.parse(source);
+            case 28: return PARSER10.parse(source);
+            case 24: return PARSER11.parse(source);
+            default: return this.format.parse(source);
         }
     }
 

@@ -513,7 +513,7 @@ public class Strings {
             return text;
         }
 
-        StringBuilder escaped = new StringBuilder(text.length());
+        StringBuilder escaped = new StringBuilder(text.length() + 8);
         char c;
         for (int i = 0, n = text.length(); i < n; i++) {
             c = text.charAt(i);

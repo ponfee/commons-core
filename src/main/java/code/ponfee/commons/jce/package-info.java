@@ -3,6 +3,7 @@
  * 以及 Message Authentication Code（MAC）算法的实现<p>
  * 
  * http://www.freebuf.com/articles/others-articles/136742.html
+ * https://www.jianshu.com/p/b10a892879a0
  * 
  * 1、密码：
  *   你知道什么：口令（密码）、口令摘要、质询/响应
