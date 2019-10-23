@@ -12,41 +12,42 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.reflect.GenericUtils;
+import code.ponfee.commons.util.Networks;
 import code.ponfee.commons.util.ObjectUtils;
 import code.ponfee.commons.util.SpringContextHolder;
 import code.ponfee.commons.ws.JAXWS;
 
 /**
- * webservice-url: http://localhost:8888/testws/address
+ * addressUrl: http://localhost:8888/testws/address
  * 
- * Endpoint.publish(webservice-url, new WebServiceImpl());
+ * Endpoint.publish(addressUrl, new WebServiceImpl());
  * 
  * wsdl-url: http://localhost:8888/testws/address?wsdl
  * 
- * xmlns:ns1="http://service.screen.ddt.sf.com/" name="TestScreenBizService" targetNamespace="http://impl.service.screen.ddt.sf.com/">
+ * xmlns:ns1="http://service.ws.ponfee.cn/" name="TestService" targetNamespace="http://impl.service.ws.ponfee.cn/">
  * 
- * namespaceURI: targetNamespace="http://impl.service.screen.ddt.sf.com/"
- *    localPart: name="TestScreenBizService"
+ * namespaceURI: targetNamespace="http://impl.service.ws.ponfee.cn/"
+ *    localPart: name="TestService"
  * 
  * @author Ponfee
  * @param <T>
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration(locations = { "classpath:spring-context.xml" })
-public abstract class WebServiceTest<T> {
+public abstract class WebServiceJaxTest<T> {
 
     private static final Set<String> PUBLISHED = new HashSet<>();
 
     private T client;
     private final String addressUrl;
-    private final String namespaceURI; // targetNamespace="http://impl.service.screen.ddt.sf.com/"
-    private final String localPart;    // name="TestScreenBizService"
+    private final String namespaceURI; // targetNamespace="http://impl.service.ws.ponfee.cn/"
+    private final String localPart;    // name="TestService"
 
-    protected WebServiceTest(String namespaceURI, String localPart) {
-        this("http://localhost:8888/testws/" + ObjectUtils.uuid32(), namespaceURI, localPart);
+    protected WebServiceJaxTest(String namespaceURI, String localPart) {
+        this("http://localhost:" + Networks.findAvailablePort(8000) + "/testws/" + ObjectUtils.uuid32(), namespaceURI, localPart);
     }
 
-    protected WebServiceTest(String url, String namespaceURI, String localPart) {
+    protected WebServiceJaxTest(String url, String namespaceURI, String localPart) {
         this.addressUrl = url;
         this.namespaceURI = namespaceURI;
         this.localPart = localPart;
@@ -59,26 +60,23 @@ public abstract class WebServiceTest<T> {
     @Before
     public final void setUp() {
         Class<T> clazz = GenericUtils.getActualTypeArgument(this.getClass());
-        synchronized (WebServiceTest.class) {
+        synchronized (WebServiceJaxTest.class) {
             int pos = StringUtils.ordinalIndexOf(addressUrl, "/", 3);
             if (pos == -1) {
                 pos = addressUrl.length();
             }
             String prefixUrl = addressUrl.substring(0, pos); // http://domain:port
-            if (!PUBLISHED.contains(prefixUrl)) {
-                JAXWS.publish(addressUrl, SpringContextHolder.getBean(clazz)); // 发布web service
-                PUBLISHED.add(addressUrl);
+            if (PUBLISHED.add(prefixUrl)) {
+                // 发布web service
+                JAXWS.publish(addressUrl, SpringContextHolder.getBean(clazz));
             } else {
-                System.out.println("The web service: " + prefixUrl + " are already published.");
+                System.err.println("The web service: " + prefixUrl + " are already published.");
             }
         }
 
-        /*JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
-        factory.setServiceClass(clazz);
-        factory.setAddress(addressUrl);
-        client = (T) factory.create();*/
-
+        // 创建客户端
         client = JAXWS.client(clazz, addressUrl + "?wsdl", namespaceURI, localPart);
+
         initiate();
     }
 
