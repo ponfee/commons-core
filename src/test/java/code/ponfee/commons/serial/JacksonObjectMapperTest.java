@@ -48,7 +48,7 @@ public class JacksonObjectMapperTest {
     }
 
     @Test
-    public void test3() throws JsonProcessingException {
+    public void test3() throws Exception {
         String json = "{\"id\": 0,\"title\": \"\",\"content\": \"xxx\",\"email\": \"ponfee.cn@gmail.com\",\"createDate\": \"20140202\",\"updateDate\": \"2019-10-18 16:02:52\"}";
         ObjectMapper mapper = new ObjectMapper();
         mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));

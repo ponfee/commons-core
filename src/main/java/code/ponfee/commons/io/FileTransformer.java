@@ -26,10 +26,11 @@ public class FileTransformer {
 
     private static final int FIX_LENGTH = 85;
 
-    private String includeFileExtensions = "(?i)^(.+\\.)(" + StringUtils.join(new String[] { "java", "txt",
-         "properties", "xml", "sql", "html", "htm", "jsp", "css", "js", "log", "bak", "ini", "csv" }, "|") + ")$";
+    private String includeFileExtensions = regexExtensions(
+        "java", "txt", "properties", "xml", "sql", "html", "htm", "jsp", 
+        "css", "js", "log", "bak", "ini", "csv", "yml", "yaml"
+    );
 
-    private final File source;
     private final String sourcePath;
     private final String targetPath;
     private final String encoding;
@@ -42,19 +43,18 @@ public class FileTransformer {
     }
 
     public FileTransformer(String source, String target, String encoding) {
-        this.source = new File(source);
-        this.sourcePath = this.source.getAbsolutePath();
-        File targetDir = Files.mkdir(target);
-        this.targetPath = targetDir.getAbsolutePath();
+        this.sourcePath = new File(source).getAbsolutePath();
+        this.targetPath = Files.mkdir(target).getAbsolutePath();
         this.encoding = encoding;
     }
 
     /**
      * 文件后缀名，不加“.”
+     * 
      * @param includeFileExtensions
      */
     public void setIncludeFileExtensions(String... includeFileExtensions) {
-        this.includeFileExtensions = "(?i)^(.+\\.)(" + StringUtils.join(includeFileExtensions, "|") + ")$";
+        this.includeFileExtensions = regexExtensions(includeFileExtensions);
     }
 
     public void setReplaceEach(String[] searchList, String[] replacementList) {
@@ -66,7 +66,7 @@ public class FileTransformer {
      * 转换（移）
      */
     public void transform() {
-        transform(this.source);
+        transform(new File(sourcePath));
     }
 
     public String getTransformLog() {
@@ -94,15 +94,15 @@ public class FileTransformer {
                 && !"void".equalsIgnoreCase(charset) 
                 && !encoding.equalsIgnoreCase(charset)
             ) {
-                log.append("转换　[").append(charset).append("]").append(StringUtils.rightPad(filepath, FIX_LENGTH)).append("　-->　");
+                log.append("转换：[").append(charset).append("]").append(StringUtils.rightPad(filepath, FIX_LENGTH)).append("  -->  ");
                 transform(file, dest, charset, encoding, searchList, replacementList);
                 log.append("[").append(encoding).append("]").append(dest.getAbsolutePath()).append("\n");
             } else if (isMatch && searchList != null && searchList.length > 0) {
-                log.append("替换　").append(StringUtils.rightPad(filepath, FIX_LENGTH)).append("　-->　");
+                log.append("替换：").append(StringUtils.rightPad(filepath, FIX_LENGTH)).append("  -->  ");
                 transform(file, dest, searchList, replacementList);
                 log.append(dest.getAbsolutePath()).append("\n");
             } else {
-                log.append("复制　").append(StringUtils.rightPad(filepath, FIX_LENGTH)).append("　-->　");
+                log.append("复制：").append(StringUtils.rightPad(filepath, FIX_LENGTH)).append("  -->  ");
                 transform(file, dest);
                 log.append(dest.getAbsolutePath()).append("\n");
             }
@@ -115,10 +115,10 @@ public class FileTransformer {
      * @param target
      */
     public static void transform(File source, File target) {
-        try ( FileInputStream sourceFile = new FileInputStream(source);
-              FileChannel sourceChannel = sourceFile.getChannel();
-              FileOutputStream targetFile = new FileOutputStream(target);
-              FileChannel targetChannel = targetFile.getChannel()
+        try (FileInputStream sourceFile = new FileInputStream(source);
+             FileChannel sourceChannel = sourceFile.getChannel();
+             FileOutputStream targetFile = new FileOutputStream(target);
+             FileChannel targetChannel = targetFile.getChannel()
         ) {
             sourceChannel.transferTo(0, sourceChannel.size(), targetChannel);
         } catch (IOException e) {
@@ -151,7 +151,8 @@ public class FileTransformer {
      * @param fromCharset
      * @param toCharset
      */
-    public static void transform(File source, File target, String fromCharset, String toCharset) {
+    public static void transform(File source, File target, 
+                                 String fromCharset, String toCharset) {
         transform(source, target, fromCharset, toCharset, null, null);
     }
 
@@ -163,7 +164,8 @@ public class FileTransformer {
      * @param searchList  the Strings to search for, no-op if null
      * @param replacementList  the Strings to replace them with, no-op if null
      */
-    public static void transform(File source, File target, String fromCharset, String toCharset,
+    public static void transform(File source, File target, 
+                                 String fromCharset, String toCharset,
                                  String[] searchList, String[] replacementList) {
         try (WrappedBufferedReader reader = new WrappedBufferedReader(source, fromCharset);
              WrappedBufferedWriter writer = new WrappedBufferedWriter(target, toCharset)
@@ -234,13 +236,18 @@ public class FileTransformer {
         String line;
         if (searchList != null && searchList.length > 0) {
             while ((line = reader.readLine()) != null) {
-                writer.writeln(StringUtils.replaceEach(line, searchList, replacementList));
+                writer.write(StringUtils.replaceEach(line, searchList, replacementList));
+                writer.write(Files.UNIX_LINE_SEPARATOR);
             }
         } else {
             while ((line = reader.readLine()) != null) {
-                writer.writeln(line);
+                writer.write(line);
+                writer.write(Files.UNIX_LINE_SEPARATOR);
             }
         }
     }
 
+    private static String regexExtensions(String... includeFileExtensions) {
+        return "(?i)^(.+\\.)(" + String.join("|", includeFileExtensions) + ")$";
+    }
 }
