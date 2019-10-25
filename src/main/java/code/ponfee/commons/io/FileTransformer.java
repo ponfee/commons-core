@@ -247,7 +247,7 @@ public class FileTransformer {
         }
     }
 
-    private static String regexExtensions(String... includeFileExtensions) {
-        return "(?i)^(.+\\.)(" + String.join("|", includeFileExtensions) + ")$";
+    private static String regexExtensions(String... fileExtensions) {
+        return "(?i)^(.+\\.)(" + String.join("|", fileExtensions) + ")$";
     }
 }
