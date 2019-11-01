@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -52,18 +53,10 @@ public class KeysOperations extends JedisOperations {
      * @return
      */
     public Set<String> keys(String keyWildcard) {
-        return call(shardedJedis -> {
-            List<CompletableFuture<Set<String>>> list = 
-            shardedJedis.getAllShards().stream().map(
-                jedis -> CompletableFuture.supplyAsync(
-                    () -> jedis.keys(keyWildcard), EXECUTOR
-                )
-            ).collect(Collectors.toList());
-            return list.stream()
-                       .map(CompletableFuture::join)
-                       .filter(CollectionUtils::isNotEmpty)
-                       .collect(HashSet::new, HashSet::addAll, HashSet::addAll);
-        }, null, keyWildcard);
+        Stream<Set<String>> stream = jedisClient.executeSharded(jedis -> jedis.keys(keyWildcard));
+
+        return stream.filter(CollectionUtils::isNotEmpty)
+                     .collect(HashSet::new, HashSet::addAll, HashSet::addAll);
     }
 
     /**
@@ -167,15 +160,9 @@ public class KeysOperations extends JedisOperations {
             }
 
             if (jedisList.size() < keys.length / BATCH_MULTIPLE) { // key数量大于分片数量的BATCH_MULTIPLE倍
-                List<CompletableFuture<Long>> list = jedisList.stream().map(
-                     jedis -> CompletableFuture.supplyAsync(() -> jedis.del(keys), EXECUTOR)
-                 ).collect(Collectors.toList());
-
-                //return list.stream().mapToLong(c -> ObjectUtils.orElse(c.join(), 0L)).sum()
-                return list.stream()
-                           .map(CompletableFuture::join)
-                           .filter(Objects::nonNull)
-                           .reduce(0L, Long::sum);
+                Stream<Long> stream = jedisClient.executeSharded(jedis -> jedis.del(keys));
+                //return stream.mapToLong(c -> ObjectUtils.orElse(c.join(), 0L)).sum()
+                return stream.filter(Objects::nonNull).reduce(0L, Long::sum);
             } else {
                 LongAdder adder = new LongAdder();
                 jedisClient.executePipelined(

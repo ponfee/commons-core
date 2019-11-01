@@ -23,7 +23,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.objenesis.ObjenesisHelper;
 
 import com.google.common.base.Preconditions;
@@ -41,10 +40,7 @@ public final class ObjectUtils {
     private static final char[] URL_SAFE_BASE64_CODES = 
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_".toCharArray();
 
-    private static final String[] DATE_PATTERN = { 
-        "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyyMMdd", "yyyyMMddHHmmss", 
-        "yyyyMMddHHmmssSSS", "yyyy-MM-dd HH:mm:ss.SSS", "yyyy-MM-dd HH:mm:ss.SSS" 
-    };
+    private static final WrappedFastDateFormat DATE_FORMAT = new WrappedFastDateFormat("yyyy-MM-dd HH:mm:ss");
 
     /**
      * Returns object toString
@@ -182,7 +178,7 @@ public final class ObjectUtils {
                         value = new Date(Numbers.toLong(str));
                     } else {
                         try {
-                            value = DateUtils.parseDate(str, DATE_PATTERN);
+                            value = DATE_FORMAT.parse(str);
                         } catch (ParseException e) {
                             throw new RuntimeException(e);
                         }

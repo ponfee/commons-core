@@ -15,7 +15,7 @@ public class PropertiesUtils {
     }
 
     public static String getString(Properties props, String name, String defaultValue) {
-        return props.getProperty(name, defaultValue);
+        return props == null ? null : props.getProperty(name, defaultValue);
     }
 
     // --------------------------------------------------------------boolean

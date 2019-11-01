@@ -370,6 +370,9 @@ public class ShardedJedisSentinelPool extends Pool<ShardedJedis> {
 
         @Override
         public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
             if (!(obj instanceof MasterListener)) {
                 return false;
             }

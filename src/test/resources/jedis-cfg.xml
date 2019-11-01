@@ -4,28 +4,6 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans 
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <!-- <bean id="jedisClient" class="code.ponfee.commons.jedis.JedisClient" destroy-method="destroy">
-        <constructor-arg index="0">
-            <bean class="redis.clients.jedis.JedisPoolConfig">
-                <property name="maxTotal" value="200" />
-                <property name="maxIdle" value="10" />
-                <property name="minIdle" value="1" />
-                <property name="maxWaitMillis" value="10000" />
-                <property name="testOnBorrow" value="false" />
-                <property name="testOnReturn" value="false" />
-                <property name="testWhileIdle" value="false" />
-                <property name="numTestsPerEvictionRun" value="-1" />
-                <property name="minEvictableIdleTimeMillis" value="60000" />
-                <property name="timeBetweenEvictionRunsMillis" value="30000" />
-            </bean>
-        </constructor-arg>
-        <constructor-arg index="1" value="127.0.0.1:6379,127.0.0.1:6380," />
-        <constructor-arg index="2" value="5000" type="int" />
-        <constructor-arg index="3">
-            <bean class="code.ponfee.commons.serial.FstSerializer" />
-        </constructor-arg>
-    </bean> -->
-
     <bean id="jedisClient" class="code.ponfee.commons.jedis.JedisClient" destroy-method="destroy">
         <constructor-arg index="0">
             <bean class="redis.clients.jedis.JedisPoolConfig">
@@ -41,13 +19,11 @@
                 <property name="timeBetweenEvictionRunsMillis" value="30000" />
             </bean>
         </constructor-arg>
-        <!-- redis.sentinel.master=REDIS_SENTINEL
-        redis.sentinel.server=112.74.170.75:16379,112.74.170.75:16380
-        redis.sentinel.passwd= -->
         <constructor-arg index="1" value="REDIS_SENTINEL" />
         <constructor-arg index="2" value="112.74.170.75:16379,112.74.170.75:16380" />
         <constructor-arg index="3" value="" />
-        <constructor-arg index="4">
+        <constructor-arg index="4" value="5000" />
+        <constructor-arg index="5">
             <bean class="code.ponfee.commons.serial.FstSerializer" />
         </constructor-arg>
     </bean>

@@ -7,8 +7,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -265,6 +268,34 @@ public class JedisClient implements DisposableBean {
         ShardedJedisPipeline pipeline = shardedJedis.pipelined();
         coll.forEach(elem -> action.accept(pipeline, elem));
         pipeline.sync();
+    }
+
+    // --------------------------------------------------------execute each 
+    public <R> Stream<R> executeSharded(Function<Jedis,  R> action) {
+        return valueOps.call(
+            shardedJedis -> executeSharded(shardedJedis, action), null
+        );
+    }
+
+    /**
+     * 
+     * @param shardedJedis the shardedJedis
+     * @param action       the BiFunction for jedis exec batch action
+     * @return a stream for batch result
+     */
+    public <R> Stream<R> executeSharded(ShardedJedis shardedJedis,
+                                        Function<Jedis, R> action) {
+        Stream<Jedis> stream = shardedJedis.getAllShards().stream();
+
+        List<CompletableFuture<R>> result = stream.map(
+            jedis -> CompletableFuture.supplyAsync(
+                () -> action.apply(jedis), JedisOperations.EXECUTOR
+            )
+        ).collect(
+            Collectors.toList()
+        );
+
+        return result.stream().map(CompletableFuture::join);
     }
 
     // --------------------------------------------------------package modify methods

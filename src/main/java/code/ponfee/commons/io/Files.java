@@ -326,10 +326,11 @@ public final class Files {
                 break;
         }
 
-        int trim = 1;
+        int trim = 0;
         // last character isn't a digit
         char c = humanSize.charAt(humanSize.length() - 1);
         if (c == 'B') {
+            trim++;
             c = humanSize.charAt(humanSize.length() - 2);
         }
         if (!Character.isDigit(c)) {
@@ -363,7 +364,9 @@ public final class Files {
                     throw new RuntimeException("Invalid unit " + c); // cannot happened
             }
         }
-        humanSize = humanSize.substring(0, humanSize.length() - trim);
+        if (trim > 0) {
+            humanSize = humanSize.substring(0, humanSize.length() - trim);
+        }
         try {
             return factor * Numbers.toLong(humanSize);
         } catch (NumberFormatException e) {

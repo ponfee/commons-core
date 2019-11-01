@@ -67,7 +67,7 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
             return null;
         }
 
-        return page.transform(this);
+        return page.map(this);
     }
 
     public final Result<T> convertResultBean(Result<S> result) {
@@ -164,7 +164,7 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
         if (page == null) {
             return null;
         }
-        return page.transform(converter);
+        return page.map(converter);
     }
 
     public static <S, T> Result<T> convertResultBean(

@@ -1,5 +1,13 @@
 package code.ponfee.commons.io;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import info.monitorenter.cpdetector.io.ASCIIDetector;
 import info.monitorenter.cpdetector.io.ByteOrderMarkDetector;
 import info.monitorenter.cpdetector.io.CodepageDetectorProxy;
@@ -7,15 +15,6 @@ import info.monitorenter.cpdetector.io.ICodepageDetector;
 import info.monitorenter.cpdetector.io.JChardetFacade;
 import info.monitorenter.cpdetector.io.ParsingDetector;
 import info.monitorenter.cpdetector.io.UnicodeDetector;
-import org.apache.commons.lang3.StringUtils;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.channels.FileChannel;
 
 /**
  * 文件编码转换与文本内容替换
@@ -85,11 +84,11 @@ public class FileTransformer {
             }
         } else {
             String filepath = file.getAbsolutePath(), charset;
-            File dest = Files.touch(targetPath + filepath.substring(sourcePath.length()));
+            File dest = new File(targetPath + filepath.substring(sourcePath.length()));
             boolean isMatch = file.getName().matches(includeFileExtensions);
 
-            if (   StringUtils.isNotEmpty(encoding) 
-                && isMatch 
+            if (   isMatch 
+                && StringUtils.isNotEmpty(encoding) 
                 && (charset = guessEncoding(filepath)) != null
                 && !"void".equalsIgnoreCase(charset) 
                 && !encoding.equalsIgnoreCase(charset)
@@ -97,7 +96,7 @@ public class FileTransformer {
                 log.append("转换：[").append(charset).append("]").append(StringUtils.rightPad(filepath, FIX_LENGTH)).append("  -->  ");
                 transform(file, dest, charset, encoding, searchList, replacementList);
                 log.append("[").append(encoding).append("]").append(dest.getAbsolutePath()).append("\n");
-            } else if (isMatch && searchList != null && searchList.length > 0) {
+            } else if (isMatch && ArrayUtils.isNotEmpty(searchList)) {
                 log.append("替换：").append(StringUtils.rightPad(filepath, FIX_LENGTH)).append("  -->  ");
                 transform(file, dest, searchList, replacementList);
                 log.append(dest.getAbsolutePath()).append("\n");
@@ -111,16 +110,15 @@ public class FileTransformer {
 
     /**
      * 采用nio方式转移
+     * 
      * @param source
      * @param target
      */
     public static void transform(File source, File target) {
-        try (FileInputStream sourceFile = new FileInputStream(source);
-             FileChannel sourceChannel = sourceFile.getChannel();
-             FileOutputStream targetFile = new FileOutputStream(target);
-             FileChannel targetChannel = targetFile.getChannel()
-        ) {
-            sourceChannel.transferTo(0, sourceChannel.size(), targetChannel);
+        try {
+            target.getParentFile().mkdirs();
+            //com.google.common.io.Files.copy(source, source);
+            java.nio.file.Files.copy(source.toPath(), target.toPath());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -134,6 +132,7 @@ public class FileTransformer {
      */
     public static void transform(File source, File target,
                                  String[] searchList, String[] replacementList) {
+        Files.touch(target);
         try (WrappedBufferedReader reader = new WrappedBufferedReader(source);
              WrappedBufferedWriter writer = new WrappedBufferedWriter(target)
         ) {
@@ -167,6 +166,7 @@ public class FileTransformer {
     public static void transform(File source, File target, 
                                  String fromCharset, String toCharset,
                                  String[] searchList, String[] replacementList) {
+        Files.touch(target);
         try (WrappedBufferedReader reader = new WrappedBufferedReader(source, fromCharset);
              WrappedBufferedWriter writer = new WrappedBufferedWriter(target, toCharset)
         ) {

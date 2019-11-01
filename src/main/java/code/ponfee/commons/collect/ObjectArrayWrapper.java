@@ -32,6 +32,9 @@ public class ObjectArrayWrapper<T> implements
 
     @Override
     public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
         if (other instanceof ObjectArrayWrapper) {
             return Arrays.equals(array, ((ObjectArrayWrapper<?>) other).array);
         }

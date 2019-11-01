@@ -14,6 +14,8 @@ import org.springframework.cglib.beans.BeanCopier;
 
 import com.google.common.collect.Lists;
 
+import code.ponfee.commons.reflect.ClassUtils;
+
 /**
  * <pre>
  * 参考guthub开源的mybatis分页工具
@@ -339,7 +341,8 @@ public class Page<T> implements java.io.Serializable {
      * 
      * @return
      */
-    public @Transient boolean isEmpty() {
+    @Transient
+    public boolean isEmpty() {
         return CollectionUtils.isEmpty(rows);
     }
 
@@ -347,7 +350,7 @@ public class Page<T> implements java.io.Serializable {
      * 处理
      * @param action
      */
-    public void process(Consumer<T> action) {
+    public void forEach(Consumer<T> action) {
         Objects.requireNonNull(action);
         if (isEmpty()) {
             return;
@@ -357,17 +360,18 @@ public class Page<T> implements java.io.Serializable {
 
     /**
      * 转换
-     * @param transformer
+     * 
+     * @param mapper
      * @return
      */
-    public <E> Page<E> transform(Function<T, E> transformer) {
-        Objects.requireNonNull(transformer);
+    public <E> Page<E> map(Function<T, E> mapper) {
+        Objects.requireNonNull(mapper);
         Page<E> page = this.copy();
         if (isEmpty()) {
             return page;
         }
         page.setRows(
-            rows.stream().map(transformer).collect(Collectors.toList())
+            rows.stream().map(mapper).collect(Collectors.toList())
         );
         return page;
     }
@@ -402,15 +406,15 @@ public class Page<T> implements java.io.Serializable {
     private String rowsToString() {
         // GenericUtils.getFieldGenericType(ClassUtils.getField(Page.class, "rows"))
         if (rows.isEmpty()) {
-            return "List<T>(0)";
+            return "List<>(0)";
         }
 
-        T first = rows.get(0);
-        if (first == null) {
-            return "List<T>(" + rows.size() + ")";
+        T row = rows.stream()/*.limit(10)*/.filter(Objects::nonNull).findFirst().orElse(null);
+        if (row == null) {
+            return "List<>(" + rows.size() + ")";
         }
 
-        return "List<" + first.getClass().getCanonicalName() + ">(" + rows.size() + ")";
+        return "List<" + ClassUtils.getClassName(row.getClass()) + ">(" + rows.size() + ")";
     }
 
 }

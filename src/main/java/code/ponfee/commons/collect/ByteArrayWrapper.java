@@ -35,6 +35,9 @@ public final class ByteArrayWrapper implements
 
     @Override
     public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
         if (other instanceof ByteArrayWrapper) {
             return Arrays.equals(array, ((ByteArrayWrapper) other).array);
         }

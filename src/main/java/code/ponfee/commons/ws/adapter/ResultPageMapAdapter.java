@@ -41,7 +41,7 @@ public abstract class ResultPageMapAdapter<K, V>
             return v.copy(Page.empty());
         }
 
-        return v.copy(v.getData().transform(items -> {
+        return v.copy(v.getData().map(items -> {
             if (items == null) {
                 return null;
             }
@@ -59,7 +59,7 @@ public abstract class ResultPageMapAdapter<K, V>
             return v.copy(Page.empty());
         }
 
-        return v.copy(v.getData().transform(map -> {
+        return v.copy(v.getData().map(map -> {
             if (map == null) {
                 return null;
             }

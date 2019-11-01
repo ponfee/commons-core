@@ -228,13 +228,14 @@ public class JedisClientTester {
 
     @Test
     public void testDels() {
-        int n = 3;
+        int n = 100;
         String[] keys = new String[n];
         for (int i = 0; i < n; i++) {
-            keys[i] = ObjectUtils.uuid32();
+            keys[i] = "testDels:"+ObjectUtils.uuid32();
             jedisClient.valueOps().set(keys[i], keys[i]);
         }
         System.out.println("mget: "+jedisClient.valueOps().mget(keys).size());
+        System.out.println("keys: "+jedisClient.keysOps().keys("testDels:*"));
         System.out.println("dels: "+jedisClient.keysOps().del(keys));
         System.out.println("mget: "+jedisClient.valueOps().mget(keys).size());
     }

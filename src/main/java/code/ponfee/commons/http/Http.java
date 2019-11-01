@@ -71,10 +71,10 @@ public final class Http {
     private final HttpMethod method; // 请求方法
 
     private final Map<String, String> headers = new HashMap<>(1);   // http请求头
-    private final Map<String, Object> params  = new HashMap<>(1);   // http请求参数
+    private final Map<String, Object> params  = new HashMap<>(1);   // http请求参数：queryString
     private final List<MimePart> parts        = new ArrayList<>(1); // http文件上传
 
-    private String data; // 请求data
+    private String data; // request body
     private int connectTimeout = 1000 * 3; // 连接超时时间
     private int readTimeout = 1000 * 7; // 读取返回数据超时时间（socket timeout）
     private Boolean encode = Boolean.TRUE; // 是否编码
@@ -185,6 +185,8 @@ public final class Http {
     /**
      * 发送到服务器的查询字符串或json串：name1=value1&name2=value2
      * 
+     * application/x-www-form-urlencoded
+     * 
      * @param params the http params
      * @param charset the charset
      * @return a reference to this object
@@ -201,7 +203,7 @@ public final class Http {
      */
     public Http data(String data) {
         Preconditions.checkState(this.data == null, "http data are already set.");
-        Preconditions.checkArgument(data != null && !data.isEmpty(), "data cannot be empty.");
+        Preconditions.checkArgument(data != null && data.length() != 0, "data cannot be empty.");
         this.data = data;
         return this;
     }
@@ -213,15 +215,15 @@ public final class Http {
 
     /**
      * 文件上传
-     * @param formName 表单名称
-     * @param fileName 附件名称
-     * @param partType 附件类型，value of the Content-Type part header
-     * @param mimePart 上传数据
+     * @param formName    表单名称
+     * @param fileName    附件名称
+     * @param contentType 附件类型，value of the Content-Type part header
+     * @param mimePart    上传数据
      * @return
      */
     public Http addPart(String formName, String fileName, 
-                        String partType, Object mimePart) {
-        this.parts.add(new MimePart(formName, fileName, partType, mimePart));
+                        String contentType, Object mimePart) {
+        this.parts.add(new MimePart(formName, fileName, contentType, mimePart));
         return this;
     }
 
@@ -457,7 +459,7 @@ public final class Http {
         }
 
         for (MimePart part : parts) {
-            request.part(part.formName, part.fileName, part.partType, part.stream);
+            request.part(part.formName, part.fileName, part.contentType, part.stream);
         }
 
         status = request.status();
@@ -488,10 +490,10 @@ public final class Http {
     private static final class MimePart {
         final String formName;    // 表单域字段名
         final String fileName;    // 文件名
-        final String partType;    // 附件类型
+        final String contentType; // 附件类型
         final InputStream stream; // 文件流
 
-        MimePart(String formName, String fileName, String partType, Object mime) {
+        MimePart(String formName, String fileName, String contentType, Object mime) {
             if (mime instanceof byte[]) {
                 this.stream = new ByteArrayInputStream((byte[]) mime);
             } else if (mime instanceof Byte[]) {
@@ -506,13 +508,14 @@ public final class Http {
             } else if (mime instanceof InputStream) {
                 this.stream = (InputStream) mime;
             } else {
-                throw new IllegalArgumentException("mime must be one of them: file, "
-                                                 + "file path, byte array, input stream.");
+                throw new IllegalArgumentException(
+                    "mime must be one of them: file, file path, byte array, input stream."
+                );
             }
 
-            this.formName = formName;
-            this.fileName = fileName;
-            this.partType = partType;
+            this.formName    = formName;
+            this.fileName    = fileName;
+            this.contentType = contentType;
         }
     }
 

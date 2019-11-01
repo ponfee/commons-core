@@ -1,7 +1,5 @@
 package code.ponfee.commons.model;
 
-import java.io.Serializable;
-
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -100,36 +98,37 @@ import com.google.common.collect.ImmutableList;
  * 
  * @author Ponfee
  */
-public final class ResultCode implements Serializable {
+public final class ResultCode implements CodeMsg {
     private static final long serialVersionUID = -679746150956111045L;
 
     private static final int SYS_CODE_MIN = 0;
     private static final int SYS_CODE_MAX = 999;
+    private static final String SYS_ERROR = "The sys code must between " + SYS_CODE_MIN + " and " + SYS_CODE_MAX + ".";
 
     /** 公用结果码 */
-    public static final ResultCode OK                 = create0(200, "OK");
-    public static final ResultCode CREATED            = create0(201, "已创建"); // POST
-    public static final ResultCode PROCESSING         = create0(202, "处理中");
-    public static final ResultCode NO_CONTENT         = create0(204, "已处理，无返回内容"); // PUT, PATCH, DELETE
-    public static final ResultCode REST_CONTENT       = create0(205, "请重置");
+    public static final ResultCode OK                 = of0(200, "OK");
+    public static final ResultCode CREATED            = of0(201, "已创建"); // POST
+    public static final ResultCode PROCESSING         = of0(202, "处理中");
+    public static final ResultCode NO_CONTENT         = of0(204, "已处理，无返回内容"); // PUT, PATCH, DELETE
+    public static final ResultCode REST_CONTENT       = of0(205, "请重置");
 
-    public static final ResultCode REDIRECT           = create0(302, "重定向");
+    public static final ResultCode REDIRECT           = of0(302, "重定向");
 
-    public static final ResultCode BAD_REQUEST        = create0(400, "参数错误");
-    public static final ResultCode UNAUTHORIZED       = create0(401, "未授权"); // 
-    public static final ResultCode FORBIDDEN          = create0(403, "拒绝访问"); // BACKLIST
-    public static final ResultCode NOT_FOUND          = create0(404, "资源未找到"); // GET return null
-    public static final ResultCode NOT_ALLOWED        = create0(405, "方法不允许");
-    public static final ResultCode NOT_ACCEPTABLE     = create0(406, "请求格式错误");
-    public static final ResultCode REQUEST_TIMEOUT    = create0(408, "请求超时");
-    public static final ResultCode OPS_CONFLICT       = create0(409, "操作冲突"); // DATABSE UPDATE DELETE FAIL
-    public static final ResultCode UNSUPPORT_MEDIA    = create0(415, "格式不支持");
+    public static final ResultCode BAD_REQUEST        = of0(400, "参数错误");
+    public static final ResultCode UNAUTHORIZED       = of0(401, "未授权"); // 
+    public static final ResultCode FORBIDDEN          = of0(403, "拒绝访问"); // BACKLIST
+    public static final ResultCode NOT_FOUND          = of0(404, "资源未找到"); // GET return null
+    public static final ResultCode NOT_ALLOWED        = of0(405, "方法不允许");
+    public static final ResultCode NOT_ACCEPTABLE     = of0(406, "请求格式错误");
+    public static final ResultCode REQUEST_TIMEOUT    = of0(408, "请求超时");
+    public static final ResultCode OPS_CONFLICT       = of0(409, "操作冲突"); // DATABSE UPDATE DELETE FAIL
+    public static final ResultCode UNSUPPORT_MEDIA    = of0(415, "格式不支持");
 
-    public static final ResultCode SERVER_ERROR       = create0(500, "服务器错误");
-    public static final ResultCode BAD_GATEWAY        = create0(502, "网关错误");
-    public static final ResultCode SERVER_UNAVAILABLE = create0(503, "服务不可用");
-    public static final ResultCode GATEWAY_TIMEOUT    = create0(504, "网关超时");
-    public static final ResultCode SERVER_UNSUPPORT   = create0(505, "服务不支持");
+    public static final ResultCode SERVER_ERROR       = of0(500, "服务器错误");
+    public static final ResultCode BAD_GATEWAY        = of0(502, "网关错误");
+    public static final ResultCode SERVER_UNAVAILABLE = of0(503, "服务不可用");
+    public static final ResultCode GATEWAY_TIMEOUT    = of0(504, "网关超时");
+    public static final ResultCode SERVER_UNSUPPORT   = of0(505, "服务不支持");
 
     public static final ImmutableList<Integer> SUCCESS_CODES = ImmutableList.of(
         OK.getCode(), CREATED.getCode(), NO_CONTENT.getCode()
@@ -150,8 +149,6 @@ public final class ResultCode implements Serializable {
         this.msg = msg;
     }
 
-    private static final String SYS_ERROR = "The sys code must between "
-                           + SYS_CODE_MIN + " and " + SYS_CODE_MAX + ".";
     /**
      * inner create, only call in this class
      * use in assign the commons code 
@@ -159,7 +156,7 @@ public final class ResultCode implements Serializable {
      * @param msg
      * @return
      */
-    private static ResultCode create0(int code, String msg) {
+    private static ResultCode of0(int code, String msg) {
         if (code < SYS_CODE_MIN || code > SYS_CODE_MAX) {
             throw new IllegalArgumentException(SYS_ERROR);
         }
@@ -174,7 +171,7 @@ public final class ResultCode implements Serializable {
      * @param msg
      * @return
      */
-    public static ResultCode create(int code, String msg) {
+    public static ResultCode of(int code, String msg) {
         if (code >= SYS_CODE_MIN && code <= SYS_CODE_MAX) {
             throw new IllegalArgumentException(BIZ_ERROR);
         }
@@ -185,10 +182,12 @@ public final class ResultCode implements Serializable {
         return SUCCESS_CODES.contains(code);
     }
 
+    @Override
     public int getCode() {
         return code;
     }
 
+    @Override
     public String getMsg() {
         return msg;
     }

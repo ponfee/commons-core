@@ -111,9 +111,7 @@ public final class Collects {
      */
     public static Result<Page<Object[]>> map2array(
         Result<Page<LinkedHashMap<String, Object>>> source) {
-        return source.copy(source.getData().transform(
-            Collects::map2array
-        ));
+        return source.copy(source.getData().map(Collects::map2array));
     }
 
     /**
@@ -124,7 +122,7 @@ public final class Collects {
      */
     public static Result<Page<Object[]>> map2array(Result<Page<Map<String, Object>>> source, 
                                                    String... fields) {
-        return source.copy(source.getData().transform(map -> map2array(map, fields)));
+        return source.copy(source.getData().map(map -> map2array(map, fields)));
     }
 
     // ----------------------------------------------------------------to List, Map and Array

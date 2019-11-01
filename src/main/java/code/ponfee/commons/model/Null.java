@@ -18,10 +18,10 @@ import java.lang.reflect.Constructor;
  */
 public final class Null {
 
-    public static final Constructor<Null> NONE_CONSTRUCTOR;
+    public static final Constructor<Null> UNCONSTRUCTOR;
     static {
         try {
-            NONE_CONSTRUCTOR = Null.class.getDeclaredConstructor();
+            UNCONSTRUCTOR = Null.class.getDeclaredConstructor();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
