@@ -92,9 +92,9 @@ public final class WebUtils {
      * @return
      */
     public static String getClientIp(HttpServletRequest req) {
-        boolean invalid = true;
+        boolean invalid;
         String ip = req.getHeader("x-forwarded-for");
-        if (invalid && (invalid = isInvalidIp(ip))) {
+        if (invalid = isInvalidIp(ip)) {
             ip = req.getHeader("Proxy-Client-IP");
         }
         if (invalid && (invalid = isInvalidIp(ip))) {
