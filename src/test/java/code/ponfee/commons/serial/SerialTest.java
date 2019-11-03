@@ -24,7 +24,7 @@ import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.log.LogInfo;
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.reflect.ClassUtils;
-import code.ponfee.commons.serial.WrappedSerializer.Serializers;
+import code.ponfee.commons.util.Convertors;
 import code.ponfee.commons.util.SecureRandoms;
 
 /**
@@ -240,5 +240,12 @@ public class SerialTest {
         ToStringSerializer ser = new ToStringSerializer();
         System.out.println(ser.deserialize(ser.serialize(1), int.class));
         System.out.println(ser.deserialize(ser.serialize(true), boolean.class));
+    }
+    
+    @Test
+    public void test7() {
+        System.out.println(Serializers.of(int.class));
+        System.out.println(Convertors.of(int.class));
+        
     }
 }
