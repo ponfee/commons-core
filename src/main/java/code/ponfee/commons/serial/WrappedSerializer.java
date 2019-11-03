@@ -227,7 +227,7 @@ public class WrappedSerializer extends Serializer {
         } else if (value instanceof ByteBuffer) {
             return ((ByteBuffer) value).array();
         } else if (value instanceof Enum) {
-            //return Bytes.toBytes(((Enum<?>) value).ordinal());
+            // return serialize(((Enum<?>) value).ordinal());
             return serialize(((Enum<?>) value).name());
         } else {
             return other.serialize(value);
@@ -244,8 +244,12 @@ public class WrappedSerializer extends Serializer {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private <T> T deserialize0(byte[] value, Class<T> type) {
-        if (value == null || value.length == 0) { // null or empty byte array
-            return (T) (byte[].class == type ? value : PRIMITIVE_DEFAULT_VALUE.get(type));
+        if (value == null || value.length == 0) {
+            if (type.isPrimitive()) {
+                return (T) PRIMITIVE_DEFAULT_VALUE.get(type);
+            } else if (value == null) {
+                return null;
+            }
         }
 
         Serializers serializer = SERIALIZER_MAPPING.get(type);

@@ -239,7 +239,7 @@ public final class Bytes {
      * @return a char array
      */
     public static char[] toCharArray(byte[] bytes, Charset charset) {
-        //return new String(bytes, Charset.forName(charset)).toCharArray();
+        //return new String(bytes, charset).toCharArray();
         ByteBuffer buffer = ByteBuffer.allocate(bytes.length);
         buffer.put(bytes);
         buffer.flip();
@@ -264,7 +264,7 @@ public final class Bytes {
      * @return a byte array
      */
     public static byte[] toBytes(char[] chars, Charset charset) {
-        //return new String(chars).getBytes(Charset.forName(charset));
+        //return new String(chars).getBytes(charset);
         CharBuffer buffer = CharBuffer.allocate(chars.length);
         buffer.put(chars);
         buffer.flip();
