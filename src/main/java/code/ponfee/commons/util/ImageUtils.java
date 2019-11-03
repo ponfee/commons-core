@@ -2,7 +2,6 @@ package code.ponfee.commons.util;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,16 +41,16 @@ public class ImageUtils {
 
     /**
      * 横向合并图片
-     * @param imgs
      * @param format
+     * @param imgs
      * @return
      */
-    public static byte[] mergeHorizontal(List<byte[]> imgs, String format) {
+    public static byte[] mergeHorizontal(String format, InputStream... imgs) {
         int width = 0, height = 0;
         try {
             List<BufferedImage> list = new ArrayList<>();
-            for (byte[] img : imgs) {
-                BufferedImage i = ImageIO.read(new ByteArrayInputStream(img));
+            for (InputStream img : imgs) {
+                BufferedImage i = ImageIO.read(img);
                 width += i.getWidth();// 图片宽度
                 height = Math.max(height, i.getHeight());
                 list.add(i);
@@ -77,16 +76,16 @@ public class ImageUtils {
 
     /**
      * 纵向合并图片
-     * @param imgs
      * @param format  png,jpeg,gif
+     * @param imgs
      * @return
      */
-    public static byte[] mergeVertical(List<byte[]> imgs, String format) {
+    public static byte[] mergeVertical(String format, InputStream... imgs) {
         try {
             int width = 0, height = 0;
             List<BufferedImage> list = new ArrayList<>();
-            for (byte[] img : imgs) {
-                BufferedImage i = ImageIO.read(new ByteArrayInputStream(img));
+            for (InputStream img : imgs) {
+                BufferedImage i = ImageIO.read(img);
                 height += i.getHeight();// 图片宽度
                 width = Math.max(width, i.getWidth());
                 list.add(i);
@@ -120,12 +119,12 @@ public class ImageUtils {
      *     黑    rgb:-16777216-->0,0,0
      *     黑    rgb:-939524096-->0,0,0
      *  </pre>
-     * @param bytes
+     * @param image
      * @return
      */
-    public static byte[] transparent(byte[] bytes, int refer, int normal) {
+    public static byte[] transparent(InputStream image, int refer, int normal) {
         try {
-            ImageIcon icon = new ImageIcon(ImageIO.read(new ByteArrayInputStream(bytes)));
+            ImageIcon icon = new ImageIcon(ImageIO.read(image));
             BufferedImage img = new BufferedImage(
                 icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_4BYTE_ABGR
             );
@@ -156,14 +155,13 @@ public class ImageUtils {
 
     /**
      * 图片类型
-     * @param bytes
+     * @param img
      * @return
      * @throws IOException
      */
-    public static String[] getImageType(byte[] bytes) throws IOException {
+    public static String[] getImageType(InputStream img) throws IOException {
         List<String> types = new ArrayList<>();
-        ByteArrayInputStream in = new ByteArrayInputStream(bytes);
-        try (MemoryCacheImageInputStream m = new MemoryCacheImageInputStream(in)) {
+        try (MemoryCacheImageInputStream m = new MemoryCacheImageInputStream(img)) {
             for (Iterator<ImageReader> i = ImageIO.getImageReaders(m); i.hasNext(); ) {
                 types.add(i.next().getFormatName());
             }

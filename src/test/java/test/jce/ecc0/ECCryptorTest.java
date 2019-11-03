@@ -7,7 +7,7 @@ import org.junit.Test;
 import code.ponfee.commons.jce.ECParameters;
 import code.ponfee.commons.jce.implementation.Cryptor;
 import code.ponfee.commons.jce.implementation.Key;
-import code.ponfee.commons.jce.implementation.NullCryptor;
+import code.ponfee.commons.jce.implementation.NoopCryptor;
 import code.ponfee.commons.jce.implementation.ecc.ECCryptor;
 import code.ponfee.commons.jce.implementation.ecc.EllipticCurve;
 import code.ponfee.commons.util.IdcardResolver;
@@ -36,7 +36,7 @@ public class ECCryptorTest {
 
     @Test
     public void testNullCryptor() {
-        Cryptor cs = new NullCryptor();
+        Cryptor cs = NoopCryptor.SINGLETON;
         Key dk = cs.generateKey();
         Key ek = dk.getPublic();
 

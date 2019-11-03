@@ -1,5 +1,6 @@
 package code.ponfee.commons.pdf.sign;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
@@ -25,7 +26,7 @@ public class Signer {
         this.priKey = priKey;
         this.certChain = certChain;
         if (transparent) { // 图片透明化处理
-            img = ImageUtils.transparent(img, 250, 235);
+            img = ImageUtils.transparent(new ByteArrayInputStream(img), 250, 235);
         }
         try {
             this.image = Image.getInstance(img);

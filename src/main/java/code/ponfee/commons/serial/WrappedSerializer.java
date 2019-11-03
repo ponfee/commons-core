@@ -18,20 +18,28 @@ import com.google.common.collect.ImmutableMap;
 
 import code.ponfee.commons.collect.ByteArrayTrait;
 import code.ponfee.commons.collect.ByteArrayWrapper;
+import code.ponfee.commons.io.GzipProcessor;
 import code.ponfee.commons.math.Numbers;
 import code.ponfee.commons.reflect.ClassUtils;
 import code.ponfee.commons.util.Bytes;
 import code.ponfee.commons.util.Enums;
 
 /**
- * 序列化工具类
+ * 
+ * Wrapped other Serializer
  * 
  * @author Ponfee
  */
-public final class Serializations {
+public class WrappedSerializer extends Serializer {
 
-    public static final byte BYTE_TRUE = (byte) 0xFF;
-    public static final byte BYTE_FALSE = 0x00;
+    public static final WrappedSerializer WRAPPED_KRYO_SERIALIZER = 
+        new WrappedSerializer(KryoSerializer.INSTANCE);
+
+    public static final WrappedSerializer WRAPPED_TOSTRING_SERIALIZER = 
+        new WrappedSerializer(new ToStringSerializer());
+
+    public static final byte BOOL_TRUE_BYTE = (byte) 0xFF;
+    public static final byte BOOL_FALSE_BYTE = 0x00;
 
     private static final Map<Class<?>, Object> PRIMITIVE_DEFAULT_VALUE = 
         new ImmutableMap.Builder<Class<?>, Object>()
@@ -50,94 +58,118 @@ public final class Serializations {
         Objects.nonNull(Serializers.BOOLEAN); // init
     }
 
-    public static byte[] serialize(boolean value) {
-        return new byte[] { value ? BYTE_TRUE : BYTE_FALSE };
+    private final Serializer other;
+
+    public WrappedSerializer() {
+        this(KryoSerializer.INSTANCE);
     }
 
-    public static byte[] serialize(byte value) {
+    public WrappedSerializer(Serializer other) {
+        this.other = other;
+    }
+
+    @Override
+    protected byte[] serialize0(Object obj, boolean compress) {
+        byte[] bytes = serialize0(obj);
+        return compress ? GzipProcessor.compress(bytes) : bytes;
+    }
+
+    @Override
+    protected <T> T deserialize0(byte[] bytes, Class<T> type, boolean compress) {
+        if (compress) {
+            bytes = GzipProcessor.decompress(bytes);
+        }
+        return deserialize0(bytes, type);
+    }
+
+    public byte[] serialize(boolean value) {
+        return new byte[] { value ? BOOL_TRUE_BYTE : BOOL_FALSE_BYTE };
+    }
+
+    public byte[] serialize(byte value) {
         return new byte[] { value };
     }
 
-    public static byte[] serialize(short value) {
+    public byte[] serialize(short value) {
         return Bytes.toBytes(value);
     }
 
-    public static byte[] serialize(char value) {
+    public byte[] serialize(char value) {
         return Bytes.toBytes(value);
     }
 
-    public static byte[] serialize(int value) {
+    public byte[] serialize(int value) {
         return Bytes.toBytes(value);
     }
 
-    public static byte[] serialize(long value) {
+    public byte[] serialize(long value) {
         return Bytes.toBytes(value);
     }
 
-    public static byte[] serialize(float value) {
+    public byte[] serialize(float value) {
         return Bytes.toBytes(value);
     }
 
-    public static byte[] serialize(double value) {
+    public byte[] serialize(double value) {
         return Bytes.toBytes(value);
     }
 
-    public static byte[] serialize(Boolean value) {
+    public byte[] serialize(Boolean value) {
         return Serializers.BOOLEAN.toBytes(value);
     }
 
-    public static byte[] serialize(Byte value) {
+    public byte[] serialize(Byte value) {
         return Serializers.BYTE.toBytes(value);
     }
 
-    public static byte[] serialize(Short value) {
+    public byte[] serialize(Short value) {
         return Serializers.SHORT.toBytes(value);
     }
 
-    public static byte[] serialize(Character value) {
+    public byte[] serialize(Character value) {
         return Serializers.CHAR.toBytes(value);
     }
 
-    public static byte[] serialize(Integer value) {
+    public byte[] serialize(Integer value) {
         return Serializers.INT.toBytes(value);
     }
 
-    public static byte[] serialize(Long value) {
+    public byte[] serialize(Long value) {
         return Serializers.LONG.toBytes(value);
     }
 
-    public static byte[] serialize(Float value) {
+    public byte[] serialize(Float value) {
         return Serializers.FLOAT.toBytes(value);
     }
 
-    public static byte[] serialize(Double value) {
+    public byte[] serialize(Double value) {
         return Serializers.DOUBLE.toBytes(value);
     }
 
-    public static byte[] serialize(byte[] value) {
+    public byte[] serialize(byte[] value) {
         return Serializers.PRIMITIVE_BYTES.toBytes(value);
     }
 
-    public static byte[] serialize(Byte[] value) {
+    public byte[] serialize(Byte[] value) {
         return Serializers.WRAPPED_BYTES.toBytes(value);
     }
 
-    public static byte[] serialize(Date value) {
+    public byte[] serialize(Date value) {
         return Serializers.DATE.toBytes(value);
     }
 
-    public static byte[] serialize(ByteArrayWrapper value) {
+    public byte[] serialize(ByteArrayWrapper value) {
         return Serializers.BYTE_ARRAY_WRAPPER.toBytes(value);
     }
 
-    public static byte[] serialize(CharSequence value) {
+    public byte[] serialize(CharSequence value) {
         if (value == null) {
             return null;
         }
         return Serializers.STRING.toBytes(value.toString());
     }
 
-    public static byte[] serialize(InputStream value) {
+    public byte[] serialize(InputStream value) {
         if (value == null) {
             return null;
         }
@@ -148,21 +180,21 @@ public final class Serializations {
         }
     }
 
-    public static byte[] serialize(ByteArrayTrait value) {
+    public byte[] serialize(ByteArrayTrait value) {
         if (value == null) {
             return null;
         }
         return value.toByteArray();
     }
 
-    public static byte[] serialize(ByteBuffer value) {
+    public byte[] serialize(ByteBuffer value) {
         if (value == null) {
             return null;
         }
         return value.array();
     }
 
-    public static byte[] serialize(Enum<?> value) {
+    public byte[] serialize(Enum<?> value) {
         if (value == null) {
             return null;
         }
@@ -176,7 +208,7 @@ public final class Serializations {
      * @param value the value
      * @return a byte array
      */
-    public static byte[] serialize(Object value) {
+    private byte[] serialize0(Object value) {
         if (value == null) {
             return null;
         }
@@ -197,9 +229,8 @@ public final class Serializations {
         } else if (value instanceof Enum) {
             //return Bytes.toBytes(((Enum<?>) value).ordinal());
             return serialize(((Enum<?>) value).name());
-        } else /*if (value instanceof Serializable)*/ {
-            //org.apache.commons.lang3.SerializationUtils.serialize(value);
-            return KryoSerializer.INSTANCE.serialize(value);
+        } else {
+            return other.serialize(value);
         }
     }
 
@@ -212,10 +243,10 @@ public final class Serializations {
      * @return a object
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> T deserialize(byte[] value, Class<T> type) {
+    private <T> T deserialize0(byte[] value, Class<T> type) {
         if (value == null || value.length == 0) { // null or empty byte array
             return (T) (byte[].class == type ? value : PRIMITIVE_DEFAULT_VALUE.get(type));
-        } 
+        }
 
         Serializers serializer = SERIALIZER_MAPPING.get(type);
         if (serializer != null) {
@@ -233,9 +264,8 @@ public final class Serializations {
         } else if (type.isEnum()) {
             //return type.getEnumConstants()[Bytes.toInt(value)];
             return (T) Enums.ofIgnoreCase((Class<Enum>) type, Serializers.STRING.ofBytes(value));
-        } else /*if (Serializable.class.isAssignableFrom(type))*/ {
-            return KryoSerializer.INSTANCE.deserialize(value, type);
-            //return (T) SerializationUtils.deserialize(value);
+        } else {
+            return other.deserialize(value, type);
         }
     }
 
@@ -243,11 +273,11 @@ public final class Serializations {
     public static enum Serializers {
         BOOLEAN(boolean.class, Boolean.class) {
             byte[] toBytes0(Object value) {
-                return new byte[] { (Boolean) value ? BYTE_TRUE : BYTE_FALSE };
+                return new byte[] { (Boolean) value ? BOOL_TRUE_BYTE : BOOL_FALSE_BYTE };
             }
 
             public <T> T ofBytes(byte[] value) {
-                return (T) (Boolean) (value[0] != BYTE_FALSE);
+                return (T) (Boolean) (value[0] != BOOL_FALSE_BYTE);
             }
         },
         BYTE(byte.class, Byte.class) {
@@ -376,5 +406,4 @@ public final class Serializations {
 
         public abstract <T> T ofBytes(byte[] value);
     }
-
 }
