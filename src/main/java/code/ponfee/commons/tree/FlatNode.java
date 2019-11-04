@@ -18,14 +18,14 @@ import org.apache.commons.collections4.CollectionUtils;
  * 
  * @author Ponfee
  */
-public final class FlatNode<T extends java.io.Serializable & Comparable<T>, A extends Serializable>
-    extends BaseNode<T, A> {
+public final class FlatNode<T extends Serializable & Comparable<T>, O extends Serializable & Comparable<O>, A extends Serializable>
+    extends BaseNode<T, O, A> {
 
     private static final long serialVersionUID = 5191371614061952661L;
 
     private final boolean leaf; // 是否叶子节点
 
-    public FlatNode(TreeNode<T, A> nt) {
+    public FlatNode(TreeNode<T, O, A> nt) {
         super(nt.getNid(), nt.getPid(), nt.getOrders(), 
               nt.isEnabled(), nt.getAttach());
 
@@ -41,7 +41,7 @@ public final class FlatNode<T extends java.io.Serializable & Comparable<T>, A ex
         this.leaf = CollectionUtils.isEmpty(nt.getChildren());
     }
 
-    public <R> R convert(Function<FlatNode<T, A>, R> convertor) {
+    public <R> R convert(Function<FlatNode<T, O, A>, R> convertor) {
         return convertor.apply(this);
     }
 

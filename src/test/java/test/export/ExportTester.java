@@ -40,7 +40,7 @@ public class ExportTester {
     public @Test void testHtml1() throws IOException {
         AbstractDataExporter html = new HtmlExporter();
         AbstractDataExporter csv = new CsvStringExporter();
-        List<BaseNode<Integer, Thead>> list = new ArrayList<>();
+        List<BaseNode<Integer, Integer, Thead>> list = new ArrayList<>();
 
         list.add(new BaseNode<>(1, 0, 1, new Thead("区域")));
         list.add(new BaseNode<>(2, 0, 2, new Thead("分公司")));
@@ -146,7 +146,7 @@ public class ExportTester {
     @Test
     public void testExcel() throws IOException {
         ExcelExporter excel = new ExcelExporter();
-        List<BaseNode<Integer, Thead>> list = new ArrayList<>();
+        List<BaseNode<Integer, Integer, Thead>> list = new ArrayList<>();
 
         list.add(new BaseNode<>(1, 0, 1, new Thead("区域")));
         list.add(new BaseNode<>(2, 0, 2, new Thead("分公司")));

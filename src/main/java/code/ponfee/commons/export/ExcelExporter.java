@@ -176,7 +176,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
     @Override
     public <E> void build(Table<E> table) {
         // 1、校验表头是否为空
-        List<FlatNode<Integer, Thead>> flats = table.getThead();
+        List<FlatNode<Integer, Integer, Thead>> flats = table.getThead();
         if (CollectionUtils.isEmpty(flats)) {
             throw new IllegalArgumentException("thead can't be null");
         }
@@ -406,10 +406,10 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
 
     // 复合表头
     private <E> void buildComplexThead(Table<E> table, SXSSFSheet sheet, CursorRowNumber cursorRow) {
-        List<FlatNode<Integer, Thead>> flats = table.getThead();
-        FlatNode<Integer, Thead> root = flats.get(0);
+        List<FlatNode<Integer, Integer, Thead>> flats = table.getThead();
+        FlatNode<Integer, Integer, Thead> root = flats.get(0);
         int totalLeafCount = root.getChildLeafCount();
-        List<FlatNode<Integer, Thead>> thead = flats.subList(1, flats.size());
+        List<FlatNode<Integer, Integer, Thead>> thead = flats.subList(1, flats.size());
 
         // create caption
         if (StringUtils.isNotBlank(table.getCaption())) {
@@ -423,7 +423,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
         int beginCol, endRow, endCol, lastLevel = 1;
         int cellLevel, treeMaxDepth = root.getTreeMaxDepth() - 1; 
         for (int n = thead.size(), i = 0; i < n; i++) {
-            FlatNode<Integer, Thead> flat = thead.get(i);
+            FlatNode<Integer, Integer, Thead> flat = thead.get(i);
             cellLevel = flat.getLevel() - 1;
             if (cellLevel > lastLevel) {
                 lastLevel = cellLevel;

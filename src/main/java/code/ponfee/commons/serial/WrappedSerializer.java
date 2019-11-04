@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 import com.google.common.collect.ImmutableMap.Builder;
 
@@ -233,21 +234,21 @@ public class WrappedSerializer extends Serializer {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private <T> T deserialize0(byte[] value, Class<T> type) {
-        if (value == null || value.length == 0) {
-            if (type.isPrimitive()) {
-                return (T) PRIMITIVES.get(type);
-            } else if (value == null) {
-                return null;
-            }
+        if (ArrayUtils.isEmpty(value) && type.isPrimitive()) {
+            return (T) PRIMITIVES.get(type); // primitive type use default value
+        }
+
+        if (value == null) {
+            return null;
         }
 
         Serializers serializer = Serializers.of(type);
         if (serializer != null) {
-            return serializer.ofBytes(value);
+            return serializer.fromBytes(value);
         }
 
         if (CharSequence.class.isAssignableFrom(type)) {
-            return ClassUtils.newInstance(type, String.class, Serializers.STRING.ofBytes(value));
+            return ClassUtils.newInstance(type, String.class, Serializers.STRING.fromBytes(value));
         } else if (InputStream.class.isAssignableFrom(type)) {
             return (T) new ByteArrayInputStream(value);
         } else if (ByteArrayTrait.class.isAssignableFrom(type)) {
@@ -256,7 +257,7 @@ public class WrappedSerializer extends Serializer {
             return (T) ByteBuffer.wrap(value);
         } else if (type.isEnum()) {
             //return type.getEnumConstants()[Bytes.toInt(value)];
-            return (T) Enums.ofIgnoreCase((Class<Enum>) type, Serializers.STRING.ofBytes(value));
+            return (T) Enums.ofIgnoreCase((Class<Enum>) type, Serializers.STRING.fromBytes(value));
         } else {
             return other.deserialize(value, type);
         }

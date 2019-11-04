@@ -41,7 +41,7 @@ public abstract class AbstractCsvExporter<T> extends AbstractDataExporter<T> {
             throw new UnsupportedOperationException("Only support signle table.");
         }
 
-        List<FlatNode<Integer, Thead>> thead = table.getThead();
+        List<FlatNode<Integer, Integer, Thead>> thead = table.getThead();
         if (CollectionUtils.isEmpty(thead)) {
             throw new IllegalArgumentException("Thead cannot be null.");
         }
@@ -77,7 +77,7 @@ public abstract class AbstractCsvExporter<T> extends AbstractDataExporter<T> {
 
             // tfoot---------
             if (ArrayUtils.isNotEmpty(table.getTfoot())) {
-                FlatNode<Integer, Thead> root = thead.get(0);
+                FlatNode<Integer, Integer, Thead> root = thead.get(0);
                 if (table.getTfoot().length > root.getChildLeafCount()) {
                     throw new IllegalStateException("Tfoot length cannot more than total leaf count.");
                 }
@@ -106,7 +106,7 @@ public abstract class AbstractCsvExporter<T> extends AbstractDataExporter<T> {
 
     //protected void flush() {}
 
-    private void buildComplexThead(List<FlatNode<Integer, Thead>> thead) {
+    private void buildComplexThead(List<FlatNode<Integer, Integer, Thead>> thead) {
         List<Thead> leafs = super.getLeafThead(thead);
         try {
             for (int i = 0, n = leafs.size(); i < n; i++) {

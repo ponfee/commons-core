@@ -87,7 +87,7 @@ public abstract class AbstractDataExporter<T> implements DataExporter<T> {
         }
     }
 
-    protected final List<Thead> getLeafThead(List<FlatNode<Integer, Thead>> thead) {
+    protected final List<Thead> getLeafThead(List<FlatNode<Integer, Integer, Thead>> thead) {
         return thead.stream()
                     .filter(FlatNode::isLeaf)
                     .map(FlatNode::getAttach)

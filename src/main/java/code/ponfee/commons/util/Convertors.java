@@ -103,16 +103,16 @@ public enum Convertors {
     };
 
     private Convertors(Class<?> targetType) {
-        Holder.MAPPING.put(targetType, this);
+        Hide.MAPPING.put(targetType, this);
     }
 
     public abstract <T> T to(Object value);
 
     public static Convertors of(Class<?> targetType) {
-        return Holder.MAPPING.get(targetType);
+        return Hide.MAPPING.get(targetType);
     }
 
-    private static class Holder {
+    private static class Hide {
         private static final Map<Class<?>, Convertors> MAPPING = new HashMap<>();
     }
 }

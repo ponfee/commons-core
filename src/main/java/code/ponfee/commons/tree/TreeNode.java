@@ -33,14 +33,14 @@ import code.ponfee.commons.util.Strings;
  * 
  * @author Ponfee
  */
-public final class TreeNode<T extends Serializable & Comparable<T>, A extends Serializable>
-    extends BaseNode<T, A> {
+public final class TreeNode<T extends Serializable & Comparable<T>, O extends Serializable & Comparable<O>, A extends Serializable>
+    extends BaseNode<T, O, A> {
 
     private static final long serialVersionUID = -9081626363752680404L;
     public static final String DEFAULT_ROOT_ID = "__ROOT__";
 
     // 子节点列表（空列表则表示为叶子节点）
-    private final List<TreeNode<T, A>> children = Lists.newArrayList();
+    private final List<TreeNode<T, O, A>> children = Lists.newArrayList();
 
     /**
      * 构造根节点
@@ -50,7 +50,7 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A extends Se
      * @param orders
      * @param enabled
      */
-    private TreeNode(T nid, T pid, int orders, boolean enabled) {
+    private TreeNode(T nid, T pid, O orders, boolean enabled) {
         super(nid, pid, orders, enabled, null);
         this.available = enabled;
     }
@@ -60,25 +60,26 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A extends Se
      * 
      * @param node  as a tree root node
      */
-    private TreeNode(BaseNode<T, A> node) {
+    private TreeNode(BaseNode<T, O, A> node) {
         super(node.getNid(), node.getPid(), node.getOrders(), 
               node.isEnabled(), node.attach);
         super.available = node.isAvailable();
     }
 
     // ---------------------------------------------------create root node
-    public static <T extends Serializable & Comparable<T>, A extends Serializable> TreeNode<T, A> 
+    // Integer orders
+    public static <T extends Serializable & Comparable<T>, A extends Serializable> TreeNode<T, Integer, A> 
         createRoot(T nid) {
         return createRoot(nid, null, 0, true);
     }
 
-    public static <T extends Serializable & Comparable<T>, A extends Serializable> TreeNode<T, A> 
-        createRoot(T nid, T pid, int orders) {
+    public static <T extends Serializable & Comparable<T>, O extends Serializable & Comparable<O>, A extends Serializable> TreeNode<T, O, A> 
+        createRoot(T nid, T pid, O orders) {
         return createRoot(nid, pid, orders, true);
     }
 
-    public static <T extends Serializable & Comparable<T>, A extends Serializable> TreeNode<T, A> 
-        createRoot(T nid, T pid, int orders, boolean enabled) {
+    public static <T extends Serializable & Comparable<T>, O extends Serializable & Comparable<O>, A extends Serializable> TreeNode<T, O, A> 
+        createRoot(T nid, T pid, O orders, boolean enabled) {
         return new TreeNode<>(nid, pid, orders, enabled);
     }
 
@@ -88,13 +89,13 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A extends Se
      * @param node   the node for root
      * @return a tree root node
      */
-    public static <T extends Serializable & Comparable<T>, A extends Serializable> TreeNode<T, A> 
-        createRoot(BaseNode<T, A> node) {
+    public static <T extends Serializable & Comparable<T>, O extends Serializable & Comparable<O>, A extends Serializable> TreeNode<T, O, A> 
+        createRoot(BaseNode<T, O, A> node) {
         return new TreeNode<>(node);
     }
 
     // ------------------------------------------------------mount children nodes
-    public <E extends BaseNode<T, A>> TreeNode<T, A> mount(List<E> nodes) {
+    public <E extends BaseNode<T, O, A>> TreeNode<T, O, A> mount(List<E> nodes) {
         mount(nodes, false);
         return this;
     }
@@ -106,17 +107,17 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A extends Se
      * @param ignoreOrphan {@code true}忽略孤儿节点
      */
     @SuppressWarnings("unchecked")
-    public <E extends BaseNode<T, A>> TreeNode<T, A> mount(@Nonnull List<E> list, 
+    public <E extends BaseNode<T, O, A>> TreeNode<T, O, A> mount(@Nonnull List<E> list, 
                                                            boolean ignoreOrphan) {
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(list));
 
         Set<T> nodeNids = Sets.newHashSet(this.nid);
 
         // 1、预处理
-        List<BaseNode<T, A>> nodes = prepare(list);
+        List<BaseNode<T, O, A>> nodes = prepare(list);
 
         // 2、检查是否存在重复节点
-        for (BaseNode<T, A> n : nodes) {
+        for (BaseNode<T, O, A> n : nodes) {
             if (!nodeNids.add(n.getNid())) {
                 throw new RuntimeException("重复的节点：" + n.getNid());
             }
@@ -149,8 +150,8 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A extends Se
      * 
      * @return a list nodes for dfs tree node
      */
-    public List<FlatNode<T, A>> dfsFlat() {
-        List<FlatNode<T, A>> collect = Lists.newArrayList();
+    public List<FlatNode<T, O, A>> dfsFlat() {
+        List<FlatNode<T, O, A>> collect = Lists.newArrayList();
         dfs(collect);
         return collect;
     }
@@ -163,20 +164,20 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A extends Se
      * 
      * @return a list nodes for bfs tree node
      */
-    public List<FlatNode<T, A>> bfsFlat() {
-        List<FlatNode<T, A>> collect = Lists.newArrayList(new FlatNode<>(this));
+    public List<FlatNode<T, O, A>> bfsFlat() {
+        List<FlatNode<T, O, A>> collect = Lists.newArrayList(new FlatNode<>(this));
         bfs(collect);
         return collect;
     }
 
     // -----------------------------------------------------------private methods
-    private <E extends BaseNode<T, A>> List<BaseNode<T, A>> prepare(List<E> nodes) {
-        List<BaseNode<T, A>> list = Lists.newArrayListWithCapacity(nodes.size());
+    private <E extends BaseNode<T, O, A>> List<BaseNode<T, O, A>> prepare(List<E> nodes) {
+        List<BaseNode<T, O, A>> list = Lists.newArrayListWithCapacity(nodes.size());
 
         // nodes list
-        for (BaseNode<T, A> node : nodes) {
+        for (BaseNode<T, O, A> node : nodes) {
             if (node instanceof TreeNode) {
-                list.addAll(((TreeNode<T, A>) node).dfsFlat());
+                list.addAll(((TreeNode<T, O, A>) node).dfsFlat());
             } else {
                 list.add(node); // node.clone()
             }
@@ -184,21 +185,23 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A extends Se
 
         // the root node children
         if (CollectionUtils.isNotEmpty(this.children)) {
-            List<FlatNode<T, A>> flat = this.dfsFlat();
+            List<FlatNode<T, O, A>> flat = this.dfsFlat();
             list.addAll(flat.subList(1, flat.size()));
             this.children.clear();
         }
         return list;
     }
 
-    private <E extends BaseNode<T, A>> void mount0(
+    private <E extends BaseNode<T, O, A>> void mount0(
         List<E> nodes, boolean ignoreOrphan, T mountPidIfNull) {
         // current "this" is parent: AbstractNode parent = this;
 
-        Set<Integer> uniqueOrders = Sets.newHashSet();
         // find child nodes for the current node
         for (Iterator<E> iter = nodes.iterator(); iter.hasNext();) {
-            BaseNode<T, A> node = iter.next();
+            BaseNode<T, O, A> node = iter.next();
+            if (node.getOrders() == null) {
+                throw new RuntimeException("节点次序不能为空：" + node.getNid());
+            }
 
             if (!ignoreOrphan && Strings.isBlank(node.getPid())) { // effect condition that pid is null
                 // 不忽略孤儿节点且节点的父节点为空，则其父节点视为根节点（将其挂载到根节点下）
@@ -212,11 +215,7 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A extends Se
                     throw new RuntimeException("节点循环依赖：" + node.getNid());
                 }
 
-                if (!uniqueOrders.add(node.getOrders())) {
-                    throw new RuntimeException("兄弟节点次序重复：" + node.getNid());
-                }
-
-                TreeNode<T, A> child = new TreeNode<>(node);
+                TreeNode<T, O, A> child = new TreeNode<>(node);
                 child.available = this.available && child.isEnabled();
 
                 // 子节点路径=节点路径+自身节点
@@ -230,10 +229,12 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A extends Se
 
         if (CollectionUtils.isNotEmpty(this.children)) {
             // sort the children list
-            this.children.sort(Comparator.comparing(TreeNode::getOrders));
+            this.children.sort(
+                Comparator.<TreeNode<T, O, A>, O> comparing(TreeNode::getOrders).thenComparing(TreeNode::getNid)
+            );
 
             // recursion to mount child tree
-            for (TreeNode<T, A> nt : this.children) {
+            for (TreeNode<T, O, A> nt : this.children) {
                 nt.mount0(nodes, ignoreOrphan, mountPidIfNull);
             }
         }
@@ -241,21 +242,21 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A extends Se
         this.path = concat(this.path, this.nid); // 节点路径追加自身的ID
     }
 
-    private void dfs(List<FlatNode<T, A>> collect) {
+    private void dfs(List<FlatNode<T, O, A>> collect) {
         collect.add(new FlatNode<>(this));
         if (CollectionUtils.isNotEmpty(this.children)) {
-            for (TreeNode<T, A> nt : this.children) {
+            for (TreeNode<T, O, A> nt : this.children) {
                 nt.dfs(collect);
             }
         }
     }
 
-    private void bfs(List<FlatNode<T, A>> collect) {
+    private void bfs(List<FlatNode<T, O, A>> collect) {
         if (CollectionUtils.isNotEmpty(this.children)) {
-            for (TreeNode<T, A> nt : this.children) {
+            for (TreeNode<T, O, A> nt : this.children) {
                 collect.add(new FlatNode<>(nt));
             }
-            for (TreeNode<T, A> nt : this.children) {
+            for (TreeNode<T, O, A> nt : this.children) {
                 nt.bfs(collect);
             }
         }
@@ -265,7 +266,7 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A extends Se
         if (CollectionUtils.isNotEmpty(this.children)) { // 非叶子节点
             int maxChildTreeDepth = 0, sumTreeNodeCount = 0, 
                 sumChildLeafCount = 0;
-            TreeNode<T, A> child;
+            TreeNode<T, O, A> child;
             for (int i = 0; i < this.children.size(); i++) {
                 child = this.children.get(i);
 
@@ -276,7 +277,7 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A extends Se
                 } else {
                     // 若不是最左子节点，则其左叶子节点个数=
                     // 相邻左兄弟节点的左叶子节点个数+该兄弟节点的子节点个数
-                    TreeNode<T, A> prevSibling = this.children.get(i - 1);
+                    TreeNode<T, O, A> prevSibling = this.children.get(i - 1);
                     child.leftLeafCount = prevSibling.leftLeafCount 
                                         + prevSibling.childLeafCount;
                 }
@@ -316,7 +317,7 @@ public final class TreeNode<T extends Serializable & Comparable<T>, A extends Se
     }
 
     // -----------------------------------------------getter/setter
-    public List<TreeNode<T, A>> getChildren() {
+    public List<TreeNode<T, O, A>> getChildren() {
         return children;
     }
 

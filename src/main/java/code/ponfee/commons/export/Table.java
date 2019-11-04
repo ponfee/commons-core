@@ -24,7 +24,7 @@ public class Table<E> implements Serializable {
 
     private static final int ROOT_PID = 0;
 
-    private final List<FlatNode<Integer, Thead>> thead; // 表头
+    private final List<FlatNode<Integer, Integer, Thead>> thead; // 表头
     private final Function<E, Object[]> converter; // 数据转换
     private String caption; // 标题
     private Object[] tfoot; // 表尾
@@ -35,7 +35,7 @@ public class Table<E> implements Serializable {
     private volatile boolean empty = true;
     private volatile boolean end = false;
 
-    public Table(List<FlatNode<Integer, Thead>> thead, 
+    public Table(List<FlatNode<Integer, Integer, Thead>> thead, 
                  Function<E, Object[]> converter,
                  String caption, Object[] tfoot, String comment, 
                  Map<CellStyleOptions, Object> options) {
@@ -47,13 +47,13 @@ public class Table<E> implements Serializable {
         this.options = options;
     }
 
-    public Table(List<BaseNode<Integer, Thead>> list) {
+    public Table(List<BaseNode<Integer, Integer, Thead>> list) {
         this(list, null);
     }
 
-    public Table(List<BaseNode<Integer, Thead>> list, 
+    public Table(List<BaseNode<Integer, Integer, Thead>> list, 
                  Function<E, Object[]> converter) {
-        this.thead = TreeNode.<Integer, Thead>createRoot(ROOT_PID, null, 0)
+        this.thead = TreeNode.<Integer, Integer, Thead>createRoot(ROOT_PID, null, 0)
                              .mount(list).bfsFlat();
         this.converter = converter;
     }
@@ -63,11 +63,11 @@ public class Table<E> implements Serializable {
     }
 
     public Table(String[] names, Function<E, Object[]> converter) {
-        List<BaseNode<Integer, Thead>> list = new ArrayList<>(names.length);
+        List<BaseNode<Integer, Integer, Thead>> list = new ArrayList<>(names.length);
         for (int i = 1; i <= names.length; i++) {
             list.add(new BaseNode<>(i, ROOT_PID, i, true, new Thead(names[i - 1])));
         }
-        this.thead = TreeNode.<Integer, Thead>createRoot(ROOT_PID, null, 0)
+        this.thead = TreeNode.<Integer, Integer, Thead>createRoot(ROOT_PID, null, 0)
                              .mount(list).bfsFlat();
         this.converter = converter;
     }
@@ -80,7 +80,7 @@ public class Table<E> implements Serializable {
         return new Table<>(thead, converter, caption, tfoot, comment, options);
     }
 
-    public List<FlatNode<Integer, Thead>> getThead() {
+    public List<FlatNode<Integer, Integer, Thead>> getThead() {
         return thead;
     }
 
