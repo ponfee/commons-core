@@ -23,17 +23,15 @@ import code.ponfee.commons.util.Strings;
  * @author Ponfee
  * 
  * @param <T> the node id type
- * @param <O> the orders type
  * @param <A> the attachment biz object type
  */
-public class BaseNode<T extends Serializable & Comparable<T>, O extends Serializable & Comparable<O>, A extends Serializable>
+public class BaseNode<T extends Serializable & Comparable<T>, A extends Serializable>
     implements Serializable, Cloneable {
 
     private static final long serialVersionUID = -4116799955526185765L;
 
     protected final T nid; // node id
     protected final T pid; // parent node id
-    protected final O orders; // 节点次序（在兄弟节点间的排序中使用到）
     protected final boolean enabled; // 状态（业务相关）：false无效；true有效；
     protected final A attach; // 附加信息（与业务相关）
 
@@ -46,23 +44,21 @@ public class BaseNode<T extends Serializable & Comparable<T>, O extends Serializ
     protected int treeNodeCount;  // 整棵树的节点数量（包括根节点）
     protected int treeMaxDepth;   // 节点树的最大深度（包括自身层级）
 
-    public BaseNode(T nid, T pid, O orders, A attach) {
-        this(nid, pid, orders, true, attach);
+    public BaseNode(T nid, T pid, A attach) {
+        this(nid, pid, true, attach);
     }
 
-    public BaseNode(T nid, T pid, O orders, 
-                    boolean enabled, A attach) {
+    public BaseNode(T nid, T pid, boolean enabled, A attach) {
         Preconditions.checkArgument(!Strings.isBlank(nid), "节点编号不能为空");
         this.nid = nid;
         this.pid = pid;
-        this.orders = orders;
         this.enabled = enabled;
         this.available = enabled;
         this.attach = attach;
     }
 
     @Override
-    public BaseNode<T, O, A> clone() {
+    public BaseNode<T, A> clone() {
         return SerializationUtils.clone(this);
     }
 
@@ -73,10 +69,6 @@ public class BaseNode<T extends Serializable & Comparable<T>, O extends Serializ
 
     public T getNid() {
         return nid;
-    }
-
-    public O getOrders() {
-        return orders;
     }
 
     public boolean isEnabled() {

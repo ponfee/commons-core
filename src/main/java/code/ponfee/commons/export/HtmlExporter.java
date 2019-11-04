@@ -77,7 +77,7 @@ public class HtmlExporter extends AbstractDataExporter<String> {
      */
     @Override
     public <E> void build(Table<E> table) {
-        List<FlatNode<Integer, Integer, Thead>> flats = table.getThead();
+        List<FlatNode<Integer, Thead>> flats = table.getThead();
         if (flats == null || flats.isEmpty()) {
             throw new IllegalArgumentException("thead can't be null");
         }
@@ -222,10 +222,10 @@ public class HtmlExporter extends AbstractDataExporter<String> {
     }*/
 
     // 复合表头
-    private void buildComplexThead(List<FlatNode<Integer, Integer, Thead>> flats) {
+    private void buildComplexThead(List<FlatNode<Integer, Thead>> flats) {
         html.append("<thead><tr>");
         int lastLevel = 1, treeMaxDepth = flats.get(0).getTreeMaxDepth() - 1, cellLevel;
-        for (FlatNode<Integer, Integer, Thead> flat : flats.subList(1, flats.size())) {
+        for (FlatNode<Integer, Thead> flat : flats.subList(1, flats.size())) {
             cellLevel = flat.getLevel() - 1;
             if (lastLevel < cellLevel) {
                 html.append("</tr><tr>");
