@@ -25,7 +25,7 @@ import code.ponfee.commons.util.Strings;
  * @param <T> the node id type
  * @param <A> the attachment biz object type
  */
-public class BaseNode<T extends Serializable & Comparable<T>, A extends Serializable>
+public class BaseNode<T extends Serializable & Comparable<? super T>, A extends Serializable>
     implements Serializable, Cloneable {
 
     private static final long serialVersionUID = -4116799955526185765L;
@@ -33,9 +33,9 @@ public class BaseNode<T extends Serializable & Comparable<T>, A extends Serializ
     protected final T nid; // node id
     protected final T pid; // parent node id
     protected final boolean enabled; // 状态（业务相关）：false无效；true有效；
+    protected final boolean available; // 是否可用（parent.available & this.enabled）
     protected final A attach; // 附加信息（与业务相关）
 
-    protected boolean available; // 是否可用（parent.available & this.enabled）
     protected int level; // 节点层级（以根节点为1开始，往下逐级加1）
     protected List<T> path; // 节点路径list<nid>（父节点在前，末尾元素是节点本身的nid）
 
@@ -49,17 +49,34 @@ public class BaseNode<T extends Serializable & Comparable<T>, A extends Serializ
     }
 
     public BaseNode(T nid, T pid, boolean enabled, A attach) {
+        this(nid, pid, enabled, enabled, attach);
+    }
+
+    public BaseNode(T nid, T pid, boolean enabled, boolean available, A attach) {
         Preconditions.checkArgument(!Strings.isBlank(nid), "节点编号不能为空");
         this.nid = nid;
         this.pid = pid;
         this.enabled = enabled;
-        this.available = enabled;
+        this.available = available;
         this.attach = attach;
     }
 
     @Override
-    public BaseNode<T, A> clone() {
+    public BaseNode<T, A> clone() { // deep copy
         return SerializationUtils.clone(this);
+    }
+
+    public BaseNode<T, A> copy() { // shadow copy
+        BaseNode<T, A> node = new BaseNode<>(
+            this.nid, this.pid, this.enabled, this.available, this.attach
+        );
+        node.level = this.level;
+        node.path = this.path;
+        node.childLeafCount = this.childLeafCount;
+        node.leftLeafCount = this.leftLeafCount;
+        node.treeNodeCount = this.treeNodeCount;
+        node.treeMaxDepth = this.treeMaxDepth;
+        return node;
     }
 
     // -----------------------------------------------getter/setter

@@ -1,8 +1,9 @@
 package code.ponfee.commons.util;
 
+import static code.ponfee.commons.util.WrappedFastDateFormat.PATTERN09A;
+
 import java.util.Date;
 
-import org.apache.commons.lang3.time.FastDateFormat;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
@@ -83,11 +84,10 @@ public enum DatePeriods {
         }
     };
 
-    private static final String PATTERN = "yyyy-MM-dd HH:mm:ss SSS";
-
     // 2018-01-01: the first day of year, month, week
-    private static final LocalDateTime ORIGINAL = DateTimeFormat.forPattern(PATTERN)
-                                      .parseLocalDateTime("2018-01-01 00:00:00 000");
+    private static final LocalDateTime ORIGINAL = DateTimeFormat
+        .forPattern("yyyy-MM-dd HH:mm:ss.SSS")
+        .parseLocalDateTime("2018-01-01 00:00:00.000");
 
     /**
      * Template method pattern
@@ -141,9 +141,6 @@ public enum DatePeriods {
     }
 
     public static final class Interval {
-        private static final FastDateFormat FORMATTER =
-            FastDateFormat.getInstance(PATTERN);
-
         private final Date begin;
         private final Date end;
 
@@ -162,7 +159,7 @@ public enum DatePeriods {
 
         @Override
         public String toString() {
-            return FORMATTER.format(begin) + " ~ " + FORMATTER.format(end);
+            return PATTERN09A.format(begin) + " ~ " + PATTERN09A.format(end);
         }
     }
 

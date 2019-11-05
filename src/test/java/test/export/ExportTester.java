@@ -25,7 +25,6 @@ import code.ponfee.commons.export.ExcelExporter;
 import code.ponfee.commons.export.HtmlExporter;
 import code.ponfee.commons.export.Table;
 import code.ponfee.commons.export.Thead;
-import code.ponfee.commons.io.FileTransformer;
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.model.Result;
@@ -323,7 +322,4 @@ public class ExportTester {
         out.close();
     }
 
-    public static void main(String[] args) {
-        System.out.println(FileTransformer.guessEncoding("d:/csv3.csv"));
-    }
 }

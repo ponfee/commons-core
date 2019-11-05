@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509CRL;
 import java.security.cert.X509CRLEntry;
@@ -374,33 +375,35 @@ public class X509CertUtils {
         return baos.toByteArray();
     }
 
-    private static byte[] base64ToBinary(InputStream inputstream) throws IOException {
+    private static byte[] base64ToBinary(InputStream input) throws IOException {
         try {
-            long l = 0L;
-            inputstream.mark(inputstream.available());
-            BufferedInputStream bufferedinputstream = new BufferedInputStream(inputstream);
-            BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(bufferedinputstream, "ASCII"));
+            long len = 0L;
+            input.mark(input.available());
+            BufferedInputStream bufferedinputstream = new BufferedInputStream(input);
+            BufferedReader reader = new BufferedReader(
+                new InputStreamReader(bufferedinputstream, StandardCharsets.US_ASCII)
+            );
             String s;
-            if ((s = readLine(bufferedreader)) == null || !s.startsWith("-----BEGIN")) {
+            if ((s = readLine(reader)) == null || !s.startsWith("-----BEGIN")) {
                 throw new IOException("Unsupported encoding");
             }
-            l += s.length();
-            StringBuilder builder = new StringBuilder();
-            for (; (s = readLine(bufferedreader)) != null && !s.startsWith("-----END"); builder.append(s)) {
+            len += s.length();
+            StringBuilder sb = new StringBuilder();
+            for (; (s = readLine(reader)) != null && !s.startsWith("-----END"); sb.append(s)) {
                 // do-non
             }
 
             if (s == null) {
                 throw new IOException("Unsupported encoding");
             } else {
-                l += s.length();
-                l += builder.length();
-                inputstream.reset();
-                inputstream.skip(l);
-                return Base64.getDecoder().decode(builder.toString());
+                len += s.length();
+                len += sb.length();
+                input.reset();
+                input.skip(len);
+                return Base64.getDecoder().decode(sb.toString());
             }
         } finally {
-            Closeables.console(inputstream);
+            Closeables.console(input);
         }
     }
 

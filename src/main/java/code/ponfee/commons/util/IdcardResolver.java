@@ -1,7 +1,6 @@
 package code.ponfee.commons.util;
 
-import com.google.common.collect.ImmutableMap;
-import org.apache.commons.lang3.StringUtils;
+import static java.util.Calendar.YEAR;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -12,7 +11,9 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 
-import static java.util.Calendar.YEAR;
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.collect.ImmutableMap;
 
 /**
  * 身份证解析及生成
@@ -23,7 +24,7 @@ import static java.util.Calendar.YEAR;
  */
 public class IdcardResolver {
 
-    private static final Date ORIGIN_DATE = Dates.toDate("1950-01-01 00:00:00", "yyyy-MM-dd HH:mm:ss");
+    private static final long ORIGINAL = Dates.toDate("1950-01-01 00:00:00").getTime();
 
     /**
      * 证件类型
@@ -56,7 +57,7 @@ public class IdcardResolver {
         Random random = ThreadLocalRandom.current();
         StringBuilder builder = new StringBuilder(18);
         builder.append(AREA_CODE_LIST.get(random.nextInt(AREA_CODE_LIST.size()))); // 行政区号：6位
-        builder.append(Dates.format(Dates.random(Dates.ofMillis(0), ORIGIN_DATE), "yyyyMMdd")); // 生日：8位
+        builder.append(Dates.format(Dates.random(ORIGINAL, System.currentTimeMillis()), "yyyyMMdd")); // 生日：8位
         // 当地派出所在该日期的出生顺序号：3位，其中17位（倒数第二位）男为单数，女为双数
         builder.append(StringUtils.leftPad(String.valueOf(random.nextInt(1000)), 3, '0'));
         builder.append(genPowerSum(builder.toString().toCharArray())); // 校验码：1位

@@ -4,7 +4,6 @@ import static org.apache.commons.io.FilenameUtils.getExtension;
 
 import java.io.File;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.List;
 
 import org.apache.commons.csv.CSVFormat;
@@ -18,7 +17,7 @@ import code.ponfee.commons.extract.streaming.StreamingExcelExtractor;
 import code.ponfee.commons.http.ContentType;
 
 /**
- * The fiel data extractor builder
+ * The data extractor builder, facade operator
  * 
  * @author Ponfee
  */
@@ -31,13 +30,12 @@ public class DataExtractorBuilder {
     private final String fileName;
     private final String contentType;
     private String[] headers;
+    private int startRow = 0;
 
-    private int startRow = 0; // excel start row: start with 0
     private int sheetIndex = 0; // excel work book sheet index: start with 0
     private boolean streaming = true; // excel whether streaming read, default true
 
     private CSVFormat csvFormat; // csv format
-    private Charset charset; // csv data source charset
 
     private DataExtractorBuilder(Object dataSource, String fileName, 
                                  String contentType) {
@@ -52,8 +50,8 @@ public class DataExtractorBuilder {
         return new DataExtractorBuilder(dataSource, fileName, contentType);
     }
 
-    public static DataExtractorBuilder newBuilder(CharSequence dataSource) {
-        return newBuilder(new File(dataSource.toString()));
+    public static DataExtractorBuilder newBuilder(String path) {
+        return newBuilder(new File(path));
     }
 
     public static DataExtractorBuilder newBuilder(File dataSource) {
@@ -87,17 +85,12 @@ public class DataExtractorBuilder {
         return this;
     }
 
-    public DataExtractorBuilder charset(Charset charset) {
-        this.charset = charset;
-        return this;
-    }
-
     public <T> DataExtractor<T> build() {
         String extension = FilenameUtils.getExtension(fileName).toLowerCase();
         if (ContentType.TEXT_PLAIN.value().equalsIgnoreCase(contentType)
             || CSV_EXTENSION.contains(extension)) {
             // csv, txt文本格式数据
-            return new CsvExtractor<>(dataSource, headers, charset, csvFormat);
+            return new CsvExtractor<>(dataSource, headers, csvFormat, startRow);
         } else if (EXCEL_EXTENSION.contains(extension)) {
             // content-type
             // xlsx: application/vnd.openxmlformats-officedocument.wordprocessingml.document

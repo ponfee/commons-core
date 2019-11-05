@@ -1,21 +1,12 @@
 package code.ponfee.commons.io;
 
-import code.ponfee.commons.math.Maths;
-import com.google.common.collect.ImmutableMap;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.StringBuilderWriter;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
@@ -28,6 +19,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.function.Consumer;
+
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.commons.io.output.StringBuilderWriter;
+import org.apache.commons.lang3.ArrayUtils;
+
+import com.google.common.collect.ImmutableMap;
+
+import code.ponfee.commons.exception.Throwables;
+import code.ponfee.commons.math.Maths;
 
 /**
  * 文件工具类
@@ -90,16 +91,21 @@ public final class Files {
 
     /**
      * 创建目录
+     * 
      * @param file
      * @return
      */
     public static File mkdir(File file) {
-        if (!file.exists()) {
-            if (file.mkdirs()) {
-                file.setLastModified(System.currentTimeMillis());
-            }
-        } else if (file.isFile()) {
+        if (file.isFile()) {
             throw new IllegalStateException(file.getAbsolutePath() + " is a directory.");
+        }
+
+        if (file.exists()) {
+            return file;
+        }
+
+        if (file.mkdirs()) {
+            file.setLastModified(System.currentTimeMillis());
         }
         return file;
     }
@@ -119,23 +125,39 @@ public final class Files {
      * @return
      */
     public static File touch(File file) {
-        if (!file.exists()) {
-            if (!file.getParentFile().exists()) {
-                file.getParentFile().mkdirs();
-            }
-
-            try {
-                if (file.createNewFile()) {
-                    file.setLastModified(System.currentTimeMillis());
-                }
-            } catch (IOException e) {
-                throw new IllegalStateException(e);
-            }
-        } else if (file.isDirectory()) {
+        if (file.isDirectory()) {
             throw new IllegalStateException(file.getAbsolutePath() + " is a directory.");
         }
 
+        if (file.exists()) {
+            return file;
+        }
+
+        if (!file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
+        }
+
+        try {
+            if (file.createNewFile()) {
+                file.setLastModified(System.currentTimeMillis());
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+
         return file;
+    }
+
+    public static void deleteQuietly(File file) {
+        if (file == null) {
+            return;
+        }
+
+        try {
+            java.nio.file.Files.deleteIfExists(file.toPath());
+        } catch (IOException e) {
+            Throwables.ignore(e);
+        }
     }
 
     /**
@@ -148,14 +170,26 @@ public final class Files {
     }
 
     public static String toString(File file) {
-        return toString(file, DEFAULT_CHARSET_NAME);
+        return toString(file, CharacterEncodingDetector.detect(file));
     }
 
     public static String toString(File file, String charset) {
-        try (FileInputStream in = new FileInputStream(file); 
-             FileChannel channel = in.getChannel()
+        boolean hasBom;
+        try {
+            hasBom = hasBOM(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        try (FileInputStream input = new FileInputStream(file); 
+             FileChannel channel = input.getChannel()
         ) {
-            ByteBuffer buffer = channel.map(MapMode.READ_ONLY, 0, channel.size());
+            long offset = 0, length = channel.size();
+            if (hasBom) {
+                offset = WINDOWS_BOM.length;
+                length -= offset;
+            }
+            ByteBuffer buffer = channel.map(MapMode.READ_ONLY, offset, length);
             return Charset.forName(charset).decode(buffer).toString();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -163,61 +197,8 @@ public final class Files {
     }
 
     /**
-     * File to string spec charset
-     *
-     * @param file the file
-     * @return
-     */
-    public static String toStringGuessCharset(File file) {
-        try {
-            return toStringGuessCharset(new FileInputStream(file));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * InputStream to string spec charset
-     *
-     * @param inputStream the input stream
-     * @return
-     */
-    public static String toStringGuessCharset(InputStream inputStream) {
-        try (InputStream input = inputStream) {
-            return toStringGuessCharset(IOUtils.toByteArray(input));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        /*Charset charset = Charset.forName(
-            FileTransformer.guessEncoding(Arrays.copyOf(data, 600))
-        );
-
-        inputStream = new ByteArrayInputStream(data);
-        try (WrappedBufferedReader reader = new WrappedBufferedReader(inputStream, charset)) {
-            StringBuilder builder = new StringBuilder(data.length >> 1);
-            String line;
-            while ((line = reader.readLine()) != null) {
-                builder.append(line).append(Files.SYSTEM_LINE_SEPARATOR);
-            }
-            return builder.toString();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }*/
-    }
-
-    public static String toStringGuessCharset(byte[] data) {
-        if (data == null) {
-            return null;
-        } else if (data.length == 0) {
-            return StringUtils.EMPTY;
-        }
-        Charset charset = Charset.forName(FileTransformer.guessEncoding(data));
-        return new String(data, charset);
-    }
-
-    /**
-     * read file to byte array
+     * Reads file to byte array
+     * 
      * @param file
      * @return
      */
@@ -234,6 +215,7 @@ public final class Files {
         }
     }
 
+    // ---------------------------------------------------------------read line
     public static List<String> readLines(File file) throws FileNotFoundException {
         return readLines(new FileInputStream(file), null);
     }
@@ -243,17 +225,13 @@ public final class Files {
         return readLines(new FileInputStream(file), charset);
     }
 
-    /**
-     * 读取文件全部行数据
-     * @param input
-     * @return
-     */
     public static List<String> readLines(InputStream input) {
         return readLines(input, null);
     }
 
     /**
      * 读取文件全部行数据
+     * 
      * @param input
      * @param charset
      * @return
@@ -288,7 +266,10 @@ public final class Files {
         }
     }
 
-    private static final String[] FILE_UNITS = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+    // ---------------------------------------------------------------file size humanly
+    private static final String[] FILE_UNITS = { 
+        "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" 
+    };
     /** 
      * 文件大小可读化（attach unit）：B、KB、MB
      * @param size 文件字节大小 
@@ -357,87 +338,114 @@ public final class Files {
         }
     }
 
-    // -------------------------------------windows file bom head-------------------------------------
-    /**
-     * add file bom head
-     * @param filepath
-     */
-    public static void addBOM(String filepath) {
+    // ---------------------------------------------------------------windows file bom head
+    public static void addBOM(String filepath) throws IOException {
         addBOM(new File(filepath));
     }
 
+    /**
+     * Adds windows BOM to file head
+     * 
+     * @param file the file
+     */
     public static void addBOM(File file) {
-        FileOutputStream output = null;
-        BufferedOutputStream bos = null;
-        try (FileInputStream input = new FileInputStream(file)) {
-            int length = input.available();
-            byte[] bytes1, bytes2;
-            if (length >= 3) {
-                bytes1 = new byte[3];
-                input.read(bytes1);
-                if (Arrays.equals(WINDOWS_BOM, bytes1)) {
-                    return;
+        int bomLen = WINDOWS_BOM.length;
+        try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
+            byte[] headBytes = new byte[bomLen];
+            int count = raf.read(headBytes);
+            if (count < bomLen || !Arrays.equals(WINDOWS_BOM, headBytes)) {
+                ByteArrayOutputStream output = new ByteArrayOutputStream();
+                output.write(headBytes);
+                byte[] buffer = new byte[Files.BUFF_SIZE];
+                while ((count = raf.read(buffer)) != EOF) {
+                    output.write(buffer, 0, count);
                 }
-                bytes2 = new byte[length - 3];
-                input.read(bytes2);
-            } else {
-                bytes1 = new byte[0];
-                bytes2 = new byte[length];
-                input.read(bytes2);
+                raf.seek(0); // 将指针移动到文件首部
+                raf.write(WINDOWS_BOM);
+                raf.write(output.toByteArray());
+                output.close();
             }
-            output = new FileOutputStream(file);
-            bos = new BufferedOutputStream(output);
-            bos.write(WINDOWS_BOM);
-            bos.write(bytes1);
-            bos.write(bytes2);
-            bos.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } finally {
-            Closeables.console(bos);
-            Closeables.console(output);
         }
     }
 
-    /**
-     * remove file bom head
-     * @param filepath
-     */
     public static void removeBOM(String filepath) {
         removeBOM(new File(filepath));
     }
 
+    /**
+     * Removes windows BOM from file head
+     * 
+     * @param file the file
+     */
     public static void removeBOM(File file) {
-        FileOutputStream output = null;
-        BufferedOutputStream bos = null;
-        try (FileInputStream input = new FileInputStream(file)) {
-            int length = input.available();
-            if (length < 3) {
-                return;
+        int bomLen = WINDOWS_BOM.length;
+        try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
+            long length = raf.length();
+            byte[] headBytes = new byte[bomLen];
+            int count = raf.read(headBytes);
+            if (count == bomLen && Arrays.equals(WINDOWS_BOM, headBytes)) {
+                ByteArrayOutputStream output = new ByteArrayOutputStream();
+                byte[] buffer = new byte[Files.BUFF_SIZE];
+                while ((count = raf.read(buffer)) != EOF) {
+                    output.write(buffer, 0, count);
+                }
+                raf.seek(0);
+                raf.write(output.toByteArray());
+                raf.setLength(length - bomLen);
+                output.close();
             }
-
-            byte[] bytes = new byte[3];
-            input.read(bytes);
-            if (!Arrays.equals(bytes, WINDOWS_BOM)) {
-                return;
-            }
-
-            bytes = new byte[length - 3];
-            input.read(bytes);
-            output = new FileOutputStream(file);
-            bos = new BufferedOutputStream(output);
-            bos.write(bytes);
-            bos.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } finally {
-            Closeables.console(bos);
-            Closeables.console(output);
         }
     }
 
-    // ------------------------file type---------------------------------
-    private static final int SUB_PREFIX = 32;
+    public static boolean hasBOM(InputStream input) throws IOException {
+        return hasBOM(readByteArray(input, WINDOWS_BOM.length));
+    }
+
+    public static boolean hasBOM(File file) throws IOException {
+        return hasBOM(readByteArray(file, WINDOWS_BOM.length));
+    }
+
+    public static boolean hasBOM(byte[] bytes) {
+        int bomLen = WINDOWS_BOM.length;
+        if (bytes == null || bytes.length < bomLen) {
+            return false;
+        }
+
+        for (int i = 0; i < bomLen; i++) {
+            if (bytes[i] != WINDOWS_BOM[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // -----------------------------------------------------------------readByteArray
+    public static byte[] readByteArray(InputStream input, int count) throws IOException {
+        byte[] bytes = new byte[count];
+        int n, index = 0;
+        while (index < count && (n = input.read(bytes, index, count - index)) != EOF) {
+            index += n;
+        }
+ 
+        return (index == count) ? bytes : Arrays.copyOf(bytes, index);
+    }
+
+    public static byte[] readByteArray(File file, int count) throws IOException {
+        try (InputStream input = new FileInputStream(file)) {
+            return readByteArray(input, count);
+        }
+    }
+
+    public static byte[] readByteArray(String filePath, int count) throws IOException {
+        return readByteArray(new File(filePath), count);
+    }
+
+    // -----------------------------------------------------------------file type
+    private static final int SUB_PREFIX = 64;
     public static final Map<String, String> FILE_TYPE_MAGIC = ImmutableMap.<String, String> builder()
         .put("jpg", "FFD8FF") // JPEG (jpg)
         .put("png", "89504E47") // PNG (png)
@@ -474,22 +482,17 @@ public final class Files {
         .build();
 
     /**
-     * 猜测文件类型
+     * 探测文件类型
+     * 
      * @param file
      * @return
      * @throws IOException
      */
-    public static String guessFileType(File file) throws IOException {
-        try (InputStream input = new FileInputStream(file)) {
-            int count = input.available();
-            count = count < SUB_PREFIX ? count : SUB_PREFIX;
-            byte[] array = new byte[count];
-            input.read(array);
-            return guessFileType(array);
-        }
+    public static String detectFileType(File file) throws IOException {
+        return detectFileType(readByteArray(file, SUB_PREFIX));
     }
 
-    public static String guessFileType(byte[] array) {
+    public static String detectFileType(byte[] array) {
         if (array.length > SUB_PREFIX) {
             array = ArrayUtils.subarray(array, 0, SUB_PREFIX);
         }

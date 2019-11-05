@@ -142,6 +142,7 @@ public class Dates {
 
     /**
      * 计算两个日期的时间差（单位：秒）
+     * 
      * @param start 开始时间
      * @param end 结束时间
      * @return 时间间隔
@@ -382,9 +383,23 @@ public class Dates {
      * @return
      */
     public static Date random(Date begin, Date end) {
-        long seconds = ThreadLocalRandom.current().nextLong(clockdiff(begin, end));
-        int s = seconds > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) seconds;
-        return Dates.plusSeconds(begin, s);
+        long beginMills = begin.getTime(), endMills = end.getTime();
+        if (beginMills >= endMills) {
+            throw new IllegalArgumentException(
+                "Arg begin[" + format(begin) + "] must before end[" + format(end) + "]"
+            );
+        }
+        return random(beginMills, endMills);
+    }
+
+    public static Date random(long beginMills, long endMills) {
+        if (beginMills >= endMills) {
+            throw new IllegalArgumentException(
+                "Arg beginMills[" + beginMills + "] must be less than endMills[" + endMills + "]"
+            );
+        }
+
+        return new Date(beginMills + ThreadLocalRandom.current().nextLong(endMills - beginMills));
     }
 
     public static Date min(Date a, Date b) {

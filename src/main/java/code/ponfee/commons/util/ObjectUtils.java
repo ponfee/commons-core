@@ -22,7 +22,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.springframework.objenesis.ObjenesisHelper;
 
 import com.google.common.base.Preconditions;
 
@@ -141,7 +140,7 @@ public final class ObjectUtils {
                 return (T) new Date(Numbers.toLong(text));
             }
             try {
-                return (T) WrappedFastDateFormat.NORMAL.parse(text);
+                return (T) WrappedFastDateFormat.DEFAULT.parse(text);
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
@@ -286,7 +285,7 @@ public final class ObjectUtils {
         } else if (org.apache.commons.lang3.ClassUtils.isPrimitiveWrapper(type)) {
             return ClassUtils.newInstance(type, String.class, "0");
         } else {
-            return ObjenesisHelper.newInstance(type);
+            return ClassUtils.newInstance(type);
         }
     }
 

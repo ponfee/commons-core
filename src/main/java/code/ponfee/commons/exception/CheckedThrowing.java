@@ -149,7 +149,7 @@ public final class CheckedThrowing {
     public static interface ThrowingComparator<E, T extends Throwable> {
         int compare(E e1, E e2) throws T;
 
-        static <E, T extends Throwable> Comparator<E> checked(ThrowingComparator<E, T> c) {
+        static <E, T extends Throwable> Comparator<? super E> checked(ThrowingComparator<E, T> c) {
             return (e1, e2) -> {
                 try {
                     return c.compare(e1, e2);

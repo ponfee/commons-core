@@ -240,13 +240,14 @@ public final class WebUtils {
         try (InputStream in = input;
              OutputStream out = resp.getOutputStream()
         ) {
-            respStream(resp, in.available(), filename, charset);
+            long len;
             if (isGzip) {
                 resp.setHeader("Content-Encoding", "gzip");
-                GzipProcessor.compress(in, out);
+                len = GzipProcessor.compress(in, out);
             } else {
-                IOUtils.copyLarge(in, out);
+                len = IOUtils.copyLarge(in, out);
             }
+            respStream(resp, len, filename, charset);
         } catch (IOException e) {
             // cannot happened
             throw new RuntimeException("response input stream occur error", e);

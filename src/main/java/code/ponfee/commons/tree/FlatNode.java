@@ -18,19 +18,18 @@ import org.apache.commons.collections4.CollectionUtils;
  * 
  * @author Ponfee
  */
-public final class FlatNode<T extends Serializable & Comparable<T>, A extends Serializable>
+public final class FlatNode<T extends Serializable & Comparable<? super T>, A extends Serializable>
     extends BaseNode<T, A> {
 
     private static final long serialVersionUID = 5191371614061952661L;
 
     private final boolean leaf; // 是否叶子节点
 
-    public FlatNode(TreeNode<T, A> nt) {
-        super(nt.getNid(), nt.getPid(), nt.isEnabled(), nt.getAttach());
+    FlatNode(TreeNode<T, A> nt) {
+        super(nt.nid, nt.pid, nt.enabled, nt.available, nt.attach);
 
-        super.available = nt.isAvailable();
-        super.level     = nt.getLevel();
-        super.path      = nt.getPath();
+        super.level = nt.level;
+        super.path  = nt.path;
 
         super.treeNodeCount  = nt.treeNodeCount;
         super.childLeafCount = nt.childLeafCount;

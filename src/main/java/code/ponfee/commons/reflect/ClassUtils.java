@@ -24,11 +24,11 @@ import org.springframework.asm.Label;
 import org.springframework.asm.MethodVisitor;
 import org.springframework.asm.Opcodes;
 import org.springframework.asm.Type;
+import org.springframework.objenesis.ObjenesisHelper;
 
 import code.ponfee.commons.collect.ObjectArrayWrapper;
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.model.Null;
-import code.ponfee.commons.util.ObjectUtils;
 
 /**
  * 基于asm的字节码工具类
@@ -38,7 +38,7 @@ import code.ponfee.commons.util.ObjectUtils;
 public final class ClassUtils {
     private ClassUtils() {}
 
-    private static final Map<ObjectArrayWrapper<Class<?>>, Constructor<?>> CONSTRUCTOR_CACHE = new HashMap<>();
+    private static final Map<Object, Constructor<?>> CONSTRUCTOR_CACHE = new HashMap<>();
 
     /**
      * 获取方法的参数名（编译未清除）<p>
@@ -295,8 +295,21 @@ public final class ClassUtils {
 
     // -----------------------------------------------------------------------------new instance
     public static <T> T newInstance(Class<T> type, Object... args) {
+        if (args.getClass() != Object[].class) {
+            return newInstance(type, args.getClass(), args);
+        }
+
         if (ArrayUtils.isEmpty(args)) {
-            return ObjectUtils.newInstance(type);
+            Constructor<T> constructor = getConstructor(type);
+            if (constructor != null) {
+                try {
+                    return constructor.newInstance();
+                } catch (Exception e) {
+                    throw new IllegalStateException(e);
+                }
+            } else {
+                return ObjenesisHelper.newInstance(type);
+            }
         }
 
         Class<?>[] parameterTypes = null;
@@ -330,23 +343,16 @@ public final class ClassUtils {
     // -----------------------------------------------------------------------------get constructor
     @SuppressWarnings("unchecked")
     public static <T> Constructor<T> getConstructor(Class<T> type, Class<?>... parameterTypes) {
-        Class<?>[] array;
-        if (ArrayUtils.isEmpty(parameterTypes)) {
-            array = new Class<?>[] { type };
-        } else {
-            array = ArrayUtils.insert(0, parameterTypes, type);
-        }
-        ObjectArrayWrapper<Class<?>> key = ObjectArrayWrapper.of(array);
+        boolean flag = ArrayUtils.isEmpty(parameterTypes);
+        Object key = flag ? type : ObjectArrayWrapper.of(ArrayUtils.insert(0, parameterTypes, type));
         Constructor<T> constructor = (Constructor<T>) CONSTRUCTOR_CACHE.get(key);
         if (constructor == null) {
             synchronized (CONSTRUCTOR_CACHE) {
                 if ((constructor = (Constructor<T>) CONSTRUCTOR_CACHE.get(key)) == null) {
                     try {
-                        constructor = ArrayUtils.isEmpty(parameterTypes)
-                                    ? type.getConstructor() // getDeclaredConstructor
-                                    : type.getConstructor(parameterTypes);
+                        constructor = flag ? type.getConstructor() : type.getConstructor(parameterTypes);
                     } catch (NoSuchMethodException | SecurityException ignored) {
-                        // Not such constructor
+                        // Not such constructor, placeholder
                         constructor = (Constructor<T>) Null.UNCONSTRUCTOR;
                     }
                     CONSTRUCTOR_CACHE.put(key, constructor);

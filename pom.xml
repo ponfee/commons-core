@@ -233,17 +233,24 @@
       <version>2.7.7</version>
     </dependency>
     <dependency>
-      <groupId>org.mozilla.intl</groupId>
-      <artifactId>chardet</artifactId>
+      <groupId>net.sourceforge.jargs</groupId>
+      <artifactId>jargs</artifactId>
       <version>1.0</version>
-      <!-- <scope>system</scope>
-      <systemPath>${pom.basedir}/lib/chardet-1.0.jar</systemPath> -->
     </dependency>
     <dependency>
-      <groupId>cpdetector</groupId>
+      <groupId>net.sourceforge.jchardet</groupId>
+      <artifactId>jchardet</artifactId>
+      <version>1.1</version>
+      <!-- https://sourceforge.net/projects/jchardet/
+      <scope>system</scope>
+      <systemPath>${pom.basedir}/lib/jchardet-1.1.jar</systemPath> -->
+    </dependency>
+    <dependency>
+      <groupId>net.sourceforge.cpdetector</groupId>
       <artifactId>cpdetector</artifactId>
       <version>1.0.10</version>
-      <!-- <scope>system</scope>
+      <!-- https://sourceforge.net/projects/cpdetector/
+      <scope>system</scope>
       <systemPath>${pom.basedir}/lib/cpdetector-1.0.10.jar</systemPath> -->
     </dependency>
 
@@ -297,6 +304,11 @@
       <artifactId>javax.servlet-api</artifactId>
       <version>4.0.1</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>1.4</version>
     </dependency>
 
     <!-- jsr303 -->

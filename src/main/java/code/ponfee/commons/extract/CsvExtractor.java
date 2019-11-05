@@ -1,11 +1,8 @@
 package code.ponfee.commons.extract;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import org.apache.commons.csv.CSVFormat;
@@ -13,6 +10,10 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import code.ponfee.commons.io.BeforeReadInputStream;
+import code.ponfee.commons.io.CharacterEncodingDetector;
+import code.ponfee.commons.io.Files;
 
 /**
  * Csv file data extractor
@@ -22,20 +23,20 @@ import org.apache.commons.lang3.StringUtils;
 public class CsvExtractor<T> extends DataExtractor<T> {
 
     private final CSVFormat csvFormat;
-    private final boolean specHeaders;
-    private final Charset charset;
+    private final boolean withHeader;
+    private final int startRow;
 
     public CsvExtractor(Object dataSource, String[] headers) {
-        this(dataSource, headers, null, null);
+        this(dataSource, headers, null, 0);
     }
 
     public CsvExtractor(Object dataSource, String[] headers, 
-                        Charset charset, CSVFormat csvFormat) {
+                        CSVFormat csvFormat, int startRow) {
         super(dataSource, headers);
-        this.specHeaders = ArrayUtils.isNotEmpty(headers);
-        this.charset = Optional.ofNullable(charset).orElse(StandardCharsets.UTF_8);
+        this.withHeader = ArrayUtils.isNotEmpty(headers);
         this.csvFormat = Optional.ofNullable(csvFormat).orElse(CSVFormat.DEFAULT);
-        if (this.specHeaders) {
+        this.startRow = startRow;
+        if (this.withHeader) {
             this.csvFormat.withHeader(headers);
         }
     }
@@ -43,15 +44,25 @@ public class CsvExtractor<T> extends DataExtractor<T> {
     @SuppressWarnings("unchecked")
     @Override
     public void extract(RowProcessor<T> processor) throws IOException {
-        try (InputStream stream = asInputStream();
-             BOMInputStream bom = new BOMInputStream(stream);
-             Reader reader = new InputStreamReader(bom, charset)
-        ) {
-            int columnSize = specHeaders ? this.headers.length : 0;
+        BeforeReadInputStream bris = new BeforeReadInputStream(
+            asInputStream(), CharacterEncodingDetector.DETECT_COUNT
+        );
+        String charset = CharacterEncodingDetector.detect(bris.getArray()); // 检测文件编码
+        if (Files.hasBOM(bris.getArray())) {
+            bris.skip(3);
+        }
+
+        try (Reader reader = new InputStreamReader(new BOMInputStream(bris), charset)) {
+            int columnSize = withHeader ? this.headers.length : 0;
             Iterable<CSVRecord> records = csvFormat.parse(reader);
-            int i = 0, j, n; T data;
+            int i = 0, j, n, start = startRow;
+            T data;
             for (CSVRecord record : records) {
-                if (!specHeaders && i == 0) {
+                if (start >= 0) {
+                    start--;
+                    continue;
+                }
+                if (!withHeader && i == 0) {
                     columnSize = record.size(); // 不指定表头，则取第一行数据为表头
                 }
                 n = record.size();

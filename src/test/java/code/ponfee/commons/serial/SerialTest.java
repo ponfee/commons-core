@@ -241,11 +241,15 @@ public class SerialTest {
         System.out.println(ser.deserialize(ser.serialize(1), int.class));
         System.out.println(ser.deserialize(ser.serialize(true), boolean.class));
     }
-    
+
     @Test
     public void test7() {
         System.out.println(Serializers.of(int.class));
         System.out.println(Convertors.of(int.class));
-        
+
+        System.out.println(Integer.class.isInstance(1));
+        System.out.println(Long.class.isInstance(1));
+        System.out.println(Long.class.isInstance(1L));
+
     }
 }
