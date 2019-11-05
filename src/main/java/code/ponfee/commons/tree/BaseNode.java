@@ -67,7 +67,16 @@ public class BaseNode<T extends Serializable & Comparable<? super T>, A extends 
     }
 
     public BaseNode<T, A> copy() { // shadow copy
-        return new BaseNode<>(this.nid, this.pid, this.enabled, this.available, this.attach);
+        BaseNode<T, A> node = new BaseNode<>(
+            this.nid, this.pid, this.enabled, this.available, this.attach
+        );
+        node.level = this.level;
+        node.path = this.path;
+        node.childLeafCount = this.childLeafCount;
+        node.leftLeafCount = this.leftLeafCount;
+        node.treeNodeCount = this.treeNodeCount;
+        node.treeMaxDepth = this.treeMaxDepth;
+        return node;
     }
 
     // -----------------------------------------------getter/setter

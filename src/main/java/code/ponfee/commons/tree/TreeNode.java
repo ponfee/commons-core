@@ -27,8 +27,8 @@ import org.apache.commons.collections4.IterableUtils;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
+import code.ponfee.commons.collect.Collects;
 import code.ponfee.commons.collect.Comparators;
 import code.ponfee.commons.reflect.Fields;
 import code.ponfee.commons.util.Strings;
@@ -158,21 +158,20 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
      * @param list         子节点列表
      * @param ignoreOrphan {@code true}忽略孤儿节点
      */
-    @SuppressWarnings("unchecked")
     public <E extends BaseNode<T, A>> TreeNode<T, A> mount(List<E> list, boolean ignoreOrphan) {
         if (list == null) {
             list = Collections.emptyList();
         }
-        Set<T> nodeNids = Sets.newHashSet(super.nid);
 
         // 1、预处理
         List<BaseNode<T, A>> nodes = prepare(list);
 
         // 2、检查是否存在重复节点
-        for (BaseNode<T, A> n : nodes) {
-            if (!nodeNids.add(n.nid)) {
-                throw new RuntimeException("重复的节点：" + n.nid);
-            }
+        List<T> checkDuplicateList = Lists.newArrayList(super.nid);
+        nodes.stream().forEach(n -> checkDuplicateList.add(n.nid));
+        Set<T> duplicated = Collects.duplicate(checkDuplicateList);
+        if (CollectionUtils.isNotEmpty(duplicated)) {
+            throw new RuntimeException("Duplicated node ids: " + duplicated);
         }
 
         // 3、以此节点为根构建节点树
@@ -355,19 +354,19 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     /**
      * Returns the ImmutableList for current node path
      * 
-     * @param list the parent node path
-     * @param nid  the current node id
+     * @param parentPath the parent node path
+     * @param nid        the current node id
      * @return a new ImmutableList appended current node id
      */
-    private List<T> buildPath(List<T> list, T nid) {
-        if (IterableUtils.matchesAny(list, nid::equals)) {
+    private List<T> buildPath(List<T> parentPath, T nid) {
+        if (IterableUtils.matchesAny(parentPath, nid::equals)) {
             // 节点路径中已经包含了此节点，则视为环状
-            throw new RuntimeException("Node circular dependencies: " + list + " -> " + nid);
+            throw new RuntimeException("Node circular dependencies: " + parentPath + " -> " + nid);
         }
 
         ImmutableList.Builder<T> builder = ImmutableList.builder();
-        if (list != null) {
-            builder.addAll(list);
+        if (parentPath != null) {
+            builder.addAll(parentPath);
         }
         return builder.add(nid).build();
     }
