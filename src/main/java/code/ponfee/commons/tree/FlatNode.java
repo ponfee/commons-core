@@ -25,7 +25,7 @@ public final class FlatNode<T extends Serializable & Comparable<? super T>, A ex
 
     private final boolean leaf; // 是否叶子节点
 
-    public FlatNode(TreeNode<T, A> nt) {
+    FlatNode(TreeNode<T, A> nt) {
         super(nt.nid, nt.pid, nt.enabled, nt.available, nt.attach);
 
         super.level = nt.level;

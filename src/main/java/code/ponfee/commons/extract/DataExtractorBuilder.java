@@ -18,7 +18,7 @@ import code.ponfee.commons.extract.streaming.StreamingExcelExtractor;
 import code.ponfee.commons.http.ContentType;
 
 /**
- * The fiel data extractor builder
+ * The data extractor builder, facade operator
  * 
  * @author Ponfee
  */

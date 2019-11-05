@@ -2,7 +2,6 @@ package code.ponfee.commons.util;
 
 import java.util.Date;
 
-import org.apache.commons.lang3.time.FastDateFormat;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
@@ -141,9 +140,6 @@ public enum DatePeriods {
     }
 
     public static final class Interval {
-        private static final FastDateFormat FORMATTER =
-            FastDateFormat.getInstance(PATTERN);
-
         private final Date begin;
         private final Date end;
 
@@ -162,7 +158,7 @@ public enum DatePeriods {
 
         @Override
         public String toString() {
-            return FORMATTER.format(begin) + " ~ " + FORMATTER.format(end);
+            return WrappedFastDateFormat.PATTERN09A.format(begin) + " ~ " + WrappedFastDateFormat.PATTERN09A.format(end);
         }
     }
 

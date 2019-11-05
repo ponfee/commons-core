@@ -2,6 +2,7 @@ package code.ponfee.commons.math;
 
 import com.google.common.primitives.Chars;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
@@ -9,7 +10,6 @@ import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Arrays;
-import static java.util.Optional.ofNullable;
 
 /**
  * 数字工具类
@@ -130,7 +130,8 @@ public final class Numbers {
     }
 
     public static Byte toWrapByte(Object obj, Byte defaultVal) {
-        return ofNullable(toNumber(obj)).map(Number::byteValue).orElse(defaultVal);
+        Long value = toWrapLong(obj);
+        return value == null ? defaultVal : value.byteValue();
     }
 
     public static Short toWrapShort(Object obj) {
@@ -138,7 +139,8 @@ public final class Numbers {
     }
 
     public static Short toWrapShort(Object obj, Short defaultVal) {
-        return ofNullable(toNumber(obj)).map(Number::shortValue).orElse(defaultVal);
+        Long value = toWrapLong(obj);
+        return value == null ? defaultVal : value.shortValue();
     }
 
     public static Integer toWrapInt(Object obj) {
@@ -146,7 +148,8 @@ public final class Numbers {
     }
 
     public static Integer toWrapInt(Object obj, Integer defaultVal) {
-        return ofNullable(toNumber(obj)).map(Number::intValue).orElse(defaultVal);
+        Long value = toWrapLong(obj);
+        return value == null ? defaultVal : value.intValue();
     }
 
     public static Long toWrapLong(Object obj) {
@@ -154,7 +157,17 @@ public final class Numbers {
     }
 
     public static Long toWrapLong(Object obj, Long defaultVal) {
-        return ofNullable(toNumber(obj)).map(Number::longValue).orElse(defaultVal);
+        if (obj == null) {
+            return defaultVal;
+        }
+        if (obj instanceof Number) {
+            return ((Number) obj).longValue();
+        }
+        try {
+            return Long.parseLong(obj.toString());
+        } catch (NumberFormatException ignored) {
+            return defaultVal;
+        }
     }
 
     public static Float toWrapFloat(Object obj) {
@@ -162,7 +175,8 @@ public final class Numbers {
     }
 
     public static Float toWrapFloat(Object obj, Float defaultVal) {
-        return ofNullable(toNumber(obj)).map(Number::floatValue).orElse(defaultVal);
+        Double value = toWrapDouble(obj);
+        return value == null ? defaultVal : value.floatValue();
     }
 
     public static Double toWrapDouble(Object obj) {
@@ -170,7 +184,17 @@ public final class Numbers {
     }
 
     public static Double toWrapDouble(Object obj, Double defaultVal) {
-        return ofNullable(toNumber(obj)).map(Number::doubleValue).orElse(defaultVal);
+        if (obj == null) {
+            return defaultVal;
+        }
+        if (obj instanceof Number) {
+            return ((Number) obj).doubleValue();
+        }
+        try {
+            return Double.parseDouble(obj.toString());
+        } catch (NumberFormatException ignored) {
+            return defaultVal;
+        }
     }
 
     // ---------------------------------------------------------------------number format
@@ -311,15 +335,15 @@ public final class Numbers {
     }
 
     public static int sum(Integer a, Integer b) {
-        return ofNullable(a).orElse(0) + ofNullable(b).orElse(0);
+        return ObjectUtils.defaultIfNull(a, 0) + ObjectUtils.defaultIfNull(b, 0);
     }
 
     public static long sum(Long a, Long b) {
-        return ofNullable(a).orElse(0L) + ofNullable(b).orElse(0L);
+        return ObjectUtils.defaultIfNull(a, 0L) + ObjectUtils.defaultIfNull(b, 0L);
     }
 
     public static double sum(Double a, Double b) {
-        return ofNullable(a).orElse(0.0) + ofNullable(b).orElse(0.0);
+        return ObjectUtils.defaultIfNull(a, 0.0D) + ObjectUtils.defaultIfNull(b, 0.0D);
     }
 
     /**
@@ -477,18 +501,4 @@ public final class Numbers {
         return hex.replaceFirst("^0*", "");
     }
 
-    // -----------------------------------------------------private methods
-    private static Number toNumber(Object obj) {
-        if (obj == null) {
-            return null;
-        }
-        if (obj instanceof Number) {
-            return (Number) obj;
-        }
-        try {
-            return Double.parseDouble(obj.toString());
-        } catch (NumberFormatException ignored) {
-            return null;
-        }
-    }
 }

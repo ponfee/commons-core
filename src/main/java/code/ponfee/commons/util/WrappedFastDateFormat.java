@@ -1,3 +1,11 @@
+/* __________              _____                                          *\
+** \______   \____   _____/ ____\____   ____        Ponfee's code         **
+**  |     ___/  _ \ /    \   __\/ __ \_/ __ \       (c) 2017-2019, MIT    **
+**  |    |  (  <_> )   |  \  | \  ___/\  ___/       http://www.ponfee.cn  **
+**  |____|   \____/|___|  /__|  \___  >\___  >                            **
+**                      \/          \/     \/                             **
+\*                                                                        */
+
 package code.ponfee.commons.util;
 
 import java.text.AttributedCharacterIterator;
@@ -42,7 +50,7 @@ public class WrappedFastDateFormat extends DateFormat {
     public static final FastDateFormat PATTERN10B = FastDateFormat.getInstance("yyyy/MM/dd'T'HH:mm:ss.SSSZ");
     public static final FastDateFormat PATTERN11B = FastDateFormat.getInstance("yyyy/MM/dd'T'HH:mm:ss.SSS'Z'");
 
-    public static final WrappedFastDateFormat NORMAL = new WrappedFastDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static final WrappedFastDateFormat DEFAULT = new WrappedFastDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private final FastDateFormat format;
     private final boolean strict;
@@ -97,7 +105,13 @@ public class WrappedFastDateFormat extends DateFormat {
             case  6: return PATTERN02A.parse(source, pos);
             case  7: return (isCrossbar(source) ? PATTERN03A : PATTERN03B).parse(source, pos);
             case  8: return PATTERN04A.parse(source, pos);
-            case 10: return (isCrossbar(source) ? PATTERN05A : PATTERN05B).parse(source, pos);
+            case 10: 
+                switch (source.charAt(4)) {
+                    case '-': return PATTERN05A.parse(source, pos);
+                    case '/': return PATTERN05B.parse(source, pos);
+                    default: return new Date(Long.parseLong(source) * 1000); // a long string of seconds unix timestamp 
+                }
+            case 13: return new Date(Long.parseLong(source));  // a long string of mills unix timestamp 
             case 14: return PATTERN06A.parse(source, pos);
             case 19: return (isCrossbar(source) ? PATTERN07A : PATTERN07B).parse(source, pos);
             case 17: return PATTERN08A.parse(source, pos);
@@ -123,7 +137,13 @@ public class WrappedFastDateFormat extends DateFormat {
             case  6: return PATTERN02A.parse(source);
             case  7: return (isCrossbar(source) ? PATTERN03A : PATTERN03B).parse(source);
             case  8: return PATTERN04A.parse(source);
-            case 10: return (isCrossbar(source) ? PATTERN05A : PATTERN05B).parse(source);
+            case 10: 
+                switch (source.charAt(4)) {
+                    case '-': return PATTERN05A.parse(source);
+                    case '/': return PATTERN05B.parse(source);
+                    default: return new Date(Long.parseLong(source) * 1000);
+                }
+            case 13: return new Date(Long.parseLong(source));
             case 14: return PATTERN06A.parse(source);
             case 19: return (isCrossbar(source) ? PATTERN07A : PATTERN07B).parse(source);
             case 17: return PATTERN08A.parse(source);
@@ -192,10 +212,6 @@ public class WrappedFastDateFormat extends DateFormat {
         return this; // return new WrappedFastDateFormat((FastDateFormat) this.format.clone());
     }
 
-    private boolean isCrossbar(String str) {
-        return str.charAt(4) == '-';
-    }
-
     // ------------------------------------------------------------------------unsupported
     @Override
     public void setTimeZone(TimeZone zone) {
@@ -215,6 +231,10 @@ public class WrappedFastDateFormat extends DateFormat {
     @Override
     public void setLenient(boolean lenient) {
         throw new UnsupportedOperationException();
+    }
+
+    private boolean isCrossbar(String str) {
+        return str.charAt(4) == '-';
     }
 
 }

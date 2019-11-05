@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
 
 import org.junit.Test;
 
@@ -96,5 +97,52 @@ public class NodeTreeTest {
         list.add(new BaseNode<>("200000", "notfound", true, "nid200000")); // 无效的孤儿节点
 
         TreeNode.<String, String> of(TreeNode.DEFAULT_ROOT_ID).mount(list);
+    }
+
+    @Test
+    public void test5() {
+        List<BaseNode<String, String>> list = new ArrayList<>();
+        list.add(new BaseNode<>("100000", null, true, null));
+        list.add(new BaseNode<>("100010", "100000", true, null));
+        list.add(new BaseNode<>("100011", "100010", false, random()));
+        list.add(new BaseNode<>("100012", "100010", true, random()));
+        list.add(new BaseNode<>("100020", "100000", false, random()));
+        list.add(new BaseNode<>("100021", "100020", true, random()));
+        list.add(new BaseNode<>("100022", "100020", false, random()));
+
+        list.add(new BaseNode<>("200000", null, true, random()));
+
+        list.add(new BaseNode<>("300000", null, true, random()));
+
+        list.add(new BaseNode<>("400000", null, true, random()));
+
+        // do mount first
+        TreeNode<String, String> subtree = TreeNode.of("400010", "400000");
+
+        // do mount second
+        subtree.mount(Arrays.asList(
+            new BaseNode<>("400011", "400010", true, "nid400011"),
+            new BaseNode<>("400012", "400010", false, "nid400012")
+        ));
+        list.add(subtree); // add a tree node
+
+        list.add(new BaseNode<>("500000", null, false, random()));
+        list.add(new BaseNode<>("500010", "500000", true, random()));
+        list.add(new BaseNode<>("500011", "500010", true, random()));
+
+        // do mount third
+        TreeNode<String, String> root = TreeNode.of(TreeNode.DEFAULT_ROOT_ID, TreeNode.comparingThenComparingNid(Function.identity()));
+        System.out.println(Jsons.toJson(root));
+
+        // do mount fouth
+        root.mount(list); // mount
+        System.out.println(Jsons.toJson(root));
+        System.out.println(Jsons.toJson(root.dfsFlat()));
+        System.out.println(Jsons.toJson(root.bfsFlat()));
+    }
+    
+    private String random() {
+        String[] s = new String[] { "a", null, "b", null, "c", "d", null };
+        return s[ThreadLocalRandom.current().nextInt(s.length)];
     }
 }

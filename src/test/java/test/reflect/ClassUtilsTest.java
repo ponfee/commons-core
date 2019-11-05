@@ -26,12 +26,19 @@ import code.ponfee.commons.reflect.ClassUtils;
  */
 public class ClassUtilsTest {
 
-    static int n = 1000000000;
+    static int n = 100000000;
 
     @Test
     public void test1() {
         for (int i = 0; i < n; i++) {
             ClassUtils.getConstructor(ByteArrayWrapper.class, byte[].class);
+        }
+    }
+
+    @Test
+    public void test12() {
+        for (int i = 0; i < n; i++) {
+            ClassUtils.getConstructor(ClassUtilsTest.class);
         }
     }
 

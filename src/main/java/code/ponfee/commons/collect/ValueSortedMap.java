@@ -42,7 +42,7 @@ public class ValueSortedMap<K, V> extends TreeMap<K, V> {
 
     public static <K, V extends Comparable<? super V>> ValueSortedMap<K, V> nullsFirst(
         Map<? extends K, ? extends V> map) {
-        return nullsFirst(map, Comparator.naturalOrder());
+        return nullsFirst(map, Comparators.asc());
     }
 
     public static <K, V> ValueSortedMap<K, V> nullsFirst(
@@ -52,7 +52,7 @@ public class ValueSortedMap<K, V> extends TreeMap<K, V> {
 
     public static <K, V extends Comparable<? super V>> ValueSortedMap<K, V> nullsLast(
         Map<? extends K, ? extends V> map) {
-        return nullsLast(map, Comparator.naturalOrder());
+        return nullsLast(map, Comparators.asc());
     }
 
     public static <K, V> ValueSortedMap<K, V> nullsLast(

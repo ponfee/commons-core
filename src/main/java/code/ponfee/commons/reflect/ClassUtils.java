@@ -38,7 +38,7 @@ import code.ponfee.commons.util.ObjectUtils;
 public final class ClassUtils {
     private ClassUtils() {}
 
-    private static final Map<ObjectArrayWrapper<Class<?>>, Constructor<?>> CONSTRUCTOR_CACHE = new HashMap<>();
+    private static final Map<Object, Constructor<?>> CONSTRUCTOR_CACHE = new HashMap<>();
 
     /**
      * 获取方法的参数名（编译未清除）<p>
@@ -330,13 +330,9 @@ public final class ClassUtils {
     // -----------------------------------------------------------------------------get constructor
     @SuppressWarnings("unchecked")
     public static <T> Constructor<T> getConstructor(Class<T> type, Class<?>... parameterTypes) {
-        Class<?>[] array;
-        if (ArrayUtils.isEmpty(parameterTypes)) {
-            array = new Class<?>[] { type };
-        } else {
-            array = ArrayUtils.insert(0, parameterTypes, type);
-        }
-        ObjectArrayWrapper<Class<?>> key = ObjectArrayWrapper.of(array);
+        Object key = ArrayUtils.isEmpty(parameterTypes) 
+                   ? type 
+                   : ObjectArrayWrapper.of(ArrayUtils.insert(0, parameterTypes, type));
         Constructor<T> constructor = (Constructor<T>) CONSTRUCTOR_CACHE.get(key);
         if (constructor == null) {
             synchronized (CONSTRUCTOR_CACHE) {
@@ -346,7 +342,7 @@ public final class ClassUtils {
                                     ? type.getConstructor() // getDeclaredConstructor
                                     : type.getConstructor(parameterTypes);
                     } catch (NoSuchMethodException | SecurityException ignored) {
-                        // Not such constructor
+                        // Not such constructor, placeholder
                         constructor = (Constructor<T>) Null.UNCONSTRUCTOR;
                     }
                     CONSTRUCTOR_CACHE.put(key, constructor);

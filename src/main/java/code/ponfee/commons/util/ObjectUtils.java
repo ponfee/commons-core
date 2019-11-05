@@ -141,7 +141,7 @@ public final class ObjectUtils {
                 return (T) new Date(Numbers.toLong(text));
             }
             try {
-                return (T) WrappedFastDateFormat.NORMAL.parse(text);
+                return (T) WrappedFastDateFormat.DEFAULT.parse(text);
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }

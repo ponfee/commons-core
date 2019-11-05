@@ -62,8 +62,12 @@ public class BaseNode<T extends Serializable & Comparable<? super T>, A extends 
     }
 
     @Override
-    public BaseNode<T, A> clone() {
+    public BaseNode<T, A> clone() { // deep copy
         return SerializationUtils.clone(this);
+    }
+
+    public BaseNode<T, A> copy() { // shadow copy
+        return new BaseNode<>(this.nid, this.pid, this.enabled, this.available, this.attach);
     }
 
     // -----------------------------------------------getter/setter
