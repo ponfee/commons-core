@@ -43,7 +43,10 @@ public class NodeTreeTest {
 
         list.add(new BaseNode<>("400000", null, true, "nid400000"));
 
+        // do mount first
         TreeNode<String, String> subtree = TreeNode.of("400010", "400000", true, Comparator.comparing(n -> ThreadLocalRandom.current().nextInt(10)));
+
+        // do mount second
         subtree.mount(Arrays.asList(
             new BaseNode<>("400011", "400010", true, "nid400011"),
             new BaseNode<>("400012", "400010", false, "nid400012")
@@ -54,9 +57,11 @@ public class NodeTreeTest {
         list.add(new BaseNode<>("500010", "500000", true, "nid500010"));
         list.add(new BaseNode<>("500011", "500010", true, "nid500011"));
 
+        // do mount third
         TreeNode<String, String> root = TreeNode.of(TreeNode.DEFAULT_ROOT_ID, Comparator.comparing(BaseNode::getNid));
         System.out.println(Jsons.toJson(root));
 
+        // do mount fouth
         root.mount(list); // mount
         System.out.println(Jsons.toJson(root));
         System.out.println(Jsons.toJson(root.dfsFlat()));
