@@ -22,7 +22,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.springframework.objenesis.ObjenesisHelper;
 
 import com.google.common.base.Preconditions;
 
@@ -286,7 +285,7 @@ public final class ObjectUtils {
         } else if (org.apache.commons.lang3.ClassUtils.isPrimitiveWrapper(type)) {
             return ClassUtils.newInstance(type, String.class, "0");
         } else {
-            return ObjenesisHelper.newInstance(type);
+            return ClassUtils.newInstance(type);
         }
     }
 

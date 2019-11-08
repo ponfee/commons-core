@@ -1,5 +1,6 @@
 package code.ponfee.commons.io;
 
+import code.ponfee.commons.exception.Throwables;
 import code.ponfee.commons.math.Maths;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.codec.binary.Hex;
@@ -138,6 +139,18 @@ public final class Files {
         return file;
     }
 
+    public static void deleteQuietly(File file) {
+        if (file == null) {
+            return;
+        }
+
+        try {
+            java.nio.file.Files.deleteIfExists(file.toPath());
+        } catch (IOException e) {
+            Throwables.ignore(e);
+        }
+    }
+
     /**
      * read file as string
      * @param file
@@ -212,7 +225,7 @@ public final class Files {
         } else if (data.length == 0) {
             return StringUtils.EMPTY;
         }
-        Charset charset = Charset.forName(FileTransformer.guessEncoding(data));
+        Charset charset = Charset.forName(CharacterEncodingDetector.detect(data));
         return new String(data, charset);
     }
 
@@ -436,7 +449,46 @@ public final class Files {
         }
     }
 
-    // ------------------------file type---------------------------------
+    // -----------------------------------------------------------------hasBom
+    public static boolean hasBOM(InputStream input) throws IOException {
+        return hasBOM(readByteArray(input, 3));
+    }
+
+    public static boolean hasBOM(File file) throws IOException {
+        return hasBOM(readByteArray(file, 3));
+    }
+
+    public static boolean hasBOM(byte[] bytes) {
+        if (bytes == null || bytes.length < 3) {
+            return false;
+        }
+        return bytes[0] == WINDOWS_BOM[0] 
+            && bytes[1] == WINDOWS_BOM[1] 
+            && bytes[2] == WINDOWS_BOM[2];
+    }
+
+    // -----------------------------------------------------------------readByteArray
+    public static byte[] readByteArray(InputStream input, int count) throws IOException {
+        if (input.available() <= count) {
+            return IOUtils.toByteArray(input);
+        }
+
+        byte[] array = new byte[count];
+        input.read(array);
+        return array;
+    }
+
+    public static byte[] readByteArray(File file, int count) throws IOException {
+        try (InputStream input = new FileInputStream(file)) {
+            return readByteArray(input, count);
+        }
+    }
+
+    public static byte[] readByteArray(String filePath, int count) throws IOException {
+        return readByteArray(new File(filePath), count);
+    }
+
+    // -----------------------------------------------------------------file type
     private static final int SUB_PREFIX = 32;
     public static final Map<String, String> FILE_TYPE_MAGIC = ImmutableMap.<String, String> builder()
         .put("jpg", "FFD8FF") // JPEG (jpg)

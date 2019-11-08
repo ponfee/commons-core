@@ -128,6 +128,10 @@ public class Result<T> implements java.io.Serializable {
         return actualAffectedRows == exceptAffectedRows ? SUCCESS : failure(ResultCode.OPS_CONFLICT);
     }
 
+    public static Result<Void> assertOperatedState(boolean condition) {
+        return condition ? SUCCESS : failure(ResultCode.OPS_CONFLICT);
+    }
+
     // -------------------------------------------------getter/setter
     public int getCode() {
         return code;

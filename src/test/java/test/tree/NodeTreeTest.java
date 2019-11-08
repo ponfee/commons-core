@@ -131,7 +131,8 @@ public class NodeTreeTest {
         list.add(new BaseNode<>("500011", "500010", true, random()));
 
         // do mount third
-        TreeNode<String, String> root = TreeNode.of(TreeNode.DEFAULT_ROOT_ID, TreeNode.comparingThenComparingNid(Function.identity()));
+        Comparator< ? super TreeNode<String, String>> c = TreeNode.comparingThenComparingNid(Function.identity());
+        TreeNode<String, String> root = TreeNode.of(TreeNode.DEFAULT_ROOT_ID, c);
         System.out.println(Jsons.toJson(root));
 
         // do mount fouth
