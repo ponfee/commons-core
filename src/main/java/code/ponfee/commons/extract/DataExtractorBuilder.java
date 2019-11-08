@@ -4,7 +4,6 @@ import static org.apache.commons.io.FilenameUtils.getExtension;
 
 import java.io.File;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.List;
 
 import org.apache.commons.csv.CSVFormat;
@@ -37,7 +36,6 @@ public class DataExtractorBuilder {
     private boolean streaming = true; // excel whether streaming read, default true
 
     private CSVFormat csvFormat; // csv format
-    private Charset charset; // csv data source charset
 
     private DataExtractorBuilder(Object dataSource, String fileName, 
                                  String contentType) {
@@ -87,17 +85,12 @@ public class DataExtractorBuilder {
         return this;
     }
 
-    public DataExtractorBuilder charset(Charset charset) {
-        this.charset = charset;
-        return this;
-    }
-
     public <T> DataExtractor<T> build() {
         String extension = FilenameUtils.getExtension(fileName).toLowerCase();
         if (ContentType.TEXT_PLAIN.value().equalsIgnoreCase(contentType)
             || CSV_EXTENSION.contains(extension)) {
             // csv, txt文本格式数据
-            return new CsvExtractor<>(dataSource, headers, charset, csvFormat);
+            return new CsvExtractor<>(dataSource, headers, csvFormat);
         } else if (EXCEL_EXTENSION.contains(extension)) {
             // content-type
             // xlsx: application/vnd.openxmlformats-officedocument.wordprocessingml.document

@@ -21,7 +21,7 @@ import info.monitorenter.cpdetector.io.UnicodeDetector;
  */
 public class CharacterEncodingDetector {
 
-    private static final int COUNT = 9600;
+    public static final int COUNT = 9600;
 
     public static String detect(String filePath) {
         return detect(new File(filePath));
@@ -43,8 +43,8 @@ public class CharacterEncodingDetector {
         }
     }
 
-    public static String detect(InputStream inputStream) {
-        try (InputStream input = inputStream) {
+    public static String detect(InputStream input) {
+        try {
             return detect(Files.readByteArray(input, COUNT));
         } catch (IOException e) {
             throw new RuntimeException("Read file byte array occur error.", e);

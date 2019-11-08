@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import org.apache.commons.csv.CSVFormat;
@@ -13,6 +11,9 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import code.ponfee.commons.io.BeforeReadInputStream;
+import code.ponfee.commons.io.CharacterEncodingDetector;
 
 /**
  * Csv file data extractor
@@ -23,17 +24,14 @@ public class CsvExtractor<T> extends DataExtractor<T> {
 
     private final CSVFormat csvFormat;
     private final boolean specHeaders;
-    private final Charset charset;
 
     public CsvExtractor(Object dataSource, String[] headers) {
-        this(dataSource, headers, null, null);
+        this(dataSource, headers, null);
     }
 
-    public CsvExtractor(Object dataSource, String[] headers, 
-                        Charset charset, CSVFormat csvFormat) {
+    public CsvExtractor(Object dataSource, String[] headers, CSVFormat csvFormat) {
         super(dataSource, headers);
         this.specHeaders = ArrayUtils.isNotEmpty(headers);
-        this.charset = Optional.ofNullable(charset).orElse(StandardCharsets.UTF_8);
         this.csvFormat = Optional.ofNullable(csvFormat).orElse(CSVFormat.DEFAULT);
         if (this.specHeaders) {
             this.csvFormat.withHeader(headers);
@@ -43,10 +41,12 @@ public class CsvExtractor<T> extends DataExtractor<T> {
     @SuppressWarnings("unchecked")
     @Override
     public void extract(RowProcessor<T> processor) throws IOException {
-        try (InputStream stream = asInputStream();
-             BOMInputStream bom = new BOMInputStream(stream);
-             Reader reader = new InputStreamReader(bom, charset)
-        ) {
+        BeforeReadInputStream bris = new BeforeReadInputStream(
+            asInputStream(), CharacterEncodingDetector.COUNT
+        );
+        String charset = CharacterEncodingDetector.detect(bris.getArray()); // 检测文件编码
+
+        try (Reader reader = new InputStreamReader(new BOMInputStream(bris), charset)) {
             int columnSize = specHeaders ? this.headers.length : 0;
             Iterable<CSVRecord> records = csvFormat.parse(reader);
             int i = 0, j, n; T data;
