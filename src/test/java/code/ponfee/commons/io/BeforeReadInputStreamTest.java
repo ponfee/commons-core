@@ -25,7 +25,7 @@ public class BeforeReadInputStreamTest {
         bb = IOUtils.toByteArray(binput);
         Assert.assertArrayEquals(fb, bb);*/
 
-        for (int i = 1; i < 10000; i++) {
+        for (int i = 1; i < 50000; i += 13) {
             try (InputStream input1 = new FileInputStream(f);
                  InputStream input2 = new BeforeReadInputStream(new FileInputStream(f), i)
             ){
@@ -34,6 +34,7 @@ public class BeforeReadInputStreamTest {
                 Assert.assertArrayEquals(fb, bb);
                 System.out.println(i);
             } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

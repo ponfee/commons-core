@@ -17,13 +17,7 @@ public class BeforeReadInputStream extends InputStream {
 
     public BeforeReadInputStream(InputStream input, int maxCount) throws IOException {
         this.input = input;
-
-        if (input.available() <= maxCount) {
-            this.beforeReadByteArray = new byte[input.available()];
-        } else {
-            this.beforeReadByteArray = new byte[maxCount];
-        }
-        input.read(this.beforeReadByteArray);
+        this.beforeReadByteArray = Files.readByteArray(input, maxCount);
         this.offset = 0;
         this.limit = this.beforeReadByteArray.length;
     }
@@ -34,7 +28,7 @@ public class BeforeReadInputStream extends InputStream {
     @Override
     public int read() throws IOException {
         if (this.offset < this.limit) {
-            return beforeReadByteArray[offset];
+            return this.beforeReadByteArray[this.offset];
         } else {
             return this.input.read();
         }
@@ -42,18 +36,18 @@ public class BeforeReadInputStream extends InputStream {
 
     @Override
     public int read(byte[] buf, int off, int len) throws IOException {
-        int remain = this.limit - this.offset;
-        if (remain > 0) {
+        int remaining = this.limit - this.offset;
+        if (remaining > 0) {
             int count = len - off;
-            if (remain >= count) {
+            if (remaining >= count) {
                 System.arraycopy(this.beforeReadByteArray, this.offset, buf, off, len);
                 this.offset += count;
                 return count;
             } else {
-                System.arraycopy(this.beforeReadByteArray, this.offset, buf, off, remain);
-                int cnt = this.input.read(buf, off + remain, len - remain);
+                System.arraycopy(this.beforeReadByteArray, this.offset, buf, off, remaining);
+                int cnt = this.input.read(buf, off + remaining, len - remaining);
                 this.offset = this.limit;
-                return cnt == -1 ? remain : remain + cnt;
+                return cnt == -1 ? remaining : remaining + cnt;
             }
         } else {
             return this.input.read(buf, off, len);
@@ -72,27 +66,50 @@ public class BeforeReadInputStream extends InputStream {
     // --------------------------------------------------------------
     @Override
     public long skip(long n) throws IOException {
-        return this.input.skip(n);
+        int remaining = this.limit - this.offset;
+        if (remaining <= 0) {
+            return this.input.skip(n);
+        } else if (remaining > n) {
+            this.offset += n;
+            return n;
+        } else {
+            this.offset = this.limit;
+            return this.input.skip(n - remaining) + remaining;
+        }
     }
 
     @Override
     public int available() throws IOException {
-        return this.input.available();
+        return this.input.available() + this.limit - this.offset;
     }
 
     @Override
     public void close() throws IOException {
         this.input.close();
+        this.offset = this.limit;
     }
 
     @Override
     public synchronized void mark(int readlimit) {
-        this.input.mark(readlimit);
+        if (this.markSupported()) {
+            if (readlimit >= this.limit) {
+                this.input.mark(readlimit);
+                this.offset = this.limit;
+            } else {
+                this.input.mark(this.limit);
+                this.offset = readlimit;
+            }
+        }
     }
 
     @Override
     public synchronized void reset() throws IOException {
-        this.input.reset();
+        if (this.markSupported()) {
+            this.input.mark(this.limit);
+            this.offset = 0;
+        } else {
+            throw new IOException("Unsupported reset.");
+        }
     }
 
     @Override

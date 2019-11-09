@@ -17,7 +17,7 @@ public final class Comparators {
         return Comparator.reverseOrder();
     }
 
-    public static <T extends Comparable<? super T>> Comparator<T> orderBy(boolean asc) {
+    public static <T extends Comparable<? super T>> Comparator<T> order(boolean asc) {
         return asc ? asc() : desc();
     }
 

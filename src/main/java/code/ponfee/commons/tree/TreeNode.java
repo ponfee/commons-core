@@ -388,7 +388,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         // Second nullsLast will handle the cases when the return value of "keyExtractor.apply(node.getAttach())" is null.
         //Comparator.nullsLast(Comparator.<TreeNode<T, A>, O> comparing(node -> keyExtractor.apply(node.getAttach()), Comparator.nullsLast(orderBy(asc))));
 
-        return Comparator.comparing(n -> keyExtractor.apply(n.getAttach()), Comparator.nullsLast(Comparators.orderBy(asc)));
+        return Comparator.comparing(n -> keyExtractor.apply(n.getAttach()), Comparator.nullsLast(Comparators.order(asc)));
     }
 
     // -----------------------------------------------------------------------------comparing by Attach then after with TreeNode.nid
@@ -400,7 +400,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     public static <T extends Serializable & Comparable<? super T>, A extends Serializable, O extends Serializable & Comparable<? super O>> 
         Comparator<? super TreeNode<T, A>> comparingThenComparingNid(Function<? super A, ? extends O> keyExtractor, boolean asc) {
         return Comparator.<TreeNode<T, A>, O> comparing(
-            n -> keyExtractor.apply(n.getAttach()), Comparator.nullsLast(Comparators.orderBy(asc))
+            n -> keyExtractor.apply(n.getAttach()), Comparator.nullsLast(Comparators.order(asc))
         ).thenComparing(
             TreeNode::getNid
         );

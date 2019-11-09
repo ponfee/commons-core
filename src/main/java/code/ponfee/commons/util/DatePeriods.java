@@ -1,5 +1,7 @@
 package code.ponfee.commons.util;
 
+import static code.ponfee.commons.util.WrappedFastDateFormat.PATTERN09A;
+
 import java.util.Date;
 
 import org.joda.time.LocalDateTime;
@@ -82,11 +84,10 @@ public enum DatePeriods {
         }
     };
 
-    private static final String PATTERN = "yyyy-MM-dd HH:mm:ss SSS";
-
     // 2018-01-01: the first day of year, month, week
-    private static final LocalDateTime ORIGINAL = DateTimeFormat.forPattern(PATTERN)
-                                      .parseLocalDateTime("2018-01-01 00:00:00 000");
+    private static final LocalDateTime ORIGINAL = DateTimeFormat
+        .forPattern("yyyy-MM-dd HH:mm:ss.SSS")
+        .parseLocalDateTime("2018-01-01 00:00:00.000");
 
     /**
      * Template method pattern
@@ -158,7 +159,7 @@ public enum DatePeriods {
 
         @Override
         public String toString() {
-            return WrappedFastDateFormat.PATTERN09A.format(begin) + " ~ " + WrappedFastDateFormat.PATTERN09A.format(end);
+            return PATTERN09A.format(begin) + " ~ " + PATTERN09A.format(end);
         }
     }
 

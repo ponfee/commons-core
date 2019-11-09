@@ -30,8 +30,8 @@ public class DataExtractorBuilder {
     private final String fileName;
     private final String contentType;
     private String[] headers;
+    private int startRow = 0;
 
-    private int startRow = 0; // excel start row: start with 0
     private int sheetIndex = 0; // excel work book sheet index: start with 0
     private boolean streaming = true; // excel whether streaming read, default true
 
@@ -50,8 +50,8 @@ public class DataExtractorBuilder {
         return new DataExtractorBuilder(dataSource, fileName, contentType);
     }
 
-    public static DataExtractorBuilder newBuilder(CharSequence dataSource) {
-        return newBuilder(new File(dataSource.toString()));
+    public static DataExtractorBuilder newBuilder(String path) {
+        return newBuilder(new File(path));
     }
 
     public static DataExtractorBuilder newBuilder(File dataSource) {
@@ -90,7 +90,7 @@ public class DataExtractorBuilder {
         if (ContentType.TEXT_PLAIN.value().equalsIgnoreCase(contentType)
             || CSV_EXTENSION.contains(extension)) {
             // csv, txt文本格式数据
-            return new CsvExtractor<>(dataSource, headers, csvFormat);
+            return new CsvExtractor<>(dataSource, headers, csvFormat, startRow);
         } else if (EXCEL_EXTENSION.contains(extension)) {
             // content-type
             // xlsx: application/vnd.openxmlformats-officedocument.wordprocessingml.document

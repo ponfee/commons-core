@@ -49,11 +49,12 @@ public final class GzipProcessor {
      * @param input
      * @param output
      */
-    public static void compress(InputStream input, OutputStream output) {
+    public static long compress(InputStream input, OutputStream output) {
         try (GZIPOutputStream gzout = new ExtendedGZIPOutputStream(output)) {
-            IOUtils.copyLarge(input, gzout);
+            long size = IOUtils.copyLarge(input, gzout);
             gzout.flush();
             gzout.finish();
+            return size;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -108,10 +108,24 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
             return (T) source;
         }
 
-        T target = ObjectUtils.newInstance(targetType);
-
-        copy(source, target, copier);
-        return target;
+        // convert
+        if (Map.class.isAssignableFrom(targetType)) {
+            return (T) (source instanceof Map ? source : BeanMaps.CGLIB.toMap(source));
+        } else if (source instanceof Map) {
+            return (T) BeanMaps.CGLIB.toBean((Map<String, Object>) source, targetType);
+        } else {
+            T target = ObjectUtils.newInstance(targetType);
+            if (copier != null) {
+                copier.copy(source, target, null);
+            } else {
+                CglibUtils.copyProperties(source, target);
+            }
+            return target;
+            //org.apache.commons.beanutils.BeanUtils.copyProperties(target, source);
+            //org.apache.commons.beanutils.PropertyUtils.copyProperties(target, source);
+            //org.springframework.beans.BeanUtils.copyProperties(source, target);
+            //org.springframework.cglib.beans.BeanCopier.create(sourceType, targetType, false);
+        }
     }
 
     public static <S, T> void copy(S source, T target) {
@@ -125,10 +139,12 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
         }
 
         // convert
-        if (target instanceof Map && source instanceof Map) {
-            ((Map) target).putAll((Map<?, ?>) source);
-        } else if (target instanceof Map) {
-            ((Map) target).putAll(BeanMaps.CGLIB.toMap(source));
+        if (target instanceof Map) {
+            if (source instanceof Map) {
+                ((Map) target).putAll((Map<?, ?>) source);
+            } else {
+                ((Map) target).putAll(BeanMaps.CGLIB.toMap(source));
+            }
         } else if (source instanceof Map) {
             BeanMaps.CGLIB.copyFromMap((Map) source, target);
         } else {
@@ -137,10 +153,6 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
             } else {
                 CglibUtils.copyProperties(source, target);
             }
-            //org.apache.commons.beanutils.BeanUtils.copyProperties(target, source);
-            //org.apache.commons.beanutils.PropertyUtils.copyProperties(target, source);
-            //org.springframework.beans.BeanUtils.copyProperties(source, target);
-            //org.springframework.cglib.beans.BeanCopier.create(sourceType, targetType, false);
         }
     }
 

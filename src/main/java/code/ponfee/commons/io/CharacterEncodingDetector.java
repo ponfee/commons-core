@@ -21,7 +21,7 @@ import info.monitorenter.cpdetector.io.UnicodeDetector;
  */
 public class CharacterEncodingDetector {
 
-    public static final int COUNT = 9600;
+    public static final int DETECT_COUNT = 4800;
 
     public static String detect(String filePath) {
         return detect(new File(filePath));
@@ -29,7 +29,7 @@ public class CharacterEncodingDetector {
 
     public static String detect(File file) {
         try (InputStream input = new FileInputStream(file)) {
-            return detect(Files.readByteArray(input, COUNT));
+            return detect(Files.readByteArray(input, DETECT_COUNT));
         } catch (IOException e) {
             throw new RuntimeException("Read file byte array occur error.", e);
         }
@@ -37,7 +37,7 @@ public class CharacterEncodingDetector {
 
     public static String detect(URL url) {
         try (InputStream input = url.openStream()) {
-            return detect(Files.readByteArray(input, COUNT));
+            return detect(Files.readByteArray(input, DETECT_COUNT));
         } catch (IOException e) {
             throw new RuntimeException("Read file byte array occur error.", e);
         }
@@ -45,17 +45,23 @@ public class CharacterEncodingDetector {
 
     public static String detect(InputStream input) {
         try {
-            return detect(Files.readByteArray(input, COUNT));
+            return detect(Files.readByteArray(input, DETECT_COUNT));
         } catch (IOException e) {
             throw new RuntimeException("Read file byte array occur error.", e);
         }
     }
 
     public static String detect(byte[] bytes) {
+        int length = bytes.length;
+        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+        if (Files.hasBOM(bytes)) {
+            bais.skip(3);
+            length -= 3;
+        }
+
         try {
-            return buildDetector().detectCodepage(
-                new ByteArrayInputStream(bytes), bytes.length
-            ).name();
+            String encoding = buildDetector().detectCodepage(bais, length).name();
+            return "void".equalsIgnoreCase(encoding) ? Encoding.DEFAULT_ENCODING : encoding;
         } catch (IOException e) {
             // Cannot happened, because the ByteArrayInputStream don't throws IOException 
             Throwables.console(e);
@@ -4441,7 +4447,6 @@ public class CharacterEncodingDetector {
         private static final int ISO2022JP = 21;
         private static final int ASCII = 22;
         private static final int DEFAULT = 23;
-
 
         private static final String DEFAULT_ENCODING = "ISO-8859-1";
         private static final int TOTAL_TYPES = 24;
