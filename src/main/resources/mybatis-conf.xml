@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 
+<!-- https://mybatis.org/mybatis-3/zh/configuration.html -->
 <configuration>
     <settings>
         <!-- 指定MyBatis所用日志的具体实现，未指定时将自动查找。 -->
         <setting name="logImpl" value="SLF4J" />
+
         <!-- 
             dao.中的字符“.”是必须的，log4j、log4j2、logback，log4j2.xml中配置：
             <Logger name="dao" level="DEBUG" additivity="false"><AppenderRef ref="Console"/></Logger>
@@ -13,22 +15,13 @@
 
         <!-- 使全局的映射器启用或禁用缓存。 -->
         <setting name="cacheEnabled" value="false" />
+
         <!-- 全局启用或禁用延迟加载。当禁用时，所有关联对象都会即时加载。 -->
         <setting name="lazyLoadingEnabled" value="true" />
-        <!-- 当启用时，有延迟加载属性的对象在被调用时将会完全加载任意属性。否则，每种属性将会按需要加载。 -->
-        <setting name="aggressiveLazyLoading" value="true" />
-        <!-- 允许或不允许多种结果集从一个单独的语句中返回（需要适合的驱动）。 -->
-        <setting name="multipleResultSetsEnabled" value="true" />
-        <!-- 使用列标签代替列名。 -->
-        <setting name="useColumnLabel" value="true" />
-        <!-- 允许JDBC支持生成的键。 -->
-        <setting name="useGeneratedKeys" value="false" />
-        <!-- 指定MyBatis如何自动映射列到字段/属性。 -->
-        <setting name="autoMappingBehavior" value="PARTIAL" />
-        <!-- 配置默认的执行器。 -->
-        <setting name="defaultExecutorType" value="SIMPLE" />
+
         <!-- 返回NULL显示字段 -->
         <setting name="callSettersOnNulls" value="true" />
+
         <!-- 下划线转驼峰 -->
         <setting name="mapUnderscoreToCamelCase" value="true" />
     </settings>
@@ -87,4 +80,5 @@
             <property name="returnPageInfo" value="none" />
         </plugin>
     </plugins>
+
 </configuration>

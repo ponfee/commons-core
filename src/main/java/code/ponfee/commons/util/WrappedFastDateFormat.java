@@ -31,7 +31,6 @@ public class WrappedFastDateFormat extends DateFormat {
 
     private static final long serialVersionUID = 6837172676882367405L;
 
-    public static final FastDateFormat PATTERN01A = FastDateFormat.getInstance("yyyy");
     public static final FastDateFormat PATTERN02A = FastDateFormat.getInstance("yyyyMM");
     public static final FastDateFormat PATTERN03A = FastDateFormat.getInstance("yyyy-MM");
     public static final FastDateFormat PATTERN04A = FastDateFormat.getInstance("yyyyMMdd");
@@ -100,8 +99,11 @@ public class WrappedFastDateFormat extends DateFormat {
             return this.format.parse(source, pos);
         }
 
-        switch (source.length()) {
-            case  4: return PATTERN01A.parse(source, pos);
+        int length = source.length();
+        if (length < 6) {
+            return null;
+        }
+        switch (length) {
             case  6: return PATTERN02A.parse(source, pos);
             case  7: return (isCrossbar(source) ? PATTERN03A : PATTERN03B).parse(source, pos);
             case  8: return PATTERN04A.parse(source, pos);
@@ -132,8 +134,11 @@ public class WrappedFastDateFormat extends DateFormat {
             return this.format.parse(source);
         }
 
-        switch (source.length()) {
-            case  4: return PATTERN01A.parse(source);
+        int length = source.length();
+        if (length < 6) {
+            throw new ParseException("Invalid data format: " + source, 0);
+        }
+        switch (length) {
             case  6: return PATTERN02A.parse(source);
             case  7: return (isCrossbar(source) ? PATTERN03A : PATTERN03B).parse(source);
             case  8: return PATTERN04A.parse(source);

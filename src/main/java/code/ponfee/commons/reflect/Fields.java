@@ -94,7 +94,7 @@ public final class Fields {
         field.setAccessible(true);
         long fieldOffset = UNSAFE.objectFieldOffset(field);
 
-        Class<?> type = field.getType();
+        Class<?> type = GenericUtils.getFieldActualType(target.getClass(), field);
         if (Boolean.TYPE.equals(type)) {
             UNSAFE.putBoolean(target, fieldOffset, (boolean) value);
         } else if (Byte.TYPE.equals(type)) {
@@ -138,7 +138,7 @@ public final class Fields {
      */
     public static Object get(Object target, Field field) {
         long fieldOffset = UNSAFE.objectFieldOffset(field);
-        Class<?> type = field.getType();
+        Class<?> type = GenericUtils.getFieldActualType(target.getClass(), field);
         if (Boolean.TYPE.equals(type)) {
             return UNSAFE.getBoolean(target, fieldOffset);
         } else if (Byte.TYPE.equals(type)) {
@@ -170,7 +170,7 @@ public final class Fields {
         field.setAccessible(true);
         long fieldOffset = UNSAFE.objectFieldOffset(field);
 
-        Class<?> type = field.getType();
+        Class<?> type = GenericUtils.getFieldActualType(target.getClass(), field);
         if (Boolean.TYPE.equals(type)) {
             UNSAFE.putBooleanVolatile(target, fieldOffset, (boolean) value);
         } else if (Byte.TYPE.equals(type)) {
@@ -214,7 +214,7 @@ public final class Fields {
      */
     public static Object getVolatile(Object target, Field field) {
         long fieldOffset = UNSAFE.objectFieldOffset(field);
-        Class<?> type = field.getType();
+        Class<?> type = GenericUtils.getFieldActualType(target.getClass(), field);
         if (Boolean.TYPE.equals(type)) {
             return UNSAFE.getBooleanVolatile(target, fieldOffset);
         } else if (Byte.TYPE.equals(type)) {

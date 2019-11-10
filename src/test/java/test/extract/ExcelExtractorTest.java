@@ -20,17 +20,17 @@ public class ExcelExtractorTest {
 
     @Test
     public void testXLS1() throws FileNotFoundException, IOException {
-        DataExtractor<?> et = DataExtractorBuilder.newBuilder("e:\\writeTest2.xls")
+        DataExtractor et = DataExtractorBuilder.newBuilder("e:\\writeTest2.xls")
             .streaming(true)
             .headers(new String[] { "a", "b", "c", "d", "e", "f" }).build();
         et.extract((n, d) -> {
             System.out.println(Arrays.toString((String[])d));
         });
     }
-    
+
     @Test
     public void testXLS2() throws FileNotFoundException, IOException {
-        DataExtractor<?> et = DataExtractorBuilder.newBuilder("e:\\writeTest2.xls")
+        DataExtractor et = DataExtractorBuilder.newBuilder("e:\\writeTest2.xls")
             .streaming(false)
             .headers(new String[] { "a", "b", "c", "d", "e", "f" }).build();
         et.extract((n, d) -> {
@@ -40,7 +40,7 @@ public class ExcelExtractorTest {
 
     @Test
     public void testXLSX1() throws FileNotFoundException, IOException {
-        DataExtractor<?> et = DataExtractorBuilder.newBuilder("e:\\mergeTest.xlsx")
+        DataExtractor et = DataExtractorBuilder.newBuilder("e:\\mergeTest.xlsx")
             .streaming(false)
             .headers(new String[] { "a", "b", "c", "d", "e", "f" }).build();
         et.extract((n, d) -> {
@@ -50,7 +50,7 @@ public class ExcelExtractorTest {
     
     @Test
     public void testXLSX2() throws FileNotFoundException, IOException {
-        DataExtractor<?> et = DataExtractorBuilder.newBuilder("e:\\mergeTest.xlsx")
+        DataExtractor et = DataExtractorBuilder.newBuilder("e:\\mergeTest.xlsx")
             .streaming(true)
             .headers(new String[] { "a", "b", "c", "d", "e", "f" }).build();
         et.extract((n, d) -> {
@@ -60,7 +60,7 @@ public class ExcelExtractorTest {
     
     @Test
     public void testFile() throws FileNotFoundException, IOException {
-        DataExtractor<?> et = DataExtractorBuilder.newBuilder(new File("D:\\test\\test_excel_14.xlsx"))
+        DataExtractor et = DataExtractorBuilder.newBuilder(new File("D:\\test\\test_excel_14.xlsx"))
             /*.headers(new String[] { "a", "b", "c", "d", "e" })*/.build();
         et.extract((n, d) -> {
             System.out.println(Arrays.toString((String[])d));
@@ -69,7 +69,7 @@ public class ExcelExtractorTest {
     
     @Test
     public void testInput() throws FileNotFoundException, IOException {
-        DataExtractor<?> et = DataExtractorBuilder.newBuilder(new FileInputStream("D:\\test\\test_excel_14.xlsx"), "test_excel_16.xlsx", null)
+        DataExtractor et = DataExtractorBuilder.newBuilder(new FileInputStream("D:\\test\\test_excel_14.xlsx"), "test_excel_16.xlsx", null)
             .headers(new String[] { "a", "b", "c", "d", "e" }).build();
         et.extract((n, d) -> {
             if (n == 0) {
@@ -84,7 +84,7 @@ public class ExcelExtractorTest {
     
     @Test
     public void test1() throws FileNotFoundException, IOException {
-        DataExtractor<?> et = DataExtractorBuilder.newBuilder("e:\\data_expert_temp.xls")
+        DataExtractor et = DataExtractorBuilder.newBuilder("e:\\data_expert_temp.xls")
             .headers(new String[] { "a", "b", "c", "d", "e" }).build();
         et.extract((n, d) -> {
             System.out.println(Arrays.toString((String[])d));
@@ -93,7 +93,7 @@ public class ExcelExtractorTest {
     
     @Test
     public void test2() throws FileNotFoundException, IOException {
-        DataExtractor<?> et = DataExtractorBuilder.newBuilder("E:\\test.xlsx")
+        DataExtractor et = DataExtractorBuilder.newBuilder("E:\\test.xlsx")
             .headers(new String[] { "a", "b", "c", "d", "e" }).build();
         et.extract((n, d) -> {
             System.out.println(String.join("|",(String[])d));
@@ -102,16 +102,16 @@ public class ExcelExtractorTest {
     
     @Test
     public void test3() throws FileNotFoundException, IOException {
-        DataExtractor<?> et = DataExtractorBuilder.newBuilder("src/test/java/test/extract/advices_export.xls")
+        DataExtractor et = DataExtractorBuilder.newBuilder("src/test/java/test/extract/advices_export.xls")
             .headers(new String[] { "a", "b", "c", "d"}).build();
         et.extract((n, d) -> {
             System.out.println(String.join("|",(String[])d));
         });
     }
-    
+
     @Test
     public void testCsvPath() throws FileNotFoundException, IOException {
-        DataExtractor<?> et = DataExtractorBuilder.newBuilder("E:\\test.csv")
+        DataExtractor et = DataExtractorBuilder.newBuilder("E:\\test.csv")
             .headers(new String[] { "a", "b", "c", "d", "e" }).build();
         et.extract((n, d) -> {
             if (n < 10)
@@ -119,6 +119,23 @@ public class ExcelExtractorTest {
         });
     }
     
+    @Test
+    public void testCsv1() throws FileNotFoundException, IOException {
+        DataExtractor et = DataExtractorBuilder.newBuilder("E:\\test.csv")
+            .headers(new String[] { "a", "b", "c", "d", "e" }).build();
+        et.extract((n, d) -> {
+            System.out.println(Arrays.toString((String[])d));
+        });
+    }
+    
+    @Test
+    public void testCsv2() throws FileNotFoundException, IOException {
+        DataExtractor et = DataExtractorBuilder.newBuilder("E:\\test.csv")
+            .headers(new String[] { "a", "b", "c", "d", "e" }).build();
+        et.extract(1).forEach(x -> {
+            System.out.println(Arrays.toString((String[])x));
+        });
+    }
     
     // ------------------------------------------------------
     @Test
@@ -130,7 +147,7 @@ public class ExcelExtractorTest {
     }
 
     private void test(String filename, boolean streaming) throws FileNotFoundException, IOException {
-        DataExtractor<?> et = DataExtractorBuilder.newBuilder(filename)
+        DataExtractor et = DataExtractorBuilder.newBuilder(filename)
             .streaming(streaming).headers(new String[] { "a", "b", "c", "d", "e" }).build();
         
         AtomicInteger count = new AtomicInteger();

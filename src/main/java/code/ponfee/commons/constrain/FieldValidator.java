@@ -28,6 +28,7 @@ import code.ponfee.commons.cache.CacheBuilder;
 import code.ponfee.commons.collect.ObjectArrayWrapper;
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.reflect.Fields;
+import code.ponfee.commons.reflect.GenericUtils;
 import code.ponfee.commons.util.ObjectUtils;
 import code.ponfee.commons.util.RegexUtils;
 import code.ponfee.commons.util.Strings;
@@ -83,7 +84,7 @@ public class FieldValidator {
                 }
 
                 builder.append(
-                    constrain(clazz, field.getName(), Fields.get(bean, field), cst, field.getType())
+                    constrain(clazz, field.getName(), Fields.get(bean, field), cst, GenericUtils.getFieldActualType(clazz, field))
                 );
             }
             clazz = clazz.getSuperclass();

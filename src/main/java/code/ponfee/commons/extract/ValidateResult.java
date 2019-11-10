@@ -13,11 +13,10 @@ import code.ponfee.commons.io.Files;
  * 处理结果
  * 
  * @author Ponfee
- * @param <T>
  */
-public class ValidateResult<T> {
+public class ValidateResult {
 
-    private final List<T> data = Lists.newArrayList();
+    private final List<String[]> data = Lists.newArrayList();
     private final List<String> errors = Lists.newArrayList();
 
     public boolean hasErrors() {
@@ -32,7 +31,7 @@ public class ValidateResult<T> {
         return StringUtils.join(errors, Files.UNIX_LINE_SEPARATOR);
     }
 
-    public List<T> getData() {
+    public List<String[]> getData() {
         return data;
     }
 
@@ -40,7 +39,7 @@ public class ValidateResult<T> {
         return errors;
     }
 
-    public void addData(T obj) {
+    public void addData(String[] obj) {
         this.data.add(obj);
     }
 

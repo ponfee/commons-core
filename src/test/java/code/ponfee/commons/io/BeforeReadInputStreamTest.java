@@ -25,14 +25,13 @@ public class BeforeReadInputStreamTest {
         bb = IOUtils.toByteArray(binput);
         Assert.assertArrayEquals(fb, bb);*/
 
-        for (int i = 1; i < 50000; i += 13) {
+        for (int i = 1, n = (int) f.length() + 500; i < n; i += 7) {
             try (InputStream input1 = new FileInputStream(f);
                  InputStream input2 = new BeforeReadInputStream(new FileInputStream(f), i)
             ){
                 fb = IOUtils.toByteArray(input1);
                 bb = IOUtils.toByteArray(input2);
                 Assert.assertArrayEquals(fb, bb);
-                System.out.println(i);
             } catch (Exception e) {
                 e.printStackTrace();
             }

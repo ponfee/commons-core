@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
@@ -21,7 +20,6 @@ import java.util.Scanner;
 import java.util.function.Consumer;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -77,8 +75,6 @@ public final class Files {
         SYSTEM_LINE_SEPARATOR = buffer.toString();
         out.close();
     }
-
-    private static final byte[] WINDOWS_BOM = { (byte) 0xEF, (byte) 0xBB, (byte) 0xBF };
 
     /**
      * 创建目录
@@ -154,43 +150,39 @@ public final class Files {
         }
 
         try {
+            //org.apache.commons.io.FileUtils.deleteQuietly(file);
             java.nio.file.Files.deleteIfExists(file.toPath());
         } catch (IOException e) {
             Throwables.ignore(e);
         }
     }
 
-    /**
-     * read file as string
-     * @param file
-     * @return
-     */
-    public static String toString(String file) {
+    // --------------------------------------------------------------------------file to string
+    public static String toString(String file) throws IOException {
         return toString(new File(file));
     }
 
-    public static String toString(File file) {
+    public static String toString(File file) throws IOException {
         return toString(file, CharacterEncodingDetector.detect(file));
     }
 
-    public static String toString(File file, String charset) {
-        boolean hasBom;
-        try {
-            hasBom = hasBOM(file);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public static String toString(File file, String charsetName) throws IOException {
+        return toString(file, Charset.forName(charsetName));
+    }
+
+    public static String toString(File file, Charset charset) throws IOException {
+        ByteOrderMarks bom = ByteOrderMarks.of(charset, file);
 
         try (FileInputStream input = new FileInputStream(file); 
              FileChannel channel = input.getChannel()
         ) {
             long offset = 0, length = channel.size();
-            if (hasBom) {
-                offset = WINDOWS_BOM.length;
+            if (bom != null) {
+                offset = bom.length();
                 length -= offset;
             }
             ByteBuffer buffer = channel.map(MapMode.READ_ONLY, offset, length);
-            return Charset.forName(charset).decode(buffer).toString();
+            return charset.decode(buffer).toString();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -336,91 +328,6 @@ public final class Files {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Failed to parse \"" + humanSize + "\"", e);
         }
-    }
-
-    // ---------------------------------------------------------------windows file bom head
-    public static void addBOM(String filepath) throws IOException {
-        addBOM(new File(filepath));
-    }
-
-    /**
-     * Adds windows BOM to file head
-     * 
-     * @param file the file
-     */
-    public static void addBOM(File file) {
-        int bomLen = WINDOWS_BOM.length;
-        try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
-            byte[] headBytes = new byte[bomLen];
-            int count = raf.read(headBytes);
-            if (count < bomLen || !Arrays.equals(WINDOWS_BOM, headBytes)) {
-                ByteArrayOutputStream output = new ByteArrayOutputStream();
-                output.write(headBytes);
-                byte[] buffer = new byte[Files.BUFF_SIZE];
-                while ((count = raf.read(buffer)) != EOF) {
-                    output.write(buffer, 0, count);
-                }
-                raf.seek(0); // 将指针移动到文件首部
-                raf.write(WINDOWS_BOM);
-                raf.write(output.toByteArray());
-                output.close();
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void removeBOM(String filepath) {
-        removeBOM(new File(filepath));
-    }
-
-    /**
-     * Removes windows BOM from file head
-     * 
-     * @param file the file
-     */
-    public static void removeBOM(File file) {
-        int bomLen = WINDOWS_BOM.length;
-        try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
-            long length = raf.length();
-            byte[] headBytes = new byte[bomLen];
-            int count = raf.read(headBytes);
-            if (count == bomLen && Arrays.equals(WINDOWS_BOM, headBytes)) {
-                ByteArrayOutputStream output = new ByteArrayOutputStream();
-                byte[] buffer = new byte[Files.BUFF_SIZE];
-                while ((count = raf.read(buffer)) != EOF) {
-                    output.write(buffer, 0, count);
-                }
-                raf.seek(0);
-                raf.write(output.toByteArray());
-                raf.setLength(length - bomLen);
-                output.close();
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static boolean hasBOM(InputStream input) throws IOException {
-        return hasBOM(readByteArray(input, WINDOWS_BOM.length));
-    }
-
-    public static boolean hasBOM(File file) throws IOException {
-        return hasBOM(readByteArray(file, WINDOWS_BOM.length));
-    }
-
-    public static boolean hasBOM(byte[] bytes) {
-        int bomLen = WINDOWS_BOM.length;
-        if (bytes == null || bytes.length < bomLen) {
-            return false;
-        }
-
-        for (int i = 0; i < bomLen; i++) {
-            if (bytes[i] != WINDOWS_BOM[i]) {
-                return false;
-            }
-        }
-        return true;
     }
 
     // -----------------------------------------------------------------readByteArray

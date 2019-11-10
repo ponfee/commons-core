@@ -37,7 +37,7 @@ import io.netty.util.internal.ThreadLocalRandom;
 public class Test1 {
     
     public static void main(String[] args) throws InterruptedException, ExecutionException {
-        
+        System.out.println(String.format("%02d", 1));
         Date d1 = Dates.toDate("2019-05-10 10:23:34");
         Date d2 = Dates.toDate("2019-05-11 08:23:34");
         

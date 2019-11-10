@@ -1,6 +1,7 @@
 package code.ponfee.commons.util;
 
 import java.io.File;
+import java.io.IOException;
 
 import code.ponfee.commons.io.Files;
 
@@ -33,7 +34,11 @@ public class MavenProjects {
     }
 
     public static String getMainJavaFileAsLineString(Class<?> clazz) {
-        return Files.toString(MavenProjects.getMainJavaFile(clazz)).replaceAll(EXCLUSION_STRING, "");
+        try {
+            return Files.toString(MavenProjects.getMainJavaFile(clazz)).replaceAll(EXCLUSION_STRING, "");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static File getTestJavaFile(Class<?> clazz) {
@@ -45,7 +50,11 @@ public class MavenProjects {
     }
 
     public static String getTestJavaFileAsLineString(Class<?> clazz) {
-        return Files.toString(MavenProjects.getTestJavaFile(clazz)).replaceAll(EXCLUSION_STRING, "");
+        try {
+            return Files.toString(MavenProjects.getTestJavaFile(clazz)).replaceAll(EXCLUSION_STRING, "");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static String getMainJavaPath(String basePackage) {

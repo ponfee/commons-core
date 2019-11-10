@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
+import code.ponfee.commons.io.ByteOrderMarks;
 import code.ponfee.commons.io.WrappedBufferedWriter;
 
 /**
@@ -33,8 +34,9 @@ public class CsvStringExporter extends AbstractCsvExporter<String> {
     public void write(String filePath, Charset charset, boolean withBom) {
         File file = new File(filePath);
         try (WrappedBufferedWriter writer = new WrappedBufferedWriter(file, charset)) {
-            if (withBom) {
-                writer.write(WINDOWS_BOM);
+            byte[] bom;
+            if (withBom && (bom = ByteOrderMarks.get(charset)) != null) {
+                writer.write(bom);
             }
             writer.append((StringBuilder) super.csv);
         } catch (IOException e) {

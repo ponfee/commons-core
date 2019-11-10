@@ -3,7 +3,10 @@ package code.ponfee.commons.io;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
+import org.apache.commons.csv.CSVFormat;
 import org.junit.Test;
 
 import code.ponfee.commons.extract.DataExtractorBuilder;
@@ -13,8 +16,6 @@ public class FilesTest {
 
     @Test
     public void test1() throws MalformedURLException {
-        System.out.println("fbdp.xml -> "+CharacterEncodingDetector.detect("D:/temp/fbdp.xml"));
-        System.out.println("fbdp3.xml -> "+CharacterEncodingDetector.detect("D:/temp/fbdp3.xml"));
         System.out.println("GBK.properties -> "+CharacterEncodingDetector.detect("D:/temp/GBK.properties"));
         System.out.println("UTF8.txt -> "+CharacterEncodingDetector.detect("D:/temp/UTF8.txt"));
         System.out.println("UTF8-WITH-BOM.xml -> "+CharacterEncodingDetector.detect("D:/temp/UTF8-WITH-BOM.xml"));
@@ -26,39 +27,65 @@ public class FilesTest {
     }
 
     @Test
-    public void test2() throws IOException {
-        Files.removeBOM("D:\\test\\csv-gbk-bom.csv");
-        Files.removeBOM("D:\\test\\csv-utf8-bom.csv");
-        Files.removeBOM("D:\\test\\csv-utf16-bom.csv");
+    public void test0() throws IOException {
+        System.out.println(ByteOrderMarks.has("D:\\temp\\withbom\\csv-gbk-bom.csv"));
+        System.out.println(ByteOrderMarks.has("D:\\temp\\withbom\\csv-utf8-bom.csv"));
+        System.out.println(ByteOrderMarks.has("D:\\temp\\withbom\\csv-utf16le-bom.csv"));
+        System.out.println(ByteOrderMarks.has("D:\\temp\\withbom\\csv-utf16be-bom.csv"));
+        System.out.println(ByteOrderMarks.has("D:\\temp\\withbom\\csv-unicode-ascii-escaped-bom.csv"));
+        System.out.println(ByteOrderMarks.has("D:\\temp\\withbom\\csv-ansi-ascii-bom.csv"));
     }
-    
-    
+
+    @Test
+    public void test2() throws IOException {
+        /*System.out.println(WindowsBOM.add("D:\\temp\\withbom\\csv-gbk-bom.csv"));
+        System.out.println(WindowsBOM.add("D:\\temp\\withbom\\csv-utf8-bom.csv"));
+        System.out.println(WindowsBOM.add("D:\\temp\\withbom\\csv-utf16le-bom.csv"));
+        System.out.println(WindowsBOM.add("D:\\temp\\withbom\\csv-utf16be-bom.csv"));
+        System.out.println(WindowsBOM.add("D:\\temp\\withbom\\csv-unicode-ascii-escaped-bom.csv"));
+        System.out.println(WindowsBOM.add("D:\\temp\\withbom\\csv-ansi-ascii-bom.csv"));*/
+        
+        System.out.println(ByteOrderMarks.add(StandardCharsets.UTF_8, "D:\\temp\\withoutbom\\test-utf8-bom.csv"));
+        System.out.println(ByteOrderMarks.add(StandardCharsets.UTF_16LE, "D:\\temp\\withoutbom\\test-utf16le-bom.csv"));
+        System.out.println(ByteOrderMarks.add(StandardCharsets.UTF_16BE, "D:\\temp\\withoutbom\\test-utf16be-bom.csv"));
+    }
+
     @Test
     public void test3() throws IOException {
-        Files.addBOM("D:\\temp\\csv-gbk-bom.csv");
-        Files.addBOM("D:\\temp\\csv-utf8-bom.csv");
-        Files.addBOM("D:\\temp\\csv-utf16-bom.csv");
+        System.out.println(ByteOrderMarks.remove("D:\\temp\\withbom\\csv-gbk-bom.csv"));
+        System.out.println(ByteOrderMarks.remove("D:\\temp\\withbom\\csv-utf8-bom.csv"));
+        System.out.println(ByteOrderMarks.remove("D:\\temp\\withbom\\csv-utf16le-bom.csv"));
+        System.out.println(ByteOrderMarks.remove("D:\\temp\\withbom\\csv-utf16be-bom.csv"));
+        System.out.println(ByteOrderMarks.remove("D:\\temp\\withbom\\csv-unicode-ascii-escaped-bom.csv"));
+        System.out.println(ByteOrderMarks.remove("D:\\temp\\withbom\\csv-ansi-ascii-bom.csv"));
     }
 
     @Test
     public void test4() throws IOException {
         String[] files = { 
-            "D:\\temp\\csv-gbk.csv", 
-            "D:\\temp\\csv-gbk-bom.csv", 
-            
-            "D:\\temp\\csv-utf8.csv", 
-            "D:\\temp\\csv-utf8-bom.csv", 
-            
-            "D:\\temp\\csv-utf16.csv" ,
-            "D:\\temp\\csv-utf16-bom.csv" 
+            "D:\\temp\\withoutbom\\csv-gbk.csv", 
+            "D:\\temp\\withbom\\csv-gbk-bom.csv", 
+
+            "D:\\temp\\withoutbom\\csv-utf8.csv", 
+            "D:\\temp\\withbom\\csv-utf8-bom.csv", 
+
+            "D:\\temp\\withoutbom\\csv-utf16le.csv", 
+            "D:\\temp\\withbom\\csv-utf16le-bom.csv", 
+
+            "D:\\temp\\withoutbom\\csv-utf16be.csv", 
+            "D:\\temp\\withbom\\csv-utf16be-bom.csv", 
+
+            "D:\\temp\\withoutbom\\csv-unicode-ascii-escaped.csv", 
+            "D:\\temp\\withbom\\csv-unicode-ascii-escaped-bom.csv", 
+
+            "D:\\temp\\withoutbom\\csv-ansi-ascii.csv", 
+            "D:\\temp\\withbom\\csv-ansi-ascii-bom.csv", 
         };
         for (String file : files) {
-            String charset = CharacterEncodingDetector.detect(file);
+            Charset charset = CharacterEncodingDetector.detect(file);
             System.out.println("\n============================="+file+" -> "+", "+charset+"   "+Files.toString(new File(file)).replaceAll("\r\n|\n", ";"));
             DataExtractorBuilder builder = DataExtractorBuilder.newBuilder(file);
-            builder.build().extract((rowNum, row) -> {
-                System.out.println(Jsons.toJson(row));
-            });
+            builder.build().extract(100).stream().forEach(row -> System.out.println(Jsons.toJson(row)));
         }
     }
     
@@ -76,4 +103,58 @@ public class FilesTest {
         System.out.println(CharacterEncodingDetector.detect("D:\\temp\\ca.pfx"));
         System.out.println(CharacterEncodingDetector.detect("D:\\temp\\signers.xml"));
     }
+    
+    @Test
+    public void test6() throws IOException {
+        System.out.println(Charset.forName("utf-8") == StandardCharsets.UTF_8);
+        System.out.println(Charset.forName("utf8") == StandardCharsets.UTF_8);
+        System.out.println(Charset.forName("utf-16") == StandardCharsets.UTF_16);
+    }
+
+    @Test
+    public void test7() throws IOException {
+        String[] files = { 
+            "D:\\temp\\withoutbom\\test-utf8-bom.csv", 
+
+            "D:\\temp\\withoutbom\\test-utf16le-bom.csv", 
+
+            "D:\\temp\\withoutbom\\test-utf16be-bom.csv", 
+        };
+        CSVFormat format = CSVFormat.DEFAULT.withDelimiter(',').withQuote('"');
+        for (String file : files) {
+            Charset charset = CharacterEncodingDetector.detect(file);
+            System.out.println("\n============================="+file+" -> "+", "+charset+"   "+Files.toString(new File(file)).substring(1, 1000).replaceAll("\r\n|\n", ";"));
+            DataExtractorBuilder builder = DataExtractorBuilder.newBuilder(file).csvFormat(format).startRow(1);
+            builder.build().extract(2).stream().forEach(row -> System.out.println(Jsons.toJson(row)));
+        }
+    }
+
+    @Test
+    public void test() throws IOException {
+        String file;
+        DataExtractorBuilder builder;
+        CSVFormat format = CSVFormat.DEFAULT.withDelimiter(',').withQuote('"');
+
+        /*file =  "D:\\temp\\withoutbom\\test-utf8.csv";
+        builder = DataExtractorBuilder.newBuilder(file).csvFormat(format);
+        builder.build().extract(100).stream().forEach(row -> System.out.println(Jsons.toJson(row)));*/
+
+        /*file =  "D:\\temp\\withoutbom\\test-utf16le.csv";
+        builder = DataExtractorBuilder.newBuilder(file).csvFormat(format).charset(StandardCharsets.UTF_16LE);
+        builder.build().extract(100).stream().forEach(row -> System.out.println(Jsons.toJson(row)));*/
+
+        file = "D:\\temp\\withoutbom\\test-utf16be.csv";
+        builder = DataExtractorBuilder.newBuilder(file).csvFormat(format).charset(StandardCharsets.UTF_16BE);
+        builder.build().extract(100).stream().forEach(row -> System.out.println(Jsons.toJson(row)));
+    }
+
+    @Test
+    public void test8() throws IOException {
+        System.out.println(CharacterEncodingDetector.detect("D:\\temp\\withoutbom\\test-utf8.csv"));
+        System.out.println(CharacterEncodingDetector.detect("D:\\temp\\withoutbom\\test-utf16le.csv"));
+        System.out.println(CharacterEncodingDetector.detect("D:\\temp\\withoutbom\\test-utf16be.csv"));
+        //System.out.println(Files.toString(new File("D:\\temp\\withoutbom\\test-utf16be.csv"), "UTF-16BE"));
+        System.out.println(CharacterEncodingDetector.detect("D:\\temp\\withoutbom\\gbk.txt"));
+    }
+
 }

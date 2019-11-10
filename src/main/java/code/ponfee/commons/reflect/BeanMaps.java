@@ -63,11 +63,12 @@ public enum BeanMaps {
 
         @Override
         public void copyFromMap(Map<String, Object> sourceMap, Object targetBean) {
-            List<Field> fields = getFields(targetBean.getClass());
+            Class<?> clazz = targetBean.getClass();
+            List<Field> fields = getFields(clazz);
             sourceMap.forEach((k, v) -> {
                 for (Field field : fields) {
                     if (field.getName().equals(k)) {
-                        Fields.put(targetBean, field, ObjectUtils.convert(v, field.getType()));
+                        Fields.put(targetBean, field, ObjectUtils.convert(v, GenericUtils.getFieldActualType(clazz, field)));
                     }
                 }
             });

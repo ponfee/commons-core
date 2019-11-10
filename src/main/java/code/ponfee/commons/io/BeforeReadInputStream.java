@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * 预先第一次读取InputStream的数据用来判断文件流类型，文件编码等用途
+ * 预先第一次读取InputStream的数据用来判断文件类型，文件编码等用途
  * 
  * @author Ponfee
  */
@@ -63,7 +63,6 @@ public class BeforeReadInputStream extends InputStream {
         return this.beforeReadByteArray;
     }
 
-    // --------------------------------------------------------------
     @Override
     public long skip(long n) throws IOException {
         int remaining = this.limit - this.offset;
@@ -91,30 +90,17 @@ public class BeforeReadInputStream extends InputStream {
 
     @Override
     public synchronized void mark(int readlimit) {
-        if (this.markSupported()) {
-            if (readlimit >= this.limit) {
-                this.input.mark(readlimit);
-                this.offset = this.limit;
-            } else {
-                this.input.mark(this.limit);
-                this.offset = readlimit;
-            }
-        }
+        throw new UnsupportedOperationException("mark/reset not supported");
     }
 
     @Override
     public synchronized void reset() throws IOException {
-        if (this.markSupported()) {
-            this.input.mark(this.limit);
-            this.offset = 0;
-        } else {
-            throw new IOException("Unsupported reset.");
-        }
+        throw new IOException("mark/reset not supported");
     }
 
     @Override
     public boolean markSupported() {
-        return this.input.markSupported();
+        return false;
     }
 
 }

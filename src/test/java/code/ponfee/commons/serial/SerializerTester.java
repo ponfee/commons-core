@@ -2,6 +2,7 @@ package code.ponfee.commons.serial;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +26,7 @@ public class SerializerTester {
 
     @Before
     public void setUp() {
-        text = Files.toString(MavenProjects.getTestJavaFile(this.getClass())).replaceAll("\r|\n", "");
+        text =  MavenProjects.getTestJavaFileAsLineString(this.getClass());
     }
 
     @Test
@@ -241,7 +242,7 @@ public class SerializerTester {
     
 
     //@Test
-    public void testDeserializer() {
+    public void testDeserializer() throws IOException {
         String filepath = MavenProjects.getTestResourcesPath("test.txt");
         String data = Files.toString(new File(filepath));
         System.out.println(data);

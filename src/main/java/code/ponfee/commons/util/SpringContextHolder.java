@@ -22,6 +22,7 @@ import org.springframework.util.Assert;
 
 import code.ponfee.commons.reflect.ClassUtils;
 import code.ponfee.commons.reflect.Fields;
+import code.ponfee.commons.reflect.GenericUtils;
 
 /**
  * <pre>
@@ -235,6 +236,7 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
             }
 
             Object fieldBean = null;
+            Class<?> fieldType = GenericUtils.getFieldActualType(object.getClass(), field);
             if (AnnotationUtils.getAnnotation(field, Resource.class) != null) {
                 Resource resource = AnnotationUtils.getAnnotation(field, Resource.class);
                 if (StringUtils.isNotBlank(resource.name())) {
@@ -243,18 +245,18 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
                     fieldBean = getBean(field.getName());
                 }
                 if (fieldBean == null) {
-                    fieldBean = getBean(field.getType());
+                    fieldBean = getBean(fieldType);
                 }
-            } else if (field.getType().isAnnotationPresent(Autowired.class)) {
+            } else if (fieldType.isAnnotationPresent(Autowired.class)) {
                 Qualifier qualifier = AnnotationUtils.getAnnotation(field, Qualifier.class);
                 if (qualifier != null && StringUtils.isNotBlank(qualifier.value())) {
                     fieldBean = getBean(qualifier.value());
                 } else {
-                    fieldBean = getBean(field.getType());
+                    fieldBean = getBean(fieldType);
                 }
             }
 
-            if (fieldBean != null && field.getType().isInstance(fieldBean)) {
+            if (fieldBean != null && fieldType.isInstance(fieldBean)) {
                 Fields.put(object, field, fieldBean);
             }
         }

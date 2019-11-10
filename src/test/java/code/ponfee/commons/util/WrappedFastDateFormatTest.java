@@ -9,7 +9,6 @@ public class WrappedFastDateFormatTest {
         WrappedFastDateFormat format = WrappedFastDateFormat.DEFAULT;
         Date date = new Date();
 
-        System.out.println(format.parse(WrappedFastDateFormat.PATTERN01A.format(date)));
         System.out.println(format.parse(WrappedFastDateFormat.PATTERN02A.format(date)));
         System.out.println(format.parse(WrappedFastDateFormat.PATTERN03A.format(date)));
         System.out.println(format.parse(WrappedFastDateFormat.PATTERN04A.format(date)));

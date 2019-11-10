@@ -19,10 +19,11 @@ import code.ponfee.commons.util.Holder;
  * 
  * @author Ponfee
  */
-public abstract class DataExtractor<T> {
+public abstract class DataExtractor {
 
     protected final Object dataSource;
     protected final String[] headers;
+    protected volatile boolean end = false;
 
     protected DataExtractor(Object dataSource, String[] headers) {
         if (   !(dataSource instanceof File)
@@ -36,18 +37,37 @@ public abstract class DataExtractor<T> {
         this.headers = headers;
     }
 
-    public abstract void extract(RowProcessor<T> processor) throws IOException;
+    public abstract void extract(RowProcessor processor) throws IOException;
 
-    public final List<T> extract() throws IOException {
-        List<T> list = new ArrayList<>();
+    public final List<String[]> extract() throws IOException {
+        List<String[]> list = new ArrayList<>();
         this.extract((rowNumber, data) -> list.add(data));
         return list;
     }
 
-    public final void extract(int batchSize, Consumer<List<T>> action) throws IOException {
-        Holder<List<T>> holder = Holder.of(new ArrayList<>(batchSize));
+    /**
+     * Extracts specified count of top rows
+     * 
+     * @param count the top rows count
+     * @return a list
+     * @throws IOException if occur io error
+     */
+    public final List<String[]> extract(int count) throws IOException {
+        List<String[]> result = new ArrayList<>(count);
+        this.extract((rowNum, row) -> {
+            if (rowNum >= count) {
+                this.end = true;
+                return;
+            }
+            result.add(row);
+        });
+        return result;
+    }
+
+    public final void extract(int batchSize, Consumer<List<String[]>> action) throws IOException {
+        Holder<List<String[]>> holder = Holder.of(new ArrayList<>(batchSize));
         this.extract((rowNumber, data) -> {
-            List<T> list = holder.get();
+            List<String[]> list = holder.get();
             list.add(data);
             if (list.size() == batchSize) {
                 action.accept(list);
@@ -66,8 +86,8 @@ public abstract class DataExtractor<T> {
      * @return
      * @throws IOException
      */
-    public final ValidateResult<T> verify(RowValidator<T> validator) throws IOException {
-        ValidateResult<T> result = new ValidateResult<>();
+    public final ValidateResult verify(RowValidator validator) throws IOException {
+        ValidateResult result = new ValidateResult();
         this.extract((rowNumber, data) -> {
             String error = validator.verify(rowNumber, data);
             if (StringUtils.isBlank(error)) {
@@ -84,19 +104,17 @@ public abstract class DataExtractor<T> {
     }
 
     // ---------------------------------------------------------------------------protected methods
-    protected boolean isNotEmpty(T data) {
-        if (data instanceof String[]) {
-            for (String str : (String[]) data) {
-                if (StringUtils.isNotBlank(str)) {
-                    return true;
-                }
-            }
+    protected boolean isNotEmpty(String[] data) {
+        if (data == null || data.length == 0) {
             return false;
-        } else if (data instanceof String) {
-            return StringUtils.isNotBlank((String) data);
-        } else {
-            return data != null;
         }
+
+        for (String str : (String[]) data) {
+            if (StringUtils.isNotBlank(str)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected final InputStream asInputStream() {

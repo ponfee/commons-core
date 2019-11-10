@@ -1,6 +1,7 @@
 package test.utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -96,7 +97,7 @@ public class Test2 {
     }
 
     @Test
-    public void test7() {
+    public void test7() throws IOException {
         System.out.println(Files.toString(new File("src/test/resources/test.txt")));
         System.out.println(Files.toString(new File("src/test/java/test/test1.java")));
         System.out.println(Files.toString(new File("src/main/resources/log4j2.xml")));

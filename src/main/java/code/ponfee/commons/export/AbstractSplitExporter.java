@@ -59,8 +59,8 @@ public abstract class AbstractSplitExporter extends AbstractDataExporter<Void> {
         MultithreadExecutor.joinDiscard(service, split.get());
     }
 
-    protected abstract AsnycSplitExporter splitExporter(
-        Table<Object[]> subTable, String savingFilePath);
+    protected abstract AsnycSplitExporter splitExporter(Table<Object[]> subTable, 
+                                                        String savingFilePath);
 
     public @Override final Void export() {
         throw new UnsupportedOperationException();
