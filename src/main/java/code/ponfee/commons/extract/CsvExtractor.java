@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import code.ponfee.commons.io.BeforeReadInputStream;
 import code.ponfee.commons.io.CharacterEncodingDetector;
-import code.ponfee.commons.io.WindowsBOM;
+import code.ponfee.commons.io.ByteOrderMarks;
 
 /**
  * Csv file data extractor
@@ -52,7 +52,7 @@ public class CsvExtractor<T> extends DataExtractor<T> {
                          : CharacterEncodingDetector.detect(bris.getArray());
 
         // 检查是否有BOM
-        WindowsBOM wbom = WindowsBOM.of(encoding, bris.getArray());
+        ByteOrderMarks wbom = ByteOrderMarks.of(encoding, bris.getArray());
         if (wbom != null) {
             bris.skip(wbom.length());
         }

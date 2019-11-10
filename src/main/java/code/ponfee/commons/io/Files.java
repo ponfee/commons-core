@@ -170,7 +170,7 @@ public final class Files {
     }
 
     public static String toString(File file, Charset charset) throws IOException {
-        WindowsBOM wbm = WindowsBOM.of(charset, file);
+        ByteOrderMarks wbm = ByteOrderMarks.of(charset, file);
 
         try (FileInputStream input = new FileInputStream(file); 
              FileChannel channel = input.getChannel()

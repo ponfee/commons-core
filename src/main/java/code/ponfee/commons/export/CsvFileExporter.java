@@ -6,7 +6,7 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-import code.ponfee.commons.io.WindowsBOM;
+import code.ponfee.commons.io.ByteOrderMarks;
 import code.ponfee.commons.io.WrappedBufferedWriter;
 
 /**
@@ -31,7 +31,7 @@ public class CsvFileExporter extends CsvWriteExporter {
     private static Writer createWriter(File file, Charset charset, boolean withBom) throws IOException {
         WrappedBufferedWriter writer = new WrappedBufferedWriter(file, charset);
         byte[] bom;
-        if (withBom && (bom = WindowsBOM.getBOM(charset)) != null) {
+        if (withBom && (bom = ByteOrderMarks.get(charset)) != null) {
             writer.write(bom);
         }
         return writer;

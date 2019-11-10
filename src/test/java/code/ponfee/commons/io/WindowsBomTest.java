@@ -8,37 +8,37 @@ import org.junit.Test;
 public class WindowsBomTest {
 
     @Test
-    public void testHasBOM() throws IOException {
-        System.out.println(WindowsBOM.hasBOM("D:\\temp\\withbom\\csv-utf8-bom.csv"));
-        System.out.println(WindowsBOM.hasBOM("D:\\temp\\withbom\\csv-utf16le-bom.csv"));
-        System.out.println(WindowsBOM.hasBOM("D:\\temp\\withbom\\csv-utf16be-bom.csv"));
+    public void testhas() throws IOException {
+        System.out.println(ByteOrderMarks.has("D:\\temp\\withbom\\csv-utf8-bom.csv"));
+        System.out.println(ByteOrderMarks.has("D:\\temp\\withbom\\csv-utf16le-bom.csv"));
+        System.out.println(ByteOrderMarks.has("D:\\temp\\withbom\\csv-utf16be-bom.csv"));
     }
 
     @Test
-    public void testAddBOM() throws IOException {
-        System.out.println(WindowsBOM.addBOM("D:\\temp\\withbom\\csv-utf8-bom.csv"));
-        System.out.println(WindowsBOM.addBOM("D:\\temp\\withbom\\csv-utf16le-bom.csv"));
-        System.out.println(WindowsBOM.addBOM("D:\\temp\\withbom\\csv-utf16be-bom.csv"));
+    public void testadd() throws IOException {
+        System.out.println(ByteOrderMarks.add("D:\\temp\\withbom\\csv-utf8-bom.csv"));
+        System.out.println(ByteOrderMarks.add("D:\\temp\\withbom\\csv-utf16le-bom.csv"));
+        System.out.println(ByteOrderMarks.add("D:\\temp\\withbom\\csv-utf16be-bom.csv"));
     }
     
     @Test
-    public void testRemoveBOM() throws IOException {
-        System.out.println(WindowsBOM.removeBOM("D:\\temp\\withbom\\csv-utf8-bom.csv"));
-        System.out.println(WindowsBOM.removeBOM("D:\\temp\\withbom\\csv-utf16le-bom.csv"));
-        System.out.println(WindowsBOM.removeBOM("D:\\temp\\withbom\\csv-utf16be-bom.csv"));
+    public void testremove() throws IOException {
+        System.out.println(ByteOrderMarks.remove("D:\\temp\\withbom\\csv-utf8-bom.csv"));
+        System.out.println(ByteOrderMarks.remove("D:\\temp\\withbom\\csv-utf16le-bom.csv"));
+        System.out.println(ByteOrderMarks.remove("D:\\temp\\withbom\\csv-utf16be-bom.csv"));
     }
     
     @Test
-    public void testAddBOMCharset() throws IOException {
-        System.out.println(WindowsBOM.addBOM(StandardCharsets.UTF_8,  "D:\\temp\\withbom\\csv-utf8-bom.csv"));
-        System.out.println(WindowsBOM.addBOM(StandardCharsets.UTF_16LE,"D:\\temp\\withbom\\csv-utf16le-bom.csv"));
-        System.out.println(WindowsBOM.addBOM(StandardCharsets.UTF_16BE,"D:\\temp\\withbom\\csv-utf16be-bom.csv"));
+    public void testaddCharset() throws IOException {
+        System.out.println(ByteOrderMarks.add(StandardCharsets.UTF_8,  "D:\\temp\\withbom\\csv-utf8-bom.csv"));
+        System.out.println(ByteOrderMarks.add(StandardCharsets.UTF_16LE,"D:\\temp\\withbom\\csv-utf16le-bom.csv"));
+        System.out.println(ByteOrderMarks.add(StandardCharsets.UTF_16BE,"D:\\temp\\withbom\\csv-utf16be-bom.csv"));
     }
     
     @Test
-    public void testRemoveBOMCharset() throws IOException {
-        System.out.println(WindowsBOM.removeBOM(StandardCharsets.UTF_8,"D:\\temp\\withbom\\csv-utf8-bom.csv"));
-        System.out.println(WindowsBOM.removeBOM(StandardCharsets.UTF_16LE,"D:\\temp\\withbom\\csv-utf16le-bom.csv"));
-        System.out.println(WindowsBOM.removeBOM(StandardCharsets.UTF_16BE,"D:\\temp\\withbom\\csv-utf16be-bom.csv"));
+    public void testremoveCharset() throws IOException {
+        System.out.println(ByteOrderMarks.remove(StandardCharsets.UTF_8,"D:\\temp\\withbom\\csv-utf8-bom.csv"));
+        System.out.println(ByteOrderMarks.remove(StandardCharsets.UTF_16LE,"D:\\temp\\withbom\\csv-utf16le-bom.csv"));
+        System.out.println(ByteOrderMarks.remove(StandardCharsets.UTF_16BE,"D:\\temp\\withbom\\csv-utf16be-bom.csv"));
     }
 }

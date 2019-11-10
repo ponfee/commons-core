@@ -28,36 +28,36 @@ public class FilesTest {
 
     @Test
     public void test0() throws IOException {
-        System.out.println(WindowsBOM.hasBOM("D:\\temp\\withbom\\csv-gbk-bom.csv"));
-        System.out.println(WindowsBOM.hasBOM("D:\\temp\\withbom\\csv-utf8-bom.csv"));
-        System.out.println(WindowsBOM.hasBOM("D:\\temp\\withbom\\csv-utf16le-bom.csv"));
-        System.out.println(WindowsBOM.hasBOM("D:\\temp\\withbom\\csv-utf16be-bom.csv"));
-        System.out.println(WindowsBOM.hasBOM("D:\\temp\\withbom\\csv-unicode-ascii-escaped-bom.csv"));
-        System.out.println(WindowsBOM.hasBOM("D:\\temp\\withbom\\csv-ansi-ascii-bom.csv"));
+        System.out.println(ByteOrderMarks.has("D:\\temp\\withbom\\csv-gbk-bom.csv"));
+        System.out.println(ByteOrderMarks.has("D:\\temp\\withbom\\csv-utf8-bom.csv"));
+        System.out.println(ByteOrderMarks.has("D:\\temp\\withbom\\csv-utf16le-bom.csv"));
+        System.out.println(ByteOrderMarks.has("D:\\temp\\withbom\\csv-utf16be-bom.csv"));
+        System.out.println(ByteOrderMarks.has("D:\\temp\\withbom\\csv-unicode-ascii-escaped-bom.csv"));
+        System.out.println(ByteOrderMarks.has("D:\\temp\\withbom\\csv-ansi-ascii-bom.csv"));
     }
 
     @Test
     public void test2() throws IOException {
-        /*System.out.println(WindowsBOM.addBOM("D:\\temp\\withbom\\csv-gbk-bom.csv"));
-        System.out.println(WindowsBOM.addBOM("D:\\temp\\withbom\\csv-utf8-bom.csv"));
-        System.out.println(WindowsBOM.addBOM("D:\\temp\\withbom\\csv-utf16le-bom.csv"));
-        System.out.println(WindowsBOM.addBOM("D:\\temp\\withbom\\csv-utf16be-bom.csv"));
-        System.out.println(WindowsBOM.addBOM("D:\\temp\\withbom\\csv-unicode-ascii-escaped-bom.csv"));
-        System.out.println(WindowsBOM.addBOM("D:\\temp\\withbom\\csv-ansi-ascii-bom.csv"));*/
+        /*System.out.println(WindowsBOM.add("D:\\temp\\withbom\\csv-gbk-bom.csv"));
+        System.out.println(WindowsBOM.add("D:\\temp\\withbom\\csv-utf8-bom.csv"));
+        System.out.println(WindowsBOM.add("D:\\temp\\withbom\\csv-utf16le-bom.csv"));
+        System.out.println(WindowsBOM.add("D:\\temp\\withbom\\csv-utf16be-bom.csv"));
+        System.out.println(WindowsBOM.add("D:\\temp\\withbom\\csv-unicode-ascii-escaped-bom.csv"));
+        System.out.println(WindowsBOM.add("D:\\temp\\withbom\\csv-ansi-ascii-bom.csv"));*/
         
-        System.out.println(WindowsBOM.addBOM(StandardCharsets.UTF_8, "D:\\temp\\withoutbom\\test-utf8-bom.csv"));
-        System.out.println(WindowsBOM.addBOM(StandardCharsets.UTF_16LE, "D:\\temp\\withoutbom\\test-utf16le-bom.csv"));
-        System.out.println(WindowsBOM.addBOM(StandardCharsets.UTF_16BE, "D:\\temp\\withoutbom\\test-utf16be-bom.csv"));
+        System.out.println(ByteOrderMarks.add(StandardCharsets.UTF_8, "D:\\temp\\withoutbom\\test-utf8-bom.csv"));
+        System.out.println(ByteOrderMarks.add(StandardCharsets.UTF_16LE, "D:\\temp\\withoutbom\\test-utf16le-bom.csv"));
+        System.out.println(ByteOrderMarks.add(StandardCharsets.UTF_16BE, "D:\\temp\\withoutbom\\test-utf16be-bom.csv"));
     }
 
     @Test
     public void test3() throws IOException {
-        System.out.println(WindowsBOM.removeBOM("D:\\temp\\withbom\\csv-gbk-bom.csv"));
-        System.out.println(WindowsBOM.removeBOM("D:\\temp\\withbom\\csv-utf8-bom.csv"));
-        System.out.println(WindowsBOM.removeBOM("D:\\temp\\withbom\\csv-utf16le-bom.csv"));
-        System.out.println(WindowsBOM.removeBOM("D:\\temp\\withbom\\csv-utf16be-bom.csv"));
-        System.out.println(WindowsBOM.removeBOM("D:\\temp\\withbom\\csv-unicode-ascii-escaped-bom.csv"));
-        System.out.println(WindowsBOM.removeBOM("D:\\temp\\withbom\\csv-ansi-ascii-bom.csv"));
+        System.out.println(ByteOrderMarks.remove("D:\\temp\\withbom\\csv-gbk-bom.csv"));
+        System.out.println(ByteOrderMarks.remove("D:\\temp\\withbom\\csv-utf8-bom.csv"));
+        System.out.println(ByteOrderMarks.remove("D:\\temp\\withbom\\csv-utf16le-bom.csv"));
+        System.out.println(ByteOrderMarks.remove("D:\\temp\\withbom\\csv-utf16be-bom.csv"));
+        System.out.println(ByteOrderMarks.remove("D:\\temp\\withbom\\csv-unicode-ascii-escaped-bom.csv"));
+        System.out.println(ByteOrderMarks.remove("D:\\temp\\withbom\\csv-ansi-ascii-bom.csv"));
     }
 
     @Test
