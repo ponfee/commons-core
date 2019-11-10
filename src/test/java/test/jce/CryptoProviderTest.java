@@ -2,7 +2,6 @@ package test.jce;
 
 import java.util.Map;
 
-import code.ponfee.commons.io.Files;
 import code.ponfee.commons.jce.CryptoProvider;
 import code.ponfee.commons.jce.ECParameters;
 import code.ponfee.commons.jce.Providers;
@@ -18,7 +17,7 @@ public class CryptoProviderTest {
     public static void main(String[] args) {
         System.out.println("\n============================RSA crypt==========================");
         CryptoProvider rsa = CryptoProvider.rsaPrivateKeyProvider("MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEA9pU2mWa+yJwXF1VQb3WL5uk06Rc2jARYPlcV0JK0x4fMXboR9rpMlpJ9cr4B1wbJdBEa8H+kSgbJROFKsmkhFQIDAQABAkAcGiNP1krV+BwVl66EFWRtW5ShH/kiefhImoos7BtYReN5WZyYyxFCAf2yjMJigq2GFm8qdkQK+c+E7Q3lY6zdAiEA/wVfy+wGQcFh3gdFKhaQ12fBYMCtywxZ3Edss0EmxBMCIQD3h4vfENmbIMH+PX5dAPbRfrBFcx77/MxFORMESN0bNwIgL5kJMD51TICTi6U/u4NKtWmgJjbQOT2s5/hMyYg3fBECIEqRc+qUKenYuXg80Dd2VeSQlMunPZtN8b+czQTKaomLAiEA02qUv/p1dT/jc2BDtp9bl8jDiWFg5FNFcH6bBDlwgts=");
-        String str = Files.toString(MavenProjects.getMainJavaFile(CryptoProvider.class)).replaceAll("\r|\n|\\s+", "");
+        String str = MavenProjects.getMainJavaFileAsLineString(CryptoProvider.class);
         String data = rsa.encrypt(str);
         System.out.println("加密后：" + data);
         System.out.println("解密后：" + rsa.decrypt(data));

@@ -31,13 +31,8 @@ public class ExcelExtractor<T> extends DataExtractor<T> {
     protected final int sheetIndex; // start with 0
     private final int startRow; // start with 0
 
-    public ExcelExtractor(Object dataSource, String[] headers, 
-                          int startRow, ExcelType type) {
-        this(dataSource, headers, startRow, type, 0);
-    }
-
-    public ExcelExtractor(Object dataSource, String[] headers, 
-                          int startRow, ExcelType type, int sheetIndex) {
+    protected ExcelExtractor(Object dataSource, String[] headers, 
+                             int startRow, ExcelType type, int sheetIndex) {
         super(dataSource, headers);
         this.startRow = startRow;
         this.type = type;
@@ -80,6 +75,9 @@ public class ExcelExtractor<T> extends DataExtractor<T> {
         Row row; T data; String[] array; String str;
         Iterator<Row> iter = workbook.getSheetAt(sheetIndex).iterator();
         for (int i = 0, k = 0, m, j; iter.hasNext(); i++) {
+            if (super.end) {
+                return;
+            }
             row = iter.next(); // row = sheet.getRow(i);
             if (row == null || i < startRow) {
                 continue;

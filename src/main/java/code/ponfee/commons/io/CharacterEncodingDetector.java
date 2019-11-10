@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import code.ponfee.commons.exception.Throwables;
 import info.monitorenter.cpdetector.io.ASCIIDetector;
@@ -21,13 +23,14 @@ import info.monitorenter.cpdetector.io.UnicodeDetector;
  */
 public class CharacterEncodingDetector {
 
-    public static final int DETECT_COUNT = 4800;
+    public static final int DETECT_COUNT = 1200;
+    public static final Charset DEFAULT_CHARSET  = StandardCharsets.ISO_8859_1;
 
-    public static String detect(String filePath) {
+    public static Charset detect(String filePath) {
         return detect(new File(filePath));
     }
 
-    public static String detect(File file) {
+    public static Charset detect(File file) {
         try (InputStream input = new FileInputStream(file)) {
             return detect(Files.readByteArray(input, DETECT_COUNT));
         } catch (IOException e) {
@@ -35,7 +38,7 @@ public class CharacterEncodingDetector {
         }
     }
 
-    public static String detect(URL url) {
+    public static Charset detect(URL url) {
         try (InputStream input = url.openStream()) {
             return detect(Files.readByteArray(input, DETECT_COUNT));
         } catch (IOException e) {
@@ -43,7 +46,7 @@ public class CharacterEncodingDetector {
         }
     }
 
-    public static String detect(InputStream input) {
+    public static Charset detect(InputStream input) {
         try {
             return detect(Files.readByteArray(input, DETECT_COUNT));
         } catch (IOException e) {
@@ -51,50 +54,56 @@ public class CharacterEncodingDetector {
         }
     }
 
-    public static String detect(byte[] bytes) {
-        int length = bytes.length;
+    public static Charset detect(byte[] bytes) {
+        return detect(bytes, bytes.length);
+    }
+
+    public static Charset detect(byte[] bytes, int length) {
+        length = Math.min(bytes.length, length);
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-        if (Files.hasBOM(bytes)) {
-            bais.skip(3);
-            length -= 3;
-        }
 
         try {
             String encoding = buildDetector().detectCodepage(bais, length).name();
-            return "void".equalsIgnoreCase(encoding) ? Encoding.DEFAULT_ENCODING : encoding;
+            return "void".equalsIgnoreCase(encoding) ? DEFAULT_CHARSET : of(encoding);
         } catch (IOException e) {
             // Cannot happened, because the ByteArrayInputStream don't throws IOException 
             Throwables.console(e);
-            return Encoding.JAVA_CHARSET[
-                new BytesEncodingDetect().detectEncoding(bytes)
-            ];
+            return of(Encoding.JAVA_CHARSET[new BytesEncodingDetect().detectEncoding(bytes)]);
+        }
+    }
+
+    private static Charset of(String charset) {
+        try {
+            return Charset.forName(charset);
+        } catch (Exception e) {
+            Throwables.console(e);
+            return DEFAULT_CHARSET;
         }
     }
 
     /**
-     * 利用第三方开源包cpdetector获取文件编码格式(cpdetector.jar)
-     * detector是探测器，它把探测任务交给具体的探测实现类的实例完成。
-     * cpDetector内置了一些常用的探测实现类，这些探测实现类的实例可以通过add方法 加进来，
-     *           如ParsingDetector、JChardetFacade、ASCIIDetector、UnicodeDetector。
-     * detector按照“谁最先返回非空的探测结果，就以该结果为准”的原则返回探测到的字符集编码。
-     * cpDetector是基于统计学原理的，不保证完全正确。
+     * 编码控测器
      * 
-     * @return
+     * cpdetector-1.0.10.jar, jchardet-1.1.jar, jargs-1.0.jar, antlr-2.7.7.jar
+     * 
+     * @return a ICodepageDetector
      */
     private static ICodepageDetector buildDetector() {
         CodepageDetectorProxy detector = CodepageDetectorProxy.getInstance();
 
-        // ParsingDetector可用于检查HTML、XML等文件或字符流的编码,构造方法中的参数用于
-        // 指示是否显示探测过程的详细信息，为false不显示。
-        detector.add(new ParsingDetector(false));
+        // 通过BOM来测定编码
         detector.add(new ByteOrderMarkDetector());
 
-        // JChardetFacade封装了由Mozilla组织提供的JChardet，它可以完成大多数文件的编码
-        // 测定。所以，一般有了这个探测器就可满足大多数项目的要求，如果你还不放心，可以
-        // 再多加几个探测器，比如下面的ASCIIDetector、UnicodeDetector等。
+        // JChardetFacade封装了由Mozilla组织提供的JChardet，可以完成大多数文件的编码测定
         detector.add(JChardetFacade.getInstance()); // 用到antlr.jar，jchardet-1.1.jar
-        detector.add(ASCIIDetector.getInstance()); // ASCIIDetector用于ASCII编码测定
-        detector.add(UnicodeDetector.getInstance()); // UnicodeDetector用于Unicode家族编码的测定
+
+        // 再多加几个探测器
+        detector.add(UnicodeDetector.getInstance()); // 用于Unicode家族编码的测定
+        detector.add(ASCIIDetector.getInstance());   // 用于ASCII编码测定
+
+        // 用于检查HTML、XML等文件或字符流的编码
+        detector.add(new ParsingDetector(false));
+
         return detector;
     }
 
@@ -4448,7 +4457,7 @@ public class CharacterEncodingDetector {
         private static final int ASCII = 22;
         private static final int DEFAULT = 23;
 
-        private static final String DEFAULT_ENCODING = "ISO-8859-1";
+        private static final String DEFAULT_ENCODING = DEFAULT_CHARSET.name();
         private static final int TOTAL_TYPES = 24;
         private static final String[] JAVA_CHARSET = new String[TOTAL_TYPES]; // Names of the encodings as understood by Java
         private static final String[] NICE_CHARSET = new String[TOTAL_TYPES]; // Names of the encodings for human viewing

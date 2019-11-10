@@ -18,10 +18,6 @@ import code.ponfee.commons.tree.FlatNode;
  */
 public abstract class AbstractCsvExporter<T> extends AbstractDataExporter<T> {
 
-    static final byte[] WINDOWS_BOM = {
-        (byte) 0xEF, (byte) 0xBB, (byte) 0xBF
-    };
-
     protected final Appendable csv;
     private final char csvSeparator;
     private final AtomicBoolean hasBuild = new AtomicBoolean(false);

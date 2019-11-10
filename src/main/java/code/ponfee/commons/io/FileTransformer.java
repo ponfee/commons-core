@@ -1,5 +1,7 @@
 package code.ponfee.commons.io;
 
+import static code.ponfee.commons.io.CharacterEncodingDetector.detect;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -14,6 +16,9 @@ import org.apache.commons.lang3.StringUtils;
 public class FileTransformer {
 
     private static final int FIX_LENGTH = 85;
+    private static final String[] CHARSETS = {
+        "GBK", "GB2312", "UTF-8", "UTF-16", "UTF-16LE", "UTF-16BE"
+    };
 
     private String includeFileExtensions = regexExtensions(
         "java", "txt", "properties", "xml", "sql", "html", "htm", "jsp", 
@@ -73,25 +78,24 @@ public class FileTransformer {
                 }
             }
         } else {
-            String filepath = file.getAbsolutePath(), charset;
-            File dest = new File(targetPath + filepath.substring(sourcePath.length()));
+            String path = file.getAbsolutePath(), charset;
+            File dest = new File(targetPath + path.substring(sourcePath.length()));
             boolean isMatch = file.getName().matches(includeFileExtensions);
 
             if (   isMatch 
                 && StringUtils.isNotEmpty(encoding) 
-                && (charset = CharacterEncodingDetector.detect(filepath)) != null
-                && !"void".equalsIgnoreCase(charset) 
+                && ArrayUtils.contains(CHARSETS, charset = detect(path).name().toUpperCase()) 
                 && !encoding.equalsIgnoreCase(charset)
             ) {
-                log.append("转换：[").append(charset).append("]").append(StringUtils.rightPad(filepath, FIX_LENGTH)).append("  -->  ");
+                log.append("转换：[").append(charset).append("]").append(StringUtils.rightPad(path, FIX_LENGTH)).append("  -->  ");
                 transform(file, dest, charset, encoding, searchList, replacementList);
                 log.append("[").append(encoding).append("]").append(dest.getAbsolutePath()).append("\n");
             } else if (isMatch && ArrayUtils.isNotEmpty(searchList)) {
-                log.append("替换：").append(StringUtils.rightPad(filepath, FIX_LENGTH)).append("  -->  ");
+                log.append("替换：").append(StringUtils.rightPad(path, FIX_LENGTH)).append("  -->  ");
                 transform(file, dest, searchList, replacementList);
                 log.append(dest.getAbsolutePath()).append("\n");
             } else {
-                log.append("复制：").append(StringUtils.rightPad(filepath, FIX_LENGTH)).append("  -->  ");
+                log.append("复制：").append(StringUtils.rightPad(path, FIX_LENGTH)).append("  -->  ");
                 transform(file, dest);
                 log.append(dest.getAbsolutePath()).append("\n");
             }

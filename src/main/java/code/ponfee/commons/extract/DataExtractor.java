@@ -23,6 +23,7 @@ public abstract class DataExtractor<T> {
 
     protected final Object dataSource;
     protected final String[] headers;
+    protected volatile boolean end = false;
 
     protected DataExtractor(Object dataSource, String[] headers) {
         if (   !(dataSource instanceof File)
@@ -42,6 +43,25 @@ public abstract class DataExtractor<T> {
         List<T> list = new ArrayList<>();
         this.extract((rowNumber, data) -> list.add(data));
         return list;
+    }
+
+    /**
+     * Extracts specified count head rows
+     * 
+     * @param count the head rows count
+     * @return a list
+     * @throws IOException if occur io error
+     */
+    public final List<T> extract(int count) throws IOException {
+        List<T> result = new ArrayList<>(count);
+        this.extract((rowNum, row) -> {
+            if (rowNum >= count) {
+                this.end = true;
+                return;
+            }
+            result.add(row);
+        });
+        return result;
     }
 
     public final void extract(int batchSize, Consumer<List<T>> action) throws IOException {

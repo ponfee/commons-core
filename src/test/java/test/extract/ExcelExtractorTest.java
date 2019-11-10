@@ -108,7 +108,7 @@ public class ExcelExtractorTest {
             System.out.println(String.join("|",(String[])d));
         });
     }
-    
+
     @Test
     public void testCsvPath() throws FileNotFoundException, IOException {
         DataExtractor<?> et = DataExtractorBuilder.newBuilder("E:\\test.csv")
@@ -119,6 +119,23 @@ public class ExcelExtractorTest {
         });
     }
     
+    @Test
+    public void testCsv1() throws FileNotFoundException, IOException {
+        DataExtractor<?> et = DataExtractorBuilder.newBuilder("E:\\test.csv")
+            .headers(new String[] { "a", "b", "c", "d", "e" }).build();
+        et.extract((n, d) -> {
+            System.out.println(Arrays.toString((String[])d));
+        });
+    }
+    
+    @Test
+    public void testCsv2() throws FileNotFoundException, IOException {
+        DataExtractor<?> et = DataExtractorBuilder.newBuilder("E:\\test.csv")
+            .headers(new String[] { "a", "b", "c", "d", "e" }).build();
+        et.extract(1).forEach(x -> {
+            System.out.println(Arrays.toString((String[])x));
+        });
+    }
     
     // ------------------------------------------------------
     @Test

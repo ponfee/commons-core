@@ -19,7 +19,6 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -128,7 +127,7 @@ public final class ObjectUtils {
         if (type.isEnum()) {
             return (value instanceof Number)
                 ? type.getEnumConstants()[((Number) value).intValue()]
-                : (T) EnumUtils.getEnumIgnoreCase((Class<Enum>) type, value.toString());
+                : (T) Enums.ofIgnoreCase((Class<Enum>) type, value.toString());
         }
 
         if (Date.class == type) {

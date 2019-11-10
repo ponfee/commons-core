@@ -25,7 +25,7 @@ import code.ponfee.commons.export.ExcelExporter;
 import code.ponfee.commons.export.HtmlExporter;
 import code.ponfee.commons.export.Table;
 import code.ponfee.commons.export.Thead;
-import code.ponfee.commons.io.Files;
+import code.ponfee.commons.io.WindowsBOM;
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.model.ResultCode;
@@ -125,9 +125,9 @@ public class ExportTester {
         html.build(table);
 
         IOUtils.write((String) html.setName("报表").export(), new FileOutputStream("d://testHtml1.html"), "UTF-8");
-        Files.addBOM("d:/testHtml1.html");
+        WindowsBOM.addBOM("d:/testHtml1.html");
         IOUtils.write((String) csv.export(), new FileOutputStream("d://testHtml1.csv"), "UTF-8");
-        Files.addBOM("d:/testHtml1.csv");
+        WindowsBOM.addBOM("d:/testHtml1.csv");
 
         html.close();
         csv.close();
@@ -138,7 +138,7 @@ public class ExportTester {
         AbstractDataExporter html = new HtmlExporter();
         html.build(new Table("a,b,c,d,e".split(",")).toEnd());
         IOUtils.write((String) html.export(), new FileOutputStream("d://testHtml2.html"), "UTF-8");
-        Files.addBOM("d:/testHtml2.html");
+        WindowsBOM.addBOM("d:/testHtml2.html");
         html.close();
     }
 
@@ -258,7 +258,7 @@ public class ExportTester {
         table1.setOptions(options);
         csv.build(table1);
         IOUtils.write(csv.export().toString(), new FileOutputStream("d://testExcel.csv"), "UTF-8");
-        Files.addBOM(new File("d://testExcel.csv"));
+        WindowsBOM.addBOM(new File("d://testExcel.csv"));
         csv.close();
         System.out.println("========================================csv: " + (System.currentTimeMillis() - start));
         
@@ -272,7 +272,7 @@ public class ExportTester {
         html.build(table1);
         html.setName("test");
         IOUtils.write((String) html.export(), new FileOutputStream("d://testExcel.html"), "UTF-8");
-        Files.addBOM("d:/testExcel.html");
+        WindowsBOM.addBOM("d:/testExcel.html");
         html.close();
         System.out.println("========================================html: " + (System.currentTimeMillis() - start));
     }

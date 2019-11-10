@@ -11,8 +11,6 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.google.common.collect.ImmutableMap;
 
 /**
@@ -59,7 +57,7 @@ public class IdcardResolver {
         builder.append(AREA_CODE_LIST.get(random.nextInt(AREA_CODE_LIST.size()))); // 行政区号：6位
         builder.append(Dates.format(Dates.random(ORIGINAL, System.currentTimeMillis()), "yyyyMMdd")); // 生日：8位
         // 当地派出所在该日期的出生顺序号：3位，其中17位（倒数第二位）男为单数，女为双数
-        builder.append(StringUtils.leftPad(String.valueOf(random.nextInt(1000)), 3, '0'));
+        builder.append(String.format("%03d", random.nextInt(1000)));
         builder.append(genPowerSum(builder.toString().toCharArray())); // 校验码：1位
         return builder.toString();
     }
