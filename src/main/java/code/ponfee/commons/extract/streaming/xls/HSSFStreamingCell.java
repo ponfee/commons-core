@@ -1,5 +1,6 @@
 package code.ponfee.commons.extract.streaming.xls;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -219,6 +220,16 @@ public class HSSFStreamingCell implements Cell {
 
     @Override
     public void setBlank() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setCellValue(LocalDateTime value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public LocalDateTime getLocalDateTimeCellValue() {
         throw new UnsupportedOperationException();
     }
 

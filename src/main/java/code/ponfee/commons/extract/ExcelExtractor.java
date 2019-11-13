@@ -25,7 +25,7 @@ import code.ponfee.commons.util.Dates;
  * 
  * @author Ponfee
  */
-public class ExcelExtractor<T> extends DataExtractor<T> {
+public class ExcelExtractor extends DataExtractor {
 
     protected final ExcelType type;
     protected final int sheetIndex; // start with 0
@@ -40,7 +40,7 @@ public class ExcelExtractor<T> extends DataExtractor<T> {
     }
 
     @Override
-    public final void extract(RowProcessor<T> processor) throws IOException {
+    public final void extract(RowProcessor processor) throws IOException {
         Workbook workbook = null;
         try {
             extract(workbook = createWorkbook(), processor);
@@ -61,8 +61,7 @@ public class ExcelExtractor<T> extends DataExtractor<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void extract(Workbook workbook, RowProcessor<T> processor) {
+    private void extract(Workbook workbook, RowProcessor processor) {
         boolean specHeaders; int columnSize;
         if (ArrayUtils.isNotEmpty(headers)) {
             specHeaders = true;
@@ -72,11 +71,11 @@ public class ExcelExtractor<T> extends DataExtractor<T> {
             columnSize = 0;
         }
 
-        Row row; T data; String[] array; String str;
+        Row row; String[] data;
         Iterator<Row> iter = workbook.getSheetAt(sheetIndex).iterator();
         for (int i = 0, k = 0, m, j; iter.hasNext(); i++) {
             if (super.end) {
-                return;
+                break;
             }
             row = iter.next(); // row = sheet.getRow(i);
             if (row == null || i < startRow) {
@@ -87,22 +86,13 @@ public class ExcelExtractor<T> extends DataExtractor<T> {
                 columnSize = row.getLastCellNum(); // 不指定表头则以开始行为表头
             }
 
-            array = columnSize > 1 ? new String[columnSize] : null;
-            str = null;
+            data = new String[columnSize];
             for (m = row.getLastCellNum(), j = 0; j <= m && j < columnSize; j++) {
                 // Missing cells are returned as null, Blank cells are returned as normal
-                str = getStringCellValue(row.getCell(j, RETURN_NULL_AND_BLANK));
-                if (columnSize > 1) {
-                    array[j] = str;
-                }
+                data[j] = getStringCellValue(row.getCell(j, RETURN_NULL_AND_BLANK));
             }
-            if (columnSize > 1) {
-                for (; j < columnSize; j++) {
-                    array[j] = StringUtils.EMPTY;
-                }
-                data = (T) array;
-            } else {
-                data = (T) str;
+            for (; j < columnSize; j++) {
+                data[j] = StringUtils.EMPTY;
             }
             if (isNotEmpty(data)) {
                 processor.process(k++, data);

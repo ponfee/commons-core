@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -59,7 +60,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
      * @param enabled           the node is enabled
      * @param available         the current node is available(parent.available & this.enabled)
      * @param attach            the attachment for biz object
-     * @param siblingNodeOrders the comparator for sibling nodes(has the same parent node) sort
+     * @param siblingNodeOrders the comparator for sibling nodes(has the same parent node) by sort
      * @param doMount           whether do mount, if is inner new TreeNode then false else true
      */
     private TreeNode(T nid, T pid, boolean enabled, boolean available, A attach, 
@@ -221,11 +222,19 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         return collect;
     }
 
+    // -----------------------------------------------------------for each
     public void forEach(Consumer<TreeNode<T, A>> accept) {
         accept.accept(this);
         if (CollectionUtils.isNotEmpty(this.children)) {
             this.children.forEach(treeNode -> treeNode.forEach(accept));
         }
+    }
+
+    // -----------------------------------------------------------to map
+    public Map<String, Object> toMap(Function<TreeNode<T, A>, Map<String, Object>> convert, String childrenKey) {
+        Map<String, Object> root = convert.apply(this);
+        this.toMap(convert, root, childrenKey);
+        return root;
     }
 
     // -----------------------------------------------------------private methods
@@ -369,6 +378,19 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
             builder.addAll(parentPath);
         }
         return builder.add(nid).build();
+    }
+
+    private void toMap(Function<TreeNode<T, A>, Map<String, Object>> convert,
+                       Map<String, Object> parent, String childrenKey) {
+        if (CollectionUtils.isNotEmpty(this.children)) {
+            List<Map<String, Object>> list = new ArrayList<>(this.children.size());
+            for (TreeNode<T, A> child : this.children) {
+                Map<String, Object> map = convert.apply(child);
+                child.toMap(convert, map, childrenKey);
+                list.add(map);
+            }
+            parent.put(childrenKey, list);
+        }
     }
 
     // -----------------------------------------------getter/setter

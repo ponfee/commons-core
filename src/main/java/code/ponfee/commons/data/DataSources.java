@@ -29,7 +29,7 @@ import code.ponfee.commons.util.Enums;
  * 
  * @author Ponfee
  */
-public enum DataSourceType {
+public enum DataSources {
 
     DruidDataSource("com.alibaba.druid.pool.DruidDataSource") {
         @Override
@@ -71,7 +71,7 @@ public enum DataSourceType {
         }
     };
 
-    DataSourceType(String type) {
+    DataSources(String type) {
         this.type = type;
     }
 
@@ -91,12 +91,12 @@ public enum DataSourceType {
         return this.type;
     }
 
-    public static DataSourceType ofType(Class<?> type) {
+    public static DataSources ofType(Class<?> type) {
         return ofName(type.getName());
     }
 
-    public static DataSourceType ofType(String type) {
-        for (DataSourceType dst : DataSourceType.values()) {
+    public static DataSources ofType(String type) {
+        for (DataSources dst : DataSources.values()) {
             if (dst.type.equals(type)) {
                 return dst;
             }
@@ -104,8 +104,8 @@ public enum DataSourceType {
         return null;
     }
 
-    public static DataSourceType ofName(String name) {
-        return Enums.ofIgnoreCase(DataSourceType.class, name);
+    public static DataSources ofName(String name) {
+        return Enums.ofIgnoreCase(DataSources.class, name);
     }
 
 }

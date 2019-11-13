@@ -75,9 +75,8 @@ public class ResourceScanner {
      */
     @SuppressWarnings("unchecked")
     public Set<Class<?>> scan4class(Class<? extends Annotation>... annotations) {
-        Set<Class<?>> classSet = new HashSet<>();
         if (this.scanPaths.isEmpty()) {
-            return classSet;
+            return Collections.emptySet();
         }
 
         List<TypeFilter> typeFilters = new LinkedList<>();
@@ -87,6 +86,7 @@ public class ResourceScanner {
             }
         }
 
+        Set<Class<?>> result = new HashSet<>();
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         try {
             for (String packageName : this.scanPaths) {
@@ -106,13 +106,13 @@ public class ResourceScanner {
                     }
 
                     try {
-                        classSet.add(Class.forName(reader.getClassMetadata().getClassName()));
+                        result.add(Class.forName(reader.getClassMetadata().getClassName()));
                     } catch (Throwable e) {
-                        logger.error("load class error", e);
+                        logger.error("Load class occur error.", e);
                     }
                 }
             }
-            return classSet;
+            return result;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

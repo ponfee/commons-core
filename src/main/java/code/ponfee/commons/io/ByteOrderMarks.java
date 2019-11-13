@@ -47,11 +47,11 @@ public enum ByteOrderMarks {
     ;
 
     private final Charset charset;
-    private final byte[] bom;
+    private final byte[] bytes;
 
-    ByteOrderMarks(Charset charset, byte... bom) {
+    ByteOrderMarks(Charset charset, byte... bytes) {
         this.charset = charset;
-        this.bom = bom;
+        this.bytes = bytes;
         Hide.MAPPING.put(charset, this);
     }
 
@@ -78,28 +78,28 @@ public enum ByteOrderMarks {
     }
 
     public static ByteOrderMarks of(Charset charset, File file) throws IOException {
-        ByteOrderMarks wbom = Hide.MAPPING.get(charset);
-        if (wbom == null) {
+        ByteOrderMarks bom = Hide.MAPPING.get(charset);
+        if (bom == null) {
             return null; // no bom charset
         }
-        return wbom.match(Files.readByteArray(file, wbom.length())) ? wbom : null;
+        return bom.match(Files.readByteArray(file, bom.length())) ? bom : null;
     }
 
     public static ByteOrderMarks of(Charset charset, InputStream input) throws IOException {
-        ByteOrderMarks wbom = Hide.MAPPING.get(charset);
-        if (wbom == null) {
+        ByteOrderMarks bom = Hide.MAPPING.get(charset);
+        if (bom == null) {
             return null; // no bom charset
         }
-        return wbom.match(Files.readByteArray(input, wbom.length())) ? wbom : null;
+        return bom.match(Files.readByteArray(input, bom.length())) ? bom : null;
     }
 
     public static ByteOrderMarks of(Charset charset, byte[] bytes) {
-        ByteOrderMarks wbom = Hide.MAPPING.get(charset);
-        if (wbom == null) {
+        ByteOrderMarks bom = Hide.MAPPING.get(charset);
+        if (bom == null) {
             return null; // no bom charset
         }
 
-        return wbom.match(bytes) ? wbom : null;
+        return bom.match(bytes) ? bom : null;
     }
 
     // ------------------------------------------------------------------------has bom without charset
@@ -152,24 +152,24 @@ public enum ByteOrderMarks {
     public static ByteOrderMarks add(Charset charset, File file) throws IOException {
         try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
             byte[] headBytes;
-            ByteOrderMarks wbom;
+            ByteOrderMarks bom;
             int count;
             if (charset == null) {
                 headBytes = new byte[DETECT_COUNT];
                 count = raf.read(headBytes);
                 charset = detect(headBytes, count);
-                if ((wbom = Hide.MAPPING.get(charset)) == null) {
+                if ((bom = Hide.MAPPING.get(charset)) == null) {
                     return null; // not bom charset
                 }
             } else {
-                if ((wbom = Hide.MAPPING.get(charset)) == null) {
+                if ((bom = Hide.MAPPING.get(charset)) == null) {
                     return null; // not bom charset
                 }
-                headBytes = new byte[wbom.length()];
+                headBytes = new byte[bom.length()];
                 count = raf.read(headBytes);
             }
-            if (count >= wbom.length() && wbom.match(headBytes)) {
-                return wbom; // already has bom
+            if (count >= bom.length() && bom.match(headBytes)) {
+                return bom; // already has bom
             }
 
             ByteArrayOutputStream tailBytes = new ByteArrayOutputStream();
@@ -178,11 +178,11 @@ public enum ByteOrderMarks {
                 tailBytes.write(buffer, 0, n);
             }
             raf.seek(0); // 将指针移动到文件首部
-            raf.write(wbom.bom);
+            raf.write(bom.bytes);
             raf.write(headBytes, 0, count);
             raf.write(tailBytes.toByteArray());
             tailBytes.close();
-            return wbom;
+            return bom;
         }
     }
 
@@ -203,24 +203,24 @@ public enum ByteOrderMarks {
         try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
             long length = raf.length();
             byte[] headBytes;
-            ByteOrderMarks wbom;
+            ByteOrderMarks bom;
             int count;
             if (charset == null) {
                 headBytes = new byte[DETECT_COUNT];
                 count = raf.read(headBytes);
                 charset = detect(headBytes, count);
-                if ((wbom = Hide.MAPPING.get(charset)) == null) {
+                if ((bom = Hide.MAPPING.get(charset)) == null) {
                     return null; // not bom charset
                 }
             } else {
-                if ((wbom = Hide.MAPPING.get(charset)) == null) {
+                if ((bom = Hide.MAPPING.get(charset)) == null) {
                     return null; // not bom charset
                 }
-                headBytes = new byte[wbom.length()];
+                headBytes = new byte[bom.length()];
                 count = raf.read(headBytes);
             }
-            if (count < wbom.length() || !wbom.match(headBytes)) {
-                return wbom; // not has bom
+            if (count < bom.length() || !bom.match(headBytes)) {
+                return bom; // not has bom
             }
 
             ByteArrayOutputStream tailBytes = new ByteArrayOutputStream();
@@ -229,41 +229,42 @@ public enum ByteOrderMarks {
                 tailBytes.write(buffer, 0, n);
             }
             raf.seek(0); // 将指针移动到文件首部
-            raf.write(headBytes, wbom.length(), count - wbom.length());
+            raf.write(headBytes, bom.length(), count - bom.length());
             raf.write(tailBytes.toByteArray());
-            raf.setLength(length - wbom.length());
+            raf.setLength(length - bom.length());
             tailBytes.close();
-            return wbom;
+            return bom;
         }
     }
 
     public static byte[] get(Charset charset) {
-        ByteOrderMarks wbom = Hide.MAPPING.get(charset);
-        return wbom == null ? null : wbom.bom();
+        ByteOrderMarks bom = Hide.MAPPING.get(charset);
+        return bom == null ? null : bom.bytes();
     }
 
-    // ------------------------------------------------------------------------private methods
+    // ------------------------------------------------------------------------public methods
     public Charset charset() {
         return this.charset;
     }
 
-    public byte[] bom() {
-        byte[] bytes = new byte[this.bom.length];
-        System.arraycopy(this.bom, 0, bytes, 0, this.bom.length);
-        return bytes;
+    public byte[] bytes() {
+        byte[] array = new byte[this.length()];
+        System.arraycopy(this.bytes, 0, array, 0, this.length());
+        return array;
     }
 
     public int length() {
-        return this.bom.length;
+        return this.bytes.length;
     }
 
-    private boolean match(byte[] bytes) {
-        if (bytes.length < this.length()) {
+    // ------------------------------------------------------------------------private methods
+    private boolean match(byte[] array) {
+        if (array.length < this.length()) {
             return false;
         }
 
         for (int i = 0; i < this.length(); i++) {
-            if (bytes[i] != this.bom[i]) {
+            if (array[i] != this.bytes[i]) {
                 return false;
             }
         }

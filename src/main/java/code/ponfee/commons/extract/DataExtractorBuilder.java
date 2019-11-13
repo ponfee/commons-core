@@ -47,8 +47,7 @@ public class DataExtractorBuilder {
     }
 
     public static DataExtractorBuilder newBuilder(InputStream dataSource, 
-                                                  String fileName, 
-                                                  String contentType) {
+                                                  String fileName, String contentType) {
         return new DataExtractorBuilder(dataSource, fileName, contentType);
     }
 
@@ -93,13 +92,13 @@ public class DataExtractorBuilder {
         return this;
     }
 
-    public <T> DataExtractor<T> build() {
+    public DataExtractor build() {
         String extension = FilenameUtils.getExtension(fileName).toLowerCase();
         if (   ContentType.TEXT_PLAIN.value().equalsIgnoreCase(contentType)
             || CSV_EXTENSION.contains(extension)
         ) {
             // csv, txt文本格式数据
-            return new CsvExtractor<>(dataSource, headers, csvFormat, startRow, charset);
+            return new CsvExtractor(dataSource, headers, csvFormat, startRow, charset);
         } else if (EXCEL_EXTENSION.contains(extension)) {
             // content-type
             // xlsx: application/vnd.openxmlformats-officedocument.wordprocessingml.document
@@ -109,8 +108,8 @@ public class DataExtractorBuilder {
             //      application/msword application/x-xls
             ExcelType type = Enums.ofIgnoreCase(ExcelType.class, extension);
             return streaming 
-                   ? new StreamingExcelExtractor<>(dataSource, headers, startRow, type, sheetIndex)
-                   : new ExcelExtractor<>(dataSource, headers, startRow, type, sheetIndex);
+                   ? new StreamingExcelExtractor(dataSource, headers, startRow, type, sheetIndex)
+                   : new ExcelExtractor(dataSource, headers, startRow, type, sheetIndex);
         } else {
             throw new RuntimeException("File content type not supported: " + fileName);
         }

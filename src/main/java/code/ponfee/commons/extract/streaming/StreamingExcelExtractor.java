@@ -63,7 +63,7 @@ import code.ponfee.commons.extract.streaming.xls.HSSFStreamingReader;
  * 
  * @author Ponfee
  */
-public class StreamingExcelExtractor<T> extends ExcelExtractor<T> {
+public class StreamingExcelExtractor extends ExcelExtractor {
 
     private final ExecutorService executor;
 
@@ -98,7 +98,7 @@ public class StreamingExcelExtractor<T> extends ExcelExtractor<T> {
             case XLSX:
                 // only support xlsx
                 StreamingReader.Builder builder = StreamingReader.builder()
-                    .rowCacheSize(100) // 缓存到内存中的行数，默认是10
+                    .rowCacheSize(50) // 缓存到内存中的行数，默认是10
                     .bufferSize(4096); // 读取资源时，缓存到内存的字节大小，默认是1024
                 if (dataSource instanceof File) {
                     return builder.open((File) dataSource);

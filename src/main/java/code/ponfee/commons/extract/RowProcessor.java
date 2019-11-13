@@ -4,10 +4,9 @@ package code.ponfee.commons.extract;
  * 行处理
  * 
  * @author Ponfee
- * @param <T>
  */
 @FunctionalInterface
-public interface RowProcessor<T> {
+public interface RowProcessor {
 
-    void process(int rowNumber, T rowData);
+    void process(int rowNumber, String[] rowData);
 }

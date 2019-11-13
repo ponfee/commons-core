@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * 预先第一次读取InputStream的数据用来判断文件流类型，文件编码等用途
+ * 预先第一次读取InputStream的数据用来判断文件类型，文件编码等用途
  * 
  * @author Ponfee
  */
@@ -63,7 +63,6 @@ public class BeforeReadInputStream extends InputStream {
         return this.beforeReadByteArray;
     }
 
-    // --------------------------------------------------------------
     @Override
     public long skip(long n) throws IOException {
         int remaining = this.limit - this.offset;

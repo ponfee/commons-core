@@ -150,6 +150,7 @@ public final class Files {
         }
 
         try {
+            //org.apache.commons.io.FileUtils.deleteQuietly(file);
             java.nio.file.Files.deleteIfExists(file.toPath());
         } catch (IOException e) {
             Throwables.ignore(e);
@@ -170,14 +171,14 @@ public final class Files {
     }
 
     public static String toString(File file, Charset charset) throws IOException {
-        ByteOrderMarks wbm = ByteOrderMarks.of(charset, file);
+        ByteOrderMarks bom = ByteOrderMarks.of(charset, file);
 
         try (FileInputStream input = new FileInputStream(file); 
              FileChannel channel = input.getChannel()
         ) {
             long offset = 0, length = channel.size();
-            if (wbm != null) {
-                offset = wbm.length();
+            if (bom != null) {
+                offset = bom.length();
                 length -= offset;
             }
             ByteBuffer buffer = channel.map(MapMode.READ_ONLY, offset, length);

@@ -6,18 +6,18 @@ import java.util.Date;
  * Base class for Persistent Object(PO or DO)
  * 
  * @author Ponfee
- * @param <T>
+ * @param <U> user identify(user id or user name)
  */
-public abstract class BaseEntity<T> implements java.io.Serializable {
+public abstract class BaseEntity<U> implements java.io.Serializable {
 
     private static final long serialVersionUID = -3387171222355207376L;
 
-    private Long id; // database table primary key id
-    private Integer version; // operate version
-    private T creator; // create user
-    private Date createTm; // create time
-    private T Modifier; // last modify user
-    private Date modifyTm; // last modify time
+    private Long    id;       // database table primary key id
+    private Integer version;  // operate version
+    private U       creator;  // create user
+    private Date    createTm; // create time
+    private U       modifier; // last modify user
+    private Date    modifyTm; // last modify time
 
     public Long getId() {
         return id;
@@ -35,11 +35,11 @@ public abstract class BaseEntity<T> implements java.io.Serializable {
         this.version = version;
     }
 
-    public T getCreator() {
+    public U getCreator() {
         return creator;
     }
 
-    public void setCreator(T creator) {
+    public void setCreator(U creator) {
         this.creator = creator;
     }
 
@@ -51,12 +51,12 @@ public abstract class BaseEntity<T> implements java.io.Serializable {
         this.createTm = createTm;
     }
 
-    public T getModifier() {
-        return Modifier;
+    public U getModifier() {
+        return modifier;
     }
 
-    public void setModifier(T modifier) {
-        Modifier = modifier;
+    public void setModifier(U modifier) {
+        this.modifier = modifier;
     }
 
     public Date getModifyTm() {

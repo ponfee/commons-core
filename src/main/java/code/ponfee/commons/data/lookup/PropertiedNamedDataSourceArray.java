@@ -18,7 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.alibaba.druid.pool.DruidDataSource;
 
 import code.ponfee.commons.base.Initializable;
-import code.ponfee.commons.data.DataSourceType;
+import code.ponfee.commons.data.DataSources;
 import code.ponfee.commons.data.NamedDataSource;
 import code.ponfee.commons.io.Closeables;
 import code.ponfee.commons.util.Strings;
@@ -47,7 +47,7 @@ public class PropertiedNamedDataSourceArray implements Initializable, Closeable 
 
         String defaultDsName = getString(props, prefix + "default", names.get(0));
         String type = getString(props, prefix + "type");
-        DataSourceType dst = DataSourceType.ofType(type);
+        DataSources dst = DataSources.ofType(type);
         if (dst == null) {
             throw new UnsupportedOperationException("Unknown dataSource type: " + type);
         }
