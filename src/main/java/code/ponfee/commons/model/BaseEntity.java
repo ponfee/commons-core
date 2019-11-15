@@ -16,7 +16,7 @@ public abstract class BaseEntity<U> implements java.io.Serializable {
     private Integer version;  // operate version
     private U       creator;  // create user
     private Date    createTm; // create time
-    private U       modifier; // last modify user
+//  private U       modifier; // last modify user
     private Date    modifyTm; // last modify time
 
     public Long getId() {
@@ -49,14 +49,6 @@ public abstract class BaseEntity<U> implements java.io.Serializable {
 
     public void setCreateTm(Date createTm) {
         this.createTm = createTm;
-    }
-
-    public U getModifier() {
-        return modifier;
-    }
-
-    public void setModifier(U modifier) {
-        this.modifier = modifier;
     }
 
     public Date getModifyTm() {

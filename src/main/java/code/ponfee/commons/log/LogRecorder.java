@@ -116,7 +116,7 @@ public abstract class LogRecorder {
             try {
                 log(logInfo);
             } catch (Throwable ex) {
-                logger.error("log info error", ex);
+                logger.error("Handle log info occur error.", ex);
             }
         }
     }

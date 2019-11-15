@@ -112,12 +112,12 @@ public abstract class MethodValidator extends FieldValidator {
                     fieldType = fieldVal == null ? null : fieldVal.getClass();
                     fieldName = argsName[cst.index()] + "[" + cst.field() + "]";
                     builder.append(constrain(fieldName, fieldVal, cst, fieldType)); // cannot cache
-                }else if (fieldVal instanceof Dictionary) {
+                } else if (fieldVal instanceof Dictionary) {
                     fieldVal = ((Dictionary<String, Object>) fieldVal).get(cst.field());
                     fieldType = fieldVal == null ? null : fieldVal.getClass();
                     fieldName = argsName[cst.index()] + "[" + cst.field() + "]";
                     builder.append(constrain(fieldName, fieldVal, cst, fieldType)); // cannot cache
-                }  else {
+                } else {
                     // 验证java bean
                     String[] ognl = cst.field().split("\\.");
                     Field field;
