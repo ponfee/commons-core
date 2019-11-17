@@ -84,7 +84,7 @@ public class FieldValidator {
                 }
 
                 builder.append(
-                    constrain(clazz, field.getName(), Fields.get(bean, field), cst, GenericUtils.getActualType(clazz, field))
+                    constrain(clazz, field.getName(), Fields.get(bean, field), cst, GenericUtils.getFieldActualType(clazz, field))
                 );
             }
             clazz = clazz.getSuperclass();

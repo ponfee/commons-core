@@ -124,7 +124,7 @@ public abstract class MethodValidator extends FieldValidator {
                     Field field;
                     for (String s : ognl) {
                         field = ClassUtils.getField(fieldType, s);
-                        fieldType = GenericUtils.getActualType(fieldType, field);
+                        fieldType = GenericUtils.getFieldActualType(fieldType, field);
                         if (fieldVal != null) {
                             fieldVal = Fields.get(fieldVal, field);
                         }

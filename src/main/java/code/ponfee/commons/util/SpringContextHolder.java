@@ -236,7 +236,7 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
             }
 
             Object fieldBean = null;
-            Class<?> fieldType = GenericUtils.getActualType(object.getClass(), field);
+            Class<?> fieldType = GenericUtils.getFieldActualType(object.getClass(), field);
             if (AnnotationUtils.getAnnotation(field, Resource.class) != null) {
                 Resource resource = AnnotationUtils.getAnnotation(field, Resource.class);
                 if (StringUtils.isNotBlank(resource.name())) {

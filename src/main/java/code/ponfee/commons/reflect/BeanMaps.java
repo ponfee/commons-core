@@ -68,7 +68,7 @@ public enum BeanMaps {
             sourceMap.forEach((k, v) -> {
                 for (Field field : fields) {
                     if (field.getName().equals(k)) {
-                        Fields.put(targetBean, field, ObjectUtils.convert(v, GenericUtils.getActualType(clazz, field)));
+                        Fields.put(targetBean, field, ObjectUtils.convert(v, GenericUtils.getFieldActualType(clazz, field)));
                     }
                 }
             });

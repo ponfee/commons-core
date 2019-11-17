@@ -83,9 +83,9 @@ public class GenericTest {
 
     @Test
     public void test4() throws Exception {
-        System.out.println(GenericUtils.getActualType(BeanClass.class, ClassUtils.getField(BeanClass.class, "id")));
-        System.out.println(GenericUtils.getActualType(BeanClass.class, ClassUtils.getField(BeanClass.class, "creator")));
-        System.out.println(GenericUtils.getActualType(BeanClass2.class, ClassUtils.getField(BeanClass2.class, "creator")));
+        System.out.println(GenericUtils.getFieldActualType(BeanClass.class, ClassUtils.getField(BeanClass.class, "id")));
+        System.out.println(GenericUtils.getFieldActualType(BeanClass.class, ClassUtils.getField(BeanClass.class, "creator")));
+        System.out.println(GenericUtils.getFieldActualType(BeanClass2.class, ClassUtils.getField(BeanClass2.class, "creator")));
     }
 
     // -------------------------------------------------------------

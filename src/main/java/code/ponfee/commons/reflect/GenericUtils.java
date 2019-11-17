@@ -51,7 +51,7 @@ public final class GenericUtils {
      * @param clazz
      * @return
      */
-    public static <T> Class<T> getActualTypeArgument(final Class<?> clazz) {
+    public static <T> Class<T> getActualTypeArgument(Class<?> clazz) {
         return getActualTypeArgument(clazz, 0);
     }
 
@@ -67,8 +67,8 @@ public final class GenericUtils {
     }
 
     // ----------------------------------------------------------------------------
-    public static <T> Class<T> getActualTypeArgument(Method method, int methodParamsIndex) {
-        return getActualTypeArgument(method, methodParamsIndex, 0);
+    public static <T> Class<T> getActualTypeArgument(Method method, int methodArgsIndex) {
+        return getActualTypeArgument(method, methodArgsIndex, 0);
     }
 
     /**
@@ -106,12 +106,35 @@ public final class GenericUtils {
     /**
      * public class BeanClass extends BaseEntity<String> {}
      * 
-     * @param clazz
-     * @param field
-     * @return
+     * @param clazz the defined class
+     * @param field the field
+     * @return a Class of field actual type
      */
-    public static <T> Class<T> getActualType(Class<?> clazz, Field field) {
+    public static <T> Class<T> getFieldActualType(Class<?> clazz, Field field) {
         return getActualType(clazz, field.getGenericType());
+    }
+
+    /**
+     * Returns method arg actual type
+     * 
+     * @param clazz            the defined this method class 
+     * @param method           the method
+     * @param methodArgsIndex  the method arg index
+     * @return a Class of method arg actual type
+     */
+    public static <T> Class<T> getMethodArgActualType(Class<?> clazz, Method method, int methodArgsIndex) {
+        return getActualType(clazz, method.getGenericParameterTypes()[methodArgsIndex]);
+    }
+
+    /**
+     * Returns method return actual type
+     * 
+     * @param clazz  the defined this method class 
+     * @param method the method
+     * @return a Class of method return actual type
+     */
+    public static <T> Class<T> getMethodReturnActualType(Class<?> clazz, Method method) {
+        return getActualType(clazz, method.getGenericReturnType());
     }
 
     // -------------------------------------------------------------------private methods
