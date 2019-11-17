@@ -21,7 +21,6 @@ import code.ponfee.commons.ws.adapter.model.MapItem;
  * 
  * @author Ponfee
  */
-@SuppressWarnings("unchecked")
 public abstract class ResultPageMapAdapter<K, V> 
     extends XmlAdapter<Result<Page<MapItem>>, Result<Page<Map<K, V>>>> {
 

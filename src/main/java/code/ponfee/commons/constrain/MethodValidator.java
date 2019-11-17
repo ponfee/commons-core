@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import code.ponfee.commons.reflect.ClassUtils;
 import code.ponfee.commons.reflect.Fields;
+import code.ponfee.commons.reflect.GenericUtils;
 
 /**
  * <pre>
@@ -123,7 +124,7 @@ public abstract class MethodValidator extends FieldValidator {
                     Field field;
                     for (String s : ognl) {
                         field = ClassUtils.getField(fieldType, s);
-                        fieldType = field.getType();
+                        fieldType = GenericUtils.getActualType(fieldType, field);
                         if (fieldVal != null) {
                             fieldVal = Fields.get(fieldVal, field);
                         }
