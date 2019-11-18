@@ -61,6 +61,7 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
 
     /**
      * 通过名称获取bean
+     * 
      * @param name
      * @return
      */
@@ -82,6 +83,7 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
 
     /**
      * 通过类获取bean
+     * 
      * @param clazz
      * @return
      */
@@ -124,6 +126,7 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
 
     /**
      * 判断是否含有该名称的Bean
+     * 
      * @param name
      * @return
      */
@@ -139,6 +142,7 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
 
     /**
      * 判断Bean是否单例
+     * 
      * @param name
      * @return
      */
@@ -159,6 +163,7 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
 
     /**
      * 获取Bean的类型
+     * 
      * @param name
      * @return
      */
@@ -256,7 +261,7 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
                 }
             }
 
-            if (fieldBean != null && fieldType.isInstance(fieldBean)) {
+            if (fieldType.isInstance(fieldBean)) {
                 Fields.put(object, field, fieldBean);
             }
         }

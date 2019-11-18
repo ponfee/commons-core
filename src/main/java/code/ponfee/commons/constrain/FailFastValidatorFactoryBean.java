@@ -29,7 +29,7 @@ public class FailFastValidatorFactoryBean implements FactoryBean<Validator> {
     }
 
     @Override
-    public Validator getObject() throws Exception {
+    public Validator getObject() {
         return this.validator;
     }
 

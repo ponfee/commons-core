@@ -24,6 +24,8 @@ public enum ContentType {
     IMAGE_JPEG("image/jpeg"), //
     IMAGE_PNG("image/png"), //
     IMAGE_BMP("image/bmp"), //
+    IMAGE_ICO("image/ico"), //
+    IMAGE_GIF("image/gif"), //
 
     WILDCARD("*/*"), //
     ;
@@ -37,4 +39,14 @@ public enum ContentType {
     public String value() {
         return value;
     }
+
+    public static ContentType ofValue(String value) {
+        for (ContentType type : ContentType.values()) {
+            if (type.value.equalsIgnoreCase(value)) {
+                return type;
+            }
+        }
+        return null;
+    }
+
 }

@@ -6,32 +6,32 @@ import java.util.Date;
  * Base class for Persistent Object(PO or DO)
  * 
  * @author Ponfee
- * @param <U> user identify(user id or user name)
+ * @param <I> id field type     (table primary key)
+ * @param <U> creator field type(user id or user name)
  */
-public abstract class BaseEntity<U> implements java.io.Serializable {
+public abstract class BaseEntity<I, U> implements java.io.Serializable {
 
     private static final long serialVersionUID = -3387171222355207376L;
 
-    private Long    id;       // database table primary key id
-    private Integer version;  // operate version
-    private U       creator;  // create user
-    private Date    createTm; // create time
-//  private U       modifier; // last modify user
-    private Date    modifyTm; // last modify time
+    private I id;             // database table primary key id
+    private int  version = 1; // operate version
+    private U    creator;     // create user
+    private Date createTm;    // create time
+    private Date modifyTm;    // last modify time
 
-    public Long getId() {
+    public I getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(I id) {
         this.id = id;
     }
 
-    public Integer getVersion() {
+    public int getVersion() {
         return version;
     }
 
-    public void setVersion(Integer version) {
+    public void setVersion(int version) {
         this.version = version;
     }
 

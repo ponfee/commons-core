@@ -11,7 +11,9 @@ package test.tree;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
@@ -67,6 +69,19 @@ public class NodeTreeTest {
         System.out.println(Jsons.toJson(root));
         System.out.println(Jsons.toJson(root.dfsFlat()));
         System.out.println(Jsons.toJson(root.bfsFlat()));
+        System.out.println(Jsons.toJson(root.toMap(this::toMap, true)));
+        System.out.println(Jsons.toJson(root.toMap(this::toMap, false)));
+    }
+
+    private Map<String, Object> toMap(TreeNode<String, String> node) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("nid", node.getNid());
+        map.put("pid", node.getPid());
+        map.put("attach", node.getAttach());
+        map.put("path", node.getPath());
+        map.put("enabled", node.isEnabled());
+        map.put("available", node.isAvailable());
+        return map;
     }
 
     @Test

@@ -1,9 +1,10 @@
 package code.ponfee.commons.data.lookup;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -68,8 +69,8 @@ public final class MultipleDataSourceContext {
         dataSourceKeys.remove(key);
     }
 
-    static List<NamedDataSource> process(String defaultName, DataSource defaultDataSource,
-                                         NamedDataSource... othersDataSource) {
+    static Map<String, DataSource> process(String defaultName, DataSource defaultDataSource,
+                                           NamedDataSource... othersDataSource) {
         if (othersDataSource == null) {
             othersDataSource = new NamedDataSource[0];
         }
@@ -81,14 +82,18 @@ public final class MultipleDataSourceContext {
         // checks whether duplicate datasource name
         Set<String> duplicates = Collects.duplicate(names);
         if (CollectionUtils.isNotEmpty(duplicates)) {
-            throw new IllegalArgumentException("Duplicated data source name: " + duplicates.toString());
+            throw new IllegalArgumentException(
+                "Duplicated data source name: " + duplicates.toString()
+            );
         }
 
         addAll(names); // add data source keys 
 
-        List<NamedDataSource> dataSources = new ArrayList<>();
-        dataSources.add(new NamedDataSource(defaultName, defaultDataSource));
-        dataSources.addAll(Arrays.asList(othersDataSource));
+        Map<String, DataSource> dataSources = new LinkedHashMap<>();
+        dataSources.put(defaultName, defaultDataSource);
+        Arrays.stream(othersDataSource).forEach(
+            ns -> dataSources.put(ns.getName(), ns.getDataSource())
+        );
         return dataSources;
     }
 

@@ -103,9 +103,9 @@ public class PdfSignature {
      * @return
      */
     public static byte[] sign(byte[] pdf, Stamp[] stamps, Signer signer) {
-        for (int i = 0; i < stamps.length; i++) {
+        for (Stamp stamp : stamps) {
             ByteArrayOutputStream baos = new ByteArrayOutputStream(Files.BUFF_SIZE);
-            sign(new ByteArrayInputStream(pdf), baos, stamps[i], signer);
+            sign(new ByteArrayInputStream(pdf), baos, stamp, signer);
             pdf = baos.toByteArray();
         }
         return pdf;

@@ -39,13 +39,13 @@ public class WrappedSerializer extends Serializer {
 
     private static final Map<Class<?>, Object> PRIMITIVES = new Builder<Class<?>, Object>()
         .put(boolean.class, Boolean.FALSE)
-        .put(byte.class, (Byte) (byte) 0)
-        .put(short.class, (Short) (short) 0)
-        .put(char.class, (Character) Numbers.CHAR_ZERO)
-        .put(int.class, (Integer) 0)
-        .put(long.class, (Long) 0L)
-        .put(float.class, (Float) 0.0F)
-        .put(double.class, (Double) 0.0D)
+        .put(byte.class, (byte) 0)
+        .put(short.class, (short) 0)
+        .put(char.class, Numbers.CHAR_ZERO)
+        .put(int.class, 0)
+        .put(long.class, 0L)
+        .put(float.class, 0.0F)
+        .put(double.class, 0.0D)
         .build();
 
     private final Serializer other;
@@ -189,7 +189,7 @@ public class WrappedSerializer extends Serializer {
             return null;
         }
         //return Bytes.toBytes(value.ordinal());
-        return Serializers.STRING.toBytes(((Enum<?>) value).name());
+        return Serializers.STRING.toBytes(value.name());
     }
 
     /**

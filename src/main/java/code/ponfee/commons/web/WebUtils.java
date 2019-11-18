@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -162,11 +161,6 @@ public final class WebUtils {
         return req.getHeader("User-Agent");
     }
 
-    public static void response(HttpServletResponse resp, ContentType contentType,
-                                String text, Charset charset) {
-        response(resp, contentType.value(), text, charset.name());
-    }
-
     /**
      * 响应数据到请求客户端
      * @param resp
@@ -174,9 +168,10 @@ public final class WebUtils {
      * @param text
      * @param charset
      */
-    public static void response(HttpServletResponse resp, String contentType, 
+    public static void response(HttpServletResponse resp, 
+                                ContentType contentType, 
                                 String text, String charset) {
-        resp.setContentType(contentType + ";charset=" + charset);
+        resp.setContentType(contentType.value() + ";charset=" + charset);
         resp.setCharacterEncoding(charset);
         try (PrintWriter writer = resp.getWriter()) {
             writer.write(text);
@@ -196,7 +191,7 @@ public final class WebUtils {
     }
 
     public static void respJson(HttpServletResponse resp, Object data, String charset) {
-        response(resp, ContentType.APPLICATION_JSON.value(), toJson(data), charset);
+        response(resp, ContentType.APPLICATION_JSON, toJson(data), charset);
     }
 
     public static void respJsonp(HttpServletResponse response, 
@@ -228,7 +223,8 @@ public final class WebUtils {
     }
 
     /**
-     * response to input stream
+     * Response to input stream
+     * 
      * @param resp      the HttpServletResponse
      * @param input     the input stream
      * @param filename  the resp attachment filename
@@ -267,6 +263,7 @@ public final class WebUtils {
 
     /**
      * 响应流数据
+     * 
      * @param resp      the HttpServletResponse
      * @param data      the resp byte array data
      * @param filename  the resp attachment filename
@@ -300,14 +297,40 @@ public final class WebUtils {
      * @param isGzip whether to encode gzip
      */
     public static void response(HttpServletResponse resp, byte[] data,
-                                String contentType, boolean isGzip) {
+                                ContentType contentType, boolean isGzip) {
         try (OutputStream out = resp.getOutputStream()) {
-            resp.setContentType(contentType);
+            resp.setContentType(contentType.value());
             if (isGzip) {
                 resp.setHeader("Content-Encoding", "gzip");
                 GzipProcessor.compress(data, out);
             } else {
                 out.write(data);
+            }
+        } catch (IOException e) {
+            // cannot happened
+            throw new RuntimeException("response byte array data occur error", e);
+        }
+    }
+
+    /**
+     * 响应数据流，如图片数据
+     * 
+     * response(resp, image_file_input_stream, ContentType.IMAGE_JPEG.value(), false);
+     * 
+     * @param resp  the HttpServletResponse
+     * @param input the input stream
+     * @param contentType the content-type
+     * @param isGzip whether to encode gzip
+     */
+    public static void response(HttpServletResponse resp, InputStream input,
+                                ContentType contentType, boolean isGzip) {
+        try (OutputStream output = resp.getOutputStream()) {
+            resp.setContentType(contentType.value());
+            if (isGzip) {
+                resp.setHeader("Content-Encoding", "gzip");
+                GzipProcessor.compress(input, output);
+            } else {
+                IOUtils.copy(input, output);
             }
         } catch (IOException e) {
             // cannot happened
@@ -635,7 +658,7 @@ public final class WebUtils {
     private static String toJson(Object data) {
         return (data instanceof CharSequence)
                ? data.toString()
-               : Jsons.NON_NULL.string(data);
+               : Jsons.toJson(data);
     }
 
     private static void respStream(HttpServletResponse resp, long size,

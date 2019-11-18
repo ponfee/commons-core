@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.IterableUtils;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -44,6 +43,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
 
     private static final long serialVersionUID = -9081626363752680404L;
     public static final String DEFAULT_ROOT_ID = "__ROOT__";
+    public static final String DEFAULT_CHILDREN_KEY = "children";
 
     // 用于比较兄弟节点
     private final Comparator<? super TreeNode<T, A>> siblingNodeOrders;
@@ -231,9 +231,22 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     }
 
     // -----------------------------------------------------------to map
-    public Map<String, Object> toMap(Function<TreeNode<T, A>, Map<String, Object>> convert, String childrenKey) {
+    public Map<String, Object> toMap(Function<TreeNode<T, A>, Map<String, Object>> convert) {
+        return toMap(convert, DEFAULT_CHILDREN_KEY, true);
+    }
+
+    public Map<String, Object> toMap(Function<TreeNode<T, A>, Map<String, Object>> convert, 
+                                     boolean containsUnavailable) {
+        return toMap(convert, DEFAULT_CHILDREN_KEY, containsUnavailable);
+    }
+
+    public Map<String, Object> toMap(Function<TreeNode<T, A>, Map<String, Object>> convert, 
+                                     String childrenKey, boolean containsUnavailable) {
+        if (!containsUnavailable && !this.available) {
+            return null;
+        }
         Map<String, Object> root = convert.apply(this);
-        this.toMap(convert, root, childrenKey);
+        this.toMap(convert, root, childrenKey, containsUnavailable);
         return root;
     }
 
@@ -243,7 +256,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
 
         // nodes list
         for (BaseNode<T, A> node : nodes) {
-            if (node instanceof TreeNode) { 
+            if (node instanceof TreeNode) {
                 // if tree node, then add all the tree nodes that includes the node's children(recursive)
                 ((TreeNode<T, A>) node).forEach(list::add);
             } else {
@@ -368,10 +381,11 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
      * @return a new ImmutableList appended current node id
      */
     private List<T> buildPath(List<T> parentPath, T nid) {
-        if (IterableUtils.matchesAny(parentPath, nid::equals)) {
+        // already check duplicated, so cannot has circular dependencies happened
+        /*if (IterableUtils.matchesAny(parentPath, nid::equals)) {
             // 节点路径中已经包含了此节点，则视为环状
             throw new RuntimeException("Node circular dependencies: " + parentPath + " -> " + nid);
-        }
+        }*/
 
         ImmutableList.Builder<T> builder = ImmutableList.builder();
         if (parentPath != null) {
@@ -381,12 +395,16 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     }
 
     private void toMap(Function<TreeNode<T, A>, Map<String, Object>> convert,
-                       Map<String, Object> parent, String childrenKey) {
+                       Map<String, Object> parent, String childrenKey, 
+                       boolean containsUnavailable) {
         if (CollectionUtils.isNotEmpty(this.children)) {
             List<Map<String, Object>> list = new ArrayList<>(this.children.size());
             for (TreeNode<T, A> child : this.children) {
+                if (!containsUnavailable && !child.available) {
+                    continue; // filter unavailable
+                }
                 Map<String, Object> map = convert.apply(child);
-                child.toMap(convert, map, childrenKey);
+                child.toMap(convert, map, childrenKey, containsUnavailable);
                 list.add(map);
             }
             parent.put(childrenKey, list);
@@ -407,10 +425,10 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     public static <T extends Serializable & Comparable<? super T>, A extends Serializable, O extends Serializable & Comparable<? super O>> 
         Comparator<? super TreeNode<T, A>> comparing(Function<? super A, ? extends O> keyExtractor, boolean asc) {
         // First nullsLast will handle the cases when the "node" objects are null.
-        // Second nullsLast will handle the cases when the return value of "keyExtractor.apply(node.getAttach())" is null.
-        //Comparator.nullsLast(Comparator.<TreeNode<T, A>, O> comparing(node -> keyExtractor.apply(node.getAttach()), Comparator.nullsLast(orderBy(asc))));
+        // Second nullsLast will handle the cases when the return value of "keyExtractor.apply(node.attach)" is null.
+        //Comparator.nullsLast(Comparator.<TreeNode<T, A>, O> comparing(node -> keyExtractor.apply(node.attach), Comparator.nullsLast(Comparators.order(asc))));
 
-        return Comparator.comparing(n -> keyExtractor.apply(n.getAttach()), Comparator.nullsLast(Comparators.order(asc)));
+        return Comparator.comparing(n -> keyExtractor.apply(n.attach), Comparator.nullsLast(Comparators.order(asc)));
     }
 
     // -----------------------------------------------------------------------------comparing by Attach then after with TreeNode.nid
@@ -422,7 +440,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     public static <T extends Serializable & Comparable<? super T>, A extends Serializable, O extends Serializable & Comparable<? super O>> 
         Comparator<? super TreeNode<T, A>> comparingThenComparingNid(Function<? super A, ? extends O> keyExtractor, boolean asc) {
         return Comparator.<TreeNode<T, A>, O> comparing(
-            n -> keyExtractor.apply(n.getAttach()), Comparator.nullsLast(Comparators.order(asc))
+            n -> keyExtractor.apply(n.attach), Comparator.nullsLast(Comparators.order(asc))
         ).thenComparing(
             TreeNode::getNid
         );

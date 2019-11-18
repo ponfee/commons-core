@@ -3,7 +3,6 @@ package code.ponfee.commons.data.lookup;
 import static code.ponfee.commons.util.PropertiesUtils.getString;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,20 +41,16 @@ public class PropertiedNamedDataSourceArray implements Initializable, Closeable 
 
         List<String> names = props.keySet().stream().map(key -> {
             Matcher matcher = pattern.matcher(key.toString());
-            return matcher.find() ? matcher.group(1) : null;
+            return matcher.matches() ? matcher.group(1) : null;
         }).filter(Objects::nonNull).collect(Collectors.toList());
 
         String defaultDsName = getString(props, prefix + "default", names.get(0));
-        String type = getString(props, prefix + "type");
-        DataSources dst = DataSources.ofType(type);
-        if (dst == null) {
-            throw new UnsupportedOperationException("Unknown dataSource type: " + type);
-        }
+        String type = getString(props, prefix + "type"); // datasource type
 
         List<NamedDataSource> dataSources = new ArrayList<>();
         for (String name : names) {
             NamedDataSource namedDs = NamedDataSource.of(
-                name, dst.createDataSource(name, props, prefix)
+                name, DataSources.createDataSource(type, name, props, prefix)
             );
             if (defaultDsName.equals(name)) {
                 dataSources.add(0, namedDs); // default ds at index 0
@@ -79,7 +74,7 @@ public class PropertiedNamedDataSourceArray implements Initializable, Closeable 
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         for (NamedDataSource nds : array) {
             Closeables.log((DruidDataSource) nds.getDataSource());
         }

@@ -2,7 +2,7 @@ package code.ponfee.commons.data.lookup;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -49,7 +49,7 @@ public class MultipletCachedDataSource extends AbstractDataSource {
 
     public MultipletCachedDataSource(String defaultName, DataSource defaultDataSource, 
                                      NamedDataSource... othersDataSource) {
-        List<NamedDataSource> dataSources = MultipleDataSourceContext.process(
+        Map<String, DataSource> dataSources = MultipleDataSourceContext.process(
             defaultName, defaultDataSource, othersDataSource
         );
 
@@ -57,13 +57,11 @@ public class MultipletCachedDataSource extends AbstractDataSource {
         this.defaultDataSource = defaultDataSource;
 
         // set all the data sources to cache container(inited data sources not expire)
-        dataSources.stream().forEach(
-            ds -> this.dataSources.set(ds.getName(), ds.getDataSource(), Cache.KEEPALIVE_FOREVER)
+        dataSources.forEach(
+            (k, v) -> this.dataSources.set(k, v, Cache.KEEPALIVE_FOREVER)
         );
 
-        this.immutableDataSourceNames = ImmutableSet.copyOf(
-            dataSources.stream().map(NamedDataSource::getName).toArray(String[]::new)
-        );
+        this.immutableDataSourceNames = ImmutableSet.copyOf(dataSources.keySet());
     }
 
     // -----------------------------------------------------------------add/remove
@@ -137,7 +135,7 @@ public class MultipletCachedDataSource extends AbstractDataSource {
      * {@link #setDefaultTargetDataSource default target DataSource} if necessary.
      * @see #determineCurrentLookupKey()
      */
-    protected DataSource determineTargetDataSource() {
+    public DataSource determineTargetDataSource() {
         String lookupKey = MultipleDataSourceContext.get();
         DataSource dataSource = (lookupKey == null) 
                               ? this.defaultDataSource 

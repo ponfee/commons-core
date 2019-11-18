@@ -102,7 +102,7 @@ public enum Convertors {
         }
     };
 
-    private Convertors(Class<?> targetType) {
+    Convertors(Class<?> targetType) {
         Hide.MAPPING.put(targetType, this);
     }
 

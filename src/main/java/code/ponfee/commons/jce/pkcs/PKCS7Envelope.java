@@ -213,7 +213,7 @@ public final class PKCS7Envelope {
         public final String transform;
         public final int ivLen;
 
-        private AlgorithmOidMapping(String oid, String name, String transform, int ivLen) {
+        AlgorithmOidMapping(String oid, String name, String transform, int ivLen) {
             this.oid = oid;
             this.name = name;
             this.transform = transform;

@@ -147,7 +147,7 @@ public enum Serializers {
         }
     };
 
-    private Serializers(Class<?>... types) {
+    Serializers(Class<?>... types) {
         for (Class<?> type : types) {
             Hide.MAPPING.put(type, this);
         }

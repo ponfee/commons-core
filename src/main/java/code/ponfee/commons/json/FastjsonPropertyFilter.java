@@ -24,22 +24,28 @@ import com.alibaba.fastjson.serializer.PropertyFilter;
 public class FastjsonPropertyFilter implements PropertyFilter {
 
     private final boolean isIncludes;
+    private final boolean forceNonNull;
     private final String[] fields;
 
-    public FastjsonPropertyFilter(@Nonnull FilterType type, @Nonnull String... fields) {
-        this.isIncludes = type == FilterType.INCLUDES;
+    public FastjsonPropertyFilter(@Nonnull PropertyFilterType type, @Nonnull String... fields) {
+        this(type, false, fields);
+    }
+
+    public FastjsonPropertyFilter(@Nonnull PropertyFilterType type, boolean forceNonNull, @Nonnull String... fields) {
+        this.isIncludes = type == PropertyFilterType.INCLUDES;
+        this.forceNonNull = forceNonNull;
         this.fields = fields;
     }
 
     @Override
     public boolean apply(Object source, String name, Object value) {
+        if (forceNonNull && value != null) {
+            return true;
+        }
+
         // 异或：(A ^ B)；同或：(A ^ B) ^ 1
         //return isIncludes ^ ArrayUtils.contains(fields, name) ^ true;
-        return !(isIncludes ^ ArrayUtils.contains(fields, name));
-    }
-
-    public static enum FilterType {
-        INCLUDES, EXCLUDES
+        return isIncludes == ArrayUtils.contains(fields, name);
     }
 
 }

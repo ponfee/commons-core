@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -42,7 +41,7 @@ public class MultipletScalableDataSource extends AbstractDataSource {
 
     public MultipletScalableDataSource(String defaultName, DataSource defaultDataSource, 
                                        NamedDataSource... othersDataSource) {
-        List<NamedDataSource> dataSources = MultipleDataSourceContext.process(
+        Map<String, DataSource> dataSources = MultipleDataSourceContext.process(
             defaultName, defaultDataSource, othersDataSource
         );
 
@@ -50,9 +49,7 @@ public class MultipletScalableDataSource extends AbstractDataSource {
         this.defaultDataSource = defaultDataSource;
 
         // set all the data sources
-        dataSources.stream().forEach(
-            ds -> this.dataSources.put(ds.getName(), ds.getDataSource())
-        );
+        this.dataSources.putAll(dataSources);
     }
 
     public synchronized void add(NamedDataSource ds) {
@@ -116,7 +113,7 @@ public class MultipletScalableDataSource extends AbstractDataSource {
      * {@link #setDefaultTargetDataSource default target DataSource} if necessary.
      * @see #determineCurrentLookupKey()
      */
-    protected DataSource determineTargetDataSource() {
+    public DataSource determineTargetDataSource() {
         String lookupKey = MultipleDataSourceContext.get();
         DataSource dataSource = (lookupKey == null) 
                               ? this.defaultDataSource 

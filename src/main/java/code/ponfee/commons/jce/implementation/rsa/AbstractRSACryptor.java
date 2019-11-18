@@ -216,7 +216,7 @@ public abstract class AbstractRSACryptor extends Cryptor {
      * @param data        the data
      * @param fixedSize   the result of byte array length
      * @param out         the output stream
-     * @throws IOException
+     * @throws IOException if occur IOException
      * @see code.ponfee.commons.util.Bytes#toBinary(byte...)
      * @see code.ponfee.commons.util.Bytes#tailCopy(byte[], int, int, byte[], int, int)
      */
@@ -241,7 +241,7 @@ public abstract class AbstractRSACryptor extends Cryptor {
      * 
      * @param data  the decrypted origin data
      * @param out   the output stream
-     * @throws IOException
+     * @throws IOException if occur IOException
      * @see code.ponfee.commons.util.Bytes#toBinary(byte...)
      */
     private static void trimByteArray(byte[] data, OutputStream out)
@@ -315,10 +315,10 @@ public abstract class AbstractRSACryptor extends Cryptor {
 
     /**
      * 解码原文填充（前缀0被舍去，只有127位）
-     * @param input
-     * @param cipherBlockSize
-     * @param out
-     * @throws IOException
+     * @param input the input
+     * @param cipherBlockSize the cipherBlockSize
+     * @param out the out
+     * @throws IOException if occur IOException
      * @see code.ponfee.commons.util.Bytes#toBinary(byte...)
      */
     private static void decodeBlock(byte[] input, int cipherBlockSize, 

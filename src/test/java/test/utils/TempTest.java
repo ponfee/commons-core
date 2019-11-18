@@ -57,7 +57,7 @@ public class TempTest {
         for (Class<?> clazz : new ResourceScanner("code/ponfee/commons/").scan4class()) {
             for (Method method : clazz.getMethods()) {
                 try {
-                    Class<?> c = GenericUtils.getActualTypeArgument(method, 0);
+                    Class<?> c = GenericUtils.getActualArgTypeArgument(method, 0);
                     if (c != Object.class) {
                         System.out.println(clazz.getSimpleName() + "-->" + method.getName() + "-->" + c);
                     }

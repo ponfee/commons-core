@@ -30,7 +30,7 @@ public class MapDataConverter<S> extends AbstractDataConverter<S, Map<String, Ob
 
     @SuppressWarnings("unchecked")
     public static <S> Map<String, Object> convert(S source, String... keys) {
-        Function<? super String, ? extends Object> vm;
+        Function<? super String, ?> vm;
         if (source instanceof Map) {
             vm = ((Map<String, Object>) source)::get;
         } else if (source instanceof Dictionary) {

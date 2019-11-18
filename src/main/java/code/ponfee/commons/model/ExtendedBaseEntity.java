@@ -5,7 +5,7 @@ package code.ponfee.commons.model;
  * 
  * @author Ponfee
  */
-public abstract class ExtendedBaseEntity<U> extends BaseEntity<U> {
+public abstract class ExtendedBaseEntity<I, U> extends BaseEntity<I, U> {
 
     private static final long serialVersionUID = 5333847915253038118L;
 

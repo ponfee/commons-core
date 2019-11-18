@@ -8,8 +8,10 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -44,7 +46,7 @@ public final class GenericUtils {
         return target;
     }
 
-    // ----------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------class actual type argument
     /**
      * 获取泛型的实际类型参数
      * 
@@ -56,19 +58,32 @@ public final class GenericUtils {
     }
 
     /**
-     * public class GenericClass extends GenericSuperClass<A,B,...,N> {}
+     * public class GenericClass extends GenericSuperClass<A,B,...,N> implements GenericInterface<X,Y,..,Z> {}
      * 
      * @param clazz
      * @param genericArgsIndex
      * @return
      */
+    @SuppressWarnings("unchecked")
     public static <T> Class<T> getActualTypeArgument(Class<?> clazz, int genericArgsIndex) {
-        return getActualTypeArgument(clazz.getGenericSuperclass(), genericArgsIndex);
+        int index = 0;
+        for (Type type : getGenericTypes(clazz)) {
+            if (type instanceof ParameterizedType) {
+                Type[] acts = ((ParameterizedType) type).getActualTypeArguments();
+                if (acts.length + index < genericArgsIndex) {
+                    index += acts.length;
+                } else {
+                    return getActualType(null, acts[genericArgsIndex - index]);
+                }
+            }
+        }
+
+        return (Class<T>) Object.class;
     }
 
-    // ----------------------------------------------------------------------------
-    public static <T> Class<T> getActualTypeArgument(Method method, int methodArgsIndex) {
-        return getActualTypeArgument(method, methodArgsIndex, 0);
+    // ----------------------------------------------------------------------------method actual arg type argument
+    public static <T> Class<T> getActualArgTypeArgument(Method method, int methodArgsIndex) {
+        return getActualArgTypeArgument(method, methodArgsIndex, 0);
     }
 
     /**
@@ -79,8 +94,17 @@ public final class GenericUtils {
      * @param genericArgsIndex  泛型参数索引号
      * @return
      */
-    public static <T> Class<T> getActualTypeArgument(Method method, int methodArgsIndex, int genericArgsIndex) {
+    public static <T> Class<T> getActualArgTypeArgument(Method method, int methodArgsIndex, int genericArgsIndex) {
         return getActualTypeArgument(method.getGenericParameterTypes()[methodArgsIndex], genericArgsIndex);
+    }
+
+    // ----------------------------------------------------------------------------method actual return type argument
+    public static <T> Class<T> getActualReturnTypeArgument(Method method) {
+        return getActualReturnTypeArgument(method, 0);
+    }
+
+    public static <T> Class<T> getActualReturnTypeArgument(Method method, int genericArgsIndex) {
+        return getActualTypeArgument(method.getGenericReturnType(), genericArgsIndex);
     }
 
     // ----------------------------------------------------------------------------
@@ -97,16 +121,13 @@ public final class GenericUtils {
      */
     public static <T> Class<T> getActualTypeArgument(Field field, int genericArgsIndex) {
         return getActualTypeArgument(field.getGenericType(), genericArgsIndex);
-        // type.getTypeName();                         ->  java.util.List<test.ClassA>
-        // ((ParameterizedType) type).getRawType();    ->  interface java.util.List
-        // ((ParameterizedType) type).getOwnerType();  ->  null
     }
 
     // -------------------------------------------------------------------get actual variable type
     /**
      * public class BeanClass extends BaseEntity<String> {}
      * 
-     * @param clazz the defined class
+     * @param clazz the defined or sub class
      * @param field the field
      * @return a Class of field actual type
      */
@@ -117,7 +138,7 @@ public final class GenericUtils {
     /**
      * Returns method arg actual type
      * 
-     * @param clazz            the defined this method class 
+     * @param clazz            the defined this method class or sub class
      * @param method           the method
      * @param methodArgsIndex  the method arg index
      * @return a Class of method arg actual type
@@ -129,12 +150,33 @@ public final class GenericUtils {
     /**
      * Returns method return actual type
      * 
-     * @param clazz  the defined this method class 
+     * @param clazz  the defined this method class or sub class
      * @param method the method
      * @return a Class of method return actual type
      */
     public static <T> Class<T> getMethodReturnActualType(Class<?> clazz, Method method) {
         return getActualType(clazz, method.getGenericReturnType());
+    }
+
+    // public class ClassA extends ClassB<Map<U,V>> implements interfaceC<List<X>>, interfaceD<Y> {}
+    public static List<Type> getGenericTypes(Class<?> clazz) {
+        if (clazz == null || clazz == Object.class) {
+            return Collections.emptyList();
+        }
+        List<Type> types = new ArrayList<>();
+        if (!clazz.isInterface()) {
+            types.add(clazz.getGenericSuperclass()); // Map<U,V>
+        }
+        Collections.addAll(types, clazz.getGenericInterfaces()); // List<X>, Y
+        return types;
+    }
+
+    public static Map<String, Class<?>> getActualTypeVariableMapping(Class<?> clazz) {
+        Map<String, Class<?>> result = new HashMap<>();
+        for (Type type : getGenericTypes(clazz)) {
+            resolveMapping(result, type);
+        }
+        return result.isEmpty() ? Collections.emptyMap() : result;
     }
 
     // -------------------------------------------------------------------private methods
@@ -162,14 +204,14 @@ public final class GenericUtils {
             Type etype = ((GenericArrayType) type).getGenericComponentType(); // E: element type
             return (Class<T>) Array.newInstance(getActualType(clazz, etype), 0).getClass();
         } else if (type instanceof TypeVariable) {
-            return (Class<T>) (clazz == null ? Object.class : getVariableActualType(clazz, ((TypeVariable<?>) type).getName()));
+            return getVariableActualType(clazz, (TypeVariable<?>) type);
         } else if (type instanceof WildcardType) {
             WildcardType wtype = (WildcardType) type;
             if (ArrayUtils.isNotEmpty(wtype.getLowerBounds())) {
-                // List<? super A>
+                // 下限List<? super A>
                 return getActualType(clazz, wtype.getLowerBounds()[0]);
             } else if (ArrayUtils.isNotEmpty(wtype.getUpperBounds())) {
-                // List<? extends A>
+                // 上限List<? extends A>
                 return getActualType(clazz, wtype.getUpperBounds()[0]);
             } else {
                 // List<?>
@@ -181,32 +223,74 @@ public final class GenericUtils {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> Class<T> getVariableActualType(Class<?> clazz, String variableName) {
-        Map<String, Class<?>> map = (Map<String, Class<?>>) VARIABLE_TYPE_MAPPING.get(clazz);
+    private static <T> Class<T> getVariableActualType(Class<?> clazz, TypeVariable<?> var) {
+        if (clazz == null) {
+            return (Class<T>) Object.class;
+        }
+
+        Map<String, Class<?>> map = VARIABLE_TYPE_MAPPING.get(clazz);
         if (map == null) {
             synchronized (VARIABLE_TYPE_MAPPING) {
-                if ((map = (Map<String, Class<?>>) VARIABLE_TYPE_MAPPING.get(clazz)) == null) {
-                    VARIABLE_TYPE_MAPPING.put(clazz, map = initVariableActualTypeMapping(clazz));
+                if ((map = VARIABLE_TYPE_MAPPING.get(clazz)) == null) {
+                    VARIABLE_TYPE_MAPPING.put(clazz, map = getActualTypeVariableMapping(clazz));
                 }
             }
         }
-        return (Class<T>) map.getOrDefault(variableName, Object.class);
+        return (Class<T>) map.getOrDefault(getTypeVariableName(null, var).get(0), Object.class);
     }
 
-    private static Map<String, Class<?>> initVariableActualTypeMapping(Class<?> clazz) {
-        Type gtype = clazz.getGenericSuperclass();
-        if (!(gtype instanceof ParameterizedType)) {
-            return Collections.emptyMap();
+    private static void resolveMapping(Map<String, Class<?>> result, Type type) {
+        if (!(type instanceof ParameterizedType)) {
+            return;
         }
 
-        ParameterizedType ptype = (ParameterizedType) gtype;
-        TypeVariable<?>[] vars = ((Class<?>) ptype.getRawType()).getTypeParameters();
+        ParameterizedType ptype = (ParameterizedType) type;
+        Class<?> rawType = (Class<?>) ptype.getRawType();
+        // (Map<U,V>).getRawType() -> Map
+        TypeVariable<?>[] vars = rawType.getTypeParameters();
         Type[] acts = ptype.getActualTypeArguments();
-        Map<String, Class<?>> result = new HashMap<>();
         for (int i = 0; i < acts.length; i++) {
-            result.put(vars[i].getName(), getActualType(null, acts[i]));
+            Class<?> varType = getActualType(null, acts[i]);
+            getTypeVariableName(rawType, vars[i]).forEach(x -> result.put(x, varType));
+            resolveMapping(result, acts[i]);
         }
-        return result;
+    }
+
+    private static List<String> getTypeVariableName(Class<?> clazz, TypeVariable<?> var) {
+        List<String> names = new ArrayList<>();
+        getTypeVariableName(names, clazz, var);
+        return names;
+    }
+
+    // Class, Method, Constructor
+    private static void getTypeVariableName(List<String> names, Class<?> clazz, TypeVariable<?> var) {
+        names.add(var.getGenericDeclaration().toString() + "[" + var.getName() + "]");
+        if (clazz == null || clazz == Object.class) {
+            return;
+        }
+        for (Type type : getGenericTypes(clazz)) {
+            if (!(type instanceof ParameterizedType)) {
+                continue;
+            }
+
+            ParameterizedType ptype = (ParameterizedType) type;
+            Type[] types = ptype.getActualTypeArguments();
+            if (ArrayUtils.isEmpty(types)) {
+                continue;
+            }
+
+            for (int i = 0; i < types.length; i++) {
+                if (!(types[i] instanceof TypeVariable<?>)) {
+                    continue;
+                }
+                // find the type variable origin difined class
+                if (((TypeVariable<?>) types[i]).getName().equals(var.getTypeName())) {
+                    clazz = (Class<?>) ptype.getRawType();
+                    getTypeVariableName(names, clazz, clazz.getTypeParameters()[i]);
+                    break;
+                }
+            }
+        }
     }
 
 }

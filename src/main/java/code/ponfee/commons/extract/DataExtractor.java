@@ -109,7 +109,7 @@ public abstract class DataExtractor {
             return false;
         }
 
-        for (String str : (String[]) data) {
+        for (String str : data) {
             if (StringUtils.isNotBlank(str)) {
                 return true;
             }

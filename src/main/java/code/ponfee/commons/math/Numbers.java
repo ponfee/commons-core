@@ -19,27 +19,24 @@ import java.util.Arrays;
 public final class Numbers {
     private Numbers() {}
 
-    public static final Integer INTEGER_ZERO = new Integer(0);
+    public static final Integer INTEGER_ZERO = 0;
     public static final int     INT_ZERO     = 0;
     public static final byte    BYTE_ZERO    = 0x00;
     public static final char    CHAR_ZERO    = '\u0000'; // equals '\0'
 
     // --------------------------------------------------------------character convert
-    public static char toChar(Object obj, char defaultVal) {
-        return toWrapChar(obj, defaultVal);
+    public static char toChar(Object obj) {
+        return toChar(obj, CHAR_ZERO);
     }
 
-    public static char toChar(Object obj) {
-        return toWrapChar(obj, CHAR_ZERO);
+    public static char toChar(Object obj, char defaultVal) {
+        Character value = toWrapChar(obj);
+        return value == null ? defaultVal : value;
     }
 
     public static Character toWrapChar(Object obj) {
-        return toWrapChar(obj, null);
-    }
-
-    public static Character toWrapChar(Object obj, Character defaultVal) {
         if (obj == null) {
-            return defaultVal;
+            return null;
         } else if (obj instanceof Character) {
             return (Character) obj;
         } else if (obj instanceof Number) {
@@ -50,22 +47,23 @@ public final class Numbers {
             return (char) (((boolean) obj) ? 0xFF : 0x00);
         } else {
             String str = obj.toString();
-            return str.length() == 1 ? str.charAt(0) : defaultVal;
+            return str.length() == 1 ? str.charAt(0) : null;
         }
     }
 
     // -----------------------------------------------------------------boolean convert
     public static boolean toBoolean(Object obj) {
-        return toWrapBoolean(obj, false);
+        return toBoolean(obj, false);
+    }
+
+    public static boolean toBoolean(Object obj, boolean defaultVal) {
+        Boolean value = toWrapBoolean(obj);
+        return value == null ? defaultVal : value;
     }
 
     public static Boolean toWrapBoolean(Object obj) {
-        return toWrapBoolean(obj, null);
-    }
-
-    public static Boolean toWrapBoolean(Object obj, Boolean defaultVal) {
         if (obj == null) {
-            return defaultVal;
+            return null;
         } else if (obj instanceof Boolean) {
             return (Boolean) obj;
         } else if (obj instanceof Number) {
@@ -75,90 +73,64 @@ public final class Numbers {
         }
     }
 
-    // -----------------------------------------------------------------primary number convert
+    // -----------------------------------------------------------------byte convert
     public static byte toByte(Object obj) {
         return toByte(obj, (byte) 0);
     }
 
     public static byte toByte(Object obj, byte defaultVal) {
-        return toWrapByte(obj, defaultVal);
+        Long value = toWrapLong(obj);
+        return value == null ? defaultVal : value.byteValue();
     }
 
+    public static Byte toWrapByte(Object obj) {
+        Long value = toWrapLong(obj);
+        return value == null ? null : value.byteValue();
+    }
+
+    // -----------------------------------------------------------------short convert
     public static short toShort(Object obj) {
         return toShort(obj, (short) 0);
     }
 
     public static short toShort(Object obj, short defaultVal) {
-        return toWrapShort(obj, defaultVal);
+        Long value = toWrapLong(obj);
+        return value == null ? defaultVal : value.shortValue();
     }
 
+    public static Short toWrapShort(Object obj) {
+        Long value = toWrapLong(obj);
+        return value == null ? null : value.shortValue();
+    }
+
+    // -----------------------------------------------------------------int convert
     public static int toInt(Object obj) {
         return toInt(obj, 0);
     }
 
     public static int toInt(Object obj, int defaultVal) {
-        return toWrapInt(obj, defaultVal);
+        Long value = toWrapLong(obj);
+        return value == null ? defaultVal : value.intValue();
     }
 
+    public static Integer toWrapInt(Object obj) {
+        Long value = toWrapLong(obj);
+        return value == null ? null : value.intValue();
+    }
+
+    // -----------------------------------------------------------------long convert
     public static long toLong(Object obj) {
         return toLong(obj, 0L);
     }
 
     public static long toLong(Object obj, long defaultVal) {
-        return toWrapLong(obj, defaultVal);
-    }
-
-    public static float toFloat(Object obj) {
-        return toFloat(obj, 0.0F);
-    }
-
-    public static float toFloat(Object obj, float defaultVal) {
-        return toWrapFloat(obj, defaultVal);
-    }
-
-    public static double toDouble(Object obj) {
-        return toDouble(obj, 0.0D);
-    }
-
-    public static double toDouble(Object obj, double defaultVal) {
-        return toWrapDouble(obj, defaultVal);
-    }
-
-    // -----------------------------------------------------------------to wrapper number
-    public static Byte toWrapByte(Object obj) {
-        return toWrapByte(obj, null);
-    }
-
-    public static Byte toWrapByte(Object obj, Byte defaultVal) {
         Long value = toWrapLong(obj);
-        return value == null ? defaultVal : value.byteValue();
-    }
-
-    public static Short toWrapShort(Object obj) {
-        return toWrapShort(obj, null);
-    }
-
-    public static Short toWrapShort(Object obj, Short defaultVal) {
-        Long value = toWrapLong(obj);
-        return value == null ? defaultVal : value.shortValue();
-    }
-
-    public static Integer toWrapInt(Object obj) {
-        return toWrapInt(obj, null);
-    }
-
-    public static Integer toWrapInt(Object obj, Integer defaultVal) {
-        Long value = toWrapLong(obj);
-        return value == null ? defaultVal : value.intValue();
+        return value == null ? defaultVal : value;
     }
 
     public static Long toWrapLong(Object obj) {
-        return toWrapLong(obj, null);
-    }
-
-    public static Long toWrapLong(Object obj, Long defaultVal) {
         if (obj == null) {
-            return defaultVal;
+            return null;
         }
         if (obj instanceof Number) {
             return ((Number) obj).longValue();
@@ -166,26 +138,38 @@ public final class Numbers {
         try {
             return Long.parseLong(obj.toString());
         } catch (NumberFormatException ignored) {
-            return defaultVal;
+            return null;
         }
     }
 
-    public static Float toWrapFloat(Object obj) {
-        return toWrapFloat(obj, null);
+    // -----------------------------------------------------------------float convert
+    public static float toFloat(Object obj) {
+        return toFloat(obj, 0.0F);
     }
 
-    public static Float toWrapFloat(Object obj, Float defaultVal) {
+    public static float toFloat(Object obj, float defaultVal) {
         Double value = toWrapDouble(obj);
         return value == null ? defaultVal : value.floatValue();
     }
 
-    public static Double toWrapDouble(Object obj) {
-        return toWrapDouble(obj, null);
+    public static Float toWrapFloat(Object obj) {
+        Double value = toWrapDouble(obj);
+        return value == null ? null : value.floatValue();
     }
 
-    public static Double toWrapDouble(Object obj, Double defaultVal) {
+    // -----------------------------------------------------------------double convert
+    public static double toDouble(Object obj) {
+        return toDouble(obj, 0.0D);
+    }
+
+    public static double toDouble(Object obj, double defaultVal) {
+        Double value = toWrapDouble(obj);
+        return value == null ? defaultVal : value;
+    }
+
+    public static Double toWrapDouble(Object obj) {
         if (obj == null) {
-            return defaultVal;
+            return null;
         }
         if (obj instanceof Number) {
             return ((Number) obj).doubleValue();
@@ -193,7 +177,7 @@ public final class Numbers {
         try {
             return Double.parseDouble(obj.toString());
         } catch (NumberFormatException ignored) {
-            return defaultVal;
+            return null;
         }
     }
 

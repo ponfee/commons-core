@@ -26,9 +26,8 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
     private final Class<T> targetType;
     private final BeanCopier copier;
 
-    @SuppressWarnings("unchecked")
     public AbstractDataConverter() {
-        targetType = (Class<T>) getActualTypeArgument(getClass(), 1);
+        targetType = getActualTypeArgument(getClass(), 1);
         copier = BeanCopier.create(
             getActualTypeArgument(getClass(), 0), targetType, false
         );
@@ -112,7 +111,7 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
         if (Map.class.isAssignableFrom(targetType)) {
             return (T) (source instanceof Map ? source : BeanMaps.CGLIB.toMap(source));
         } else if (source instanceof Map) {
-            return (T) BeanMaps.CGLIB.toBean((Map<String, Object>) source, targetType);
+            return BeanMaps.CGLIB.toBean((Map<String, Object>) source, targetType);
         } else {
             T target = ObjectUtils.newInstance(targetType);
             if (copier != null) {

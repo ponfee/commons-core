@@ -86,7 +86,7 @@ public class IntArrayList extends AbstractArrayList<Integer> {
     public int hashCode() {
         int result = 1;
         for (int i = start; i < end; i++) {
-            result = 31 * result + (int) array[i];
+            result = 31 * result + array[i];
         }
         return result;
     }

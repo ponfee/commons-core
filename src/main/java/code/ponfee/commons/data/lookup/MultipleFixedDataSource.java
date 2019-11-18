@@ -1,8 +1,6 @@
 package code.ponfee.commons.data.lookup;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -35,9 +33,10 @@ public class MultipleFixedDataSource extends AbstractRoutingDataSource {
         );
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public MultipleFixedDataSource(String defaultName, DataSource defaultDataSource, 
                                    NamedDataSource... othersDataSource) {
-        List<NamedDataSource> dataSources = MultipleDataSourceContext.process(
+        Map<String, DataSource> dataSources = MultipleDataSourceContext.process(
             defaultName, defaultDataSource, othersDataSource
         );
 
@@ -45,9 +44,7 @@ public class MultipleFixedDataSource extends AbstractRoutingDataSource {
         super.setDefaultTargetDataSource(defaultDataSource);
 
         // set all the data sources
-        super.setTargetDataSources(dataSources.stream().collect(
-            Collectors.toMap(NamedDataSource::getName, NamedDataSource::getDataSource)
-        ));
+        super.setTargetDataSources((Map) dataSources);
     }
 
     @Override
@@ -55,4 +52,11 @@ public class MultipleFixedDataSource extends AbstractRoutingDataSource {
         return MultipleDataSourceContext.get();
     }
 
+    /**
+     * Makes this method to public access purview
+     */
+    @Override
+    public DataSource determineTargetDataSource() {
+        return super.determineTargetDataSource();
+    }
 }

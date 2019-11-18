@@ -191,7 +191,7 @@ public abstract class AbstractWebExceptionHandler {
     //@ResponseBody @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public void handle(HttpServletRequest req, HttpServletResponse resp, BasicException e) {
         LOGGER.debug("Biz operate failure", e);
-        Integer code = ((BasicException) e).getCode();
+        Integer code = e.getCode();
         handle(req, resp, code == null ? SERVER_ERROR : code, e.getMessage());
     }
 

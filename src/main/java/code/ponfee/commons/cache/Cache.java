@@ -85,7 +85,6 @@ public class Cache<K, V> {
                     lock.unlock();
                 }
             }, autoReleaseInSeconds, autoReleaseInSeconds, TimeUnit.SECONDS);
-
         }
     }
 

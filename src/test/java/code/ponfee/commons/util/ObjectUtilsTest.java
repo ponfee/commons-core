@@ -1,6 +1,7 @@
 package code.ponfee.commons.util;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -12,8 +13,17 @@ import code.ponfee.commons.reflect.ClassUtils;
 public class ObjectUtilsTest {
 
     static int round = 100000000;
-    
+
     private static final Map<String, Object> map = new HashMap<>();
+
+    @Test
+    public void test0() {
+        System.out.println(ObjectUtils.newInstance(int.class));
+        System.out.println(ObjectUtils.newInstance(Integer.class));
+        System.out.println(ObjectUtils.newInstance(String.class));
+        System.out.println(ObjectUtils.newInstance(Map.class));
+        System.out.println(ObjectUtils.newInstance(List.class));
+    }
 
     @Test
     public void test1() {
@@ -28,7 +38,7 @@ public class ObjectUtilsTest {
             ClassUtils.newInstance(Result.class);
         }
     }
-    
+
     @Test
     public void test3() throws Exception {
         for (int i = 0; i < round; i++) {
@@ -53,7 +63,7 @@ public class ObjectUtilsTest {
         System.out.println(b1 == b2);
         System.out.println(b3 == b2);
     }
-    
+
     @Test
     public void test6() {
         // XXX: if Executor is CALLER_RUN_EXECUTOR and threadNumber>=33 then will be dead loop
@@ -61,7 +71,7 @@ public class ObjectUtilsTest {
             get("123");
         }, 5);
     }
-    
+
     @Test
     public void test7() {
         // XXX: if Executor is CALLER_RUN_EXECUTOR and threadNumber>=33 then will be dead loop
@@ -69,7 +79,7 @@ public class ObjectUtilsTest {
             Singleton.getInstance();
         }, 5);
     }
-    
+
     public static Object get(String key) {
         Object val = map.get(key);
         if (val == null) {
@@ -85,7 +95,9 @@ public class ObjectUtilsTest {
 
     public static class Singleton {
         private static Singleton instance = null;
+
         private Singleton() {}
+
         public static Singleton getInstance() {
             if (instance == null) {
                 synchronized (Singleton.class) {
@@ -98,8 +110,10 @@ public class ObjectUtilsTest {
             return instance;
         }
     }
-    
-    class Helper {}
+
+    class Helper {
+    }
+
     class Foo {
         /** 
          * If perThreadInstance.get() returns a non-null value, this thread
