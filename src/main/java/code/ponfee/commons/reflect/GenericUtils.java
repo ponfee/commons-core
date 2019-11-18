@@ -8,8 +8,10 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -44,7 +46,7 @@ public final class GenericUtils {
         return target;
     }
 
-    // ----------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------class actual type argument
     /**
      * 获取泛型的实际类型参数
      * 
@@ -56,19 +58,35 @@ public final class GenericUtils {
     }
 
     /**
-     * public class GenericClass extends GenericSuperClass<A,B,...,N> {}
+     * public class GenericClass extends GenericSuperClass<A,B,...,N> implements GenericInterface<X,Y,..,Z> {}
      * 
      * @param clazz
      * @param genericArgsIndex
      * @return
      */
+    @SuppressWarnings("unchecked")
     public static <T> Class<T> getActualTypeArgument(Class<?> clazz, int genericArgsIndex) {
-        return getActualTypeArgument(clazz.getGenericSuperclass(), genericArgsIndex);
+        List<Type> types = new ArrayList<>();
+        types.add(clazz.getGenericSuperclass());
+        Collections.addAll(types, clazz.getGenericInterfaces());
+        int index = 0;
+        for (Type type : types) {
+            if (type instanceof ParameterizedType) {
+                Type[] acts = ((ParameterizedType) type).getActualTypeArguments();
+                if (acts.length + index < genericArgsIndex) {
+                    index += acts.length;
+                } else {
+                    return getActualType(null, acts[genericArgsIndex - index]);
+                }
+            }
+        }
+
+        return (Class<T>) Object.class;
     }
 
-    // ----------------------------------------------------------------------------
-    public static <T> Class<T> getActualTypeArgument(Method method, int methodArgsIndex) {
-        return getActualTypeArgument(method, methodArgsIndex, 0);
+    // ----------------------------------------------------------------------------method actual arg type argument
+    public static <T> Class<T> getActualArgTypeArgument(Method method, int methodArgsIndex) {
+        return getActualArgTypeArgument(method, methodArgsIndex, 0);
     }
 
     /**
@@ -79,8 +97,17 @@ public final class GenericUtils {
      * @param genericArgsIndex  泛型参数索引号
      * @return
      */
-    public static <T> Class<T> getActualTypeArgument(Method method, int methodArgsIndex, int genericArgsIndex) {
+    public static <T> Class<T> getActualArgTypeArgument(Method method, int methodArgsIndex, int genericArgsIndex) {
         return getActualTypeArgument(method.getGenericParameterTypes()[methodArgsIndex], genericArgsIndex);
+    }
+
+    // ----------------------------------------------------------------------------method actual return type argument
+    public static <T> Class<T> getActualReturnTypeArgument(Method method) {
+        return getActualReturnTypeArgument(method, 0);
+    }
+
+    public static <T> Class<T> getActualReturnTypeArgument(Method method, int genericArgsIndex) {
+        return getActualTypeArgument(method.getGenericReturnType(), genericArgsIndex);
     }
 
     // ----------------------------------------------------------------------------
@@ -106,7 +133,7 @@ public final class GenericUtils {
     /**
      * public class BeanClass extends BaseEntity<String> {}
      * 
-     * @param clazz the defined class
+     * @param clazz the defined or sub class
      * @param field the field
      * @return a Class of field actual type
      */
@@ -117,7 +144,7 @@ public final class GenericUtils {
     /**
      * Returns method arg actual type
      * 
-     * @param clazz            the defined this method class 
+     * @param clazz            the defined this method class or sub class
      * @param method           the method
      * @param methodArgsIndex  the method arg index
      * @return a Class of method arg actual type
@@ -129,7 +156,7 @@ public final class GenericUtils {
     /**
      * Returns method return actual type
      * 
-     * @param clazz  the defined this method class 
+     * @param clazz  the defined this method class or sub class
      * @param method the method
      * @return a Class of method return actual type
      */
@@ -194,19 +221,21 @@ public final class GenericUtils {
     }
 
     private static Map<String, Class<?>> initVariableActualTypeMapping(Class<?> clazz) {
-        Type gtype = clazz.getGenericSuperclass();
-        if (!(gtype instanceof ParameterizedType)) {
-            return Collections.emptyMap();
-        }
-
-        ParameterizedType ptype = (ParameterizedType) gtype;
-        TypeVariable<?>[] vars = ((Class<?>) ptype.getRawType()).getTypeParameters();
-        Type[] acts = ptype.getActualTypeArguments();
         Map<String, Class<?>> result = new HashMap<>();
-        for (int i = 0; i < acts.length; i++) {
-            result.put(vars[i].getName(), getActualType(null, acts[i]));
+        List<Type> types = new ArrayList<>();
+        types.add(clazz.getGenericSuperclass());
+        Collections.addAll(types, clazz.getGenericInterfaces());
+        for (Type type : types) {
+            if (type instanceof ParameterizedType) {
+                ParameterizedType ptype = (ParameterizedType) type;
+                TypeVariable<?>[] vars = ((Class<?>) ptype.getRawType()).getTypeParameters();
+                Type[] acts = ptype.getActualTypeArguments();
+                for (int i = 0; i < acts.length; i++) {
+                    result.put(vars[i].getName(), getActualType(null, acts[i]));
+                }
+            }
         }
-        return result;
+        return result.isEmpty() ? Collections.emptyMap() : result;
     }
 
 }

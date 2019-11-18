@@ -9,8 +9,10 @@
 package code.ponfee.commons.reflect;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.TypeVariable;
 import java.util.List;
 
 import org.junit.Test;
@@ -47,7 +49,7 @@ public class GenericTest {
     public void test1() throws Exception {
         Method method = B.class.getDeclaredMethod("setList", List.class);
 
-        System.out.println("====" + GenericUtils.getActualTypeArgument(method, 0, 0));
+        System.out.println("====" + GenericUtils.getActualArgTypeArgument(method, 0, 0));
 
         java.lang.reflect.Type type = method.getGenericParameterTypes()[0];
         System.out.println(type.getClass()); // class sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
@@ -71,13 +73,14 @@ public class GenericTest {
         System.out.println(ObjectUtils.toString(method.getParameterTypes()));
         System.out.println(ObjectUtils.toString(method.getGenericParameterTypes()));
         System.out.println(ObjectUtils.toString(method.getTypeParameters()));
-        System.out.println(ObjectUtils.toString(GenericUtils.getActualTypeArgument(method, 0, 0)));
+        System.out.println(ObjectUtils.toString(GenericUtils.getActualArgTypeArgument(method, 0, 0)));
     }
 
     @Test
     public void test3() throws Exception {
         //System.out.println(GenericUtils.getActualTypeArgument(ClassUtils.getField(B.class, "f1")));
         System.out.println(GenericUtils.getActualTypeArgument(B.class));
+        System.out.println(GenericUtils.getActualTypeArgument(String.class));
         System.out.println(GenericUtils.getActualTypeArgument(BeanClass.class));
     }
 
@@ -86,6 +89,16 @@ public class GenericTest {
         System.out.println(GenericUtils.getFieldActualType(BeanClass.class, ClassUtils.getField(BeanClass.class, "id")));
         System.out.println(GenericUtils.getFieldActualType(BeanClass.class, ClassUtils.getField(BeanClass.class, "creator")));
         System.out.println(GenericUtils.getFieldActualType(BeanClass2.class, ClassUtils.getField(BeanClass2.class, "creator")));
+    }
+
+    @Test
+    public void test5() throws Exception {
+        TypeVariable<?> type = (TypeVariable<?>) ClassUtils.getField(BeanClass.class, "creator").getGenericType();
+        GenericDeclaration gd = type.getGenericDeclaration();
+        System.out.println(gd);
+        for (TypeVariable<?> t : gd.getTypeParameters()) {
+            System.out.println(type == t);
+        }
     }
 
     // -------------------------------------------------------------
