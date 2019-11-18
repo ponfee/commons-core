@@ -15,12 +15,19 @@ import static com.alibaba.druid.pool.DruidAbstractDataSource.DEFAULT_TIME_BETWEE
 import static com.alibaba.druid.pool.DruidAbstractDataSource.DEFAULT_WHILE_IDLE;
 
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.sql.DataSource;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.druid.wall.WallConfig;
+import com.alibaba.druid.wall.WallFilter;
 
 import code.ponfee.commons.util.Enums;
 
@@ -63,7 +70,27 @@ public enum DataSources {
 
             // filters and monitor
             try {
-                ds.setFilters(getString(props, prefix + "filters"));
+                String filters = getString(props, prefix + "filters");
+                if (StringUtils.isNotBlank(filters)) {
+                    filters = filters.trim();
+                    boolean force = false;
+                    if (filters.startsWith("!")) {
+                        filters = filters.substring(1);
+                        force = true;
+                    }
+                    List<String> list = Arrays.stream(filters.split(",")).map(String::trim).collect(Collectors.toList());
+                    boolean hasWall = list.remove("wall");
+                    filters = (force ? "!" : "") + String.join(",", list);
+                    ds.setFilters(filters);
+                    if (hasWall) {
+                        WallFilter wallf = new WallFilter();
+                        WallConfig wallc = new WallConfig();
+                        wallc.setCommentAllow(true);
+                        wallc.setMultiStatementAllow(true);
+                        wallf.setConfig(wallc);
+                        ds.setProxyFilters(Arrays.asList(wallf));
+                    }
+                }
             } catch (SQLException e) {
                 throw new IllegalArgumentException(e);
             }

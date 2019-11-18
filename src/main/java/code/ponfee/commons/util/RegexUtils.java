@@ -186,11 +186,11 @@ public final class RegexUtils {
     public static int getPhoneCarrier(String mobilePhone) {
         if (StringUtils.isBlank(mobilePhone)) {
             return 0;
-        } else if (CHINA_MOBILE_PATTERN.matcher(mobilePhone).find()) {
+        } else if (CHINA_MOBILE_PATTERN.matcher(mobilePhone).matches()) {
             return 1;
-        } else if (CHINA_UNICOM_PATTERN.matcher(mobilePhone).find()) {
+        } else if (CHINA_UNICOM_PATTERN.matcher(mobilePhone).matches()) {
             return 2;
-        } else if (CHINA_TELECOM_PATTERN.matcher(mobilePhone).find()) {
+        } else if (CHINA_TELECOM_PATTERN.matcher(mobilePhone).matches()) {
             return 3;
         } else {
             return 0;

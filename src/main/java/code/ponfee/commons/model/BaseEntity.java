@@ -12,12 +12,11 @@ public abstract class BaseEntity<U> implements java.io.Serializable {
 
     private static final long serialVersionUID = -3387171222355207376L;
 
-    private Long    id;       // database table primary key id
-    private Integer version;  // operate version
-    private U       creator;  // create user
-    private Date    createTm; // create time
-//  private U       modifier; // last modify user
-    private Date    modifyTm; // last modify time
+    private Long    id;          // database table primary key id
+    private int     version = 1; // operate version
+    private U       creator;     // create user
+    private Date    createTm;    // create time
+    private Date    modifyTm;    // last modify time
 
     public Long getId() {
         return id;
@@ -27,11 +26,11 @@ public abstract class BaseEntity<U> implements java.io.Serializable {
         this.id = id;
     }
 
-    public Integer getVersion() {
+    public int getVersion() {
         return version;
     }
 
-    public void setVersion(Integer version) {
+    public void setVersion(int version) {
         this.version = version;
     }
 

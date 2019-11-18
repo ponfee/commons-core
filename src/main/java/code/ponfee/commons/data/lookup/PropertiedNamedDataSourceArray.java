@@ -42,7 +42,7 @@ public class PropertiedNamedDataSourceArray implements Initializable, Closeable 
 
         List<String> names = props.keySet().stream().map(key -> {
             Matcher matcher = pattern.matcher(key.toString());
-            return matcher.find() ? matcher.group(1) : null;
+            return matcher.matches() ? matcher.group(1) : null;
         }).filter(Objects::nonNull).collect(Collectors.toList());
 
         String defaultDsName = getString(props, prefix + "default", names.get(0));

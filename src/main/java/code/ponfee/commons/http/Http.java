@@ -358,7 +358,7 @@ public final class Http {
                 /*// 获取文件名
                 String disposition = UrlCoder.decodeURIComponent(request.header("content-Disposition"));
                 Matcher matcher = FILENAME_PATTERN.matcher(disposition);
-                if (matcher.find()) {
+                if (matcher.matches()) {
                     String filename = matcher.group(1);
                 }*/
                 bos = new BufferedOutputStream(output);
