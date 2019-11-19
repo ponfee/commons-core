@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import code.ponfee.commons.model.BaseEntity;
 import code.ponfee.commons.util.ObjectUtils;
+import code.ponfee.commons.ws.adapter.ResultListAdapter;
 
 /**
  * 
@@ -99,6 +100,34 @@ public class GenericTest {
         for (TypeVariable<?> t : gd.getTypeParameters()) {
             System.out.println(type == t);
         }
+    }
+
+    @Test
+    public void test6() throws Exception {
+        /*// ResultListAdapter<T>
+        System.out.println(ResultListAdapter.class.getTypeParameters());
+
+        System.out.println("\n=========================================");
+        // XmlAdapter<Result<ArrayItem<T>>, Result<List<T>>>
+        Type ggs = ResultListAdapter.class.getGenericSuperclass();
+        ParameterizedType pt = (ParameterizedType) ggs;
+        System.out.println(pt.getTypeName()); // <=> toString()
+        System.out.println(pt.getRawType()); // XmlAdapter
+        System.out.println(pt.getOwnerType()); // 内部类的“父类”，如 Map就是 Map.Entry<String,String>的拥有者
+
+        System.out.println(Arrays.toString(((Class<?>) pt.getRawType()).getTypeParameters()));
+        System.out.println(Arrays.toString(pt.getActualTypeArguments()));*/
+
+        //System.out.println(GenericUtils.initVariableActualTypeMapping(ResultListMapNormalAdapter.class));
+        //System.out.println(GenericUtils.initVariableActualTypeMapping(ResultListAdapter.class));
+        //System.out.println(GenericUtils.initVariableActualTypeMapping(MarshalJsonAdapter.class));
+        System.out.println(B.class.toGenericString());
+        System.out.println(B.class.getDeclaredMethod("setList", List.class).toGenericString());
+        System.out.println(B.class.getConstructor().toGenericString());
+        
+        System.out.println(B.class.toString());
+        System.out.println(B.class.getDeclaredMethod("setList", List.class).toString());
+        System.out.println(B.class.getConstructor().toString());
     }
 
     // -------------------------------------------------------------

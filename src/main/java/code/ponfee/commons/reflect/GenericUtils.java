@@ -124,9 +124,6 @@ public final class GenericUtils {
      */
     public static <T> Class<T> getActualTypeArgument(Field field, int genericArgsIndex) {
         return getActualTypeArgument(field.getGenericType(), genericArgsIndex);
-        // type.getTypeName();                         ->  java.util.List<test.ClassA>
-        // ((ParameterizedType) type).getRawType();    ->  interface java.util.List
-        // ((ParameterizedType) type).getOwnerType();  ->  null
     }
 
     // -------------------------------------------------------------------get actual variable type
@@ -189,14 +186,14 @@ public final class GenericUtils {
             Type etype = ((GenericArrayType) type).getGenericComponentType(); // E: element type
             return (Class<T>) Array.newInstance(getActualType(clazz, etype), 0).getClass();
         } else if (type instanceof TypeVariable) {
-            return (Class<T>) (clazz == null ? Object.class : getVariableActualType(clazz, ((TypeVariable<?>) type).getName()));
+            return getVariableActualType(clazz, (TypeVariable<?>) type);
         } else if (type instanceof WildcardType) {
             WildcardType wtype = (WildcardType) type;
             if (ArrayUtils.isNotEmpty(wtype.getLowerBounds())) {
-                // List<? super A>
+                // 下限List<? super A>
                 return getActualType(clazz, wtype.getLowerBounds()[0]);
             } else if (ArrayUtils.isNotEmpty(wtype.getUpperBounds())) {
-                // List<? extends A>
+                // 上限List<? extends A>
                 return getActualType(clazz, wtype.getUpperBounds()[0]);
             } else {
                 // List<?>
@@ -208,7 +205,11 @@ public final class GenericUtils {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> Class<T> getVariableActualType(Class<?> clazz, String variableName) {
+    private static <T> Class<T> getVariableActualType(Class<?> clazz, TypeVariable<?> var) {
+        if (clazz == null) {
+            return (Class<T>) Object.class;
+        }
+
         Map<String, Class<?>> map = (Map<String, Class<?>>) VARIABLE_TYPE_MAPPING.get(clazz);
         if (map == null) {
             synchronized (VARIABLE_TYPE_MAPPING) {
@@ -217,25 +218,40 @@ public final class GenericUtils {
                 }
             }
         }
-        return (Class<T>) map.getOrDefault(variableName, Object.class);
+        return (Class<T>) map.getOrDefault(getTypeVariableName(var), Object.class);
     }
 
+    // public class ClassA extends ClassB<Map<U,V>> implements interfaceC<List<X>>, interfaceC<Y> {}
     private static Map<String, Class<?>> initVariableActualTypeMapping(Class<?> clazz) {
         Map<String, Class<?>> result = new HashMap<>();
         List<Type> types = new ArrayList<>();
-        types.add(clazz.getGenericSuperclass());
-        Collections.addAll(types, clazz.getGenericInterfaces());
+        types.add(clazz.getGenericSuperclass()); // Map<U,V>
+        Collections.addAll(types, clazz.getGenericInterfaces()); // List<X>, Y
         for (Type type : types) {
-            if (type instanceof ParameterizedType) {
-                ParameterizedType ptype = (ParameterizedType) type;
-                TypeVariable<?>[] vars = ((Class<?>) ptype.getRawType()).getTypeParameters();
-                Type[] acts = ptype.getActualTypeArguments();
-                for (int i = 0; i < acts.length; i++) {
-                    result.put(vars[i].getName(), getActualType(null, acts[i]));
-                }
-            }
+            resolveMapping(result, (ParameterizedType) type);
         }
         return result.isEmpty() ? Collections.emptyMap() : result;
+    }
+
+    private static void resolveMapping(Map<String, Class<?>> result, Type type) {
+        if (!(type instanceof ParameterizedType)) {
+            return;
+        }
+
+        ParameterizedType ptype = (ParameterizedType) type;
+
+        // (Map<U,V>).getRawType() -> Map
+        TypeVariable<?>[] vars = ((Class<?>) ptype.getRawType()).getTypeParameters();
+        Type[]            acts = ptype.getActualTypeArguments();
+        for (int i = 0; i < acts.length; i++) {
+            result.put(getTypeVariableName(vars[i]), getActualType(null, acts[i]));
+            resolveMapping(result, acts[i]);
+        }
+    }
+
+    // Class, Method, Constructor
+    private static String getTypeVariableName(TypeVariable<?> var) {
+        return var.getGenericDeclaration().toString() + "[" + var.getName() + "]";
     }
 
 }
