@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.IterableUtils;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -368,10 +367,11 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
      * @return a new ImmutableList appended current node id
      */
     private List<T> buildPath(List<T> parentPath, T nid) {
-        if (IterableUtils.matchesAny(parentPath, nid::equals)) {
+        // already check duplicated, so cannot has circular dependencies happened
+        /*if (IterableUtils.matchesAny(parentPath, nid::equals)) {
             // 节点路径中已经包含了此节点，则视为环状
             throw new RuntimeException("Node circular dependencies: " + parentPath + " -> " + nid);
-        }
+        }*/
 
         ImmutableList.Builder<T> builder = ImmutableList.builder();
         if (parentPath != null) {
@@ -408,7 +408,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         Comparator<? super TreeNode<T, A>> comparing(Function<? super A, ? extends O> keyExtractor, boolean asc) {
         // First nullsLast will handle the cases when the "node" objects are null.
         // Second nullsLast will handle the cases when the return value of "keyExtractor.apply(node.getAttach())" is null.
-        //Comparator.nullsLast(Comparator.<TreeNode<T, A>, O> comparing(node -> keyExtractor.apply(node.getAttach()), Comparator.nullsLast(orderBy(asc))));
+        //Comparator.nullsLast(Comparator.<TreeNode<T, A>, O> comparing(node -> keyExtractor.apply(node.getAttach()), Comparator.nullsLast(Comparators.order(asc))));
 
         return Comparator.comparing(n -> keyExtractor.apply(n.getAttach()), Comparator.nullsLast(Comparators.order(asc)));
     }
