@@ -19,7 +19,9 @@ import org.junit.Test;
 
 import code.ponfee.commons.model.BaseEntity;
 import code.ponfee.commons.util.ObjectUtils;
+import code.ponfee.commons.ws.adapter.MarshalJsonAdapter;
 import code.ponfee.commons.ws.adapter.ResultListAdapter;
+import code.ponfee.commons.ws.adapter.ResultListMapNormalAdapter;
 
 /**
  * 
@@ -118,9 +120,10 @@ public class GenericTest {
         System.out.println(Arrays.toString(((Class<?>) pt.getRawType()).getTypeParameters()));
         System.out.println(Arrays.toString(pt.getActualTypeArguments()));*/
 
-        //System.out.println(GenericUtils.initVariableActualTypeMapping(ResultListMapNormalAdapter.class));
-        //System.out.println(GenericUtils.initVariableActualTypeMapping(ResultListAdapter.class));
-        //System.out.println(GenericUtils.initVariableActualTypeMapping(MarshalJsonAdapter.class));
+        System.out.println(GenericUtils.getActualTypeVariableMapping(ResultListMapNormalAdapter.class));
+        System.out.println(GenericUtils.getActualTypeVariableMapping(ResultListAdapter.class));
+        System.out.println(GenericUtils.getActualTypeVariableMapping(MarshalJsonAdapter.class));
+
         System.out.println(B.class.toGenericString());
         System.out.println(B.class.getDeclaredMethod("setList", List.class).toGenericString());
         System.out.println(B.class.getConstructor().toGenericString());
@@ -131,11 +134,11 @@ public class GenericTest {
     }
 
     // -------------------------------------------------------------
-    public static class BeanClass extends BaseEntity<String> {
+    public static class BeanClass extends BaseEntity<Long, String> {
         private static final long serialVersionUID = 1L;
     }
     
-    public static class BeanClass2<E> extends BaseEntity<List<E>> {
+    public static class BeanClass2<E> extends BaseEntity<Long, List<E>> {
         private static final long serialVersionUID = 1L;
     }
 

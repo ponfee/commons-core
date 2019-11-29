@@ -658,7 +658,7 @@ public final class WebUtils {
     private static String toJson(Object data) {
         return (data instanceof CharSequence)
                ? data.toString()
-               : Jsons.NON_NULL.string(data);
+               : Jsons.toJson(data);
     }
 
     private static void respStream(HttpServletResponse resp, long size,

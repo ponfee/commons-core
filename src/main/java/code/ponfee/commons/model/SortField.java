@@ -11,29 +11,29 @@ public class SortField implements java.io.Serializable {
 
     private static final long serialVersionUID = -2400506091734529951L;
 
-    private final SortOrder sortOrder;
     private final String field;
+    private final SortOrder sortOrder;
     private final boolean ignoreCase;
     private final NullHandling nullHandling;
 
-    public SortField(SortOrder sortOrder, String field) {
-        this(sortOrder, field, false, null);
+    public SortField(String field, SortOrder sortOrder) {
+        this(field, sortOrder, false, null);
     }
 
-    public SortField(SortOrder sortOrder, String field, 
+    public SortField(String field, SortOrder sortOrder, 
                      boolean ignoreCase, NullHandling nullHandling) {
-        this.sortOrder = sortOrder;
         this.field = field;
+        this.sortOrder = sortOrder;
         this.ignoreCase = ignoreCase;
         this.nullHandling = nullHandling;
     }
 
-    public SortOrder getSortOrder() {
-        return sortOrder;
-    }
-
     public String getField() {
         return field;
+    }
+
+    public SortOrder getSortOrder() {
+        return sortOrder;
     }
 
     public boolean isIgnoreCase() {

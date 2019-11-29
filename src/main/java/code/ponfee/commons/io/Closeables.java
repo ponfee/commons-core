@@ -23,7 +23,7 @@ public final class Closeables {
      * 
      * @param closeable the Closeable
      */
-    public static void closeIgnore(@Nullable AutoCloseable closeable) {
+    public static void ignore(@Nullable AutoCloseable closeable) {
         if (closeable != null) {
             try {
                 closeable.close();

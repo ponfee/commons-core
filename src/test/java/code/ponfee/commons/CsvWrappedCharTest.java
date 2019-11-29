@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -11,14 +12,13 @@ import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
 
 import code.ponfee.commons.io.WrappedBufferedWriter;
-import code.ponfee.commons.util.Strings;
 
 public class CsvWrappedCharTest {
 
     public static void main(String[] args) throws IOException {
-        String file = "C:\\Users\\01367825\\AppData\\Local\\sfim\\NIM\\af1690f6e22097ee1c62875a8090eead\\download\\海信出库报表.csv";
+        String file = "D:\\download\\出库报表.csv";
 
-        WrappedBufferedWriter writer = new WrappedBufferedWriter(new File("d:\\海信出库报表-修正.csv"), StandardCharsets.UTF_8);
+        WrappedBufferedWriter writer = new WrappedBufferedWriter(new File("d:\\出库报表-修正.csv"), StandardCharsets.UTF_8);
 
         Files.asCharSource(new File(file), StandardCharsets.UTF_8).readLines(new LineProcessor<String>() {
             @Override
@@ -37,7 +37,7 @@ public class CsvWrappedCharTest {
 
                 array[4] = StringUtils.join(s, ",", 4, s.length - 3);
 
-                String str = Strings.join(Arrays.asList(array), ",", "\"", "\"");
+                String str = Arrays.stream(array).collect(Collectors.joining(",", "\"", "\""));
                 System.out.println(str);
 
                 writer.write(str);

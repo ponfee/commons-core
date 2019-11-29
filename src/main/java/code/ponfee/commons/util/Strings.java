@@ -2,8 +2,6 @@ package code.ponfee.commons.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -99,74 +97,6 @@ public class Strings {
     }
 
     /**
-     * 删除指定字符串中任意的字符<p>
-     * deleteAny("hello world", "eo")  ->  hll wrld
-     * @param inString       原字符串
-     * @param charsToDelete  指定要删除的字符
-     * @return               删除后的字符
-     */
-    public static String deleteAny(String inString, String charsToDelete) {
-        if (StringUtils.isEmpty(inString) || StringUtils.isEmpty(charsToDelete)) {
-            return inString;
-        }
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < inString.length(); i++) {
-            char c = inString.charAt(i);
-            if (charsToDelete.indexOf(c) == -1) {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
-    }
-
-    /**
-     * 以分隔符拆分字符串为字符串数组
-     * 
-     * @param str         待拆分字符串
-     * @param delimiter   分隔符
-     * @return
-     */
-    public static String[] split(String str, String delimiter) {
-        return split(str, delimiter, null);
-    }
-
-    /**
-     * 以分隔符拆分字符串为字符串数组<p>
-     * split("hello world", "l", "eo")  ->  [h,, wr,d]
-     * 
-     * @param str            待拆分字符串
-     * @param delimiter      分隔符
-     * @param charsToDelete  待删除的字符串
-     * @return
-     */
-    public static String[] split(String str, String delimiter, String charsToDelete) {
-        if (str == null) {
-            return new String[0];
-        }
-        if (delimiter == null) {
-            return new String[] { str };
-        }
-        List<String> result = new ArrayList<>();
-        if ("".equals(delimiter)) {
-            for (int i = 0; i < str.length(); i++) {
-                result.add(deleteAny(str.substring(i, i + 1), charsToDelete));
-            }
-        } else {
-            int pos = 0;
-            int delPos;
-            while ((delPos = str.indexOf(delimiter, pos)) != -1) {
-                result.add(deleteAny(str.substring(pos, delPos), charsToDelete));
-                pos = delPos + delimiter.length();
-            }
-            if (str.length() > 0 && pos <= str.length()) {
-                // Add rest of String, but not in case of empty input.
-                result.add(deleteAny(str.substring(pos), charsToDelete));
-            }
-        }
-        return result.toArray(new String[result.size()]);
-    }
-
-    /**
      * '?' Matches any single character.
      * '*' Matches any sequence of characters (including the empty sequence).
      * 
@@ -225,11 +155,7 @@ public class Strings {
         if (path == null) {
             return null;
         }
-        path = cleanPath(path).replace("../", "");
-        if (path.startsWith("/")) {
-            path = path.substring(1);
-        }
-        return path;
+        return cleanPath(path).replace("../", "");
     }
 
     /**
@@ -244,7 +170,7 @@ public class Strings {
             return null;
         }
 
-        String pathToUse = replace(path, WINDOWS_FOLDER_SEPARATOR, FOLDER_SEPARATOR);
+        String pathToUse = StringUtils.replace(path, WINDOWS_FOLDER_SEPARATOR, FOLDER_SEPARATOR);
 
         // Strip prefix from path to analyze, to not treat it as part of the
         // first path element. This is necessary to correctly parse paths like
@@ -265,7 +191,7 @@ public class Strings {
             pathToUse = pathToUse.substring(1);
         }
 
-        String[] pathArray = split(pathToUse, FOLDER_SEPARATOR);
+        String[] pathArray = StringUtils.split(pathToUse, FOLDER_SEPARATOR);
         List<String> pathElements = new LinkedList<>();
         int tops = 0;
 
@@ -292,73 +218,8 @@ public class Strings {
             pathElements.add(0, TOP_PATH);
         }
 
-        return prefix + join(pathElements, FOLDER_SEPARATOR);
+        return prefix + String.join(FOLDER_SEPARATOR, pathElements);
     }
-
-    /**
-     * 集合拼接为字符串<p>
-     * join(Lists.newArrayList("a","b","c"), ",", "(", ")") -> (a),(b),(c)
-     * 
-     * @param coll     集合对象
-     * @param delim    分隔符
-     * @param prefix   每个元素添加的前缀
-     * @param suffix   每个元素添加的后缀
-     * @return
-     */
-    public static String join(Collection<?> coll, String delim, String prefix, String suffix) {
-        if (coll == null || coll.isEmpty()) {
-            return "";
-        }
-        StringBuilder sb = new StringBuilder();
-        Iterator<?> it = coll.iterator();
-        while (it.hasNext()) {
-            sb.append(prefix).append(it.next()).append(suffix);
-            if (it.hasNext()) {
-                sb.append(delim);
-            }
-        }
-        return sb.toString();
-    }
-
-    /**
-     * 集合拼接为字符串
-     * @param coll    集合对象
-     * @param delim   分隔符
-     * @return
-     */
-    public static String join(Collection<?> coll, String delim) {
-        return join(coll, delim, "", "");
-    }
-
-    /**
-     * 字符串替换<p>
-     * replace("hello world", "o", "-")  ->  hell- w-rld
-     * @param inString
-     * @param oldPattern
-     * @param newPattern
-     * @return
-     */
-    public static String replace(String inString, String oldPattern, String newPattern) {
-        if (StringUtils.isEmpty(inString) || StringUtils.isEmpty(oldPattern) 
-            || newPattern == null) {
-            return inString;
-        }
-        StringBuilder sb = new StringBuilder();
-        int pos = 0; // our position in the old string
-        int index = inString.indexOf(oldPattern);
-        // the index of an occurrence we've found, or -1
-        int patLen = oldPattern.length();
-        while (index >= 0) {
-            sb.append(inString, pos, index);
-            sb.append(newPattern);
-            pos = index + patLen;
-            index = inString.indexOf(oldPattern, pos);
-        }
-        sb.append(inString.substring(pos));
-        // remember to append any characters to the right of a match
-        return sb.toString();
-    }
-
 
     /** 
      * 驼峰转换为下划线 
@@ -428,7 +289,7 @@ public class Strings {
      * @param str the string
      * @return  校验码
      */
-    public static int iemeCode(String str) {
+    public static int buildIemeCode(String str) {
         int checkSum = 0;
         for (int i = 0, len = str.length(), num; i < len; i++) {
             num = str.charAt(i) - '0'; // ascii to num  
@@ -477,6 +338,7 @@ public class Strings {
         return StringUtils.isBlank(str) ? defaultStr : str;
     }
 
+    // ---------------------------------------------------------------------------escape
     /**
      * <p>Escapes the characters in a <code>String</code> to be suitable to pass to
      * an SQL query.</p>
@@ -525,6 +387,7 @@ public class Strings {
         return escaped.toString();
     }
 
+    // ---------------------------------------------------------------------------csv split
     /**
     * Parse a CSV string using {@link #csvSplit(List,String, int, int)}
     * use in {@link code.ponfee.commons.web.CrossOriginFilter)

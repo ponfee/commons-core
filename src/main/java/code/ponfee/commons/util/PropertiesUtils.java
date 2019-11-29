@@ -33,12 +33,12 @@ public class PropertiesUtils {
 
     public static boolean getBoolean(Properties props, String name, boolean defaultValue) {
         Boolean value = getBoolean(props, name);
-        return (value == null) ? defaultValue : value;
+        return value == null ? defaultValue : value;
     }
 
     public static Boolean getBoolean(Properties props, String name) {
         String value = getString(props, name);
-        return (value == null) ? null : "true".equalsIgnoreCase(value);
+        return value == null ? null : "true".equalsIgnoreCase(value);
     }
 
     // --------------------------------------------------------------integer
@@ -48,7 +48,7 @@ public class PropertiesUtils {
 
     public static int getInteger(Properties props, String name, int defaultValue) {
         Integer value = getInteger(props, name);
-        return (value == null) ? defaultValue : value;
+        return value == null ? defaultValue : value;
     }
 
     public static Integer getInteger(Properties props, String name) {
@@ -63,7 +63,7 @@ public class PropertiesUtils {
 
     public static long getLong(Properties props, String name, long defaultValue) {
         Long value = getLong(props, name);
-        return (value == null) ? defaultValue : value;
+        return value == null ? defaultValue : value;
     }
 
     public static Long getLong(Properties props, String name) {
@@ -78,7 +78,7 @@ public class PropertiesUtils {
 
     public static double getDouble(Properties props, String name, double defaultValue) {
         Double value = getDouble(props, name);
-        return (value == null) ? defaultValue : value;
+        return value == null ? defaultValue : value;
     }
 
     public static Double getDouble(Properties props, String name) {

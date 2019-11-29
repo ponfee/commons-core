@@ -46,16 +46,12 @@ public class PropertiedNamedDataSourceArray implements Initializable, Closeable 
         }).filter(Objects::nonNull).collect(Collectors.toList());
 
         String defaultDsName = getString(props, prefix + "default", names.get(0));
-        String type = getString(props, prefix + "type");
-        DataSources dst = DataSources.ofType(type);
-        if (dst == null) {
-            throw new UnsupportedOperationException("Unknown dataSource type: " + type);
-        }
+        String type = getString(props, prefix + "type"); // datasource type
 
         List<NamedDataSource> dataSources = new ArrayList<>();
         for (String name : names) {
             NamedDataSource namedDs = NamedDataSource.of(
-                name, dst.createDataSource(name, props, prefix)
+                name, DataSources.createDataSource(type, name, props, prefix)
             );
             if (defaultDsName.equals(name)) {
                 dataSources.add(0, namedDs); // default ds at index 0

@@ -55,4 +55,11 @@ public class MultipleFixedDataSource extends AbstractRoutingDataSource {
         return MultipleDataSourceContext.get();
     }
 
+    /**
+     * Makes this method to public access purview
+     */
+    @Override
+    public DataSource determineTargetDataSource() {
+        return super.determineTargetDataSource();
+    }
 }

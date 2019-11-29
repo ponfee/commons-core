@@ -137,7 +137,7 @@ public class MultipletCachedDataSource extends AbstractDataSource {
      * {@link #setDefaultTargetDataSource default target DataSource} if necessary.
      * @see #determineCurrentLookupKey()
      */
-    protected DataSource determineTargetDataSource() {
+    public DataSource determineTargetDataSource() {
         String lookupKey = MultipleDataSourceContext.get();
         DataSource dataSource = (lookupKey == null) 
                               ? this.defaultDataSource 

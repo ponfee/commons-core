@@ -43,6 +43,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
 
     private static final long serialVersionUID = -9081626363752680404L;
     public static final String DEFAULT_ROOT_ID = "__ROOT__";
+    public static final String DEFAULT_CHILDREN_KEY = "children";
 
     // 用于比较兄弟节点
     private final Comparator<? super TreeNode<T, A>> siblingNodeOrders;
@@ -230,9 +231,19 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     }
 
     // -----------------------------------------------------------to map
-    public Map<String, Object> toMap(Function<TreeNode<T, A>, Map<String, Object>> convert, String childrenKey) {
+    public Map<String, Object> toMap(Function<TreeNode<T, A>, Map<String, Object>> convert) {
+        return toMap(convert, DEFAULT_CHILDREN_KEY, true);
+    }
+
+    public Map<String, Object> toMap(Function<TreeNode<T, A>, Map<String, Object>> convert, 
+                                     boolean containsUnavailable) {
+        return toMap(convert, DEFAULT_CHILDREN_KEY, containsUnavailable);
+    }
+
+    public Map<String, Object> toMap(Function<TreeNode<T, A>, Map<String, Object>> convert, 
+                                     String childrenKey, boolean containsUnavailable) {
         Map<String, Object> root = convert.apply(this);
-        this.toMap(convert, root, childrenKey);
+        this.toMap(convert, root, childrenKey, containsUnavailable);
         return root;
     }
 
@@ -381,12 +392,16 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     }
 
     private void toMap(Function<TreeNode<T, A>, Map<String, Object>> convert,
-                       Map<String, Object> parent, String childrenKey) {
+                       Map<String, Object> parent, String childrenKey, 
+                       boolean containsUnavailable) {
         if (CollectionUtils.isNotEmpty(this.children)) {
             List<Map<String, Object>> list = new ArrayList<>(this.children.size());
             for (TreeNode<T, A> child : this.children) {
+                if (!containsUnavailable && !child.isAvailable()) {
+                    continue; // filter unavailable
+                }
                 Map<String, Object> map = convert.apply(child);
-                child.toMap(convert, map, childrenKey);
+                child.toMap(convert, map, childrenKey, containsUnavailable);
                 list.add(map);
             }
             parent.put(childrenKey, list);

@@ -176,6 +176,8 @@ public final class Files {
         try (FileInputStream input = new FileInputStream(file); 
              FileChannel channel = input.getChannel()
         ) {
+            //FileLock lock = channel.lock();
+            //lock.release();
             long offset = 0, length = channel.size();
             if (bom != null) {
                 offset = bom.length();
