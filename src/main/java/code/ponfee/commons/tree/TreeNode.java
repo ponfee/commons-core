@@ -242,6 +242,9 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
 
     public Map<String, Object> toMap(Function<TreeNode<T, A>, Map<String, Object>> convert, 
                                      String childrenKey, boolean containsUnavailable) {
+        if (!containsUnavailable && !this.available) {
+            return null;
+        }
         Map<String, Object> root = convert.apply(this);
         this.toMap(convert, root, childrenKey, containsUnavailable);
         return root;
@@ -253,7 +256,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
 
         // nodes list
         for (BaseNode<T, A> node : nodes) {
-            if (node instanceof TreeNode) { 
+            if (node instanceof TreeNode) {
                 // if tree node, then add all the tree nodes that includes the node's children(recursive)
                 ((TreeNode<T, A>) node).forEach(list::add);
             } else {
@@ -397,7 +400,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         if (CollectionUtils.isNotEmpty(this.children)) {
             List<Map<String, Object>> list = new ArrayList<>(this.children.size());
             for (TreeNode<T, A> child : this.children) {
-                if (!containsUnavailable && !child.isAvailable()) {
+                if (!containsUnavailable && !child.available) {
                     continue; // filter unavailable
                 }
                 Map<String, Object> map = convert.apply(child);
@@ -422,10 +425,10 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     public static <T extends Serializable & Comparable<? super T>, A extends Serializable, O extends Serializable & Comparable<? super O>> 
         Comparator<? super TreeNode<T, A>> comparing(Function<? super A, ? extends O> keyExtractor, boolean asc) {
         // First nullsLast will handle the cases when the "node" objects are null.
-        // Second nullsLast will handle the cases when the return value of "keyExtractor.apply(node.getAttach())" is null.
-        //Comparator.nullsLast(Comparator.<TreeNode<T, A>, O> comparing(node -> keyExtractor.apply(node.getAttach()), Comparator.nullsLast(Comparators.order(asc))));
+        // Second nullsLast will handle the cases when the return value of "keyExtractor.apply(node.attach)" is null.
+        //Comparator.nullsLast(Comparator.<TreeNode<T, A>, O> comparing(node -> keyExtractor.apply(node.attach), Comparator.nullsLast(Comparators.order(asc))));
 
-        return Comparator.comparing(n -> keyExtractor.apply(n.getAttach()), Comparator.nullsLast(Comparators.order(asc)));
+        return Comparator.comparing(n -> keyExtractor.apply(n.attach), Comparator.nullsLast(Comparators.order(asc)));
     }
 
     // -----------------------------------------------------------------------------comparing by Attach then after with TreeNode.nid
@@ -437,7 +440,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     public static <T extends Serializable & Comparable<? super T>, A extends Serializable, O extends Serializable & Comparable<? super O>> 
         Comparator<? super TreeNode<T, A>> comparingThenComparingNid(Function<? super A, ? extends O> keyExtractor, boolean asc) {
         return Comparator.<TreeNode<T, A>, O> comparing(
-            n -> keyExtractor.apply(n.getAttach()), Comparator.nullsLast(Comparators.order(asc))
+            n -> keyExtractor.apply(n.attach), Comparator.nullsLast(Comparators.order(asc))
         ).thenComparing(
             TreeNode::getNid
         );
