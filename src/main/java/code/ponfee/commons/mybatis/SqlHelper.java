@@ -183,8 +183,7 @@ public class SqlHelper {
         List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
         String sql = boundSql.getSql();
         if (parameterMappings != null) {
-            for (int i = 0; i < parameterMappings.size(); i++) {
-                ParameterMapping parameterMapping = parameterMappings.get(i);
+            for (ParameterMapping parameterMapping : parameterMappings) {
                 if (parameterMapping.getMode() != ParameterMode.OUT) {
                     Object value;
                     String propertyName = parameterMapping.getProperty();
@@ -300,7 +299,7 @@ public class SqlHelper {
             map.put("list", object);
             return map;
         } else if (object != null && object.getClass().isArray()) {
-            Map<String, Object> map = new HashMap<String, Object>();
+            Map<String, Object> map = new HashMap<>();
             map.put("array", object);
             return map;
         }

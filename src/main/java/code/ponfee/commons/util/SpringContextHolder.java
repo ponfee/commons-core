@@ -261,7 +261,7 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
                 }
             }
 
-            if (fieldBean != null && fieldType.isInstance(fieldBean)) {
+            if (fieldType.isInstance(fieldBean)) {
                 Fields.put(object, field, fieldBean);
             }
         }

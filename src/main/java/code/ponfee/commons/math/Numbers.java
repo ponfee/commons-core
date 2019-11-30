@@ -19,7 +19,7 @@ import java.util.Arrays;
 public final class Numbers {
     private Numbers() {}
 
-    public static final Integer INTEGER_ZERO = new Integer(0);
+    public static final Integer INTEGER_ZERO = 0;
     public static final int     INT_ZERO     = 0;
     public static final byte    BYTE_ZERO    = 0x00;
     public static final char    CHAR_ZERO    = '\u0000'; // equals '\0'

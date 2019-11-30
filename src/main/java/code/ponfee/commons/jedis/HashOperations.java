@@ -551,12 +551,10 @@ public class HashOperations extends JedisOperations {
         jedisClient.executePipelined(
             (sp, e) -> sp.hmget(e.getKey(), e.getValue()), 
             (k, v) -> {
-                Map<String, String> map = result.get(k.getKey());
-                if (map == null) {
-                    map = new HashMap<>();
-                    result.put(k.getKey(), map);
-                }
-    
+                Map<String, String> map = result.computeIfAbsent(
+                    k.getKey(), key -> new HashMap<>()
+                );
+
                 List<String> list = (List<String>) v;
                 String[] fields = k.getValue();
                 for (int i = 0, n = fields.length; i < n; i++) {

@@ -223,9 +223,11 @@ public class HttpParams {
         sb.append("<soapenv:Body>");
         sb.append("<ns:").append(method).append(">");
         if (MapUtils.isNotEmpty(params)) {
-            params.forEach((k, v) -> {
-                sb.append("<").append(k).append(">").append(Objects.toString(v, "")).append("</").append(k).append(">");
-            });
+            params.forEach(
+                (k, v) -> sb.append("<").append(k).append(">")
+                            .append(Objects.toString(v, ""))
+                            .append("</").append(k).append(">")
+            );
         }
         sb.append("</ns:").append(method).append(">");
         sb.append("</soapenv:Body>");

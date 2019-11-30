@@ -48,7 +48,7 @@ public abstract class MultipleDataSourceAspect implements Ordered {
         return MultipleDataSourceAdvisor.around(
             ((MethodSignature) pjp.getSignature()).getMethod(), 
             pjp.getArgs(), dsn, 
-            CheckedThrowing.callable(() -> pjp.proceed())
+            CheckedThrowing.callable(pjp::proceed)
         );
     }
 

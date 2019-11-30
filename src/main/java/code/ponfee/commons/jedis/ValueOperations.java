@@ -540,7 +540,7 @@ public class ValueOperations extends JedisOperations {
                 );
                 return result;
             }
-        }, null, String.valueOf(keys));
+        }, null, Arrays.toString(keys));
     }
 
     /**
@@ -620,7 +620,7 @@ public class ValueOperations extends JedisOperations {
         }
 
         Map<ByteArrayWrapper, T> result = this.mgetObject(
-            clazz, Arrays.stream(keys).map(k -> k.getBytes()).toArray(byte[][]::new)
+            clazz, Arrays.stream(keys).map(String::getBytes).toArray(byte[][]::new)
         );
 
         if (MapUtils.isEmpty(result)) {

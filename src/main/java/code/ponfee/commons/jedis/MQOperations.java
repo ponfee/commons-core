@@ -1,5 +1,6 @@
 package code.ponfee.commons.jedis;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -74,7 +75,7 @@ public class MQOperations extends JedisOperations {
     public Map<String, String> pubsubNumSub(String... channels) {
         return call(sj -> {
             return sj.getShard(JEDIS_MQ_OPS_BYTES).pubsubNumSub(channels);
-        }, null, String.valueOf(channels));
+        }, null, Arrays.toString(channels));
     }
 
     public Long pubsubNumPat() {

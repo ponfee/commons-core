@@ -3,7 +3,6 @@ package code.ponfee.commons.data.lookup;
 import static code.ponfee.commons.util.PropertiesUtils.getString;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +74,7 @@ public class PropertiedNamedDataSourceArray implements Initializable, Closeable 
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         for (NamedDataSource nds : array) {
             Closeables.log((DruidDataSource) nds.getDataSource());
         }

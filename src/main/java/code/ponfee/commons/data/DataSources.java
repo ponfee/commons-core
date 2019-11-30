@@ -16,6 +16,7 @@ import static com.alibaba.druid.pool.DruidAbstractDataSource.DEFAULT_WHILE_IDLE;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -87,7 +88,7 @@ public enum DataSources {
                         wallc.setCommentAllow(true);
                         wallc.setMultiStatementAllow(true);
                         wallf.setConfig(wallc);
-                        ds.setProxyFilters(Arrays.asList(wallf));
+                        ds.setProxyFilters(Collections.singletonList(wallf));
                     }
                 }
             } catch (SQLException e) {
@@ -147,7 +148,7 @@ public enum DataSources {
             throw new RuntimeException("Not match dataSource type: " + typeClass.getName());
         }
 
-        DataSource ds = (DataSource) ClassUtils.newInstance(typeClass);
+        DataSource ds = ClassUtils.newInstance(typeClass);
         dataSources.configDataSource(ds, dsName, props, prefix);
         return ds;
     }

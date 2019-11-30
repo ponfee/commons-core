@@ -93,7 +93,6 @@ public class SpringRedisLock implements Lock, java.io.Serializable {
     private final transient RedisTemplate<byte[], byte[]> redisTemplate;
     private final byte[] lockKey;
     private final int timeoutSeconds; // 锁的超时时间，防止死锁
-    private final long timeoutMillis;
     private final long sleepMillis;
 
     public SpringRedisLock(RedisTemplate<byte[], byte[]> redis, String lockKey) {
@@ -126,8 +125,10 @@ public class SpringRedisLock implements Lock, java.io.Serializable {
             timeoutSeconds = MIN_TOMEOUT_SECONDS;
         }
         this.timeoutSeconds = timeoutSeconds;
-        this.timeoutMillis = TimeUnit.SECONDS.toMillis(timeoutSeconds);
-        this.sleepMillis = Numbers.bounds(sleepMillis, MIN_SLEEP_MILLIS, (int) timeoutMillis);
+        this.sleepMillis = Numbers.bounds(
+            sleepMillis, MIN_SLEEP_MILLIS, 
+            (int) TimeUnit.SECONDS.toMillis(timeoutSeconds)
+        );
     }
 
     /**

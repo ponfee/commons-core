@@ -101,7 +101,6 @@ public final class WebContext {
     /**
      * Gets the text string from request input stream
      * 
-     * @param request the HttpServletRequest
      * @param charset the string encoding
      * @return string
      */

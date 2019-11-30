@@ -95,7 +95,7 @@ public class FieldValidator {
         }
     }
 
-    protected Object processError(StringBuilder errorMsgBuilder, Method method, Object[] args) throws Throwable {
+    protected Object processError(StringBuilder errorMsgBuilder, Method method, Object[] args) {
         // 校验失败，不调用方法，进入失败处理
         if (errorMsgBuilder.length() > MAX_MSG_SIZE) {
             errorMsgBuilder.setLength(MAX_MSG_SIZE - 3);
