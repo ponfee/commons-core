@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.bouncycastle.util.Arrays;
 
 /**
  * BOM(byte-order mark) Encoding: 
@@ -34,11 +35,11 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
  */
 public enum ByteOrderMarks {
 
-    UTF_8   (StandardCharsets.UTF_8,      (byte) 0xEF, (byte) 0xBB, (byte) 0xBF             ), //
+    UTF_8   (StandardCharsets.UTF_8     , (byte) 0xEF, (byte) 0xBB, (byte) 0xBF             ), //
 
-    UTF_16LE(StandardCharsets.UTF_16LE,   (byte) 0xFF, (byte) 0xFE                          ), //
+    UTF_16LE(StandardCharsets.UTF_16LE  , (byte) 0xFF, (byte) 0xFE                          ), //
 
-    UTF_16BE(StandardCharsets.UTF_16BE,   (byte) 0xFE, (byte) 0xFF                          ), //
+    UTF_16BE(StandardCharsets.UTF_16BE  , (byte) 0xFE, (byte) 0xFF                          ), //
 
     UTF_32LE(Charset.forName("UTF-32LE"), (byte) 0xFF, (byte) 0xFE, (byte) 0x00, (byte) 0x00), //
 
@@ -47,7 +48,7 @@ public enum ByteOrderMarks {
     ;
 
     private final Charset charset;
-    private final byte[] bytes;
+    private final byte[]  bytes;
 
     ByteOrderMarks(Charset charset, byte... bytes) {
         this.charset = charset;
@@ -248,9 +249,7 @@ public enum ByteOrderMarks {
     }
 
     public byte[] bytes() {
-        byte[] array = new byte[this.length()];
-        System.arraycopy(this.bytes, 0, array, 0, this.length());
-        return array;
+        return Arrays.copyOf(this.bytes, this.bytes.length);
     }
 
     public int length() {

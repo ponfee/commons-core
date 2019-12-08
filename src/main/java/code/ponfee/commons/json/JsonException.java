@@ -1,13 +1,11 @@
 package code.ponfee.commons.json;
 
-import code.ponfee.commons.exception.BasicException;
-
 /**
  * json异常类
  * 
  * @author Ponfee
  */
-public class JsonException extends BasicException {
+public class JsonException extends RuntimeException {
     private static final long serialVersionUID = 8109219010796537426L;
 
     public JsonException() {
@@ -24,6 +22,12 @@ public class JsonException extends BasicException {
 
     public JsonException(Throwable cause) {
         super(cause);
+    }
+
+    protected JsonException(String message, Throwable cause,
+                            boolean enableSuppression,
+                            boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 
 }

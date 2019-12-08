@@ -121,7 +121,7 @@ public final class ResultCode implements CodeMsg {
     public static final ResultCode NOT_ALLOWED        = of0(405, "方法不允许");
     public static final ResultCode NOT_ACCEPTABLE     = of0(406, "请求格式错误");
     public static final ResultCode REQUEST_TIMEOUT    = of0(408, "请求超时");
-    public static final ResultCode OPS_CONFLICT       = of0(409, "操作冲突"); // DATABSE UPDATE DELETE FAIL
+    public static final ResultCode OPS_CONFLICT       = of0(409, "数据不存在或版本冲突"); // DATABSE UPDATE DELETE FAIL
     public static final ResultCode UNSUPPORT_MEDIA    = of0(415, "格式不支持");
 
     public static final ResultCode SERVER_ERROR       = of0(500, "服务器错误");

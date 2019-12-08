@@ -19,13 +19,16 @@ import java.util.TreeMap;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.objenesis.ObjenesisHelper;
 
 import com.google.common.base.Stopwatch;
 
 import code.ponfee.commons.collect.ValueSortedMap;
+import code.ponfee.commons.io.HumanReadables;
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.model.Page;
 import code.ponfee.commons.reflect.CglibUtils;
@@ -66,6 +69,8 @@ public class Test2 {
         System.out.println(tree2);
         
     }
+
+    @SuppressWarnings("rawtypes")
     @Test
     public void test2() {
         Page<Map<String, Object>> source = new Page<>();
@@ -73,7 +78,7 @@ public class Test2 {
         CglibUtils.copyProperties(source, target);
         Page<Map> p = source.copy();
     }
-    
+
     @Test
     public void test3() {
         ForkJoinPool.commonPool().shutdownNow();
@@ -89,7 +94,7 @@ public class Test2 {
         System.out.println(Dates.format(Dates.ofSeconds(-2000000000)));
     }
 
-    @Test
+    @Test @Ignore
     public void test5() throws IOException {
         Files.delete(Paths.get("D:\\test\\framework"));
     }
@@ -128,7 +133,7 @@ public class Test2 {
         }
     }
     
-    @Test
+    @Test @Ignore
     public void test8() throws IOException {
         Argon2 argon2 = Argon2Factory.create();
         // 1000 = The hash call must take at most 1000 ms
@@ -138,7 +143,7 @@ public class Test2 {
         System.out.println("Optimal number of iterations: " + iterations);
     }
     
-    @Test
+    @Test @Ignore
     public void test9() throws IOException {
         Stopwatch stopwatch = Stopwatch.createStarted();
         for (int i = 0; i < 10; i++) {
@@ -158,7 +163,7 @@ public class Test2 {
         System.out.println(map);
     }
 
-    @Test
+    @Test @Ignore
     public void test11() throws IOException {
         File source = new File("D:\\test\\test1\\CentOS-6.6-x86_64-bin-DVD1.iso");
         File target = new File("D:\\test\\test1\\CentOS-6.6-x86_64-bin-DVD2.iso");
@@ -176,20 +181,167 @@ public class Test2 {
     }
     
     @Test
-    public void test12() throws IOException {
-        System.out.println(code.ponfee.commons.io.Files.human(-12345678));
-        System.out.println(code.ponfee.commons.io.Files.human(0));
-        System.out.println(code.ponfee.commons.io.Files.human(-0));
-        System.out.println(code.ponfee.commons.io.Files.human(5));
-        System.out.println(code.ponfee.commons.io.Files.human(-5));
-        System.out.println(code.ponfee.commons.io.Files.human(98745612));
-        
+    public void test13() throws IOException {
+        System.out.println(HumanReadables.BINARY.parse("-1,023.56 GiB"));
+        System.out.println(HumanReadables.BINARY.human(-1099039181373L).length());
+        long size = 1, max = 0;
+        for (int i = 0; i < 100; i++) {
+            String s = HumanReadables.BINARY.human(size);
+            System.out.println(s);
+            max = Math.max(max, s.length());
+            size *= 7;
+            //Assert.assertEquals(s, HumanReadables.BINARY.human(size).replace("i", ""));
+            //System.out.println(HumanReadables.BINARY.parse(s, false));
+        }
+        System.out.println("======="+max);
+    }
+
+    @Test
+    public void test14() throws IOException {
+        System.out.println(HumanReadables.BINARY.human(1047552));
+        System.out.println(HumanReadables.BINARY.human(123456789123456L));
+        System.out.println(HumanReadables.BINARY.human(999_949_999_999_999_999L));
+        System.out.println(HumanReadables.BINARY.human(-12345678));
+        System.out.println(HumanReadables.BINARY.human(0));
+        System.out.println(HumanReadables.BINARY.human(-0));
+        System.out.println(HumanReadables.BINARY.human(5));
+        System.out.println(HumanReadables.BINARY.human(-5));
+        System.out.println(HumanReadables.BINARY.human(98745612));
+
         System.out.println("\n===============================");
-        System.out.println(code.ponfee.commons.io.Files.parseHuman("-1KB"));
-        System.out.println(code.ponfee.commons.io.Files.parseHuman("0B"));
-        System.out.println(code.ponfee.commons.io.Files.parseHuman("-0B"));
-        System.out.println(code.ponfee.commons.io.Files.parseHuman("123B"));
-        System.out.println(code.ponfee.commons.io.Files.parseHuman("-123B"));
-        System.out.println(code.ponfee.commons.io.Files.parseHuman("6MB"));
+        System.out.println(HumanReadables.BINARY.parse("1,023KB"));
+        System.out.println(HumanReadables.BINARY.parse("1047552"));
+        System.out.println(HumanReadables.BINARY.parse("112.28TB"));
+        System.out.println(HumanReadables.BINARY.parse("888.13PB"));
+        System.out.println(HumanReadables.BINARY.parse("-11.77MB"));
+        System.out.println(HumanReadables.BINARY.parse("0B"));
+        System.out.println(HumanReadables.BINARY.parse("5B"));
+        System.out.println(HumanReadables.BINARY.parse("-5B"));
+        System.out.println(HumanReadables.BINARY.parse("94.17MB"));
+        System.out.println(HumanReadables.BINARY.parse("-1KB"));
+        System.out.println(HumanReadables.BINARY.parse("0B"));
+        System.out.println(HumanReadables.BINARY.parse("-0B"));
+        System.out.println(HumanReadables.BINARY.parse("123B"));
+        System.out.println(HumanReadables.BINARY.parse("-123B"));
+        System.out.println(HumanReadables.BINARY.parse("6MB"));
+    }
+
+    @Test
+    public void test15() throws IOException {
+        System.out.println(HumanReadables.BINARY.parse("888.13   PiB"));
+        System.out.println(HumanReadables.BINARY.parse("888.13PiB", true));
+
+        System.out.println(HumanReadables.BINARY.parse("888.13PB"));
+        //System.out.println(HumanReadables.BINARY.parse("888.13PB", true));
+    }
+    
+    @Test
+    public void test16() throws IOException {
+        System.out.println(HumanReadables.BINARY.parse("888.13PiB", true));
+        //System.out.println(HumanReadables.BINARY.parse("888.13PB", true));
+    }
+
+    @Test
+    public void test18() throws IOException {
+        System.out.println(HumanReadables.SI.human(Long.MAX_VALUE));
+        System.out.println(HumanReadables.BINARY.human(Long.MAX_VALUE));
+
+        System.out.println(HumanReadables.SI.parse("9.22EB", true));
+        System.out.println(HumanReadables.BINARY.parse("8EiB", true));
+    }
+
+    @Test
+    public void test19() throws IOException {
+        System.out.println(HumanReadables.SI.human(Long.MIN_VALUE));
+        System.out.println(HumanReadables.BINARY.human(Long.MIN_VALUE));
+
+        System.out.println(HumanReadables.SI.parse("-9.22EB", true));
+        System.out.println(HumanReadables.BINARY.parse("-8EiB", true));
+        System.out.println(Long.MIN_VALUE);
+    }
+
+    @Test
+    public void test20() throws IOException {
+        System.out.println(HumanReadables.SI.parse("888.13P", false));
+        System.out.println(HumanReadables.SI.parse("888.13P", true));
+
+        //System.out.println(HumanReadables.BINARY.parse("888.13Pi", false));
+        //System.out.println(HumanReadables.BINARY.parse("888.13Pi", true));
+
+        System.out.println(HumanReadables.BINARY.parse("888.13P", false));
+        //System.out.println(HumanReadables.BINARY.parse("888.13P", true));
+    }
+    
+    @Test
+    public void test21() throws IOException {
+        System.out.println(HumanReadables.SI.parse("888.13", false));
+        System.out.println(HumanReadables.SI.parse("888.13", true));
+
+        System.out.println(HumanReadables.SI.parse("888.13B", false));
+        System.out.println(HumanReadables.SI.parse("888.13B", true));
+
+        System.out.println(HumanReadables.SI.parse("888.13PB", false));
+        System.out.println(HumanReadables.SI.parse("888.13PB", true));
+
+        //System.out.println(HumanReadables.SI.parse("888.13PiB", false));
+        //System.out.println(HumanReadables.SI.parse("888.13PiB", true));
+
+        System.out.println(HumanReadables.SI.parse("888.13P", false));
+        System.out.println(HumanReadables.SI.parse("888.13P", true));
+    }
+    
+    @Test
+    public void test22() throws IOException {
+        System.out.println(HumanReadables.BINARY.parse("888.13", false));
+        System.out.println(HumanReadables.BINARY.parse("888.13", true));
+        
+        System.out.println(HumanReadables.BINARY.parse("888.13B", false));
+        System.out.println(HumanReadables.BINARY.parse("888.13B", true));
+
+        System.out.println(HumanReadables.BINARY.parse("888.13PB", false));
+        //System.out.println(HumanReadables.BINARY.parse("888.13PB", true));
+
+        System.out.println(HumanReadables.BINARY.parse("888.13PiB", false));
+        System.out.println(HumanReadables.BINARY.parse("888.13PiB", true));
+
+        System.out.println(HumanReadables.BINARY.parse("888.13P", false));
+        //System.out.println(HumanReadables.BINARY.parse("888.13P", true));
+    }
+    
+    @Test
+    public void test23() throws IOException {
+        //System.out.println(HumanReadables.BINARY.parse("888.13AB", false));
+        //System.out.println(HumanReadables.BINARY.parse("888.13BA", true));
+
+        //System.out.println(HumanReadables.SI.parse("888.13AB", false));
+        //System.out.println(HumanReadables.SI.parse("888.13BA", true));
+
+    }
+    
+    @Test
+    public void test24() throws IOException {
+        System.out.println(FileUtils.byteCountToDisplaySize(1047552));
+        System.out.println(FileUtils.byteCountToDisplaySize(123456789123456L));
+        System.out.println(FileUtils.byteCountToDisplaySize(999_949_999_999_999_999L));
+        System.out.println(FileUtils.byteCountToDisplaySize(-12345678));
+        System.out.println(FileUtils.byteCountToDisplaySize(0));
+        System.out.println(FileUtils.byteCountToDisplaySize(-0));
+        System.out.println(FileUtils.byteCountToDisplaySize(5));
+        System.out.println(FileUtils.byteCountToDisplaySize(-5));
+        System.out.println(FileUtils.byteCountToDisplaySize(98745612));
+    }
+    
+    @Test
+    public void test25() throws IOException {
+        System.out.println(HumanReadables.BINARY.human(1099382778757L));
+        System.out.println(HumanReadables.BINARY.parse("-1,023.88GiB ", false));
+        System.out.println(HumanReadables.BINARY.parse("-1,023.88   GiB  ", false));
+        System.out.println(HumanReadables.BINARY.parse("-1,023.88    B", false));
+        //System.out.println(HumanReadables.BINARY.parse("-1,023.88  Gi B", false));
+        //System.out.println(HumanReadables.BINARY.parse("-1,023.88   G iB", false));
+        //System.out.println(HumanReadables.BINARY.parse("-B", false));
+        //System.out.println(HumanReadables.BINARY.parse(".B", false));
+        //System.out.println(HumanReadables.BINARY.parse("TB", false));
+        //System.out.println(HumanReadables.BINARY.parse("xTB", false));
     }
 }

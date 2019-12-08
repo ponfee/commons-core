@@ -1,5 +1,7 @@
 package code.ponfee.commons.math;
 
+import java.util.Objects;
+
 /**
  * 数学算术
  * 取模：Modulo Operation
@@ -14,7 +16,7 @@ public class Maths {
      * @param n the value
      * @return a value of log(n)/log(2)
      */
-    public static double log2(double n) {
+    public static strictfp double log2(double n) {
         return log(n, 2);
     }
 
@@ -26,9 +28,9 @@ public class Maths {
      * 
      * @param n     a value
      * @param base  底数
-     * @return
+     * @return a double of logarithm
      */
-    public static double log(double n, double base) {
+    public static strictfp double log(double n, double base) {
         return Math.log(n) / Math.log(base);
     }
 
@@ -42,4 +44,24 @@ public class Maths {
     public static int rotateLeft(int x, int n) {
         return (x << n) | (x >>> (32 - n));
     }
+
+    /**
+     * Returns a long value for {@code base}<sup>{@code exponent}</sup>.
+     * 
+     * @param base      the base
+     * @param exponent  the exponent
+     * @return a long value for {@code base}<sup>{@code exponent}</sup>.
+     */
+    public static long pow(long base, int exponent) {
+        if (exponent == 0) {
+            return 1;
+        }
+
+        long result = base;
+        for (int i = 1; i < exponent; i++) {
+            result *= base;
+        }
+        return result;
+    }
+
 }

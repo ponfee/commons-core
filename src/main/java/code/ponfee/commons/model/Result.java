@@ -177,7 +177,7 @@ public class Result<T> implements java.io.Serializable {
     }
 
     /**
-     * 成功结果
+     * SUCCESS RESULT
      */
     private static final class SuccessResult extends Result<Void> {
         private static final long serialVersionUID = 6740650053476768729L;

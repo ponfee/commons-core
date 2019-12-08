@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cglib.beans.BeanCopier;
 
 import code.ponfee.commons.reflect.BeanMaps;
@@ -22,14 +24,16 @@ import code.ponfee.commons.util.ObjectUtils;
  * @author Ponfee
  */
 public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
+ 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDataConverter.class);
 
     private final Class<T> targetType;
     private final BeanCopier copier;
 
     public AbstractDataConverter() {
-        targetType = getActualTypeArgument(getClass(), 1);
-        copier = BeanCopier.create(
-            getActualTypeArgument(getClass(), 0), targetType, false
+        this.copier = createBeanCopier(
+            getActualTypeArgument(getClass(), 0), 
+            this.targetType = getActualTypeArgument(getClass(), 1)
         );
     }
 
@@ -200,6 +204,19 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
             return null;
         }
         return result.copy(convert(result.getData(), converter));
+    }
+
+    private static final BeanCopier createBeanCopier(Class<?> sourceType, Class<?> targetType) {
+        if (sourceType == Object.class || targetType == Object.class) {
+            LOGGER.warn("Bean class cannot be java.lang.Object: {} -> {}", sourceType, targetType);
+            return null;
+        }
+        try {
+            return BeanCopier.create(sourceType, targetType, false);
+        } catch (Exception e) {
+            LOGGER.error("Create BeanCopier occur error: {}", e.getMessage());
+            return null;
+        }
     }
 
 }
