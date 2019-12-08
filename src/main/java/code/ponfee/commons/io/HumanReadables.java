@@ -28,8 +28,10 @@ public enum HumanReadables {
 
     SI    (1000, "B", "KB",  "MB",  "GB",  "TB",  "PB",  "EB" /*, "ZB",  "YB" */), // 
     BINARY(1024, "B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"/*, "ZiB", "YiB"*/), // 
-
     ;
+
+    private static final String         FORMAT  = "#,##0.##";
+    private static final HumanReadables DEFAULT = BINARY;
 
     private final int      base;
     private final String[] units;
@@ -56,7 +58,7 @@ public enum HumanReadables {
      * Parse the readable byte count, allowed suffix units: "1", "1B", "1MB", "1MiB", "1M"
      * 
      * @param size   the size
-     * @param strict the strict, if BINARY then verify contains "i"
+     * @param strict the strict, if BINARY then verify whether contains "i"
      * @return a long value bytes count
      */
     public strictfp long parse0(String size, boolean strict) {
@@ -74,8 +76,8 @@ public enum HumanReadables {
         // last character isn't a digit
         char c = str.charAt(lastPos - end);
         if (c == 'i') {
-            // the last pos cannot contains "i"
-            throw new RuntimeException("Invalid format [" + size + "]");
+            // the last pos cannot end with "i"
+            throw new RuntimeException("Invalid format [" + size + "], cannot end with \"i\".");
         }
         if (c == 'B') {
             end++;
@@ -86,14 +88,14 @@ public enum HumanReadables {
             if (c == 'i') {
                 if (this == SI) {
                     // SI cannot contains "i"
-                    throw new RuntimeException("Invalid SI format [" + size + "]");
+                    throw new RuntimeException("Invalid SI format [" + size + "], cannot contains \"i\".");
                 }
                 end++;
                 c = str.charAt(lastPos - end);
             } else {
                 if (this == BINARY && strict) {
                     // if strict, then BINARY must contains "i"
-                    throw new RuntimeException("Invalid BINARY format [" + size + "]");
+                    throw new RuntimeException("Invalid BINARY format [" + size + "], miss character \"i\".");
                 }
             }
 
@@ -108,7 +110,7 @@ public enum HumanReadables {
                 case 'Z': factor *= this.bytes[6]; break;
                 case 'Y': factor *= this.bytes[7]; break;
                 */
-                default: throw new RuntimeException("Invalid unit [" + size + "]: \"" + c + "\"");
+                default: throw new RuntimeException("Invalid unit [" + size + "]: \"" + c + "\".");
             }
             end++;
         }
@@ -119,12 +121,9 @@ public enum HumanReadables {
         try {
             return (long) (factor * new DecimalFormat(FORMAT).parse(str).doubleValue());
         } catch (NumberFormatException | ParseException e) {
-            throw new IllegalArgumentException("Failed parse [" + size + "]: \"" + str + "\"");
+            throw new IllegalArgumentException("Failed to parse [" + size + "]: \"" + str + "\".");
         }
     }
-
-    private static final String         FORMAT  = "#,##0.##";
-    private static final HumanReadables DEFAULT = BINARY;
 
     HumanReadables(int base, String... units) {
         this.base  = base;
