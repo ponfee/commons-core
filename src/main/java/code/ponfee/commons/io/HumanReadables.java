@@ -17,9 +17,12 @@ import org.apache.commons.lang3.StringUtils;
 import code.ponfee.commons.math.Maths;
 
 /**
+ * Human readable utility class
  * 
- * https://stackoverflow.com/questions/3758606/how-to-convert-byte-size-into-human-readable-format-in-java?r=SearchResults
+ * The similar function in stackoverflow, linked:
+ *  https://stackoverflow.com/questions/3758606/how-to-convert-byte-size-into-human-readable-format-in-java?r=SearchResults
  * 
+ * Apache also provide similar function
  * @see org.apache.commons.io.FileUtils#byteCountToDisplaySize(long)
  * 
  * @author Ponfee
@@ -36,6 +39,16 @@ public enum HumanReadables {
     private final int      base;
     private final String[] units;
     private final long[]   sizes;
+
+    HumanReadables(int base, String... units) {
+        this.base  = base;
+        this.units = units;
+        this.sizes = new long[this.units.length];
+        long size = 1;
+        for (int i = 0; i < this.sizes.length; i++) {
+            this.sizes[i] = (size = size * this.base);
+        }
+    }
 
     public strictfp String human0(long size) {
         if (size == 0) {
@@ -77,7 +90,7 @@ public enum HumanReadables {
         char c = str.charAt(lastPos - end);
         if (c == 'i') {
             // the last pos cannot end with "i"
-            throw new RuntimeException("Invalid format [" + size + "], cannot end with \"i\".");
+            throw new IllegalArgumentException("Invalid format [" + size + "], cannot end with \"i\".");
         }
         if (c == 'B') {
             end++;
@@ -88,14 +101,14 @@ public enum HumanReadables {
             if (c == 'i') {
                 if (this == SI) {
                     // SI cannot contains "i"
-                    throw new RuntimeException("Invalid SI format [" + size + "], cannot contains \"i\".");
+                    throw new IllegalArgumentException("Invalid SI format [" + size + "], cannot contains \"i\".");
                 }
                 end++;
                 c = str.charAt(lastPos - end);
             } else {
                 if (this == BINARY && strict) {
                     // if strict, then BINARY must contains "i"
-                    throw new RuntimeException("Invalid BINARY format [" + size + "], miss character \"i\".");
+                    throw new IllegalArgumentException("Invalid BINARY format [" + size + "], miss character \"i\".");
                 }
             }
 
@@ -110,7 +123,7 @@ public enum HumanReadables {
                 case 'Z': factor *= this.bytes[6]; break;
                 case 'Y': factor *= this.bytes[7]; break;
                 */
-                default: throw new RuntimeException("Invalid unit [" + size + "]: \"" + c + "\".");
+                default: throw new IllegalArgumentException("Invalid unit [" + size + "]: \"" + c + "\".");
             }
             end++;
         }
@@ -122,16 +135,6 @@ public enum HumanReadables {
             return (long) (factor * new DecimalFormat(FORMAT).parse(str).doubleValue());
         } catch (NumberFormatException | ParseException e) {
             throw new IllegalArgumentException("Failed to parse [" + size + "]: \"" + str + "\".");
-        }
-    }
-
-    HumanReadables(int base, String... units) {
-        this.base  = base;
-        this.units = units;
-        this.sizes = new long[this.units.length];
-        long size = 1;
-        for (int i = 0; i < this.sizes.length; i++) {
-            this.sizes[i] = (size = size * this.base);
         }
     }
 
