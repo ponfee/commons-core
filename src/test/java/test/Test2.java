@@ -20,12 +20,14 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.objenesis.ObjenesisHelper;
 
 import com.google.common.base.Stopwatch;
 
 import code.ponfee.commons.collect.ValueSortedMap;
+import code.ponfee.commons.io.HumanReadables;
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.model.Page;
 import code.ponfee.commons.reflect.CglibUtils;
@@ -176,20 +178,136 @@ public class Test2 {
     }
     
     @Test
-    public void test12() throws IOException {
-        System.out.println(code.ponfee.commons.io.Files.human(-12345678));
-        System.out.println(code.ponfee.commons.io.Files.human(0));
-        System.out.println(code.ponfee.commons.io.Files.human(-0));
-        System.out.println(code.ponfee.commons.io.Files.human(5));
-        System.out.println(code.ponfee.commons.io.Files.human(-5));
-        System.out.println(code.ponfee.commons.io.Files.human(98745612));
-        
+    public void test13() throws IOException {
+        long size = 47;
+       for (int i = 0; i < 100; i++) {
+            size *= 47;
+            String s = HumanReadables.human(size);
+            System.out.println(s);
+            Assert.assertEquals(s, HumanReadables.human(size).replace("i", ""));
+            System.out.println(HumanReadables.parse(s, false));
+        }
+    }
+    
+    @Test
+    public void test14() throws IOException {
+        System.out.println(HumanReadables.human(1047552));
+        System.out.println(HumanReadables.human(123456789123456L));
+        System.out.println(HumanReadables.human(999_949_999_999_999_999L));
+        System.out.println(HumanReadables.human(-12345678));
+        System.out.println(HumanReadables.human(0));
+        System.out.println(HumanReadables.human(-0));
+        System.out.println(HumanReadables.human(5));
+        System.out.println(HumanReadables.human(-5));
+        System.out.println(HumanReadables.human(98745612));
+
         System.out.println("\n===============================");
-        System.out.println(code.ponfee.commons.io.Files.parseHuman("-1KB"));
-        System.out.println(code.ponfee.commons.io.Files.parseHuman("0B"));
-        System.out.println(code.ponfee.commons.io.Files.parseHuman("-0B"));
-        System.out.println(code.ponfee.commons.io.Files.parseHuman("123B"));
-        System.out.println(code.ponfee.commons.io.Files.parseHuman("-123B"));
-        System.out.println(code.ponfee.commons.io.Files.parseHuman("6MB"));
+        System.out.println(HumanReadables.parse("1,023KB"));
+        System.out.println(HumanReadables.parse("1047552"));
+        System.out.println(HumanReadables.parse("112.28TB"));
+        System.out.println(HumanReadables.parse("888.13PB"));
+        System.out.println(HumanReadables.parse("-11.77MB"));
+        System.out.println(HumanReadables.parse("0B"));
+        System.out.println(HumanReadables.parse("5B"));
+        System.out.println(HumanReadables.parse("-5B"));
+        System.out.println(HumanReadables.parse("94.17MB"));
+        System.out.println(HumanReadables.parse("-1KB"));
+        System.out.println(HumanReadables.parse("0B"));
+        System.out.println(HumanReadables.parse("-0B"));
+        System.out.println(HumanReadables.parse("123B"));
+        System.out.println(HumanReadables.parse("-123B"));
+        System.out.println(HumanReadables.parse("6MB"));
+    }
+
+    @Test
+    public void test15() throws IOException {
+        System.out.println(HumanReadables.parse("888.13PiB"));
+        System.out.println(HumanReadables.parse("888.13PiB", true));
+
+        System.out.println(HumanReadables.parse("888.13PB"));
+        //System.out.println(HumanReadables.parse("888.13PB", true));
+    }
+    
+    @Test
+    public void test16() throws IOException {
+        //System.out.println(HumanReadables.SI.parse0("888.13PiB", true));
+        System.out.println(HumanReadables.SI.parse0("888.13PB", true));
+    }
+
+    @Test
+    public void test18() throws IOException {
+        System.out.println(HumanReadables.SI.human0(Long.MAX_VALUE));
+        System.out.println(HumanReadables.BINARY.human0(Long.MAX_VALUE));
+
+        System.out.println(HumanReadables.SI.parse0("9.22EB", true));
+        System.out.println(HumanReadables.BINARY.parse0("8EiB", true));
+    }
+
+    @Test
+    public void test19() throws IOException {
+        System.out.println(HumanReadables.SI.human0(Long.MIN_VALUE));
+        System.out.println(HumanReadables.BINARY.human0(Long.MIN_VALUE));
+
+        System.out.println(HumanReadables.SI.parse0("-9.22EB", true));
+        System.out.println(HumanReadables.BINARY.parse0("-8EiB", true));
+        System.out.println(Long.MIN_VALUE);
+    }
+
+    @Test
+    public void test20() throws IOException {
+        System.out.println(HumanReadables.SI.parse0("888.13P", false));
+        System.out.println(HumanReadables.SI.parse0("888.13P", true));
+
+        System.out.println(HumanReadables.BINARY.parse0("888.13Pi", false));
+        System.out.println(HumanReadables.BINARY.parse0("888.13Pi", true));
+
+        System.out.println(HumanReadables.BINARY.parse0("888.13P", false));
+        //System.out.println(HumanReadables.BINARY.parse0("888.13P", true));
+    }
+    
+    @Test
+    public void test21() throws IOException {
+        System.out.println(HumanReadables.SI.parse0("888.13", false));
+        System.out.println(HumanReadables.SI.parse0("888.13", true));
+
+        System.out.println(HumanReadables.SI.parse0("888.13B", false));
+        System.out.println(HumanReadables.SI.parse0("888.13B", true));
+
+        System.out.println(HumanReadables.SI.parse0("888.13PB", false));
+        System.out.println(HumanReadables.SI.parse0("888.13PB", true));
+
+        //System.out.println(HumanReadables.SI.parse0("888.13PiB", false));
+        //System.out.println(HumanReadables.SI.parse0("888.13PiB", true));
+
+        System.out.println(HumanReadables.SI.parse0("888.13P", false));
+        System.out.println(HumanReadables.SI.parse0("888.13P", true));
+    }
+    
+    @Test
+    public void test22() throws IOException {
+        System.out.println(HumanReadables.BINARY.parse0("888.13", false));
+        System.out.println(HumanReadables.BINARY.parse0("888.13", true));
+        
+        System.out.println(HumanReadables.BINARY.parse0("888.13B", false));
+        System.out.println(HumanReadables.BINARY.parse0("888.13B", true));
+
+        System.out.println(HumanReadables.BINARY.parse0("888.13PB", false));
+        //System.out.println(HumanReadables.BINARY.parse0("888.13PB", true));
+
+        System.out.println(HumanReadables.BINARY.parse0("888.13PiB", false));
+        System.out.println(HumanReadables.BINARY.parse0("888.13PiB", true));
+
+        System.out.println(HumanReadables.BINARY.parse0("888.13P", false));
+        //System.out.println(HumanReadables.BINARY.parse0("888.13P", true));
+    }
+    
+    @Test
+    public void test23() throws IOException {
+        //System.out.println(HumanReadables.BINARY.parse0("888.13AB", false));
+        //System.out.println(HumanReadables.BINARY.parse0("888.13BA", true));
+
+        //System.out.println(HumanReadables.SI.parse0("888.13AB", false));
+        //System.out.println(HumanReadables.SI.parse0("888.13BA", true));
+
     }
 }

@@ -14,7 +14,7 @@ public class Maths {
      * @param n the value
      * @return a value of log(n)/log(2)
      */
-    public static double log2(double n) {
+    public static strictfp double log2(double n) {
         return log(n, 2);
     }
 
@@ -28,7 +28,7 @@ public class Maths {
      * @param base  底数
      * @return
      */
-    public static double log(double n, double base) {
+    public static strictfp double log(double n, double base) {
         return Math.log(n) / Math.log(base);
     }
 

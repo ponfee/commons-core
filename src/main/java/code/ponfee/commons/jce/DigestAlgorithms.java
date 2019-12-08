@@ -35,8 +35,8 @@ public enum DigestAlgorithms {
      * @see org.bouncycastle.crypto.digests.Blake2bDigest
      * @see org.bouncycastle.jcajce.provider.digest.Blake2b
      */
-    BLAKE2B160("BLAKE2S-160", 160), BLAKE2B256("BLAKE2S-256", 256), //
-    BLAKE2B384("BLAKE2S-384", 384), BLAKE2B512("BLAKE2S-512", 512), //
+    BLAKE2B160("BLAKE2B-160", 160), BLAKE2B256("BLAKE2B-256", 256), //
+    BLAKE2B384("BLAKE2B-384", 384), BLAKE2B512("BLAKE2B-512", 512), //
 
     /**
      * @see org.bouncycastle.crypto.digests.KeccakDigest
@@ -50,8 +50,8 @@ public enum DigestAlgorithms {
      * @see org.bouncycastle.crypto.digests.SkeinDigest
      * @see org.bouncycastle.jcajce.provider.digest.Skein
      */
-    SKEIN_256_128("Skein-256-128", 128), SKEIN_256_256("Skein-256-256", 256), // 
-    SKEIN_512_256("Skein-512-256", 256), SKEIN_512_512("Skein-512-512", 512), // 
+    SKEIN_256_128 ("Skein-256-128",  128), SKEIN_256_256  ("Skein-256-256",    256), // 
+    SKEIN_512_256 ("Skein-512-256",  256), SKEIN_512_512  ("Skein-512-512",    512), // 
     SKEIN_1024_512("Skein-1024-512", 512), SKEIN_1024_1024("Skein-1024-1024", 1024), // 
 
     /**

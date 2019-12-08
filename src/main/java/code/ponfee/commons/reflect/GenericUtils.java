@@ -23,6 +23,8 @@ import com.google.common.base.Preconditions;
 /**
  * 泛型工具类
  * 
+ * https://segmentfault.com/a/1190000018319217
+ * 
  * @author Ponfee
  */
 public final class GenericUtils {
@@ -58,7 +60,7 @@ public final class GenericUtils {
     }
 
     /**
-     * public class GenericClass extends GenericSuperClass<A,B,...,N> implements GenericInterface<X,Y,..,Z> {}
+     * public class GenericClass extends GenericSuperClass<Long,Integer,...,String> implements GenericInterface<String,Short,..,Long> {}
      * 
      * @param clazz
      * @param genericArgsIndex
@@ -87,7 +89,7 @@ public final class GenericUtils {
     }
 
     /**
-     * public void genericMethod(List<A> list, Map<B, C> map){}
+     * public void genericMethod(List<Long> list, Map<String, String> map){}
      * 
      * @param method            方法对象
      * @param methodArgsIndex 方法参数索引号
@@ -103,6 +105,13 @@ public final class GenericUtils {
         return getActualReturnTypeArgument(method, 0);
     }
 
+    /**
+     * public List<String> genericMethod(){}
+     * 
+     * @param method the method
+     * @param genericArgsIndex the generic argument index
+     * @return
+     */
     public static <T> Class<T> getActualReturnTypeArgument(Method method, int genericArgsIndex) {
         return getActualTypeArgument(method.getGenericReturnType(), genericArgsIndex);
     }
@@ -125,10 +134,14 @@ public final class GenericUtils {
 
     // -------------------------------------------------------------------get actual variable type
     /**
+     * public abstract class BaseEntity<I> {
+     *   private I id;
+     * }
+     * 
      * public class BeanClass extends BaseEntity<String> {}
      * 
-     * @param clazz the defined or sub class
-     * @param field the field
+     * @param clazz the sub class
+     * @param field the super class defined field
      * @return a Class of field actual type
      */
     public static <T> Class<T> getFieldActualType(Class<?> clazz, Field field) {
@@ -138,8 +151,14 @@ public final class GenericUtils {
     /**
      * Returns method arg actual type
      * 
-     * @param clazz            the defined this method class or sub class
-     * @param method           the method
+     * public abstract class ClassA<T> {
+     *   public void method(T arg) {}
+     * }
+     * 
+     * public class ClassB extends classA<String>{}
+     * 
+     * @param clazz            the sub class
+     * @param method           the super class defined method
      * @param methodArgsIndex  the method arg index
      * @return a Class of method arg actual type
      */
@@ -150,8 +169,14 @@ public final class GenericUtils {
     /**
      * Returns method return actual type
      * 
-     * @param clazz  the defined this method class or sub class
-     * @param method the method
+     * public abstract class ClassA<T> {
+     *   public T method() {}
+     * }
+     * 
+     * public class ClassB extends classA<String>{}
+     * 
+     * @param clazz  the sub class
+     * @param method the super class defined method
      * @return a Class of method return actual type
      */
     public static <T> Class<T> getMethodReturnActualType(Class<?> clazz, Method method) {
