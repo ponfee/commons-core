@@ -46,7 +46,7 @@
  *    SHA-3：之前名为Keccak算法，是一个加密杂凑算法
  *    RIPEMD-160：哈希加密算法，用于替代128位哈希函数 MD4、MD5 和 RIPEMD
  * 
- * 8、密码安全：BCrypt、SCrypt、PBKDF2
+ * 8、密码安全：BCrypt、SCrypt、PBKDF2, Argon2
  * 
  * 9、时间戳、签章
  * 

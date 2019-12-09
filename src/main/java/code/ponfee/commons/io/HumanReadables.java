@@ -68,9 +68,9 @@ public enum HumanReadables {
         }
 
         int digit = (int) Maths.log(size, this.base);
-        return signed
-             + new DecimalFormat(FORMAT).format(size / Math.pow(this.base, digit))
-             + " " + this.units[digit];
+        return new StringBuilder(13).append(signed)
+            .append(new DecimalFormat(FORMAT).format(size / Math.pow(this.base, digit)))
+            .append(" ").append(this.units[digit]).toString();
     }
 
     public strictfp long parse(String size) {
@@ -88,6 +88,10 @@ public enum HumanReadables {
         if (StringUtils.isBlank(size)) {
             return 0L;
         }
+        if (!size.matches(".*[0-9]+.*")) {
+            throw new IllegalArgumentException("Invalid format [" + size + "]");
+        }
+
         String str = size = size.trim();
         long factor = 1L;
         switch (str.charAt(0)) {
@@ -102,10 +106,23 @@ public enum HumanReadables {
             // the last pos cannot end with "i"
             throw new IllegalArgumentException("Invalid format [" + size + "], cannot end with \"i\".");
         }
+
         if (c == 'B') {
             end++;
             c = str.charAt(lastPos - end);
+
+            if (isBlank(c)) {
+                while (isBlank(c) && end < lastPos) {
+                    end++;
+                    c = str.charAt(lastPos - end);
+                }
+                // if "B" prefix has space char, then the first prefix non space char must be a digit
+                if (!Character.isDigit(c)) {
+                    throw new IllegalArgumentException("Invalid format [" + size + "]: \"" + c + "\".");
+                }
+            }
         }
+
         if (!Character.isDigit(c)) {
             // if not a digit character, then assume is a unit character
             if (c == 'i') {
@@ -133,22 +150,16 @@ public enum HumanReadables {
                 case 'Z': factor *= this.bytes[6]; break;
                 case 'Y': factor *= this.bytes[7]; break;
                 */
-                default: throw new IllegalArgumentException("Invalid unit [" + size + "]: \"" + c + "\".");
+                default: throw new IllegalArgumentException("Invalid format [" + size + "]: \"" + c + "\".");
             }
-            end++;
+
+            do {
+                end++;
+                c = str.charAt(lastPos - end);
+            } while (isBlank(c) && end < lastPos);
         }
 
-        while (end <= lastPos) {
-            c = str.charAt(lastPos - end);
-            if (c != ' ' && c != '\t') {
-                break;
-            }
-            end++;
-        }
-
-        if (end > 0) {
-            str = str.substring(0, str.length() - end);
-        }
+        str = str.substring(0, str.length() - end);
         try {
             return (long) (factor * new DecimalFormat(FORMAT).parse(str).doubleValue());
         } catch (NumberFormatException | ParseException e) {
@@ -166,6 +177,10 @@ public enum HumanReadables {
 
     public long[] sizes() {
         return Arrays.copyOf(this.sizes, this.sizes.length);
+    }
+
+    private static boolean isBlank(char c) {
+        return c == ' ' || c == '\t';
     }
 
 }
