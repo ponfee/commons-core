@@ -26,7 +26,7 @@ public class Maths {
      * 
      * @param n     a value
      * @param base  底数
-     * @return
+     * @return a double of logarithm
      */
     public static strictfp double log(double n, double base) {
         return Math.log(n) / Math.log(base);

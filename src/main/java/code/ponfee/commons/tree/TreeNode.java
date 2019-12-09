@@ -408,6 +408,8 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
                 list.add(map);
             }
             parent.put(childrenKey, list);
+        } else {
+            parent.put(childrenKey, null);
         }
     }
 

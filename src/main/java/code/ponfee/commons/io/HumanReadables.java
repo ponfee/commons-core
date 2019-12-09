@@ -30,11 +30,11 @@ import code.ponfee.commons.math.Maths;
 public enum HumanReadables {
 
     SI    (1000, "B", "KB",  "MB",  "GB",  "TB",  "PB",  "EB" /*, "ZB",  "YB" */), // 
+
     BINARY(1024, "B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"/*, "ZiB", "YiB"*/), // 
     ;
 
-    private static final String         FORMAT  = "#,##0.##";
-    private static final HumanReadables DEFAULT = BINARY;
+    private static final String FORMAT = "#,##0.##";
 
     private final int      base;
     private final String[] units;
@@ -50,7 +50,13 @@ public enum HumanReadables {
         }
     }
 
-    public strictfp String human0(long size) {
+    /**
+     * Returns a string of bytes count human readable size
+     * 
+     * @param size the size
+     * @return human readable size
+     */
+    public strictfp String human(long size) {
         if (size == 0) {
             return "0" + this.units[0];
         }
@@ -64,7 +70,11 @@ public enum HumanReadables {
         int digit = (int) Maths.log(size, this.base);
         return signed
              + new DecimalFormat(FORMAT).format(size / Math.pow(this.base, digit))
-             + this.units[digit];
+             + " " + this.units[digit];
+    }
+
+    public strictfp long parse(String size) {
+        return parse(size, false);
     }
 
     /**
@@ -74,7 +84,7 @@ public enum HumanReadables {
      * @param strict the strict, if BINARY then verify whether contains "i"
      * @return a long value bytes count
      */
-    public strictfp long parse0(String size, boolean strict) {
+    public strictfp long parse(String size, boolean strict) {
         if (StringUtils.isBlank(size)) {
             return 0L;
         }
@@ -128,6 +138,14 @@ public enum HumanReadables {
             end++;
         }
 
+        while (end <= lastPos) {
+            c = str.charAt(lastPos - end);
+            if (c != ' ' && c != '\t') {
+                break;
+            }
+            end++;
+        }
+
         if (end > 0) {
             str = str.substring(0, str.length() - end);
         }
@@ -148,18 +166,6 @@ public enum HumanReadables {
 
     public long[] sizes() {
         return Arrays.copyOf(this.sizes, this.sizes.length);
-    }
-
-    public static String human(long size) {
-        return DEFAULT.human0(size);
-    }
-
-    public static long parse(String size) {
-        return parse(size, false);
-    }
-
-    public static long parse(String size, boolean strict) {
-        return DEFAULT.parse0(size, strict);
     }
 
 }

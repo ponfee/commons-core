@@ -45,6 +45,7 @@ public class FastjsonPropertyFilter implements PropertyFilter {
 
         // 异或：(A ^ B)；同或：(A ^ B) ^ 1
         //return isIncludes ^ ArrayUtils.contains(fields, name) ^ true;
+        //return !(isIncludes ^ ArrayUtils.contains(fields, name));
         return isIncludes == ArrayUtils.contains(fields, name);
     }
 

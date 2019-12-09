@@ -47,7 +47,7 @@ public enum ByteOrderMarks {
     ;
 
     private final Charset charset;
-    private final byte[] bytes;
+    private final byte[]  bytes;
 
     ByteOrderMarks(Charset charset, byte... bytes) {
         this.charset = charset;
