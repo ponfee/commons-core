@@ -14,8 +14,6 @@ import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
 
-import code.ponfee.commons.math.Maths;
-
 /**
  * The file size human readable utility class, 
  * provide  mutual conversions from human readable size to byte size
@@ -45,9 +43,10 @@ public enum HumanReadables {
         this.base  = base;
         this.units = units;
         this.sizes = new long[this.units.length];
-        long size = 1;
-        for (int i = 0; i < this.sizes.length; i++) {
-            this.sizes[i] = (size = size * this.base);
+
+        this.sizes[0] = 1;
+        for (int i = 1; i < this.sizes.length; i++) {
+            this.sizes[i] = this.sizes[i - 1] * this.base; // Maths.pow(this.base, i);
         }
     }
 
@@ -68,12 +67,15 @@ public enum HumanReadables {
             size = size == Long.MIN_VALUE ? Long.MAX_VALUE : -size;
         }
 
-        int digit = (int) Maths.log(size, this.base);
+        /*int unit = (int) Maths.log(size, this.base);
+        return signed + format(size / Math.pow(this.base, unit)) + " " + this.units[unit];*/
+
+        int unit = find(size);
         return new StringBuilder(13) // 13 max length like as "-1,023.45 GiB"
             .append(signed)
-            .append(new DecimalFormat(FORMAT).format(size / Math.pow(this.base, digit)))
+            .append(format(size / (double) this.sizes[unit]))
             .append(" ")
-            .append(this.units[digit])
+            .append(this.units[unit])
             .toString();
     }
 
@@ -143,15 +145,15 @@ public enum HumanReadables {
             }
 
             switch (c) {
-                case 'K': factor *= this.sizes[0]; break;
-                case 'M': factor *= this.sizes[1]; break;
-                case 'G': factor *= this.sizes[2]; break;
-                case 'T': factor *= this.sizes[3]; break;
-                case 'P': factor *= this.sizes[4]; break;
-                case 'E': factor *= this.sizes[5]; break;
+                case 'K': factor *= this.sizes[1]; break;
+                case 'M': factor *= this.sizes[2]; break;
+                case 'G': factor *= this.sizes[3]; break;
+                case 'T': factor *= this.sizes[4]; break;
+                case 'P': factor *= this.sizes[5]; break;
+                case 'E': factor *= this.sizes[6]; break;
                 /*
-                case 'Z': factor *= this.bytes[6]; break;
-                case 'Y': factor *= this.bytes[7]; break;
+                case 'Z': factor *= this.bytes[7]; break;
+                case 'Y': factor *= this.bytes[8]; break;
                 */
                 default: throw new IllegalArgumentException("Invalid format [" + size + "]: \"" + c + "\".");
             }
@@ -182,7 +184,21 @@ public enum HumanReadables {
         return Arrays.copyOf(this.sizes, this.sizes.length);
     }
 
-    private static boolean isBlank(char c) {
+    private int find(long bytes) {
+        int n = this.sizes.length;
+        for (int i = 1; i < n; i++) {
+            if (bytes < this.sizes[i]) {
+                return i - 1;
+            }
+        }
+        return n - 1;
+    }
+
+    private String format(double number) {
+        return new DecimalFormat(FORMAT).format(number);
+    }
+
+    private boolean isBlank(char c) {
         return c == ' ' || c == '\t';
     }
 

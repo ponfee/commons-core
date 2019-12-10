@@ -42,4 +42,16 @@ public class Maths {
     public static int rotateLeft(int x, int n) {
         return (x << n) | (x >>> (32 - n));
     }
+
+    public static long pow(long x, int y) {
+        if (y == 0) {
+            return 1;
+        }
+
+        long z = x;
+        for (int i = 1; i < y; i++) {
+            z *= x;
+        }
+        return z;
+    }
 }

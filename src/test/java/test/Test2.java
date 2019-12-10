@@ -333,6 +333,7 @@ public class Test2 {
     
     @Test
     public void test25() throws IOException {
+        System.out.println(HumanReadables.BINARY.human(1099382778757L));
         System.out.println(HumanReadables.BINARY.parse("-1,023.88GiB ", false));
         System.out.println(HumanReadables.BINARY.parse("-1,023.88   GiB  ", false));
         System.out.println(HumanReadables.BINARY.parse("-1,023.88    B", false));
