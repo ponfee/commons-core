@@ -17,7 +17,8 @@ import org.apache.commons.lang3.StringUtils;
 import code.ponfee.commons.math.Maths;
 
 /**
- * Human readable utility class
+ * The file size human readable utility class, 
+ * provide  mutual conversions from human readable size to byte size
  * 
  * The similar function in stackoverflow, linked:
  *  https://stackoverflow.com/questions/3758606/how-to-convert-byte-size-into-human-readable-format-in-java?r=SearchResults
@@ -68,9 +69,12 @@ public enum HumanReadables {
         }
 
         int digit = (int) Maths.log(size, this.base);
-        return new StringBuilder(13).append(signed)
+        return new StringBuilder(13) // 13 max length like as "-1,023.45 GiB"
+            .append(signed)
             .append(new DecimalFormat(FORMAT).format(size / Math.pow(this.base, digit)))
-            .append(" ").append(this.units[digit]).toString();
+            .append(" ")
+            .append(this.units[digit])
+            .toString();
     }
 
     public strictfp long parse(String size) {
@@ -103,7 +107,7 @@ public enum HumanReadables {
         // last character isn't a digit
         char c = str.charAt(lastPos - end);
         if (c == 'i') {
-            // the last pos cannot end with "i"
+            // last pos cannot end with "i"
             throw new IllegalArgumentException("Invalid format [" + size + "], cannot end with \"i\".");
         }
 
@@ -111,15 +115,14 @@ public enum HumanReadables {
             end++;
             c = str.charAt(lastPos - end);
 
-            if (isBlank(c)) {
-                while (isBlank(c) && end < lastPos) {
-                    end++;
-                    c = str.charAt(lastPos - end);
-                }
-                // if "B" prefix has space char, then the first prefix non space char must be a digit
-                if (!Character.isDigit(c)) {
-                    throw new IllegalArgumentException("Invalid format [" + size + "]: \"" + c + "\".");
-                }
+            boolean flag = isBlank(c);
+            while (isBlank(c) && end < lastPos) {
+                end++;
+                c = str.charAt(lastPos - end);
+            }
+            // if "B" head has space char, then the first head non space char must be a digit
+            if (flag && !Character.isDigit(c)) {
+                throw new IllegalArgumentException("Invalid format [" + size + "]: \"" + c + "\".");
             }
         }
 
