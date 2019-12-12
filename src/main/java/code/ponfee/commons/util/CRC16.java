@@ -17,6 +17,8 @@ package code.ponfee.commons.util;
 
 /**
  * @author <a href="mailto:mpaluch@paluch.biz">Mark Paluch</a>
+ * 
+ * @see java.util.zip.CRC32#CRC32()
  */
 public final class CRC16 {
 

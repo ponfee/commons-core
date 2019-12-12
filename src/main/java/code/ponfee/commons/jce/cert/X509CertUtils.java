@@ -237,7 +237,7 @@ public class X509CertUtils {
         try {
             switch (info) {
                 case VERSION:
-                    return cert.getVersion() + "";
+                    return Integer.toString(cert.getVersion());
                 case CERT_SN:
                     return Hex.encodeHexString(cert.getSerialNumber().toByteArray(), false);
                 case ALG_NAME:

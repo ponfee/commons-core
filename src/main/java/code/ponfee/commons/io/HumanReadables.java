@@ -11,18 +11,17 @@ package code.ponfee.commons.io;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.Arrays;
-
-import org.apache.commons.lang3.StringUtils;
+import java.util.regex.Pattern;
 
 /**
  * The file size human readable utility class, 
- * provide  mutual conversions from human readable size to byte size
+ * provide mutual conversions from human readable size to byte size<p>
  * 
  * The similar function in stackoverflow, linked:
- *  https://stackoverflow.com/questions/3758606/how-to-convert-byte-size-into-human-readable-format-in-java?r=SearchResults
+ *  https://stackoverflow.com/questions/3758606/how-to-convert-byte-size-into-human-readable-format-in-java?r=SearchResults<p>
  * 
- * Apache also provide similar function
- * @see org.apache.commons.io.FileUtils#byteCountToDisplaySize(long)
+ * Apache also provide similar function 
+ *  {@link org.apache.commons.io.FileUtils#byteCountToDisplaySize(long)}<p>
  * 
  * @author Ponfee
  */
@@ -31,9 +30,11 @@ public enum HumanReadables {
     SI    (1000, "B", "KB",  "MB",  "GB",  "TB",  "PB",  "EB" /*, "ZB",  "YB" */), // 
 
     BINARY(1024, "B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"/*, "ZiB", "YiB"*/), // 
+
     ;
 
-    private static final String FORMAT = "#,##0.##";
+    private static final String  FORMAT  = "#,##0.##";
+    private static final Pattern PATTERN = Pattern.compile(".*[0-9]+.*");
 
     private final int      base;
     private final String[] units;
@@ -44,9 +45,9 @@ public enum HumanReadables {
         this.units = units;
         this.sizes = new long[this.units.length];
 
-        this.sizes[0] = 1;
+        this.sizes[0] = 1L;
         for (int i = 1; i < this.sizes.length; i++) {
-            this.sizes[i] = this.sizes[i - 1] * this.base; // Maths.pow(this.base, i);
+            this.sizes[i] = this.sizes[i - 1] * base; // Maths.pow(base, i);
         }
     }
 
@@ -58,12 +59,12 @@ public enum HumanReadables {
      */
     public strictfp String human(long size) {
         if (size == 0) {
-            return "0" + this.units[0];
+            return "0 " + this.units[0];
         }
 
-        String signed = "";
+        String sign = "";
         if (size < 0) {
-            signed = "-";
+            sign = "-";
             size = size == Long.MIN_VALUE ? Long.MAX_VALUE : -size;
         }
 
@@ -72,8 +73,8 @@ public enum HumanReadables {
 
         int unit = find(size);
         return new StringBuilder(13) // 13 max length like as "-1,023.45 GiB"
-            .append(signed)
-            .append(format(size / (double) this.sizes[unit]))
+            .append(sign)
+            .append(new DecimalFormat(FORMAT).format(size / (double) this.sizes[unit]))
             .append(" ")
             .append(this.units[unit])
             .toString();
@@ -91,23 +92,24 @@ public enum HumanReadables {
      * @return a long value bytes count
      */
     public strictfp long parse(String size, boolean strict) {
-        if (StringUtils.isBlank(size)) {
+        if (size == null || size.isEmpty()) {
             return 0L;
         }
-        if (!size.matches(".*[0-9]+.*")) {
+        if (!PATTERN.matcher(size).matches()) {
             throw new IllegalArgumentException("Invalid format [" + size + "]");
         }
 
-        String str = size = size.trim();
-        long factor = 1L;
-        switch (str.charAt(0)) {
-            case '+': str = str.substring(1);               break;
-            case '-': str = str.substring(1); factor = -1L; break;
+        String value = size = size.trim();
+        long factor = this.sizes[0];
+        int sign = 1;
+        switch (value.charAt(0)) {
+            case '+': value = value.substring(1);            break;
+            case '-': value = value.substring(1); sign = -1; break;
         }
 
-        int end = 0, lastPos = str.length() - 1;
+        int end = 0, lastPos = value.length() - 1;
         // last character isn't a digit
-        char c = str.charAt(lastPos - end);
+        char c = value.charAt(lastPos - end);
         if (c == 'i') {
             // last pos cannot end with "i"
             throw new IllegalArgumentException("Invalid format [" + size + "], cannot end with \"i\".");
@@ -115,12 +117,12 @@ public enum HumanReadables {
 
         if (c == 'B') {
             end++;
-            c = str.charAt(lastPos - end);
+            c = value.charAt(lastPos - end);
 
             boolean flag = isBlank(c);
             while (isBlank(c) && end < lastPos) {
                 end++;
-                c = str.charAt(lastPos - end);
+                c = value.charAt(lastPos - end);
             }
             // if "B" head has space char, then the first head non space char must be a digit
             if (flag && !Character.isDigit(c)) {
@@ -136,7 +138,7 @@ public enum HumanReadables {
                     throw new IllegalArgumentException("Invalid SI format [" + size + "], cannot contains \"i\".");
                 }
                 end++;
-                c = str.charAt(lastPos - end);
+                c = value.charAt(lastPos - end);
             } else {
                 if (this == BINARY && strict) {
                     // if strict, then BINARY must contains "i"
@@ -145,30 +147,30 @@ public enum HumanReadables {
             }
 
             switch (c) {
-                case 'K': factor *= this.sizes[1]; break;
-                case 'M': factor *= this.sizes[2]; break;
-                case 'G': factor *= this.sizes[3]; break;
-                case 'T': factor *= this.sizes[4]; break;
-                case 'P': factor *= this.sizes[5]; break;
-                case 'E': factor *= this.sizes[6]; break;
+                case 'K': factor = this.sizes[1]; break;
+                case 'M': factor = this.sizes[2]; break;
+                case 'G': factor = this.sizes[3]; break;
+                case 'T': factor = this.sizes[4]; break;
+                case 'P': factor = this.sizes[5]; break;
+                case 'E': factor = this.sizes[6]; break;
                 /*
-                case 'Z': factor *= this.bytes[7]; break;
-                case 'Y': factor *= this.bytes[8]; break;
+                case 'Z': factor = this.bytes[7]; break;
+                case 'Y': factor = this.bytes[8]; break;
                 */
                 default: throw new IllegalArgumentException("Invalid format [" + size + "]: \"" + c + "\".");
             }
 
             do {
                 end++;
-                c = str.charAt(lastPos - end);
+                c = value.charAt(lastPos - end);
             } while (isBlank(c) && end < lastPos);
         }
 
-        str = str.substring(0, str.length() - end);
+        value = value.substring(0, value.length() - end);
         try {
-            return (long) (factor * new DecimalFormat(FORMAT).parse(str).doubleValue());
+            return sign * (long) (factor * new DecimalFormat(FORMAT).parse(value).doubleValue());
         } catch (NumberFormatException | ParseException e) {
-            throw new IllegalArgumentException("Failed to parse [" + size + "]: \"" + str + "\".");
+            throw new IllegalArgumentException("Failed to parse [" + size + "]: \"" + value + "\".");
         }
     }
 
@@ -192,10 +194,6 @@ public enum HumanReadables {
             }
         }
         return n - 1;
-    }
-
-    private String format(double number) {
-        return new DecimalFormat(FORMAT).format(number);
     }
 
     private boolean isBlank(char c) {
