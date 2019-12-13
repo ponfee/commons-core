@@ -49,6 +49,7 @@ public class WrappedFastDateFormat extends DateFormat {
     public static final FastDateFormat PATTERN10B = FastDateFormat.getInstance("yyyy/MM/dd'T'HH:mm:ss.SSSZ");
     public static final FastDateFormat PATTERN11B = FastDateFormat.getInstance("yyyy/MM/dd'T'HH:mm:ss.SSS'Z'");
 
+    // thread-safe
     public static final WrappedFastDateFormat DEFAULT = new WrappedFastDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private final FastDateFormat format;

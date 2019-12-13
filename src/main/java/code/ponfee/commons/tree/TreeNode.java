@@ -415,7 +415,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
 
     // -----------------------------------------------getter/setter
     public List<TreeNode<T, A>> getChildren() {
-        return children;
+        return this.children;
     }
 
     // -----------------------------------------------------------------------------comparing by Attach

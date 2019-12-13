@@ -1,5 +1,7 @@
 package code.ponfee.commons.math;
 
+import java.util.Objects;
+
 /**
  * 数学算术
  * 取模：Modulo Operation
@@ -43,15 +45,23 @@ public class Maths {
         return (x << n) | (x >>> (32 - n));
     }
 
-    public static long pow(long x, int y) {
-        if (y == 0) {
+    /**
+     * Returns a long value for {@code base}<sup>{@code exponent}</sup>.
+     * 
+     * @param base      the base
+     * @param exponent  the exponent
+     * @return a long value for {@code base}<sup>{@code exponent}</sup>.
+     */
+    public static long pow(long base, int exponent) {
+        if (exponent == 0) {
             return 1;
         }
 
-        long z = x;
-        for (int i = 1; i < y; i++) {
-            z *= x;
+        long result = base;
+        for (int i = 1; i < exponent; i++) {
+            result *= base;
         }
-        return z;
+        return result;
     }
+
 }
