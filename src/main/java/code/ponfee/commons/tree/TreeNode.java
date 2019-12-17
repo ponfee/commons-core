@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -43,7 +42,6 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
 
     private static final long serialVersionUID = -9081626363752680404L;
     public static final String DEFAULT_ROOT_ID = "__ROOT__";
-    public static final String DEFAULT_CHILDREN_KEY = "children";
 
     // 用于比较兄弟节点
     private final Comparator<? super TreeNode<T, A>> siblingNodeOrders;
@@ -230,23 +228,14 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         }
     }
 
-    // -----------------------------------------------------------to map
-    public Map<String, Object> toMap(Function<TreeNode<T, A>, Map<String, Object>> convert) {
-        return toMap(convert, DEFAULT_CHILDREN_KEY, true);
-    }
-
-    public Map<String, Object> toMap(Function<TreeNode<T, A>, Map<String, Object>> convert, 
-                                     boolean containsUnavailable) {
-        return toMap(convert, DEFAULT_CHILDREN_KEY, containsUnavailable);
-    }
-
-    public Map<String, Object> toMap(Function<TreeNode<T, A>, Map<String, Object>> convert, 
-                                     String childrenKey, boolean containsUnavailable) {
+    // -----------------------------------------------------------convert to TreeTrait
+    public TreeTrait<T, A> convert(Function<TreeNode<T, A>, TreeTrait<T, A>> convert,
+                                   boolean containsUnavailable) {
         if (!containsUnavailable && !this.available) {
             return null;
         }
-        Map<String, Object> root = convert.apply(this);
-        this.toMap(convert, root, childrenKey, containsUnavailable);
+        TreeTrait<T, A> root = convert.apply(this);
+        this.convert(convert, root, containsUnavailable);
         return root;
     }
 
@@ -394,22 +383,21 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         return builder.add(nid).build();
     }
 
-    private void toMap(Function<TreeNode<T, A>, Map<String, Object>> convert,
-                       Map<String, Object> parent, String childrenKey, 
-                       boolean containsUnavailable) {
+    private void convert(Function<TreeNode<T, A>, TreeTrait<T, A>> convert,
+                         TreeTrait<T, A> parent, boolean containsUnavailable) {
         if (CollectionUtils.isNotEmpty(this.children)) {
-            List<Map<String, Object>> list = new ArrayList<>(this.children.size());
+            List<TreeTrait<T, A>> list = new ArrayList<>(this.children.size());
             for (TreeNode<T, A> child : this.children) {
-                if (!containsUnavailable && !child.available) {
-                    continue; // filter unavailable
+                if (child.available || containsUnavailable) {
+                    // filter unavailable
+                    TreeTrait<T, A> node = convert.apply(child);
+                    child.convert(convert, node, containsUnavailable);
+                    list.add(node);
                 }
-                Map<String, Object> map = convert.apply(child);
-                child.toMap(convert, map, childrenKey, containsUnavailable);
-                list.add(map);
             }
-            parent.put(childrenKey, list);
+            parent.setChildren(list);
         } else {
-            parent.put(childrenKey, null);
+            parent.setChildren(null);
         }
     }
 

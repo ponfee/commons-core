@@ -11,9 +11,7 @@ package test.tree;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
@@ -21,7 +19,9 @@ import org.junit.Test;
 
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.tree.BaseNode;
+import code.ponfee.commons.tree.MapTreeTrait;
 import code.ponfee.commons.tree.TreeNode;
+import code.ponfee.commons.tree.TreeTrait;
 
 /**
  * 
@@ -69,12 +69,12 @@ public class NodeTreeTest {
         System.out.println(Jsons.toJson(root));
         System.out.println(Jsons.toJson(root.dfsFlat()));
         System.out.println(Jsons.toJson(root.bfsFlat()));
-        System.out.println(Jsons.toJson(root.toMap(this::toMap, true)));
-        System.out.println(Jsons.toJson(root.toMap(this::toMap, false)));
+        System.out.println("convert-true: "  + Jsons.toJson(root.convert(this::convert, true)));
+        System.out.println("convert-false: " + Jsons.toJson(root.convert(this::convert, false)));
     }
 
-    private Map<String, Object> toMap(TreeNode<String, String> node) {
-        Map<String, Object> map = new HashMap<>();
+    private TreeTrait<String, String> convert(TreeNode<String, String> node) {
+        MapTreeTrait<String, String> map = new MapTreeTrait<>();
         map.put("nid", node.getNid());
         map.put("pid", node.getPid());
         map.put("attach", node.getAttach());

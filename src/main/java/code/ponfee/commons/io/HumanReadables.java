@@ -80,12 +80,12 @@ public enum HumanReadables {
             .toString();
     }
 
-    public strictfp long parse(String size) {
+    public long parse(String size) {
         return parse(size, false);
     }
 
     /**
-     * Parse the readable byte count, allowed suffix units: "1", "1B", "1MB", "1MiB", "1M"
+     * Parse the readable byte count, allowed suffix units: "1", "1 B", "1 MB", "1 MiB", "1 M"
      * 
      * @param size   the size
      * @param strict the strict, if BINARY then verify whether contains "i"
@@ -186,6 +186,7 @@ public enum HumanReadables {
         return Arrays.copyOf(this.sizes, this.sizes.length);
     }
 
+    // --------------------------------------------------------------private methods
     private int find(long bytes) {
         int n = this.sizes.length;
         for (int i = 1; i < n; i++) {
