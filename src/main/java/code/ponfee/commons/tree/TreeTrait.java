@@ -19,5 +19,6 @@ import java.util.List;
 public interface TreeTrait<T extends Serializable & Comparable<? super T>, A extends Serializable>
     extends Serializable {
 
-    void setChildren(List<TreeTrait<T, A>> children);
+    <E extends TreeTrait<T, A>> void setChildren(List<E> children);
+
 }

@@ -229,19 +229,19 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     }
 
     // -----------------------------------------------------------convert to TreeTrait
-    public <E extends TreeTrait<T, A>> E convert(Function<TreeNode<T, A>, TreeTrait<T, A>> convert) {
+    public <E extends TreeTrait<T, A>> E convert(Function<TreeNode<T, A>, E> convert) {
         return convert(convert, true);
     }
 
-    @SuppressWarnings("unchecked")
-    public <E extends TreeTrait<T, A>> E convert(Function<TreeNode<T, A>, TreeTrait<T, A>> convert, 
+    public <E extends TreeTrait<T, A>> E convert(Function<TreeNode<T, A>, E> convert, 
                                                  boolean containsUnavailable) {
         if (!containsUnavailable && !this.available) {
             return null;
         }
-        TreeTrait<T, A> root = convert.apply(this);
+
+        E root = convert.apply(this);
         this.convert(convert, root, containsUnavailable);
-        return (E) root;
+        return root;
     }
 
     // -----------------------------------------------------------private methods
@@ -388,14 +388,13 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         return builder.add(nid).build();
     }
 
-    private void convert(Function<TreeNode<T, A>, TreeTrait<T, A>> convert,
-                         TreeTrait<T, A> parent, boolean containsUnavailable) {
+    private <E extends TreeTrait<T, A>> void convert(Function<TreeNode<T, A>, E> convert, 
+                                                     E parent, boolean containsUnavailable) {
         if (CollectionUtils.isNotEmpty(this.children)) {
-            List<TreeTrait<T, A>> list = new ArrayList<>(this.children.size());
+            List<E> list = new ArrayList<>(this.children.size());
             for (TreeNode<T, A> child : this.children) {
-                if (child.available || containsUnavailable) {
-                    // filter unavailable
-                    TreeTrait<T, A> node = convert.apply(child);
+                if (child.available || containsUnavailable) { // filter unavailable
+                    E node = convert.apply(child);
                     child.convert(convert, node, containsUnavailable);
                     list.add(node);
                 }

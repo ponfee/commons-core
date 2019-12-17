@@ -35,7 +35,7 @@ public class MapTreeTrait<T extends Serializable & Comparable<? super T>, A exte
     }
 
     @Override
-    public void setChildren(List<TreeTrait<T, A>> children) {
+    public <E extends TreeTrait<T, A>> void setChildren(List<E> children) {
         this.put(this.childrenKey, children);
     }
 
