@@ -229,14 +229,19 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     }
 
     // -----------------------------------------------------------convert to TreeTrait
-    public TreeTrait<T, A> convert(Function<TreeNode<T, A>, TreeTrait<T, A>> convert,
-                                   boolean containsUnavailable) {
+    public <E extends TreeTrait<T, A>> E convert(Function<TreeNode<T, A>, TreeTrait<T, A>> convert) {
+        return convert(convert, true);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <E extends TreeTrait<T, A>> E convert(Function<TreeNode<T, A>, TreeTrait<T, A>> convert, 
+                                                 boolean containsUnavailable) {
         if (!containsUnavailable && !this.available) {
             return null;
         }
         TreeTrait<T, A> root = convert.apply(this);
         this.convert(convert, root, containsUnavailable);
-        return root;
+        return (E) root;
     }
 
     // -----------------------------------------------------------private methods
