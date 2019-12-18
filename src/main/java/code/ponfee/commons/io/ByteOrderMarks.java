@@ -24,12 +24,16 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.bouncycastle.util.Arrays;
 
 /**
+ * <pre>
  * BOM(byte-order mark) Encoding: 
  *   EF BB BF       UTF-8
  *   FF FE          UTF-16 (little-endian)
  *   FE FF          UTF-16 (big-endian)
  *   FF FE 00 00    UTF-32 (little-endian)
  *   00 00 FE FF    UTF-32 (big-endian)
+ * 
+ * link sun.nio.cs.StandardCharsets
+ * </pre>
  * 
  * @author Ponfee
  */

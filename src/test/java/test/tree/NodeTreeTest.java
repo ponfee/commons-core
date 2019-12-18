@@ -21,7 +21,7 @@ import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.tree.BaseNode;
 import code.ponfee.commons.tree.MapTreeTrait;
 import code.ponfee.commons.tree.TreeNode;
-import code.ponfee.commons.tree.TreeTrait;
+import code.ponfee.commons.tree.TreeNodeBuilder;
 
 /**
  * 
@@ -47,7 +47,7 @@ public class NodeTreeTest {
         list.add(new BaseNode<>("400000", null, true, "nid400000"));
 
         // do mount first
-        TreeNode<String, String> subtree = TreeNode.of("400010", "400000", true, Comparator.comparing(n -> ThreadLocalRandom.current().nextInt(10)));
+        TreeNode<String, String> subtree = TreeNodeBuilder.<String, String> newBuilder("400010", Comparator.comparing(n -> ThreadLocalRandom.current().nextInt(10))).pid("400000").enabled(true).build();
 
         // do mount second
         subtree.mount(Arrays.asList(
@@ -61,7 +61,7 @@ public class NodeTreeTest {
         list.add(new BaseNode<>("500011", "500010", true, "nid500011"));
 
         // do mount third
-        TreeNode<String, String> root = TreeNode.of(TreeNode.DEFAULT_ROOT_ID, Comparator.comparing(BaseNode::getNid));
+        TreeNode<String, String> root = TreeNodeBuilder.<String, String> newBuilder(TreeNode.DEFAULT_ROOT_ID).build();
         System.out.println(Jsons.toJson(root));
 
         // do mount fouth
@@ -73,7 +73,7 @@ public class NodeTreeTest {
         System.out.println("convert-false: " + Jsons.toJson(root.convert(this::convert, false)));
     }
 
-    private TreeTrait<String, String> convert(TreeNode<String, String> node) {
+    private MapTreeTrait<String, String> convert(TreeNode<String, String> node) {
         MapTreeTrait<String, String> map = new MapTreeTrait<>();
         map.put("nid", node.getNid());
         map.put("pid", node.getPid());
@@ -90,7 +90,7 @@ public class NodeTreeTest {
         list.add(new BaseNode<>("a", "b", true, "")); // 节点循环依赖
         list.add(new BaseNode<>("b", "a", true, ""));
 
-        TreeNode<String, String> root = TreeNode.of(TreeNode.DEFAULT_ROOT_ID);
+        TreeNode<String, String> root = TreeNodeBuilder.<String, String> newBuilder(TreeNode.DEFAULT_ROOT_ID).build();
         root.mount(list);
         System.out.println(Jsons.toJson(root));
     }
@@ -100,7 +100,7 @@ public class NodeTreeTest {
         List<BaseNode<String, String>> list = new ArrayList<>();
         list.add(new BaseNode<>("100001", null, true, "nid100010")); // 节点编号不能为空
         list.add(new BaseNode<>(null, "100001", true, "nid100010"));
-        TreeNode<String, String> root = TreeNode.of(TreeNode.DEFAULT_ROOT_ID);
+        TreeNode<String, String> root = TreeNodeBuilder.<String, String> newBuilder(TreeNode.DEFAULT_ROOT_ID).build();
         root.mount(list);
         System.out.println(Jsons.toJson(root));
     }
@@ -111,7 +111,7 @@ public class NodeTreeTest {
         list.add(new BaseNode<>("100000", "notfound", true, "nid100000")); // 无效的孤儿节点
         list.add(new BaseNode<>("200000", "notfound", true, "nid200000")); // 无效的孤儿节点
 
-        TreeNode.<String, String> of(TreeNode.DEFAULT_ROOT_ID).mount(list);
+        TreeNodeBuilder.<String, String> newBuilder(TreeNode.DEFAULT_ROOT_ID).build().mount(list);
     }
 
     @Test
@@ -132,7 +132,7 @@ public class NodeTreeTest {
         list.add(new BaseNode<>("400000", null, true, random()));
 
         // do mount first
-        TreeNode<String, String> subtree = TreeNode.of("400010", "400000");
+        TreeNode<String, String> subtree = TreeNodeBuilder.<String, String> newBuilder("400010").pid("400000").build();
 
         // do mount second
         subtree.mount(Arrays.asList(
@@ -147,7 +147,7 @@ public class NodeTreeTest {
 
         // do mount third
         Comparator< ? super TreeNode<String, String>> c = TreeNode.comparingThenComparingNid(Function.identity());
-        TreeNode<String, String> root = TreeNode.of(TreeNode.DEFAULT_ROOT_ID, c);
+        TreeNode<String, String> root = TreeNodeBuilder.<String, String> newBuilder(TreeNode.DEFAULT_ROOT_ID, c).build();
         System.out.println(Jsons.toJson(root));
 
         // do mount fouth

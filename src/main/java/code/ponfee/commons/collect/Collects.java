@@ -16,6 +16,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -387,17 +388,25 @@ public final class Collects {
      * @param obj the element
      */
     public static <T> void set(List<T> list, int index, T obj) {
-        int size = list.size();
-        if (index < size) {
-            list.set(index, obj);
-        } else if (index == size) {
-            list.add(obj);
-        } else {
-            for (int i = size; i < index; i++) {
-                list.add(null);
-            }
-            list.add(obj);
+        for (int i = list.size(); i <= index; i++) {
+            list.add(null);
         }
+        list.set(index, obj);
+    }
+
+    /**
+     * Gets the index element from list, if not arrival index pos then auto imcrement
+     * 
+     * @param list     the list
+     * @param index    the index
+     * @param supplier the element generator
+     * @return an element
+     */
+    public static <T> T get(List<T> list, int index, Supplier<T> supplier) {
+        for (int i = list.size(); i <= index; i++) {
+            list.add(supplier.get());
+        }
+        return list.get(index);
     }
 
     /**

@@ -9,19 +9,34 @@
 package code.ponfee.commons.tree;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
- * The trait for Tree node
+ * Base node id
  * 
  * @author Ponfee
- * @param <T> the node id type
- * @param <A> the attachment biz object type
- * @param <E> the TreeTrait type
+ * @param <T> the NodeId implementation sub class
  */
-public interface TreeTrait<T extends Serializable & Comparable<? super T>, A extends Serializable, E extends TreeTrait<T, A, E>>
-    extends Serializable {
+public abstract class NodeId<T extends NodeId<T>> implements Serializable, Comparable<T>, Cloneable {
 
-    void setChildren(List<E> children);
+    private static final long serialVersionUID = -9004940918491918780L;
+
+    protected final T parent;
+
+    public NodeId(T parent) {
+        this.parent = parent;
+    }
+
+    @Override
+    public abstract int hashCode();
+
+    @Override
+    public abstract boolean equals(Object obj);
+
+    @Override
+    public abstract T clone();
+
+    public final T getParent() {
+        return parent;
+    }
 
 }

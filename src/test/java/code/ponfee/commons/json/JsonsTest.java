@@ -1,15 +1,19 @@
 package code.ponfee.commons.json;
 
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Map;
 
 import org.junit.Test;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import code.ponfee.commons.collect.Collects;
 import code.ponfee.commons.model.Result;
+import code.ponfee.commons.util.ObjectUtils;
 
 @SuppressWarnings("unchecked")
 public class JsonsTest {
@@ -61,5 +65,34 @@ public class JsonsTest {
         Result<String> result = Result.success("xx");
         System.out.println(JSONObject.toJSONString(result));
         System.out.println(JSONObject.toJSONString(result, new SimplePropertyPreFilter("msg")));
+    }
+    
+    @Test
+    public void test5() {
+        System.out.println(Jsons.fromJson(Jsons.toJson(new StringBuilder("111111111")), StringBuilder.class));
+        System.out.println(Jsons.fromJson(Jsons.toJson(new StringPlain()), StringPlain.class));
+
+        System.out.println(JSON.parseObject(JSON.toJSONString(new StringBuilder("111111111")), StringBuilder.class));
+        System.out.println(JSON.parseObject(JSON.toJSONString(new StringPlain()), StringPlain.class));
+
+        System.out.println(JSON.parse(JSON.toJSONString(Arrays.asList(1, 2, 3, 4))));
+    }
+
+    public static class StringPlain implements Serializable {
+        private static final long serialVersionUID = 1L;
+        private StringBuilder sb = new StringBuilder("xxxxxxxxxx");
+
+        public StringBuilder getSb() {
+            return sb;
+        }
+
+        public void setSb(StringBuilder sb) {
+            this.sb = sb;
+        }
+
+        @Override
+        public String toString() {
+            return ObjectUtils.toString(this);
+        }
     }
 }

@@ -17,6 +17,8 @@ import org.apache.commons.collections4.CollectionUtils;
  * 节点扁平结构
  * 
  * @author Ponfee
+ * @param <T> the node id type
+ * @param <A> the attachment biz object type
  */
 public final class FlatNode<T extends Serializable & Comparable<? super T>, A extends Serializable>
     extends BaseNode<T, A> {

@@ -8,6 +8,7 @@
 
 package code.ponfee.commons.model;
 
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 
 /**
@@ -16,7 +17,9 @@ import java.lang.reflect.Constructor;
  * 
  * @author Ponfee
  */
-public final class Null {
+public final class Null implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public static final Constructor<Null> UNCONSTRUCTOR;
     static {
