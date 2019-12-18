@@ -63,7 +63,10 @@ public final class TreeNodeBuilder<T extends Serializable & Comparable<? super T
     }
 
     public TreeNode<T, A> build() {
-        return new TreeNode<>(nid, pid, enabled, available, attach, siblingNodeOrders, buildPath, false);
+        return new TreeNode<>(
+            nid, pid, enabled, available, attach, 
+            siblingNodeOrders, buildPath, true
+        );
     }
 
 }

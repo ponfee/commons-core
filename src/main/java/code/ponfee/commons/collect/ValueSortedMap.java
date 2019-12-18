@@ -31,7 +31,7 @@ import java.util.function.Function;
 public class ValueSortedMap<K, V> extends TreeMap<K, V> {
 
     private static final long serialVersionUID = -6242175050718596776L;
-    private boolean initialized = false;
+    private final boolean initialized;
 
     private ValueSortedMap(Map<? extends K, ? extends V> map, 
                            Comparator<? super V> comparator) {

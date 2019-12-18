@@ -78,7 +78,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         this.buildPath = buildPath;
 
         if (doMount) {
-            this.mount(null); // as root node
+            this.mount(null); // as root node if new instance at external(TreeNodeBuilder) or of(TreeNode)
         }
     }
 
@@ -132,7 +132,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         nodes.stream().forEach(n -> checkDuplicateList.add(n.nid));
         Set<T> duplicated = Collects.duplicate(checkDuplicateList);
         if (CollectionUtils.isNotEmpty(duplicated)) {
-            throw new RuntimeException("Duplicated node ids: " + duplicated);
+            throw new RuntimeException("Duplicated nodes: " + duplicated);
         }
 
         // 3、以此节点为根构建节点树
@@ -145,7 +145,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         if (!ignoreOrphan && CollectionUtils.isNotEmpty(nodes)) {
             List<T> nids = nodes.stream().map(BaseNode::getNid)
                                 .collect(Collectors.toList());
-            throw new RuntimeException("无效的孤儿节点：" + nids);
+            throw new RuntimeException("Invalid orphan nodes: " + nids);
         }
 
         // 5、统计
@@ -343,7 +343,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
             return null;
         }
 
-        // already check duplicated, so cannot has circular dependencies happened
+        // already check duplicated, so cannot happened has circular dependencies state
         /*if (IterableUtils.matchesAny(parentPath, nid::equals)) {
             // 节点路径中已经包含了此节点，则视为环状
             throw new RuntimeException("Node circular dependencies: " + parentPath + " -> " + nid);
