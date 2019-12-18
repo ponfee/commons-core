@@ -57,7 +57,7 @@ public class CsvExtractor extends DataExtractor {
             bris.skip(bom.length());
         }
 
-        // BOMInputStream maybe occur error: UTF-16LE, UTF-16BE,
+        // Use BOMInputStream maybe occur error(dead loop): UTF-16LE, UTF-16BE,
         try (Reader reader = new InputStreamReader(/*new BOMInputStream(bris)*/bris, encoding)) {
             int columnSize = this.withHeader ? this.headers.length : 0;
             Iterable<CSVRecord> records = this.csvFormat.parse(reader);

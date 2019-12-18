@@ -15,10 +15,13 @@ import java.util.List;
  * The trait for Tree node
  * 
  * @author Ponfee
+ * @param <T> the node id type
+ * @param <A> the attachment biz object type
+ * @param <E> the TreeTrait type
  */
-public interface TreeTrait<T extends Serializable & Comparable<? super T>, A extends Serializable>
+public interface TreeTrait<T extends Serializable & Comparable<? super T>, A extends Serializable, E extends TreeTrait<T, A, E>>
     extends Serializable {
 
-    <E extends TreeTrait<T, A>> void setChildren(List<E> children);
+    void setChildren(List<E> children);
 
 }

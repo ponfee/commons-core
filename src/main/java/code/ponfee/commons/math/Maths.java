@@ -1,6 +1,6 @@
 package code.ponfee.commons.math;
 
-import java.util.Objects;
+import javax.validation.constraints.Min;
 
 /**
  * 数学算术
@@ -52,7 +52,7 @@ public class Maths {
      * @param exponent  the exponent
      * @return a long value for {@code base}<sup>{@code exponent}</sup>.
      */
-    public static long pow(long base, int exponent) {
+    public static long pow(@Min(1) long base, @Min(0) int exponent) {
         if (exponent == 0) {
             return 1;
         }

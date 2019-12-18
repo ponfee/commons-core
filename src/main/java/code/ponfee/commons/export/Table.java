@@ -12,7 +12,7 @@ import org.springframework.util.CollectionUtils;
 
 import code.ponfee.commons.tree.BaseNode;
 import code.ponfee.commons.tree.FlatNode;
-import code.ponfee.commons.tree.TreeNode;
+import code.ponfee.commons.tree.TreeNodeBuilder;
 
 /**
  * 表格
@@ -53,8 +53,7 @@ public class Table<E> implements Serializable {
 
     public Table(List<BaseNode<Integer, Thead>> list, 
                  Function<E, Object[]> converter) {
-        this.thead = TreeNode.<Integer, Thead>of(ROOT_PID)
-                             .mount(list).bfsFlat();
+        this.thead = TreeNodeBuilder.<Integer, Thead> newBuilder(ROOT_PID).build().mount(list).bfsFlat();
         this.converter = converter;
     }
 
@@ -67,8 +66,7 @@ public class Table<E> implements Serializable {
         for (int i = 1; i <= names.length; i++) {
             list.add(new BaseNode<>(i, ROOT_PID, new Thead(names[i - 1])));
         }
-        this.thead = TreeNode.<Integer, Thead>of(ROOT_PID)
-                             .mount(list).bfsFlat();
+        this.thead = TreeNodeBuilder.<Integer, Thead> newBuilder(ROOT_PID).build().mount(list).bfsFlat();
         this.converter = converter;
     }
 

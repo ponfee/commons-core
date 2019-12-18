@@ -67,20 +67,20 @@ import code.ponfee.commons.util.Enums;
  */
 public final class Http {
 
-    private final String url; // url
+    private final String     url;    // url
     private final HttpMethod method; // 请求方法
 
     private final Map<String, String> headers = new HashMap<>(1);   // http请求头
-    private final Map<String, Object> params  = new HashMap<>(1);   // http请求参数：queryString
-    private final List<MimePart> parts        = new ArrayList<>(1); // http文件上传
+    private final Map<String, Object> params  = new HashMap<>(1);   // http请求参数(query string)
+    private final List<MimePart>      parts   = new ArrayList<>(1); // http文件上传
 
-    private String data; // request body
-    private int connectTimeout = 1000 * 3; // 连接超时时间
-    private int readTimeout = 1000 * 7; // 读取返回数据超时时间（socket timeout）
-    private Boolean encode = Boolean.TRUE; // 是否编码
-    private String contentType; // 请求内容类型
-    private String contentCharset; // 请求内容编码
-    private String accept; // 接收类型
+    private String data;                       // request body（json or form params, such as name1=value1&name2=value2&...&namen=valuen）
+    private int connectTimeout = 1000 * 3;     // 连接超时时间
+    private int readTimeout = 1000 * 7;        // 读取返回数据超时时间（socket timeout）
+    private Boolean encode = Boolean.TRUE;     // 是否编码
+    private String contentType;                // 请求内容类型：header("Content-Type", "application/json; charset=UTF-8")
+    private String contentCharset;             // 请求内容编码
+    private String accept;                     // 接收类型：header("Accept", "application/json")
     private SSLSocketFactory sslSocketFactory; // 走SSL/TSL通道
 
     // ----------------------------------------------------------response
