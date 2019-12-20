@@ -17,14 +17,14 @@ import org.apache.commons.collections4.ListUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import code.ponfee.commons.tree.PathNodeId;
+import code.ponfee.commons.tree.NodePath;
 
 /**
  * 
  * 
  * @author Ponfee
  */
-public class PathNodeIdTest {
+public class NodePathTest {
 
     @Test
     public void test1() {
@@ -35,29 +35,29 @@ public class PathNodeIdTest {
 
     @Test
     public void test2() {
-        PathNodeId<Integer> p1 = new PathNodeId<>(1, 2, 3, 4);
-        PathNodeId<Integer> p2 = new PathNodeId<>(1, 2, 3, 4);
+        NodePath<Integer> p1 = new NodePath<>(1, 2, 3, 4);
+        NodePath<Integer> p2 = new NodePath<>(1, 2, 3, 4);
         System.out.println(p1.equals(p2));
         System.out.println(p1.compareTo(p2));
 
         System.out.println("\n\n=========================");
-        p1 = new PathNodeId<>(1, 2, 3, 4);
-        p2 = new PathNodeId<>(1, 2);
+        p1 = new NodePath<>(1, 2, 3, 4);
+        p2 = new NodePath<>(1, 2);
         System.out.println(p1.equals(p2));
         System.out.println(p1.compareTo(p2));
 
         System.out.println("\n\n=========================");
-        p1 = new PathNodeId<>(1, 2, 3, 4);
-        p2 = new PathNodeId<>(4, 2);
+        p1 = new NodePath<>(1, 2, 3, 4);
+        p2 = new NodePath<>(4, 2);
         System.out.println(p1.equals(p2));
         System.out.println(p1.compareTo(p2));
     }
 
     @Test
     public void test3() {
-        Map<PathNodeId<Integer>, Object> map = new HashMap<>();
-        map.put(new PathNodeId<>(1, 2, 3, 4), "xx");
-        Assert.assertNotNull(map.get(new PathNodeId<>(1, 2, 3, 4)));
-        Assert.assertNull(map.get(new PathNodeId<>(1, 2, 3)));
+        Map<NodePath<Integer>, Object> map = new HashMap<>();
+        map.put(new NodePath<>(1, 2, 3, 4), "xx");
+        Assert.assertNotNull(map.get(new NodePath<>(1, 2, 3, 4)));
+        Assert.assertNull(map.get(new NodePath<>(1, 2, 3)));
     }
 }

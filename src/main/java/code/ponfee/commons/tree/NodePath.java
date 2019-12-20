@@ -1,6 +1,8 @@
 package code.ponfee.commons.tree;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -18,41 +21,58 @@ import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.list.UnmodifiableList;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.annotation.JSONType;
+import com.alibaba.fastjson.parser.DefaultJSONParser;
+import com.alibaba.fastjson.parser.JSONToken;
+import com.alibaba.fastjson.parser.deserializer.ObjectDeserializer;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;
 
+import code.ponfee.commons.tree.NodePath.NodePathFastjsonDeserializer;
+import code.ponfee.commons.tree.NodePath.NodePathJacksondDeserializer;
+
 /**
- * The node id for path
+ * Representing node path array
  * 
  * @author Ponfee
  * @param <T> the node id type
  */
-public final class PathNodeId<T extends Serializable & Comparable<? super T>> 
-    extends ArrayList<T> implements Serializable, Comparable<PathNodeId<T>>, Cloneable {
+@JSONType(deserializer = NodePathFastjsonDeserializer.class)
+@JsonDeserialize(using = NodePathJacksondDeserializer.class)
+public final class NodePath<T extends Serializable & Comparable<? super T>> 
+    extends ArrayList<T> implements Serializable, Comparable<NodePath<T>>, Cloneable {
 
     private static final long serialVersionUID = 9090552044337950223L;
 
     private final boolean initialized;
 
-    public PathNodeId() {
+    public NodePath() {
         // for json deserialize
         initialized = true;
     }
 
     @SuppressWarnings("unchecked")
-    public PathNodeId(@NotEmpty T... path) {
+    public NodePath(@NotEmpty T... path) {
         Preconditions.checkArgument(ArrayUtils.isNotEmpty(path));
         Collections.addAll(this, path);
         initialized = true;
     }
 
-    public PathNodeId(@NotEmpty List<T> path) {
+    public NodePath(@NotEmpty List<T> path) {
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(path));
         this.addAll(path);
         initialized = true;
     }
 
-    public PathNodeId(@NotEmpty PathNodeId<T> parent, T child) {
+    public NodePath(@NotEmpty NodePath<T> parent, T child) {
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(parent));
         this.addAll(parent);
         this.add(child);
@@ -60,7 +80,7 @@ public final class PathNodeId<T extends Serializable & Comparable<? super T>>
     }
 
     @Override
-    public int compareTo(PathNodeId<T> o) {
+    public int compareTo(NodePath<T> o) {
         int min = Math.min(this.size(), o.size());
         for (int i = 0; i < min; i++) {
             int c = this.get(i).compareTo(o.get(i));
@@ -74,15 +94,15 @@ public final class PathNodeId<T extends Serializable & Comparable<? super T>>
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof PathNodeId) {
-            return ListUtils.isEqualList(this, (PathNodeId<?>) obj);
+        if (obj instanceof NodePath) {
+            return ListUtils.isEqualList(this, (NodePath<?>) obj);
         } else {
             return false;
         }
     }
 
     @Override
-    public PathNodeId<T> clone() {
+    public NodePath<T> clone() {
         return SerializationUtils.clone(this);
     }
 
@@ -148,7 +168,7 @@ public final class PathNodeId<T extends Serializable & Comparable<? super T>>
 
         @Override
         public boolean hasPrevious() {
-            return size() > 0 && cursor > 0;
+            return cursor > 0 && cursor <= size();
         }
 
         @Override
@@ -241,6 +261,48 @@ public final class PathNodeId<T extends Serializable & Comparable<? super T>>
     @Override @Deprecated
     public void sort(Comparator<? super T> c) {
         throw new UnsupportedOperationException();
+    }
+
+    // -----------------------------------------------------custom fastjson deserialize
+    public static class NodePathFastjsonDeserializer<T extends Serializable & Comparable<? super T>> 
+        implements ObjectDeserializer {
+        @Override @SuppressWarnings("unchecked")
+        public NodePath<T> deserialze(DefaultJSONParser parser, Type type, Object fieldName) {
+            if (type != NodePath.class) {
+                throw new UnsupportedOperationException(
+                    "Only supported deserialize NodePath, cannot supported: " + type
+                );
+            }
+
+            String value = parser.getLexer().stringVal();
+            if (StringUtils.isEmpty(value) ) {
+                return null;
+            }
+
+            JSONArray list = JSON.parseArray(value);
+            if (list.isEmpty()) {
+                return null;
+            }
+            return new NodePath<>(
+                list.stream().map(o -> (T) o).collect(Collectors.toList())
+            );
+        }
+
+        @Override
+        public int getFastMatchToken() {
+            return JSONToken.RBRACKET;
+        }
+    }
+
+    // -----------------------------------------------------custom jackson deserialize
+    public static class NodePathJacksondDeserializer<T extends Serializable & Comparable<? super T>> 
+        extends JsonDeserializer<NodePath<T>> {
+        @Override @SuppressWarnings("unchecked")
+        public NodePath<T> deserialize(JsonParser p, DeserializationContext ctxt)
+            throws IOException, JsonProcessingException {
+            List<T> list = p.readValueAs(List.class);
+            return CollectionUtils.isEmpty(list) ? null : new NodePath<>(list);
+        }
     }
 
 }
