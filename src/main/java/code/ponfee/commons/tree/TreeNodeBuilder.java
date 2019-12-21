@@ -28,12 +28,13 @@ public final class TreeNodeBuilder<T extends Serializable & Comparable<? super T
         this.siblingNodeOrders = siblingNodeOrders;
     }
 
-    public static <T extends Serializable & Comparable<? super T>, A extends Serializable> TreeNodeBuilder<T, A> newBuilder(T nid) {
+    public static <T extends Serializable & Comparable<? super T>, A extends Serializable> TreeNodeBuilder<T, A> 
+        newBuilder(T nid) {
         return newBuilder(nid, Comparator.comparing(TreeNode::getNid));
     }
 
-    public static <T extends Serializable & Comparable<? super T>, A extends Serializable> TreeNodeBuilder<T, A> newBuilder(
-        T nid, Comparator<? super TreeNode<T, A>> siblingNodeOrders) {
+    public static <T extends Serializable & Comparable<? super T>, A extends Serializable> TreeNodeBuilder<T, A> 
+        newBuilder(T nid, Comparator<? super TreeNode<T, A>> siblingNodeOrders) {
         return new TreeNodeBuilder<>(nid, siblingNodeOrders);
     }
 
