@@ -47,13 +47,13 @@ public class JsonsTest {
     public void test3() {
         Map<?, ?> map = Collects.toMap("a", "xx", "b", 1, "c", 1.2D, "d", null);
         System.out.println(JSONObject.toJSONString(map));
-        System.out.println(JSONObject.toJSONString(map, new FastjsonPropertyFilter(PropertyFilterType.INCLUDES, "a", "b")));
-        System.out.println(JSONObject.toJSONString(map, new FastjsonPropertyFilter(PropertyFilterType.EXCLUDES, "a", "b")));
+        System.out.println(JSONObject.toJSONString(map, FastjsonPropertyFilter.include("a", "b")));
+        System.out.println(JSONObject.toJSONString(map, FastjsonPropertyFilter.exclude("a", "b")));
 
         Result<String> result = Result.success("xx");
         System.out.println(JSONObject.toJSONString(result));
-        System.out.println(JSONObject.toJSONString(result, new FastjsonPropertyFilter(PropertyFilterType.INCLUDES, "msg")));
-        System.out.println(JSONObject.toJSONString(result, new FastjsonPropertyFilter(PropertyFilterType.EXCLUDES, "msg")));
+        System.out.println(JSONObject.toJSONString(result, FastjsonPropertyFilter.include("msg")));
+        System.out.println(JSONObject.toJSONString(result, FastjsonPropertyFilter.exclude("msg")));
     }
 
     @Test
