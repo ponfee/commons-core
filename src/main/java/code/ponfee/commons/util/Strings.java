@@ -2,6 +2,8 @@ package code.ponfee.commons.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -21,12 +23,51 @@ import code.ponfee.commons.math.Numbers;
  */
 public class Strings {
 
-    public static final char BLANK_CHAR = ' ';
-    public static final String FOLDER_SEPARATOR = "/";
+    public static final char   BLANK_CHAR               = ' ';
+    public static final String UNIX_FOLDER_SEPARATOR         = "/";
     public static final String WINDOWS_FOLDER_SEPARATOR = "\\";
-    public static final String TOP_PATH = "..";
-    public static final String CURRENT_PATH = ".";
-    public static final char[] REGEX_SPECIALS = { '\\', '$', '(', ')', '*', '+', '.', '[', ']', '?', '^', '{', '}', '|' };
+    public static final String TOP_PATH                 = "..";
+    public static final String CURRENT_PATH             = ".";
+
+    private static final char[] REGEX_SPECIALS = { '\\', '$', '(', ')', '*', '+', '.', '[', ']', '?', '^', '{', '}', '|' };
+
+    public static String join(Collection<?> coll, String delim) {
+        return join(coll, delim, "", "");
+    }
+
+    /**
+     * 集合拼接为字符串<p>
+     * join(Arrays.asList("a","b","c"), ",", "(", ")") -> (a),(b),(c)
+     * 
+     * @param coll      集合对象
+     * @param delimiter 分隔符
+     * @param open      每个元素添加的前缀
+     * @param close     每个元素添加的后缀
+     * @return a String for joined
+     * 
+     * @see java.lang.String#join(CharSequence, CharSequence...)
+     * @see java.util.stream.Collectors#joining(CharSequence, CharSequence, CharSequence)
+     * @see org.apache.commons.lang3.StringUtils#join(List, String, int, int)
+     * @see org.apache.commons.collections4.IteratorUtils#toString(Iterator, org.apache.commons.collections4.Transformer, String, String, String)
+     * @see org.apache.commons.collections4.IterableUtils#toString(Iterable, org.apache.commons.collections4.Transformer, String, String, String)
+     * @see com.google.common.base.Joiner#join(Object, Object, Object...)
+     * @see java.util.StringJoiner#StringJoiner(CharSequence, CharSequence, CharSequence)
+     */
+    public static String join(Collection<?> coll, String delimiter, String open, String close) {
+        if (coll == null) {
+            return null;
+        }
+        if (coll.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder builder = new StringBuilder(256);
+        for (Iterator<?> it = coll.iterator(); it.hasNext();) {
+            builder.append(open).append(it.next()).append(close).append(delimiter);
+        }
+        builder.setLength(builder.length() - delimiter.length());
+        return builder.toString();
+    }
 
     /**
      * 解析参数
@@ -170,7 +211,7 @@ public class Strings {
             return null;
         }
 
-        String pathToUse = StringUtils.replace(path, WINDOWS_FOLDER_SEPARATOR, FOLDER_SEPARATOR);
+        String pathToUse = StringUtils.replace(path, WINDOWS_FOLDER_SEPARATOR, UNIX_FOLDER_SEPARATOR);
 
         // Strip prefix from path to analyze, to not treat it as part of the
         // first path element. This is necessary to correctly parse paths like
@@ -186,12 +227,12 @@ public class Strings {
                 pathToUse = pathToUse.substring(prefixIndex + 1);
             }
         }
-        if (pathToUse.startsWith(FOLDER_SEPARATOR)) {
-            prefix = prefix + FOLDER_SEPARATOR;
+        if (pathToUse.startsWith(UNIX_FOLDER_SEPARATOR)) {
+            prefix = prefix + UNIX_FOLDER_SEPARATOR;
             pathToUse = pathToUse.substring(1);
         }
 
-        String[] pathArray = StringUtils.split(pathToUse, FOLDER_SEPARATOR);
+        String[] pathArray = StringUtils.split(pathToUse, UNIX_FOLDER_SEPARATOR);
         List<String> pathElements = new LinkedList<>();
         int tops = 0;
 
@@ -218,7 +259,7 @@ public class Strings {
             pathElements.add(0, TOP_PATH);
         }
 
-        return prefix + String.join(FOLDER_SEPARATOR, pathElements);
+        return prefix + String.join(UNIX_FOLDER_SEPARATOR, pathElements);
     }
 
     /** 

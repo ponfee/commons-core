@@ -3,6 +3,8 @@ package code.ponfee.commons.jce.sm;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.bouncycastle.util.Arrays;
 
@@ -166,11 +168,13 @@ public final class SM4 {
      * @return
      */
     private static byte[] crypt(int mode, boolean isPadding, byte[] key, 
-                                byte[] iv, byte[] input) {
-        Preconditions.checkArgument(ArrayUtils.isNotEmpty(input), 
-                                    "input cannot not null.");
-        Preconditions.checkArgument(iv != null && iv.length == 16, 
-                                    "iv must be 16 byte array.");
+                                @Nonnull byte[] iv, byte[] input) {
+        if (ArrayUtils.isEmpty(input)) {
+            throw new IllegalArgumentException("Input cannot not null.");
+        }
+        if (iv == null || iv.length != 16) {
+            throw new IllegalArgumentException("Iv must be 16 byte array.");
+        }
 
         long[] sk = setKey(mode, key);
         iv = Arrays.copyOf(iv, iv.length);
@@ -288,9 +292,10 @@ public final class SM4 {
         return x ^ rotateLeft(x, 13) ^ rotateLeft(x, 23);
     }
 
-    private static long[] setKey(int mode, byte[] key) {
-        Preconditions.checkArgument(key != null && key.length == 16, 
-                                    "Key must be 16 byte array");
+    private static long[] setKey(int mode, @Nonnull byte[] key) {
+        if (key == null || key.length != 16) {
+            throw new IllegalArgumentException("Key must be 16 byte array.");
+        }
 
         key = Arrays.copyOf(key, key.length);
         long[] MK = {

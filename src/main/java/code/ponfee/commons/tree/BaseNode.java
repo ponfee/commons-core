@@ -53,7 +53,7 @@ public class BaseNode<T extends Serializable & Comparable<? super T>, A extends 
     }
 
     public BaseNode(T nid, T pid, boolean enabled, boolean available, A attach) {
-        Preconditions.checkArgument(!Strings.isBlank(nid), "节点编号不能为空");
+        Preconditions.checkArgument(!Strings.isBlank(nid), "Node id cannot be empty.");
         this.nid = nid;
         this.pid = pid;
         this.enabled = enabled;

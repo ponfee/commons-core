@@ -65,18 +65,24 @@ public class MultipletCachedDataSource extends AbstractDataSource {
     }
 
     // -----------------------------------------------------------------add/remove
-    public synchronized void addIfAbsent(String dataSourceName, Supplier<DataSource> supplier, 
-                                         long expireTimeMillis) {
-        if (!this.dataSources.containsKey(dataSourceName)) {
-            this.add(dataSourceName, supplier.get(), expireTimeMillis);
+    public synchronized boolean addIfAbsent(String dataSourceName, Supplier<DataSource> supplier, 
+                                            long expireTimeMillis) {
+        if (this.dataSources.containsKey(dataSourceName)) {
+            return false;
         }
+
+        this.add(dataSourceName, supplier.get(), expireTimeMillis);
+        return true;
     }
 
-    public synchronized void addIfAbsent(String dataSourceName, DataSource datasource,
-                                         long expireTimeMillis) {
-        if (!this.dataSources.containsKey(dataSourceName)) {
-            this.add(dataSourceName, datasource, expireTimeMillis);
+    public synchronized boolean addIfAbsent(String dataSourceName, DataSource datasource,
+                                            long expireTimeMillis) {
+        if (this.dataSources.containsKey(dataSourceName)) {
+            return false;
         }
+
+        this.add(dataSourceName, datasource, expireTimeMillis);
+        return true;
     }
 
     public synchronized void add(NamedDataSource ds, long expireTimeMillis) {
@@ -88,8 +94,9 @@ public class MultipletCachedDataSource extends AbstractDataSource {
                                  long expireTimeMillis) {
         Assert.isTrue(expireTimeMillis >= 0, "ExpireTimeMillis must be >= 0.");
         if (dataSources.containsKey(dataSourceName)) { // check the datasource name not exists
-            throw new IllegalArgumentException("Duplicated name: " + dataSourceName);
+            throw new IllegalArgumentException("Duplicated datasource name: " + dataSourceName);
         }
+
         dataSources.set(dataSourceName, datasource, expireTimeMillis);
         MultipleDataSourceContext.add(dataSourceName);
     }

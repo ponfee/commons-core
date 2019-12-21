@@ -58,12 +58,12 @@ public class Tmeta implements Serializable {
 
     public void setColor(Color color) {
         this.color = color;
-        this.colorHex = Colors.color2hex(color);
+        this.colorHex = Colors.toHex(color);
     }
 
     public void setColor(String color) {
         this.colorHex = color;
-        this.color = Colors.hex2color(color);
+        this.color = Colors.fromHex(color);
     }
 
     public Color getColor() {

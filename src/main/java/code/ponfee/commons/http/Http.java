@@ -411,29 +411,14 @@ public final class Http {
     private HttpRequest request0() {
         HttpRequest request;
         switch (method) {
-            case GET:
-                request = HttpRequest.get(url, params, encode);
-                break;
-            case POST:
-                request = HttpRequest.post(url, params, encode);
-                break;
-            case PUT:
-                request = HttpRequest.put(url, params, encode);
-                break;
-            case HEAD:
-                request = HttpRequest.head(url, params, encode);
-                break;
-            case DELETE:
-                request = HttpRequest.delete(url, params, encode);
-                break;
-            case TRACE:
-                request = HttpRequest.trace(url);
-                break;
-            case OPTIONS:
-                request = HttpRequest.options(url);
-                break;
-            default:
-                throw new UnsupportedOperationException("unsupported http method " + method.name());
+            case GET:     request = HttpRequest.get    (url, params, encode); break;
+            case POST:    request = HttpRequest.post   (url, params, encode); break;
+            case PUT:     request = HttpRequest.put    (url, params, encode); break;
+            case HEAD:    request = HttpRequest.head   (url, params, encode); break;
+            case DELETE:  request = HttpRequest.delete (url, params, encode); break;
+            case TRACE:   request = HttpRequest.trace  (url                ); break;
+            case OPTIONS: request = HttpRequest.options(url                ); break;
+            default: throw new UnsupportedOperationException("unsupported http method " + method.name());
         }
 
         request.connectTimeout(connectTimeout).readTimeout(readTimeout)

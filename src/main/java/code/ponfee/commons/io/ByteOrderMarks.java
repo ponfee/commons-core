@@ -173,7 +173,7 @@ public enum ByteOrderMarks {
                 headBytes = new byte[bom.length()];
                 count = raf.read(headBytes);
             }
-            if (count >= bom.length() && bom.match(headBytes)) {
+            if (bom.match(headBytes, count)) {
                 return bom; // already has bom
             }
 
@@ -224,7 +224,7 @@ public enum ByteOrderMarks {
                 headBytes = new byte[bom.length()];
                 count = raf.read(headBytes);
             }
-            if (count < bom.length() || !bom.match(headBytes)) {
+            if (!bom.match(headBytes, count)) {
                 return bom; // not has bom
             }
 
@@ -262,11 +262,16 @@ public enum ByteOrderMarks {
 
     // ------------------------------------------------------------------------private methods
     private boolean match(byte[] array) {
-        if (array.length < this.length()) {
+        return match(array, array.length);
+    }
+
+    private boolean match(byte[] array, int count) {
+        int n = this.length();
+        if (count < n) {
             return false;
         }
 
-        for (int i = 0; i < this.length(); i++) {
+        for (int i = 0; i < n; i++) {
             if (array[i] != this.bytes[i]) {
                 return false;
             }

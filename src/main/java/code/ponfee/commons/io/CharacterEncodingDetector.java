@@ -373,7 +373,7 @@ public class CharacterEncodingDetector {
                                 } else if (15 <= row && row < 55) {
                                     hzfreq += 200;
                                 }
-                            } else if ((0xA1 <= rawtext[i] && rawtext[i] <= 0xF7) && (0xA1 <= rawtext[i + 1] && rawtext[i + 1] <= 0xF7)) {
+                            } else if (between(rawtext[i]) && between(rawtext[i + 1])) {
                                 row = rawtext[i] + 256 - 0xA1;
                                 column = rawtext[i + 1] + 256 - 0xA1;
                                 totalfreq += 500;
@@ -404,6 +404,10 @@ public class CharacterEncodingDetector {
             }
             freqval = 50 * ((float) hzfreq / (float) totalfreq);
             return (int) (rangeval + freqval);
+        }
+
+        private boolean between(byte b) {
+            return (byte) 0xA1 <= b && (byte) 0xF7 >= b;
         }
 
         /**

@@ -35,7 +35,7 @@ public abstract class AbstractSplitExporter extends AbstractDataExporter<Void> {
 
     @Override
     public final <E> void build(Table<E> table) {
-        CompletionService<Void> service = new ExecutorCompletionService<>(executor);
+        CompletionService<Boolean> service = new ExecutorCompletionService<>(executor);
         AtomicInteger count = new AtomicInteger(0);
         AtomicInteger split = new AtomicInteger(0);
         Holder<Table<Object[]>> subTable = Holder.of(table.copyOfWithoutTbody(Function.identity()));
@@ -46,14 +46,14 @@ public abstract class AbstractSplitExporter extends AbstractDataExporter<Void> {
                 // sets a new table and return the last
                 Table<Object[]> last = subTable.getAndSet(table.copyOfWithoutTbody(Function.identity()));
                 String path = buildFilePath(split.incrementAndGet());
-                service.submit(splitExporter(last, path), null);
+                service.submit(splitExporter(last, path), Boolean.TRUE);
                 count.set(0); // reset count and sub table
             }
         });
         if (!subTable.get().isEmptyTbody()) {
             super.nonEmpty();
             String path = buildFilePath(split.incrementAndGet());
-            service.submit(splitExporter(subTable.get(), path), null);
+            service.submit(splitExporter(subTable.get(), path), Boolean.TRUE);
         }
 
         MultithreadExecutor.joinDiscard(service, split.get());

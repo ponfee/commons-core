@@ -46,7 +46,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     public static final String DEFAULT_ROOT_ID = "__ROOT__";
 
     // 用于比较兄弟节点
-    private final Comparator<? super TreeNode<T, A>> siblingNodeOrders;
+    private final Comparator<? super TreeNode<T, A>> siblingNodeSort;
 
     // 子节点列表（空列表则表示为叶子节点）
     private final List<TreeNode<T, A>> children = new ArrayList<>();
@@ -57,23 +57,23 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     /**
      * Constructs a tree node
      * 
-     * @param nid               the node id
-     * @param pid               the parent node id(withhold this pid field value, 
-     *                          when use if the other root node mount this node as child)
-     * @param enabled           the node is enabled
-     * @param available         the current node is available(parent.available & this.enabled)
-     * @param attach            the attachment for biz object
-     * @param siblingNodeOrders the comparator for sibling nodes(has the same parent node) by sort
-     * @param buildPath         the if whether build path
-     * @param doMount           whether do mount, if is inner new TreeNode then false else true
+     * @param nid             the node id
+     * @param pid             the parent node id(withhold this pid field value,
+     *                        when use if the other root node mount this node as child)
+     * @param enabled         the node is enabled
+     * @param available       the current node is available(parent.available & this.enabled)
+     * @param attach          the attachment for biz object
+     * @param siblingNodeSort the comparator for sibling nodes(has the same parent node) by sort
+     * @param buildPath       the if whether build path
+     * @param doMount         whether do mount, if is inner new TreeNode then false else true
      */
     TreeNode(T nid, T pid, boolean enabled, boolean available, A attach, 
-             @Nonnull Comparator<? super TreeNode<T, A>> siblingNodeOrders, 
+             @Nonnull Comparator<? super TreeNode<T, A>> siblingNodeSort, 
              boolean buildPath, boolean doMount) {
         super(nid, pid, enabled, available, attach);
 
-        Objects.nonNull(siblingNodeOrders);
-        this.siblingNodeOrders = siblingNodeOrders; // comparator.thenComparing(TreeNode::getNid);
+        Objects.nonNull(siblingNodeSort);
+        this.siblingNodeSort = siblingNodeSort; // comparator.thenComparing(TreeNode::getNid);
 
         this.buildPath = buildPath;
 
@@ -95,15 +95,15 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     }
 
     public static <T extends Serializable & Comparable<? super T>, A extends Serializable> TreeNode<T, A> 
-        of(BaseNode<T, A> node, Comparator<? super TreeNode<T, A>> siblingNodeOrders) {
-        return of(node, siblingNodeOrders, true);
+        of(BaseNode<T, A> node, Comparator<? super TreeNode<T, A>> siblingNodeSort) {
+        return of(node, siblingNodeSort, true);
     }
 
     public static <T extends Serializable & Comparable<? super T>, A extends Serializable> TreeNode<T, A> 
-        of(BaseNode<T, A> node, Comparator<? super TreeNode<T, A>> siblingNodeOrders, boolean buildPath) {
+        of(BaseNode<T, A> node, Comparator<? super TreeNode<T, A>> siblingNodeSort, boolean buildPath) {
         return new TreeNode<>(
             node.nid, node.pid, node.enabled, node.available, 
-            node.attach, siblingNodeOrders, buildPath, true
+            node.attach, siblingNodeSort, buildPath, true
         );
     }
 
@@ -251,7 +251,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
                 TreeNode<T, A> child = new TreeNode<>(
                     node.nid, node.pid, node.enabled, 
                     super.available && node.enabled, // recompute the child node is available
-                    node.attach, this.siblingNodeOrders, 
+                    node.attach, this.siblingNodeSort, 
                     this.buildPath, false
                 );
 
@@ -264,7 +264,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
 
         if (CollectionUtils.isNotEmpty(this.children)) {
             // sort the children list(sibling nodes sort)
-            this.children.sort(this.siblingNodeOrders);
+            this.children.sort(this.siblingNodeSort);
 
             // recursion to mount child tree
             for (TreeNode<T, A> nt : this.children) {

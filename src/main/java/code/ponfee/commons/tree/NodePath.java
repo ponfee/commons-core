@@ -81,15 +81,15 @@ public final class NodePath<T extends Serializable & Comparable<? super T>>
 
     @Override
     public int compareTo(NodePath<T> o) {
-        int min = Math.min(this.size(), o.size());
+        int min = Math.min(super.size(), o.size());
         for (int i = 0; i < min; i++) {
-            int c = this.get(i).compareTo(o.get(i));
+            int c = super.get(i).compareTo(o.get(i));
             if (c != 0) {
                 return c;
             }
         }
 
-        return this.size() - o.size();
+        return super.size() - o.size();
     }
 
     @Override
@@ -109,7 +109,7 @@ public final class NodePath<T extends Serializable & Comparable<? super T>>
     // --------------------------------------------------------------------------override list methods
     @Override
     public List<T> subList(int fromIndex, int toIndex) {
-        return new UnmodifiableList<>(this.subList(fromIndex, toIndex));
+        return new UnmodifiableList<>(super.subList(fromIndex, toIndex));
     }
 
     @Override
