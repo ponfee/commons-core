@@ -581,7 +581,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
                 if (c.get(0) == tbodyRowIdx && c.get(1) == tbodyColIdx) {
                     XSSFFont font = (XSSFFont) workbook.createFont();
                     font.setColor(new XSSFColor(
-                        Colors.hex2color((String) highlight.get("color")), defaultColorMap
+                        Colors.fromHex((String) highlight.get("color")), defaultColorMap
                     ));
                     XSSFCellStyle style = (XSSFCellStyle) workbook.createCellStyle();
                     style.cloneStyleFrom(cell.getCellStyle());

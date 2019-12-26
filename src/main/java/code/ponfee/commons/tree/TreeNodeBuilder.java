@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 public final class TreeNodeBuilder<T extends Serializable & Comparable<? super T>, A extends Serializable> {
 
     private final T nid;
-    private final Comparator<? super TreeNode<T, A>> siblingNodeOrders;
+    private final Comparator<? super TreeNode<T, A>> siblingNodeSort;
 
     private T       pid       = null;
     private boolean enabled   = true;
@@ -23,9 +23,9 @@ public final class TreeNodeBuilder<T extends Serializable & Comparable<? super T
     private A       attach    = null;
     boolean         buildPath = true;
 
-    private TreeNodeBuilder(@NotNull T nid, @NotNull Comparator<? super TreeNode<T, A>> siblingNodeOrders) {
+    private TreeNodeBuilder(@NotNull T nid, @NotNull Comparator<? super TreeNode<T, A>> siblingNodeSort) {
         this.nid = nid;
-        this.siblingNodeOrders = siblingNodeOrders;
+        this.siblingNodeSort = siblingNodeSort;
     }
 
     public static <T extends Serializable & Comparable<? super T>, A extends Serializable> TreeNodeBuilder<T, A> 
@@ -34,8 +34,8 @@ public final class TreeNodeBuilder<T extends Serializable & Comparable<? super T
     }
 
     public static <T extends Serializable & Comparable<? super T>, A extends Serializable> TreeNodeBuilder<T, A> 
-        newBuilder(T nid, Comparator<? super TreeNode<T, A>> siblingNodeOrders) {
-        return new TreeNodeBuilder<>(nid, siblingNodeOrders);
+        newBuilder(T nid, Comparator<? super TreeNode<T, A>> siblingNodeSort) {
+        return new TreeNodeBuilder<>(nid, siblingNodeSort);
     }
 
     public TreeNodeBuilder<T, A> pid(T pid) {
@@ -66,7 +66,7 @@ public final class TreeNodeBuilder<T extends Serializable & Comparable<? super T
     public TreeNode<T, A> build() {
         return new TreeNode<>(
             nid, pid, enabled, available, attach, 
-            siblingNodeOrders, buildPath, true
+            siblingNodeSort, buildPath, true
         );
     }
 
