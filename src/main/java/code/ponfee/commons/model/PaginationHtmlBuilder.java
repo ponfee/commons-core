@@ -24,7 +24,7 @@ import code.ponfee.commons.http.HttpParams;
  */
 public final class PaginationHtmlBuilder {
 
-    public static final String CDN_JQUERY = "<script src=\"http://libs.baidu.com/jquery/2.0.3/jquery.min.js\"></script>";
+    public static final String CDN_JQUERY = "<script src=\"http://libs.baidu.com/jquery/2.1.4/jquery.min.js\"></script>";
 
     private final String title;
     private final String url;

@@ -33,21 +33,18 @@ public final class Holder<T> {
      * @return a boolean, if {@code true} then the value is null
      */
     public boolean isEmpty() {
-        return value == null;
+        return this.value == null;
     }
 
     /**
      * Sets a new value if former value is null
      * 
      * @param value the new value
-     * @return then former value
      */
-    public T setIfAbsent(T value) {
-        T former = this.value;
+    public void setIfAbsent(T value) {
         if (this.value == null) {
             this.value = value;
         }
-        return former;
     }
 
     /**
@@ -78,8 +75,8 @@ public final class Holder<T> {
     }
 
     public void ifPresent(Consumer<? super T> consumer) {
-        if (value != null) {
-            consumer.accept(value);
+        if (this.value != null) {
+            consumer.accept(this.value);
         }
     }
 
@@ -88,17 +85,17 @@ public final class Holder<T> {
     }
 
     public T orElse(T other) {
-        return value != null ? value : other;
+        return this.value != null ? this.value : other;
     }
 
     public T orElseGet(Supplier<T> other) {
-        return value != null ? value : other.get();
+        return this.value != null ? this.value : other.get();
     }
 
     public <E extends Throwable> T orElseThrow(
         Supplier<? extends E> exceptionSupplier) throws E {
-        if (value != null) {
-            return value;
+        if (this.value != null) {
+            return this.value;
         } else {
             throw exceptionSupplier.get();
         }
@@ -114,18 +111,18 @@ public final class Holder<T> {
             return false;
         }
 
-        return Objects.equals(value, ((Holder<?>) obj).value);
+        return Objects.equals(this.value, ((Holder<?>) obj).value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(value);
+        return Objects.hashCode(this.value);
     }
 
     @Override
     public String toString() {
-        return value != null
-            ? String.format("Holder[%s]", value)
+        return this.value != null
+            ? String.format("Holder[%s]", this.value)
             : "Holder.empty";
     }
 }
