@@ -37,13 +37,21 @@ public class Strings {
 
     /**
      * 集合拼接为字符串<p>
-     * join(Lists.newArrayList("a","b","c"), ",", "(", ")") -> (a),(b),(c)
+     * join(Arrays.asList("a","b","c"), ",", "(", ")") -> (a),(b),(c)
      * 
      * @param coll      集合对象
      * @param delimiter 分隔符
      * @param open      每个元素添加的前缀
      * @param close     每个元素添加的后缀
      * @return a String for joined
+     * 
+     * @see java.lang.String#join(CharSequence, CharSequence...)
+     * @see java.util.stream.Collectors#joining(CharSequence, CharSequence, CharSequence)
+     * @see org.apache.commons.lang3.StringUtils#join(List, String, int, int)
+     * @see org.apache.commons.collections4.IteratorUtils#toString(Iterator, org.apache.commons.collections4.Transformer, String, String, String)
+     * @see org.apache.commons.collections4.IterableUtils#toString(Iterable, org.apache.commons.collections4.Transformer, String, String, String)
+     * @see com.google.common.base.Joiner#join(Object, Object, Object...)
+     * @see java.util.StringJoiner#StringJoiner(CharSequence, CharSequence, CharSequence)
      */
     public static String join(Collection<?> coll, String delimiter, String open, String close) {
         if (coll == null) {
@@ -53,11 +61,11 @@ public class Strings {
             return "";
         }
 
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(256);
         for (Iterator<?> it = coll.iterator(); it.hasNext();) {
-            builder.append(open).append(it.next()).append(close);
+            builder.append(open).append(it.next()).append(close).append(delimiter);
         }
-        builder.setLength(builder.length() - 1);
+        builder.setLength(builder.length() - delimiter.length());
         return builder.toString();
     }
 
