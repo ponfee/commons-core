@@ -41,7 +41,7 @@ public final class GenericUtils {
             return null;
         }
 
-        Map<String, String> target = new HashMap<>();
+        Map<String, String> target = new HashMap<>(origin.size());
         for (Entry<String, ?> entry : origin.entrySet()) {
             target.put(entry.getKey(), Objects.toString(entry.getValue(), null));
         }

@@ -3,7 +3,7 @@ package code.ponfee.commons.tree;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import javax.validation.constraints.NotNull;
+import javax.annotation.Nonnull;
 
 /**
  * Builds tree node as root node
@@ -21,9 +21,9 @@ public final class TreeNodeBuilder<T extends Serializable & Comparable<? super T
     private boolean enabled   = true;
     private boolean available = true;
     private A       attach    = null;
-    boolean         buildPath = true;
+    private boolean buildPath = true;
 
-    private TreeNodeBuilder(@NotNull T nid, @NotNull Comparator<? super TreeNode<T, A>> siblingNodeSort) {
+    private TreeNodeBuilder(@Nonnull T nid, @Nonnull Comparator<? super TreeNode<T, A>> siblingNodeSort) {
         this.nid = nid;
         this.siblingNodeSort = siblingNodeSort;
     }

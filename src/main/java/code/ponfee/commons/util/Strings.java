@@ -21,12 +21,13 @@ import code.ponfee.commons.math.Numbers;
  */
 public class Strings {
 
-    public static final char BLANK_CHAR = ' ';
-    public static final String FOLDER_SEPARATOR = "/";
+    public static final char   BLANK_CHAR               = ' ';
+    public static final String UNIX_FOLDER_SEPARATOR         = "/";
     public static final String WINDOWS_FOLDER_SEPARATOR = "\\";
-    public static final String TOP_PATH = "..";
-    public static final String CURRENT_PATH = ".";
-    public static final char[] REGEX_SPECIALS = { '\\', '$', '(', ')', '*', '+', '.', '[', ']', '?', '^', '{', '}', '|' };
+    public static final String TOP_PATH                 = "..";
+    public static final String CURRENT_PATH             = ".";
+
+    private static final char[] REGEX_SPECIALS = { '\\', '$', '(', ')', '*', '+', '.', '[', ']', '?', '^', '{', '}', '|' };
 
     /**
      * 解析参数
@@ -170,7 +171,7 @@ public class Strings {
             return null;
         }
 
-        String pathToUse = StringUtils.replace(path, WINDOWS_FOLDER_SEPARATOR, FOLDER_SEPARATOR);
+        String pathToUse = StringUtils.replace(path, WINDOWS_FOLDER_SEPARATOR, UNIX_FOLDER_SEPARATOR);
 
         // Strip prefix from path to analyze, to not treat it as part of the
         // first path element. This is necessary to correctly parse paths like
@@ -186,12 +187,12 @@ public class Strings {
                 pathToUse = pathToUse.substring(prefixIndex + 1);
             }
         }
-        if (pathToUse.startsWith(FOLDER_SEPARATOR)) {
-            prefix = prefix + FOLDER_SEPARATOR;
+        if (pathToUse.startsWith(UNIX_FOLDER_SEPARATOR)) {
+            prefix = prefix + UNIX_FOLDER_SEPARATOR;
             pathToUse = pathToUse.substring(1);
         }
 
-        String[] pathArray = StringUtils.split(pathToUse, FOLDER_SEPARATOR);
+        String[] pathArray = StringUtils.split(pathToUse, UNIX_FOLDER_SEPARATOR);
         List<String> pathElements = new LinkedList<>();
         int tops = 0;
 
@@ -218,7 +219,7 @@ public class Strings {
             pathElements.add(0, TOP_PATH);
         }
 
-        return prefix + String.join(FOLDER_SEPARATOR, pathElements);
+        return prefix + String.join(UNIX_FOLDER_SEPARATOR, pathElements);
     }
 
     /** 
