@@ -2,6 +2,8 @@ package code.ponfee.commons.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +30,36 @@ public class Strings {
     public static final String CURRENT_PATH             = ".";
 
     private static final char[] REGEX_SPECIALS = { '\\', '$', '(', ')', '*', '+', '.', '[', ']', '?', '^', '{', '}', '|' };
+
+    public static String join(Collection<?> coll, String delim) {
+        return join(coll, delim, "", "");
+    }
+
+    /**
+     * 集合拼接为字符串<p>
+     * join(Lists.newArrayList("a","b","c"), ",", "(", ")") -> (a),(b),(c)
+     * 
+     * @param coll      集合对象
+     * @param delimiter 分隔符
+     * @param open      每个元素添加的前缀
+     * @param close     每个元素添加的后缀
+     * @return a String for joined
+     */
+    public static String join(Collection<?> coll, String delimiter, String open, String close) {
+        if (coll == null) {
+            return null;
+        }
+        if (coll.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder builder = new StringBuilder();
+        for (Iterator<?> it = coll.iterator(); it.hasNext();) {
+            builder.append(open).append(it.next()).append(close);
+        }
+        builder.setLength(builder.length() - 1);
+        return builder.toString();
+    }
 
     /**
      * 解析参数
