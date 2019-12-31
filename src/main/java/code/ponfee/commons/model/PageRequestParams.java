@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.collect.ImmutableList;
 
 import code.ponfee.commons.math.Numbers;
@@ -28,6 +31,8 @@ public class PageRequestParams implements java.io.Serializable {
     );
 
     public static final String SORT_PARAM = "sort";
+
+    private static final String[] ORDER_DIRECTION = { "ASC", "DESC" };
 
     private int pageNum = -1;
     private int pageSize = -1;
@@ -52,6 +57,28 @@ public class PageRequestParams implements java.io.Serializable {
         this.setLimit(0);
         this.setOffset(0);
         return this;
+    }
+
+    // prevent sql inject
+    public void validateSort(String... allows) {
+        String sort = this.getString(SORT_PARAM);
+        if (StringUtils.isBlank(sort)) {
+            return;
+        }
+
+        String[] orders = sort.split(",");
+        for (String order : orders) {
+            if (StringUtils.isBlank(order)) {
+                continue;
+            }
+
+            String[] array = order.split(" ", 2);
+            if (   !ArrayUtils.contains(allows, array[0].trim())
+                || (array.length == 2 && !ArrayUtils.contains(ORDER_DIRECTION, array[1].trim().toUpperCase()))
+            ) {
+                throw new IllegalArgumentException("Illegal sort param: " + sort);
+            }
+        }
     }
 
     public int getPageNum() {
