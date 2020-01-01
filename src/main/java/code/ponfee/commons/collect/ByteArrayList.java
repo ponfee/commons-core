@@ -30,8 +30,7 @@ public class ByteArrayList extends AbstractArrayList<Byte> {
 
     public ByteArrayList(byte[] array, int start, int end) {
         super(start, end);
-        Objects.requireNonNull(array);
-        this.array = array;
+        this.array = Objects.requireNonNull(array);
     }
 
     @Override

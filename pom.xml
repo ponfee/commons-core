@@ -62,10 +62,10 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <spring.version>4.3.25.RELEASE</spring.version>
-    <slf4j.version>1.7.28</slf4j.version>
-    <log4j2.version>2.12.1</log4j2.version><!-- Java 9 Modular: 2.12.1[2.8.2] -->
-    <bouncycastle.version>1.63</bouncycastle.version><!-- Java 9 Modular: 1.63[1.60] -->
-    <jackson.version>2.10.0</jackson.version><!-- Java 9 Modular: 2.10.0[2.9.10.1] -->
+    <slf4j.version>1.7.30</slf4j.version>
+    <log4j2.version>2.13.0</log4j2.version><!-- Java 9 Modular: 2.13.0[2.8.2] -->
+    <bouncycastle.version>1.64</bouncycastle.version><!-- Java 9 Modular: 1.64[1.60] -->
+    <jackson.version>2.10.1</jackson.version><!-- Java 9 Modular: 2.10.1[2.9.10] -->
   </properties>
 
   <profiles>
@@ -90,7 +90,7 @@
         </repository>
       </distributionManagement>
       <properties>
-        <publish.version>2.0-SNAPSHOT</publish.version>
+        <publish.version>2.2-SNAPSHOT</publish.version>
         <separator>;</separator>
       </properties>
     </profile>
@@ -112,7 +112,7 @@
         </repository>
       </distributionManagement>
       <properties>
-        <publish.version>2.0</publish.version>
+        <publish.version>2.2</publish.version>
         <separator>;</separator>
         <!-- <separator>:</separator> -->
       </properties>
@@ -471,12 +471,13 @@
 
 
     <!-- ====================序列化==================== -->
-    <dependency><!-- kryo -->
+    <dependency>
       <groupId>com.esotericsoftware</groupId>
       <artifactId>kryo</artifactId>
       <version>4.0.2</version>
     </dependency>
-    <dependency><!-- jackson -->
+
+    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>${jackson.version}</version>
@@ -487,12 +488,13 @@
       <version>${jackson.version}</version>
     </dependency>
 
-    <dependency><!-- hessian -->
+    <dependency>
       <groupId>com.caucho</groupId>
       <artifactId>hessian</artifactId>
       <version>4.0.62</version>
     </dependency>
-    <dependency><!-- fst -->
+
+    <dependency>
       <groupId>de.ruedigermoeller</groupId>
       <artifactId>fst</artifactId>
       <version>2.57</version>
@@ -507,6 +509,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+
     <dependency>
       <groupId>io.protostuff</groupId>
       <artifactId>protostuff-runtime</artifactId>
@@ -518,6 +521,7 @@
       <version>1.6.0</version>
     </dependency>
     <dependency>
+
       <groupId>com.alibaba</groupId>
       <artifactId>fastjson</artifactId>
       <version>1.2.62</version>
@@ -667,7 +671,7 @@
     <dependency>
       <groupId>org.redisson</groupId>
       <artifactId>redisson</artifactId>
-      <version>3.11.3</version>
+      <version>3.12.0</version>
       <scope>test</scope>
     </dependency>
 
@@ -724,26 +728,32 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-webapp</artifactId>
-      <version>9.4.19.v20190610</version>
+      <version>9.4.25.v20191220</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-servlets</artifactId>
+      <version>9.4.25.v20191220</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-catalina</artifactId>
-      <version>9.0.22</version>
+      <version>9.0.30</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-jasper</artifactId>
-      <version>9.0.22</version>
+      <version>9.0.30</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-core</artifactId>
-      <version>9.0.22</version>
+      <version>9.0.30</version>
       <scope>test</scope>
     </dependency>
 
@@ -770,30 +780,32 @@
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
-      <version>3.9.1</version>
+      <version>3.11.1</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>com.alibaba</groupId>
       <artifactId>transmittable-thread-local</artifactId>
-      <version>2.10.2</version>
+      <version>2.11.2</version>
       <scope>test</scope>
     </dependency>
 
+    <!-- 密码哈希处理 -->
     <dependency>
       <groupId>de.mkammerer</groupId>
       <artifactId>argon2-jvm</artifactId>
-      <version>2.5</version>
+      <version>2.6</version>
       <scope>test</scope>
     </dependency>
 
     <!-- 二维码生成 -->
-    <!-- <dependency>
+    <dependency>
       <groupId>com.github.kenglxn.qrgen</groupId>
       <artifactId>javase</artifactId>
       <version>2.6.0</version>
-    </dependency> -->
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

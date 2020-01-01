@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.cglib.beans.BeanCopier;
 
 import code.ponfee.commons.reflect.BeanMaps;
@@ -25,16 +23,13 @@ import code.ponfee.commons.util.ObjectUtils;
  */
 public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
  
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDataConverter.class);
-
     private final Class<T> targetType;
     private final BeanCopier copier;
 
     public AbstractDataConverter() {
-        this.copier = createBeanCopier(
-            getActualTypeArgument(getClass(), 0), 
-            this.targetType = getActualTypeArgument(getClass(), 1)
-        );
+        this.targetType = getActualTypeArgument(getClass(), 1);
+        this.copier = (this instanceof MapDataConverter) 
+                     ? null : createBeanCopier(getActualTypeArgument(getClass(), 0), this.targetType);
     }
 
     /**
@@ -166,56 +161,52 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
         return converter.apply(source);
     }
 
-    public static <S, T> List<T> convert(
-        List<S> list, Function<S, T> converter) {
+    public static <S, T> List<T> convert(List<S> list, Function<S, T> converter) {
         if (list == null) {
             return null;
         }
         return list.stream().map(converter).collect(Collectors.toList());
     }
 
-    public static <S, T> Page<T> convert(
-        Page<S> page, Function<S, T> converter) {
+    public static <S, T> Page<T> convert(Page<S> page, Function<S, T> converter) {
         if (page == null) {
             return null;
         }
         return page.map(converter);
     }
 
-    public static <S, T> Result<T> convertResultBean(
-        Result<S> result, Function<S, T> converter) {
+    public static <S, T> Result<T> convertResultBean(Result<S> result, Function<S, T> converter) {
         if (result == null) {
             return null;
         }
         return result.copy(converter.apply(result.getData()));
     }
 
-    public static <S, T> Result<List<T>> convertResultList(
-        Result<List<S>> result, Function<S, T> converter) {
+    public static <S, T> Result<List<T>> convertResultList(Result<List<S>> result, Function<S, T> converter) {
         if (result == null) {
             return null;
         }
         return result.copy(convert(result.getData(), converter));
     }
 
-    public static <S, T> Result<Page<T>> convertResultPage(
-        Result<Page<S>> result, Function<S, T> converter) {
+    public static <S, T> Result<Page<T>> convertResultPage(Result<Page<S>> result, Function<S, T> converter) {
         if (result == null) {
             return null;
         }
         return result.copy(convert(result.getData(), converter));
     }
 
+    // -----------------------------------------------------------------------------------private methods
     private static final BeanCopier createBeanCopier(Class<?> sourceType, Class<?> targetType) {
         if (sourceType == Object.class || targetType == Object.class) {
-            LOGGER.warn("Bean class cannot be java.lang.Object: {} -> {}", sourceType, targetType);
-            return null;
+            throw new UnsupportedOperationException(
+                "Bean class cannot be java.lang.Object: " + sourceType + " -> " + targetType
+            );
         }
         try {
             return BeanCopier.create(sourceType, targetType, false);
         } catch (Exception e) {
-            LOGGER.error("Create BeanCopier occur error: {}", e.getMessage());
-            return null;
+            throw new UnsupportedOperationException("Create BeanCopier occur error.", e);
         }
     }
 

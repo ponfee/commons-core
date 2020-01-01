@@ -23,7 +23,6 @@ public class RedisRequestLimiter extends RequestLimiter{
         return new RedisRequestLimiter(client);
     }
 
-
     @Override 
     public RedisRequestLimiter limitFrequency(String key, int period, String message)
         throws RequestLimitException {
@@ -95,11 +94,7 @@ public class RedisRequestLimiter extends RequestLimiter{
             return false;
         }
 
-        if (caseSensitive) {
-            return value.equals(captcha);
-        } else {
-            return value.equalsIgnoreCase(captcha);
-        }
+        return caseSensitive ? value.equals(captcha) : value.equalsIgnoreCase(captcha);
     }
 
     // ---------------------------------------------------------action

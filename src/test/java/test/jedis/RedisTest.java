@@ -20,9 +20,9 @@ import redis.clients.jedis.ScanParams;
 import redis.clients.jedis.ScanResult;
 
 public class RedisTest {
-    private static final String masters = "";
-    private static final String servers = "";
-    private static final String password = "";
+    private static final String masters = "DDT_CORE_CNSZ22_REDIS_CACHE";
+    private static final String servers = "10.202.40.105:8001 10.202.40.105:8002 10.202.40.107:8001";
+    private static final String password = "admin.123";
     private static JedisClient client;
 
     @BeforeClass
@@ -50,8 +50,11 @@ public class RedisTest {
             }
             keys[i] = prefix + i;
         }
+        client.hook(shardedJedis -> {
+            shardedJedis.getAllShards().iterator().next().exists(keys);
+        });
 
-        System.out.println(client.keysOps().exists(keys));
+        //System.out.println(client.keysOps().exists(keys));
     }
 
     @Test
@@ -123,6 +126,16 @@ public class RedisTest {
                 scan(jedis, 10, "o:w:r:p:*");
             }
         });
+    }
+
+    @Test
+    public void getAndDel() {
+        String key = "test123";
+        client.valueOps().set(key, "aaaaaaaaaa");
+        System.out.println(client.valueOps().get(key));
+        System.out.println(client.valueOps().get(key));
+        System.out.println(client.valueOps().getAndDel((key)));
+        System.out.println(client.valueOps().get(key));
     }
 
     private void scan(Jedis jedis, int pageSize, String keyWildcard) {

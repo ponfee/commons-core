@@ -25,8 +25,7 @@ public class IntArrayList extends AbstractArrayList<Integer> {
 
     public IntArrayList(int[] array, int start, int end) {
         super(start, end);
-        Objects.requireNonNull(array);
-        this.array = array;
+        this.array = Objects.requireNonNull(array);
     }
 
     @Override

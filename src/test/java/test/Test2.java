@@ -33,9 +33,6 @@ import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.model.Page;
 import code.ponfee.commons.reflect.CglibUtils;
 import code.ponfee.commons.util.Dates;
-import de.mkammerer.argon2.Argon2;
-import de.mkammerer.argon2.Argon2Factory;
-import de.mkammerer.argon2.Argon2Helper;
 
 /**
  * 
@@ -76,7 +73,7 @@ public class Test2 {
         Page<Map<String, Object>> source = new Page<>();
         Page<Map> target = new Page<>();
         CglibUtils.copyProperties(source, target);
-        Page<Map> p = source.copy();
+        System.out.println(source.copy());
     }
 
     @Test
@@ -108,50 +105,7 @@ public class Test2 {
         System.out.println(Double.isNaN(0.0/0.0));
         System.out.println(Double.POSITIVE_INFINITY == Double.POSITIVE_INFINITY);
     }
-    
-    @Test
-    public void test7() throws IOException {
-     // Create instance
-        Argon2 argon2 = Argon2Factory.create();
 
-        // Read password from user
-        char[] password = "passwd".toCharArray();
-
-        try {
-            // Hash password
-            String hash = argon2.hash(8, 65536, 1, password);
-            System.out.println(hash);
-            // Verify password
-            if (argon2.verify(hash, password)) {
-                // Hash matches password
-            } else {
-                // Hash doesn't match password
-            }
-        } finally {
-            // Wipe confidential data
-            argon2.wipeArray(password);
-        }
-    }
-    
-    @Test @Ignore
-    public void test8() throws IOException {
-        Argon2 argon2 = Argon2Factory.create();
-        // 1000 = The hash call must take at most 1000 ms
-        // 65536 = Memory cost
-        // 1 = parallelism
-        int iterations = Argon2Helper.findIterations(argon2, 1000, 65536, 1);
-        System.out.println("Optimal number of iterations: " + iterations);
-    }
-    
-    @Test @Ignore
-    public void test9() throws IOException {
-        Stopwatch stopwatch = Stopwatch.createStarted();
-        for (int i = 0; i < 10; i++) {
-            Argon2Factory.create().hash(8, 65536, 1, "findIterations".toCharArray());
-        }
-        System.out.println(stopwatch.stop().toString());
-    }
-    
     @Test
     public void test10() throws IOException {
         Map<String, Object> map = new HashMap<>();
@@ -243,10 +197,11 @@ public class Test2 {
 
     @Test
     public void test18() throws IOException {
+        System.out.println(Long.MAX_VALUE);
         System.out.println(HumanReadables.SI.human(Long.MAX_VALUE));
         System.out.println(HumanReadables.BINARY.human(Long.MAX_VALUE));
 
-        System.out.println(HumanReadables.SI.parse("9.22EB", true));
+        System.out.println(HumanReadables.SI.parse("9.223372036854776 EB", true));
         System.out.println(HumanReadables.BINARY.parse("8EiB", true));
     }
 

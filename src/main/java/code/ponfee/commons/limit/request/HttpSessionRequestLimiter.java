@@ -7,6 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * The request limiter based http session
  * 
+ * Warning: User clear cookie maybe occur problem
+ * 
  * @author Ponfee
  */
 @SuppressWarnings("unchecked")

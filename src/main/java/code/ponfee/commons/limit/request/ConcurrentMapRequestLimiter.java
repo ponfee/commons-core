@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * The request limiter based ConcurrentHashMap
  * 
- * multiple server nodes maybe occur problem
+ * Warning: distribute depoly with multiple server nodes maybe occur problem
  * 
  * @author Ponfee
  */

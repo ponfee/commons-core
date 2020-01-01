@@ -111,6 +111,8 @@ public final class PKCS7Envelope {
             dout.writeObject(pkcs7);
             dout.flush();
             return baos.toByteArray();
+        } catch (SecurityException e) {
+            throw e;
         } catch (Exception e) {
             throw new SecurityException(e);
         } finally {

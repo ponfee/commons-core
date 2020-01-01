@@ -25,8 +25,7 @@ public class LongArrayList extends AbstractArrayList<Long> {
 
     public LongArrayList(long[] array, int start, int end) {
         super(start, end);
-        Objects.requireNonNull(array);
-        this.array = array;
+        this.array = Objects.requireNonNull(array);
     }
 
     @Override

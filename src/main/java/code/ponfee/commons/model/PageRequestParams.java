@@ -18,7 +18,7 @@ import com.google.common.collect.ImmutableList;
 import code.ponfee.commons.math.Numbers;
 
 /**
- * 分页请求参数封装类
+ * 分页请求参数封装类（不能继承Map，否则会被ModelMethodProcessor先处理）
  * 
  * @author Ponfee
  */
@@ -61,6 +61,10 @@ public class PageRequestParams implements java.io.Serializable {
 
     // prevent sql inject
     public void validateSort(String... allows) {
+        if (ArrayUtils.isEmpty(allows)) {
+            return;
+        }
+
         String sort = this.getString(SORT_PARAM);
         if (StringUtils.isBlank(sort)) {
             return;
@@ -72,7 +76,7 @@ public class PageRequestParams implements java.io.Serializable {
                 continue;
             }
 
-            String[] array = order.split(" ", 2);
+            String[] array = order.trim()/*.replaceAll("\\s{2,}", " ")*/.split(" ", 2);
             if (   !ArrayUtils.contains(allows, array[0].trim())
                 || (array.length == 2 && !ArrayUtils.contains(ORDER_DIRECTION, array[1].trim().toUpperCase()))
             ) {

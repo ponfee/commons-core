@@ -215,7 +215,9 @@ public class WrappedFastDateFormat extends DateFormat {
 
     @Override
     public Object clone() {
-        return this; // return new WrappedFastDateFormat((FastDateFormat) this.format.clone());
+        return new WrappedFastDateFormat(
+            (FastDateFormat) this.format.clone(), this.strict
+        );
     }
 
     // ------------------------------------------------------------------------unsupported

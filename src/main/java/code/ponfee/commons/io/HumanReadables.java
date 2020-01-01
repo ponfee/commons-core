@@ -23,6 +23,8 @@ import java.util.regex.Pattern;
  * Apache also provide similar function 
  *  {@link org.apache.commons.io.FileUtils#byteCountToDisplaySize(long)}<p>
  * 
+ * spring-core 5.x: org.springframework.util.unit.DataSize
+ * 
  * @author Ponfee
  */
 public enum HumanReadables {
@@ -105,6 +107,7 @@ public enum HumanReadables {
         switch (value.charAt(0)) {
             case '+': value = value.substring(1);            break;
             case '-': value = value.substring(1); sign = -1; break;
+            default : /*          Nothing to do          */  break;
         }
 
         int end = 0, lastPos = value.length() - 1;

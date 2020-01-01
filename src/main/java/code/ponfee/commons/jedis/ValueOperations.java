@@ -31,7 +31,10 @@ import redis.clients.jedis.ShardedJedisPipeline;
 public class ValueOperations extends JedisOperations {
 
     private static final byte[] INCRBY_SCRIPT =
-        "local val=redis.call('INCRBY', KEYS[1], ARGV[1]); if val==tonumber(ARGV[1]) then redis.call('EXPIRE', KEYS[1], ARGV[2]) end; return val;".getBytes();
+        "local val=redis.call('INCRBY',KEYS[1],ARGV[1]); if val==tonumber(ARGV[1]) then redis.call('EXPIRE',KEYS[1],ARGV[2]) end; return val;".getBytes();
+
+    private static final byte[] GET_DEL_SCRIPT =
+        "local val=redis.call('GET',KEYS[1]); if val~=nil then redis.call('DEL',KEYS[1]) end; return val;".getBytes();
 
     public static final String EX = "EX";
     public static final String PX = "PX";
@@ -92,16 +95,19 @@ public class ValueOperations extends JedisOperations {
 
     /**
      * 设置并删除
+     * 
      * @param key
      * @return
      */
     public String getAndDel(String key) {
         return call(shardedJedis -> {
-            String value = shardedJedis.get(key);
-            if (value != null) {
-                shardedJedis.del(key);
-            }
-            return value;
+            /*List<Object> result = jedisClient.executePipelined(
+                shardedJedis, sdp -> { sdp.get(key); sdp.del(key); }
+            );
+            return (String) result.get(0);*/
+            byte[] keyb = key.getBytes();
+            byte[] val = (byte[]) shardedJedis.getShard(keyb).eval(GET_DEL_SCRIPT, 1, keyb);
+            return val == null ? null:new String(val);
         }, null, key);
     }
 

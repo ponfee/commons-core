@@ -1,8 +1,6 @@
 package code.ponfee.commons.extract;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -115,18 +113,6 @@ public abstract class DataExtractor {
             }
         }
         return false;
-    }
-
-    protected final InputStream asInputStream() {
-        if (dataSource instanceof File) {
-            try {
-                return new FileInputStream((File) dataSource);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            return (InputStream) dataSource;
-        }
     }
 
 }
