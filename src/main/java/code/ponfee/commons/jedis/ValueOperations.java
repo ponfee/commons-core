@@ -31,7 +31,7 @@ import redis.clients.jedis.ShardedJedisPipeline;
 public class ValueOperations extends JedisOperations {
 
     private static final byte[] INCRBY_SCRIPT =
-        "local val=redis.call('INCRBY', KEYS[1], ARGV[1]); if val==tonumber(ARGV[1]) then redis.call('EXPIRE', KEYS[1], ARGV[2]) end; return val;".getBytes();
+        "local val=redis.call('INCRBY',KEYS[1],ARGV[1]); if val==tonumber(ARGV[1]) then redis.call('EXPIRE',KEYS[1],ARGV[2]) end; return val;".getBytes();
 
     private static final byte[] GET_DEL_SCRIPT =
         "local val=redis.call('GET',KEYS[1]); if val~=nil then redis.call('DEL',KEYS[1]) end; return val;".getBytes();
