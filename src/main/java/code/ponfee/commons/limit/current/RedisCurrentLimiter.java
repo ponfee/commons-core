@@ -231,7 +231,7 @@ public class RedisCurrentLimiter implements CurrentLimiter {
         return jedisClient.zsetOps().zcount(TRACE_KEY_PREFIX + key, fromMillis, toMillis);
     }
 
-    private class Trace {
+    private static class Trace {
         final String key;
         final double timeMillis;
 

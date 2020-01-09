@@ -35,6 +35,11 @@ public class ProtostuffRedisSerializer<T> implements RedisSerializer<T> {
         public void setValue(Object value) {
             this.value = value;
         }
+
+        @Override
+        protected Object clone() throws CloneNotSupportedException {
+            return super.clone();
+        }
     }
 
     private static final Schema<ProtostuffWrapper> SCHEMA =

@@ -25,8 +25,7 @@ public class ToStringSerializer extends Serializer {
     }
 
     public ToStringSerializer(@Nonnull Charset charset) {
-        Objects.requireNonNull(charset);
-        this.charset = charset;
+        this.charset = Objects.requireNonNull(charset);
     }
 
     @Override

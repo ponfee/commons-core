@@ -46,8 +46,7 @@ public class MultipleSqlSessionTemplate extends SqlSessionTemplate {
                                       Map<Object, SqlSessionFactory> targetSqlSessionFactories) {
         super(defaultTargetSqlSessionFactory);
 
-        Objects.requireNonNull(targetSqlSessionFactories);
-        this.targetSqlSessionFactories = targetSqlSessionFactories;
+        this.targetSqlSessionFactories = Objects.requireNonNull(targetSqlSessionFactories);
 
         this.defaultTargetSqlSessionFactory = defaultTargetSqlSessionFactory;
         this.defaultTargetExecutorType = defaultTargetSqlSessionFactory.getConfiguration().getDefaultExecutorType();

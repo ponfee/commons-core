@@ -63,7 +63,7 @@ public final class Numbers {
 
     public static Boolean toWrapBoolean(Object obj) {
         if (obj == null) {
-            return (Boolean) obj;
+            return null;
         } else if (obj instanceof Boolean) {
             return (Boolean) obj;
         } else if (obj instanceof Number) {

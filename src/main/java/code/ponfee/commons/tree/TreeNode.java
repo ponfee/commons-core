@@ -72,8 +72,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
              boolean buildPath, boolean doMount) {
         super(nid, pid, enabled, available, attach);
 
-        Objects.nonNull(siblingNodeSort);
-        this.siblingNodeSort = siblingNodeSort; // comparator.thenComparing(TreeNode::getNid);
+        this.siblingNodeSort = Objects.requireNonNull(siblingNodeSort); // comparator.thenComparing(TreeNode::getNid);
 
         this.buildPath = buildPath;
 

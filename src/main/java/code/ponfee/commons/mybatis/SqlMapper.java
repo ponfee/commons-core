@@ -235,7 +235,7 @@ public class SqlMapper {
         }
     }
 
-    private class MSUtils {
+    private static class MSUtils {
         private Configuration configuration;
         private LanguageDriver languageDriver;
 

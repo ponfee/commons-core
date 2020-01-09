@@ -57,11 +57,10 @@ import code.ponfee.commons.util.Enums;
  * Restful：https://www.cnblogs.com/pixy/p/4838268.html<p>
  * 
  * http工具类<p>
- * 
- * Spring RestTemplate<p>
- * Fluent Api<p>
- * HttpClient Api<p>
- * OK Http Api<p>
+ *   Spring RestTemplate<p>
+ *   org.apache.httpcomponents:fluent-hc<p>
+ *   org.apache.httpcomponents:httpclient<p>
+ *   OK Http<p>
  * 
  * @author Ponfee
  */

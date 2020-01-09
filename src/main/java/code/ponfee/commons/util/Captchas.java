@@ -115,7 +115,7 @@ public class Captchas {
             AffineTransform affine = new AffineTransform();
             int signum = (current().nextBoolean() ? 1 : -1);
             affine.setToRotation(
-                Math.PI / 4 * current().nextDouble() * signum, 
+                Math.PI / 4.0D * current().nextDouble() * signum,
                 width / size * i + fontSize / 2, 
                 height / 2
             );
