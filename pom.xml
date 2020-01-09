@@ -667,7 +667,7 @@
     <dependency>
       <groupId>org.redisson</groupId>
       <artifactId>redisson</artifactId>
-      <version>3.11.3</version>
+      <version>3.12.0</version>
       <scope>test</scope>
     </dependency>
 
@@ -724,26 +724,31 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-webapp</artifactId>
-      <version>9.4.19.v20190610</version>
+      <version>9.4.25.v20191220</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-servlets</artifactId>
+      <version>9.4.25.v20191220</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-catalina</artifactId>
-      <version>9.0.22</version>
+      <version>9.0.30</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-jasper</artifactId>
-      <version>9.0.22</version>
+      <version>9.0.30</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-core</artifactId>
-      <version>9.0.22</version>
+      <version>9.0.30</version>
       <scope>test</scope>
     </dependency>
 
@@ -770,21 +775,21 @@
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
-      <version>3.9.1</version>
+      <version>3.11.1</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>com.alibaba</groupId>
       <artifactId>transmittable-thread-local</artifactId>
-      <version>2.10.2</version>
+      <version>2.11.2</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>de.mkammerer</groupId>
       <artifactId>argon2-jvm</artifactId>
-      <version>2.5</version>
+      <version>2.6</version>
       <scope>test</scope>
     </dependency>
 

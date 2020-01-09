@@ -202,23 +202,13 @@ public abstract class AbstractWebExceptionHandler {
     //@ResponseBody @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public void handle(HttpServletRequest req, HttpServletResponse resp, Throwable t) {
         LOGGER.error("Server error", t);
-        String message = LOGGER.isDebugEnabled() ? Throwables.getStackTraceAsString(t) : defaultErrorMsg;
-        handle(req, resp, serverErrorPage, SERVER_ERROR, message);
+        String message = LOGGER.isDebugEnabled() 
+                       ? Throwables.getStackTraceAsString(t) 
+                       : this.defaultErrorMsg;
+        handle(req, resp, this.serverErrorPage, SERVER_ERROR, message);
     }
 
-    private void handle(HttpServletRequest req, HttpServletResponse resp,
-                        List<ObjectError> errors) {
-        String message = errors.stream()
-                               .map(ObjectError::getDefaultMessage)
-                               .collect(Collectors.joining(",", "[", "]"));
-        handle(req, resp, BAD_REQUEST, message);
-    }
-
-    private void handle(HttpServletRequest req, HttpServletResponse resp,
-                        int code, String message) {
-        handle(req, resp, null, code, message);
-    }
-
+    // -----------------------------------------------------------------------protected methods
     protected void handle(HttpServletRequest req, HttpServletResponse resp,
                           String page, int code, String message) {
         if (page == null || LOGGER.isDebugEnabled() || WebUtils.isAjax(req)) {
@@ -237,4 +227,19 @@ public abstract class AbstractWebExceptionHandler {
             LOGGER.error("Forward page occur error.", e);
         }
     }
+
+    // -----------------------------------------------------------------------private methods
+    private void handle(HttpServletRequest req, HttpServletResponse resp,
+                        List<ObjectError> errors) {
+        String message = errors.stream()
+                               .map(ObjectError::getDefaultMessage)
+                               .collect(Collectors.joining(",", "[", "]"));
+        handle(req, resp, BAD_REQUEST, message);
+    }
+
+    private void handle(HttpServletRequest req, HttpServletResponse resp,
+                        int code, String message) {
+        handle(req, resp, null, code, message);
+    }
+
 }

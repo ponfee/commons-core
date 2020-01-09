@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -236,6 +237,20 @@ public class JedisClient implements DisposableBean {
             // arg-elem -> redis-value
             collector.accept(list.get(i), resp.get(i));
         }
+    }
+
+    /**
+     * Executed pipelined and return result
+     * 
+     * @param shardedJedis
+     * @param action
+     * @return
+     */
+    public List<Object> executePipelined(ShardedJedis shardedJedis, 
+                                        Consumer<ShardedJedisPipeline> action) {
+        ShardedJedisPipeline pipeline = shardedJedis.pipelined();
+        action.accept(pipeline);
+        return pipeline.syncAndReturnAll();
     }
 
     // --------------------------------------------------------------------ShardedJedisPipeline.sync()

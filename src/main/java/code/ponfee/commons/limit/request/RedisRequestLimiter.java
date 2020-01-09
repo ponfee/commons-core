@@ -95,11 +95,7 @@ public class RedisRequestLimiter extends RequestLimiter{
             return false;
         }
 
-        if (caseSensitive) {
-            return value.equals(captcha);
-        } else {
-            return value.equalsIgnoreCase(captcha);
-        }
+        return caseSensitive ? value.equals(captcha) : value.equalsIgnoreCase(captcha);
     }
 
     // ---------------------------------------------------------action
