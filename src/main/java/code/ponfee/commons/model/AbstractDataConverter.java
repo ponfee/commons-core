@@ -28,7 +28,8 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
 
     public AbstractDataConverter() {
         this.targetType = getActualTypeArgument(getClass(), 1);
-        this.copier = createBeanCopier(getActualTypeArgument(getClass(), 0), this.targetType);
+        this.copier = (this instanceof MapDataConverter) 
+                     ? null : createBeanCopier(getActualTypeArgument(getClass(), 0), this.targetType);
     }
 
     /**

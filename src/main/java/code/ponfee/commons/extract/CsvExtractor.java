@@ -1,6 +1,10 @@
 package code.ponfee.commons.extract;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
@@ -90,4 +94,15 @@ public class CsvExtractor extends DataExtractor {
         }
     }
 
+    private InputStream asInputStream() {
+        if (dataSource instanceof File) {
+            try {
+                return new FileInputStream((File) dataSource);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            return (InputStream) dataSource;
+        }
+    }
 }
