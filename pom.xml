@@ -731,6 +731,7 @@
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-servlets</artifactId>
       <version>9.4.25.v20191220</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -786,6 +787,7 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- 密码哈希处理 -->
     <dependency>
       <groupId>de.mkammerer</groupId>
       <artifactId>argon2-jvm</artifactId>
@@ -794,11 +796,12 @@
     </dependency>
 
     <!-- 二维码生成 -->
-    <!-- <dependency>
+    <dependency>
       <groupId>com.github.kenglxn.qrgen</groupId>
       <artifactId>javase</artifactId>
       <version>2.6.0</version>
-    </dependency> -->
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

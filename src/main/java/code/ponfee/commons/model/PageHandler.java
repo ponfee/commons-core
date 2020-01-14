@@ -33,7 +33,7 @@ public final class PageHandler {
     public static final PageHandler NORMAL = new PageHandler(
         DEFAULT_PAGE_NUM, DEFAULT_PAGE_SIZE, DEFAULT_OFFSET, DEFAULT_LIMIT
     );
-    public static final int MAX_SIZE = 500;
+    public static final int MAX_SIZE = 1000;
 
     private final String paramPageNum;
     private final String paramPageSize;
