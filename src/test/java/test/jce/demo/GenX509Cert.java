@@ -51,7 +51,7 @@ import sun.security.x509.X509CertInfo;
 /**
  * 首先生成CA的根证书，然后有CA的根证书签署生成ScriptX的证书
  * 
- * @author fupf
+ * @author Ponfee
  * 
  */
 public class GenX509Cert {

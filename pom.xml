@@ -62,10 +62,10 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <spring.version>4.3.25.RELEASE</spring.version>
-    <slf4j.version>1.7.28</slf4j.version>
-    <log4j2.version>2.12.1</log4j2.version><!-- Java 9 Modular: 2.12.1[2.8.2] -->
-    <bouncycastle.version>1.63</bouncycastle.version><!-- Java 9 Modular: 1.63[1.60] -->
-    <jackson.version>2.10.0</jackson.version><!-- Java 9 Modular: 2.10.0[2.9.10.1] -->
+    <slf4j.version>1.7.30</slf4j.version>
+    <log4j2.version>2.13.0</log4j2.version><!-- Java 9 Modular: 2.13.0[2.8.2] -->
+    <bouncycastle.version>1.64</bouncycastle.version><!-- Java 9 Modular: 1.64[1.60] -->
+    <jackson.version>2.10.1</jackson.version><!-- Java 9 Modular: 2.10.1[2.9.10] -->
   </properties>
 
   <profiles>
@@ -90,7 +90,7 @@
         </repository>
       </distributionManagement>
       <properties>
-        <publish.version>2.0-SNAPSHOT</publish.version>
+        <publish.version>2.2-SNAPSHOT</publish.version>
         <separator>;</separator>
       </properties>
     </profile>
@@ -112,7 +112,7 @@
         </repository>
       </distributionManagement>
       <properties>
-        <publish.version>2.0</publish.version>
+        <publish.version>2.2</publish.version>
         <separator>;</separator>
         <!-- <separator>:</separator> -->
       </properties>

@@ -13,7 +13,7 @@ public abstract class BaseEntity<I, U> implements java.io.Serializable {
 
     private static final long serialVersionUID = -3387171222355207376L;
 
-    private I id;             // database table primary key id
+    private I    id;          // database table primary key id
     private int  version = 1; // operate version
     private U    creator;     // create user
     private Date createTm;    // create time
