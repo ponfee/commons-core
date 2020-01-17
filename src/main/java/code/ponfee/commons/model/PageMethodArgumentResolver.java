@@ -46,10 +46,8 @@ public class PageMethodArgumentResolver implements HandlerMethodArgumentResolver
     }
 
     @Override
-    public PageRequestParams resolveArgument(
-        MethodParameter parameter, ModelAndViewContainer mavContainer,
-        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-
+    public PageRequestParams resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+                                             NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         PageRequestParams page = new PageRequestParams();
         webRequest.getParameterMap().forEach((key, value) -> {
             if (PageRequestParams.PAGE_PARAMS.contains(key)) {

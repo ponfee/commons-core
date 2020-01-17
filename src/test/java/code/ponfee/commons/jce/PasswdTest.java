@@ -47,7 +47,7 @@ public class PasswdTest {
     public void testPBKDF2_1() {
         // Print out 10 hashes
         for (int i = 0; i < 10; i++) {
-            System.out.println(PBKDF2.create(HmacAlgorithms.HmacSHA256, "p\r\nassw0Rd!".toCharArray(), 16, 65535, 32));
+            System.out.println(PBKDF2.create(HmacAlgorithms.HmacSHA3_256, "p\r\nassw0Rd!".toCharArray(), 16, 65535, 32));
         }
         System.out.println("============================================\n");
 
@@ -175,8 +175,8 @@ public class PasswdTest {
         int iterationCount = 20;
         int dkLen = 32;
         byte[] salt = SecureRandoms.nextBytes(16);
-        byte[] except = PBKDF2.pbkdf2(HmacAlgorithms.HmacSHA256, pwd.toCharArray(), salt, iterationCount, dkLen);
-        byte[] actual = SCrypt.pbkdf2(HmacAlgorithms.HmacSHA256, pwd.getBytes(), salt, iterationCount, dkLen);
+        byte[] except = PBKDF2.pbkdf2(HmacAlgorithms.HmacSHA3_256, pwd.toCharArray(), salt, iterationCount, dkLen);
+        byte[] actual = SCrypt.pbkdf2(HmacAlgorithms.HmacSHA3_256, pwd.getBytes(), salt, iterationCount, dkLen);
         Assert.assertArrayEquals(except, actual);
     }
 

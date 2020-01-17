@@ -23,7 +23,6 @@ public class RedisRequestLimiter extends RequestLimiter{
         return new RedisRequestLimiter(client);
     }
 
-
     @Override 
     public RedisRequestLimiter limitFrequency(String key, int period, String message)
         throws RequestLimitException {
