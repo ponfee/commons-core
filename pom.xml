@@ -90,7 +90,7 @@
         </repository>
       </distributionManagement>
       <properties>
-        <publish.version>2.2-SNAPSHOT</publish.version>
+        <publish.version>2.0-SNAPSHOT</publish.version>
         <separator>;</separator>
       </properties>
     </profile>
@@ -112,7 +112,7 @@
         </repository>
       </distributionManagement>
       <properties>
-        <publish.version>2.2</publish.version>
+        <publish.version>2.0</publish.version>
         <separator>;</separator>
         <!-- <separator>:</separator> -->
       </properties>
