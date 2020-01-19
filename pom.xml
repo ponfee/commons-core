@@ -800,12 +800,12 @@
     </dependency>
 
     <!-- 二维码生成 -->
-    <dependency>
-      <groupId>com.github.kenglxn.qrgen</groupId>
+    <!-- <dependency>
+      <groupId>com.github.kenglxn.QRGen</groupId>
       <artifactId>javase</artifactId>
       <version>2.6.0</version>
       <scope>test</scope>
-    </dependency>
+    </dependency> -->
   </dependencies>
 
   <build>
