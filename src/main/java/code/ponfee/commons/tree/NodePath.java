@@ -2,10 +2,10 @@ package code.ponfee.commons.tree;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -13,13 +13,13 @@ import java.util.ListIterator;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.validation.constraints.NotEmpty;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.list.UnmodifiableList;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -27,16 +27,14 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.annotation.JSONType;
 import com.alibaba.fastjson.parser.DefaultJSONParser;
-import com.alibaba.fastjson.parser.JSONToken;
 import com.alibaba.fastjson.parser.deserializer.ObjectDeserializer;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.common.base.Preconditions;
 
-import code.ponfee.commons.tree.NodePath.NodePathFastjsonDeserializer;
+import code.ponfee.commons.tree.NodePath.NodePathFastjsonDeserializeMarker;
 import code.ponfee.commons.tree.NodePath.NodePathJacksondDeserializer;
 
 /**
@@ -45,38 +43,36 @@ import code.ponfee.commons.tree.NodePath.NodePathJacksondDeserializer;
  * @author Ponfee
  * @param <T> the node id type
  */
-@JSONType(deserializer = NodePathFastjsonDeserializer.class)
+// NodePath is extends ArrayList, so must be use mappingTo in fastjson
+// if not it then deserialized json as a collection type
+@JSONType(mappingTo = NodePathFastjsonDeserializeMarker.class)
 @JsonDeserialize(using = NodePathJacksondDeserializer.class)
 public final class NodePath<T extends Serializable & Comparable<? super T>> 
     extends ArrayList<T> implements Serializable, Comparable<NodePath<T>>, Cloneable {
 
     private static final long serialVersionUID = 9090552044337950223L;
 
-    private final boolean initialized;
-
-    public NodePath() {
-        // for json deserialize
-        initialized = true;
-    }
-
     @SuppressWarnings("unchecked")
     public NodePath(@NotEmpty T... path) {
-        Preconditions.checkArgument(ArrayUtils.isNotEmpty(path));
-        Collections.addAll(this, path);
-        initialized = true;
+        if (path == null || path.length == 0) {
+            throw new NullPointerException();
+        }
+        Stream.of(path).forEach(super::add);
     }
 
     public NodePath(@NotEmpty List<T> path) {
-        Preconditions.checkArgument(CollectionUtils.isNotEmpty(path));
-        this.addAll(path);
-        initialized = true;
+        if (path == null || path.isEmpty()) {
+            throw new NullPointerException();
+        }
+        super.addAll(path);
     }
 
     public NodePath(@NotEmpty NodePath<T> parent, T child) {
-        Preconditions.checkArgument(CollectionUtils.isNotEmpty(parent));
-        this.addAll(parent);
-        this.add(child);
-        initialized = true;
+        if (parent == null || parent.isEmpty()) {
+            throw new NullPointerException();
+        }
+        super.addAll(parent);
+        super.add(child);
     }
 
     @Override
@@ -94,11 +90,8 @@ public final class NodePath<T extends Serializable & Comparable<? super T>>
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof NodePath) {
-            return ListUtils.isEqualList(this, (NodePath<?>) obj);
-        } else {
-            return false;
-        }
+        return (obj instanceof NodePath)
+            && ListUtils.isEqualList(this, (NodePath<?>) obj);
     }
 
     @Override
@@ -108,26 +101,8 @@ public final class NodePath<T extends Serializable & Comparable<? super T>>
 
     // --------------------------------------------------------------------------override list methods
     @Override
-    public List<T> subList(int fromIndex, int toIndex) {
+    public final List<T> subList(int fromIndex, int toIndex) {
         return new UnmodifiableList<>(super.subList(fromIndex, toIndex));
-    }
-
-    @Override
-    public boolean add(T e) {
-        if (this.initialized) {
-            throw new UnsupportedOperationException();
-        } else {
-            return super.add(e);
-        }
-    }
-
-    @Override
-    public boolean addAll(Collection<? extends T> c) {
-        if (this.initialized) {
-            throw new UnsupportedOperationException();
-        } else {
-            return super.addAll(c);
-        }
     }
 
     @Override
@@ -136,7 +111,7 @@ public final class NodePath<T extends Serializable & Comparable<? super T>>
     }
 
     @Override
-    public ListIterator<T> listIterator() {
+    public final ListIterator<T> listIterator() {
         return listIterator(0);
     }
 
@@ -204,6 +179,16 @@ public final class NodePath<T extends Serializable & Comparable<? super T>>
 
     // --------------------------------------------------------------------------unsupported operation
     @Override @Deprecated
+    public boolean add(T e) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override @Deprecated
+    public boolean addAll(Collection<? extends T> c) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override @Deprecated
     public T set(int index, T element) {
         throw new UnsupportedOperationException();
     }
@@ -264,17 +249,20 @@ public final class NodePath<T extends Serializable & Comparable<? super T>>
     }
 
     // -----------------------------------------------------custom fastjson deserialize
+    @JSONType(deserializer = NodePathFastjsonDeserializer.class)
+    public static class NodePathFastjsonDeserializeMarker {}
+
     public static class NodePathFastjsonDeserializer<T extends Serializable & Comparable<? super T>> 
         implements ObjectDeserializer {
         @Override @SuppressWarnings("unchecked")
         public NodePath<T> deserialze(DefaultJSONParser parser, Type type, Object fieldName) {
-            if (type != NodePath.class) {
+            if ((type = getActualType(type)) != NodePath.class) {
                 throw new UnsupportedOperationException(
                     "Only supported deserialize NodePath, cannot supported: " + type
                 );
             }
 
-            String value = parser.getLexer().stringVal();
+            String value = parser.parseObject(String.class);
             if (StringUtils.isEmpty(value) ) {
                 return null;
             }
@@ -290,9 +278,37 @@ public final class NodePath<T extends Serializable & Comparable<? super T>>
 
         @Override
         public int getFastMatchToken() {
-            return JSONToken.RBRACKET;
+            return 0 /*JSONToken.RBRACKET*/;
+        }
+
+        private static Class<?> getActualType(Type type) {
+            if (type instanceof Class<?>) {
+                return (Class<?>) type;
+            } else if (type instanceof ParameterizedType) {
+                // code.ponfee.commons.tree.NodePath<java.lang.Integer>
+                return (Class<?>) ((ParameterizedType) type).getRawType();
+            } else {
+                throw new UnsupportedOperationException("Unsupported type: " + type);
+            }
         }
     }
+
+    /*public static class IntegerNodePath implements java.io.Serializable {
+        private static final long serialVersionUID = 1L;
+
+        // 当字段有泛型参数时的类型信息type为ParameterizedType，
+        // 所以必须用JSONField注解，否则当成Collection来解析
+        @JSONField(deserializeUsing = NodePathFastjsonDeserializer.class)
+        private NodePath<Integer> path;
+
+        public NodePath<Integer> getPath() {
+            return path;
+        }
+
+        public void setPath(NodePath<Integer> path) {
+            this.path = path;
+        }
+    }*/
 
     // -----------------------------------------------------custom jackson deserialize
     public static class NodePathJacksondDeserializer<T extends Serializable & Comparable<? super T>> 

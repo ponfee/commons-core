@@ -1,6 +1,6 @@
 package code.ponfee.commons.util;
 
-import static code.ponfee.commons.util.WrappedFastDateFormat.PATTERN09A;
+import static code.ponfee.commons.util.WrappedFastDateFormat.PATTERN14;
 
 import java.util.Date;
 
@@ -159,7 +159,7 @@ public enum DatePeriods {
 
         @Override
         public String toString() {
-            return PATTERN09A.format(begin) + " ~ " + PATTERN09A.format(end);
+            return PATTERN14.format(begin) + " ~ " + PATTERN14.format(end);
         }
     }
 

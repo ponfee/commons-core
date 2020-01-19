@@ -140,7 +140,7 @@
     </dependency> -->
 
 
-    <!-- ====================logger==================== -->
+    <!-- ==============================logger============================== -->
     <!-- slf4j api -->
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -153,35 +153,57 @@
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
       <version>${slf4j.version}</version>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jul-to-slf4j</artifactId>
       <version>${slf4j.version}</version>
-      <scope>runtime</scope>
     </dependency>
+    <!-- log4j：当使用log4j为日志实现时，需注释此依赖项-->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>log4j-over-slf4j</artifactId>
       <version>${slf4j.version}</version>
-      <scope>runtime</scope>
     </dependency>
+    <!-- log4j2：当使用log4j2为日志实现时，需注释此依赖项 -->
+    <!-- <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-to-slf4j</artifactId>
+      <version>${log4j2.version}</version>
+    </dependency> -->
 
-    <!-- slf4j-api bridge to log4j2 -->
+
+    <!-- logback为日志实现：logback.xml -->
+    <!-- <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.2.3</version>
+      <scope>runtime</scope>
+    </dependency> -->
+
+    <!-- log4j为日志实现：log4j.properties -->
+    <!-- <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.17</version>
+    </dependency> -->
+
+    <!-- log4j2为日志实现：log4j2.xml -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
       <version>${log4j2.version}</version>
       <scope>runtime</scope>
     </dependency>
-
-    <!-- log4j2 -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
       <version>${log4j2.version}</version>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
@@ -195,25 +217,24 @@
       <version>${log4j2.version}</version>
       <scope>runtime</scope>
     </dependency>
-    <!-- <context-param> web.xml自定义位置
+    <!-- <context-param> web.xml自定义配置文件的位置
       <param-name>log4jConfiguration</param-name>
       <param-value>/WEB-INF/classes/log4j2.xml</param-value>
     </context-param> -->
-    <!-- 桥接：告诉commons-logging使用Log4j2 -->
+    <!-- commons-logging桥接到Log4j2 -->
     <!-- <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-jcl</artifactId>
       <version>${log4j2.version}</version>
-      <scope>runtime</scope>
     </dependency> -->
-    <!-- 桥接：告诉log4j java.util.logging使用Log4j2 -->
+    <!-- java.util.logging桥接到Log4j2 -->
     <!-- <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-jul</artifactId>
       <version>${log4j2.version}</version>
-      <scope>runtime</scope>
     </dependency> -->
     <!-- ====================logger==================== -->
+
 
 
     <!-- ====================本地jar依赖==================== -->
@@ -300,9 +321,9 @@
 
     <!-- servlet -->
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>4.0.1</version>
+      <groupId>javax</groupId>
+      <artifactId>javaee-api</artifactId>
+      <version>8.0.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -340,21 +361,21 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>28.1-jre</version>
+      <version>28.2-jre</version>
     </dependency>
 
     <!-- joda-time -->
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
-      <version>2.10.3</version>
+      <version>2.10.5</version>
     </dependency>
 
     <!-- zip压缩 -->
     <dependency>
       <groupId>net.lingala.zip4j</groupId>
       <artifactId>zip4j</artifactId>
-      <version>2.1.4</version>
+      <version>2.3.0</version>
     </dependency>
 
     <!-- ====================spring==================== -->
@@ -571,7 +592,7 @@
     <dependency>
       <groupId>com.github.pagehelper</groupId>
       <artifactId>pagehelper</artifactId>
-      <version>5.1.10</version>
+      <version>5.1.11</version>
     </dependency>
     <!-- ====================mybatis==================== -->
 
@@ -800,12 +821,12 @@
     </dependency>
 
     <!-- 二维码生成 -->
-    <dependency>
-      <groupId>com.github.kenglxn.qrgen</groupId>
+    <!-- <dependency>
+      <groupId>com.github.kenglxn.QRGen</groupId>
       <artifactId>javase</artifactId>
       <version>2.6.0</version>
       <scope>test</scope>
-    </dependency>
+    </dependency> -->
   </dependencies>
 
   <build>

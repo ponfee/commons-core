@@ -202,7 +202,7 @@ public final class PaginationHtmlBuilder {
         .append("    {11}                                                                          \n")
         .append("  </body>                                                                         \n")
         .append("</html>                                                                           \n")
-        .toString().replaceAll(" +\n", "\n");
+        .toString().replaceAll("\\s+\n", "\n");
 
     // -------------------------------------------------------------------------------
     private static final String INPUT_BOX = 

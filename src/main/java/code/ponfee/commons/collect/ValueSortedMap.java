@@ -31,13 +31,11 @@ import java.util.function.Function;
 public class ValueSortedMap<K, V> extends TreeMap<K, V> {
 
     private static final long serialVersionUID = -6242175050718596776L;
-    private final boolean initialized;
 
     private ValueSortedMap(Map<? extends K, ? extends V> map, 
                            Comparator<? super V> comparator) {
         super(new MapValueComparator<>(map, comparator));
-        super.putAll(map);
-        initialized = true;
+        map.forEach(super::put);
     }
 
     public static <K, V extends Comparable<? super V>> ValueSortedMap<K, V> nullsFirst(
@@ -81,11 +79,7 @@ public class ValueSortedMap<K, V> extends TreeMap<K, V> {
     // ------------------------------------------------------------Deprecated Methods
     @Deprecated @Override
     public final V put(K k, V v) {
-      if (initialized) {
         throw new UnsupportedOperationException();
-      } else {
-        return super.put(k, v);
-      }
     }
 
     @Deprecated @Override

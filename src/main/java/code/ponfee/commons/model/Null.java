@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 
 /**
- * 
  * The {@code Null} class is representing unable instance object
  * 
  * @author Ponfee
@@ -26,7 +25,7 @@ public final class Null implements Serializable {
         try {
             UNCONSTRUCTOR = Null.class.getDeclaredConstructor();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); // cannot happened
         }
     }
 
