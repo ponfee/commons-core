@@ -25,6 +25,7 @@ public class MavenProjects {
         return new File(path).getParentFile().getParentFile().getPath();
     }
 
+    // --------------------------------------------------------------------------------------java
     public static File getMainJavaFile(Class<?> clazz) {
         return new File(getMainJavaPath("") + clazz.getCanonicalName().replace('.', '/') + ".java");
     }
@@ -73,6 +74,56 @@ public class MavenProjects {
         return getTestJavaPath(basePackage) + "/" + filename;
     }
 
+    // --------------------------------------------------------------------------------------scala
+    public static File getMainScalaFile(Class<?> clazz) {
+        return new File(getMainScalaPath("") + clazz.getCanonicalName().replace('.', '/') + ".scala");
+    }
+
+    public static byte[] getMainScalaFileAsByteArray(Class<?> clazz) {
+        return Files.toByteArray(MavenProjects.getMainScalaFile(clazz));
+    }
+
+    public static String getMainScalaFileAsLineString(Class<?> clazz) {
+        try {
+            return Files.toString(MavenProjects.getMainScalaFile(clazz)).replaceAll(EXCLUSION_STRING, "");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static File getTestScalaFile(Class<?> clazz) {
+        return new File(getTestScalaPath("") + clazz.getCanonicalName().replace('.', '/') + ".scala");
+    }
+
+    public static byte[] getTestScalaFileAsByteArray(Class<?> clazz) {
+        return Files.toByteArray(MavenProjects.getTestScalaFile(clazz));
+    }
+
+    public static String getTestScalaFileAsLineString(Class<?> clazz) {
+        try {
+            return Files.toString(MavenProjects.getTestScalaFile(clazz)).replaceAll(EXCLUSION_STRING, "");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String getMainScalaPath(String basePackage) {
+        return getProjectBaseDir() + "/src/main/scala/" + basePackage.replace('.', '/');
+    }
+
+    public static String getMainScalaPath(String basePackage, String filename) {
+        return getMainScalaPath(basePackage) + "/" + filename;
+    }
+
+    public static String getTestScalaPath(String basePackage) {
+        return getProjectBaseDir() + "/src/test/scala/" + basePackage.replace('.', '/');
+    }
+
+    public static String getTestScalaPath(String basePackage, String filename) {
+        return getTestScalaPath(basePackage) + "/" + filename;
+    }
+
+    // --------------------------------------------------------------------------------------resources
     public static String getMainResourcesPath() {
         return getProjectBaseDir() + "/src/main/resources/";
     }
@@ -89,6 +140,7 @@ public class MavenProjects {
         return getTestResourcesPath() + followPath;
     }
 
+    // --------------------------------------------------------------------------------------webapp
     public static String getWebAppPath() {
         return getProjectBaseDir() + "/src/main/webapp/";
     }
