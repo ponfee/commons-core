@@ -173,7 +173,6 @@
     </dependency> -->
 
 
-
     <!-- logback为日志实现：logback.xml -->
     <!-- <dependency>
       <groupId>ch.qos.logback</groupId>
@@ -181,7 +180,6 @@
       <version>1.2.3</version>
       <scope>runtime</scope>
     </dependency> -->
-
 
     <!-- log4j为日志实现：log4j.properties -->
     <!-- <dependency>
@@ -194,8 +192,6 @@
       <artifactId>log4j</artifactId>
       <version>1.2.17</version>
     </dependency> -->
-
-
 
     <!-- log4j2为日志实现：log4j2.xml -->
     <dependency>
@@ -221,23 +217,21 @@
       <version>${log4j2.version}</version>
       <scope>runtime</scope>
     </dependency>
-    <!-- <context-param> web.xml自定义位置
+    <!-- <context-param> web.xml自定义配置文件的位置
       <param-name>log4jConfiguration</param-name>
       <param-value>/WEB-INF/classes/log4j2.xml</param-value>
     </context-param> -->
-    <!-- 桥接：告诉commons-logging使用Log4j2 -->
+    <!-- commons-logging桥接到Log4j2 -->
     <!-- <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-jcl</artifactId>
       <version>${log4j2.version}</version>
-      <scope>runtime</scope>
     </dependency> -->
-    <!-- 桥接：告诉log4j java.util.logging使用Log4j2 -->
+    <!-- java.util.logging桥接到Log4j2 -->
     <!-- <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-jul</artifactId>
       <version>${log4j2.version}</version>
-      <scope>runtime</scope>
     </dependency> -->
     <!-- ====================logger==================== -->
 
@@ -327,9 +321,9 @@
 
     <!-- servlet -->
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>4.0.1</version>
+      <groupId>javax</groupId>
+      <artifactId>javaee-api</artifactId>
+      <version>8.0.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -367,14 +361,14 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>28.1-jre</version>
+      <version>28.2-jre</version>
     </dependency>
 
     <!-- joda-time -->
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
-      <version>2.10.3</version>
+      <version>2.10.5</version>
     </dependency>
 
     <!-- zip压缩 -->
@@ -598,7 +592,7 @@
     <dependency>
       <groupId>com.github.pagehelper</groupId>
       <artifactId>pagehelper</artifactId>
-      <version>5.1.10</version>
+      <version>5.1.11</version>
     </dependency>
     <!-- ====================mybatis==================== -->
 
