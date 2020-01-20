@@ -90,7 +90,7 @@
         </repository>
       </distributionManagement>
       <properties>
-        <publish.version>2.0-SNAPSHOT</publish.version>
+        <publish.version>2.2-SNAPSHOT</publish.version>
         <separator>;</separator>
       </properties>
     </profile>
@@ -112,7 +112,7 @@
         </repository>
       </distributionManagement>
       <properties>
-        <publish.version>2.0</publish.version>
+        <publish.version>2.2</publish.version>
         <separator>;</separator>
         <!-- <separator>:</separator> -->
       </properties>
@@ -140,7 +140,7 @@
     </dependency> -->
 
 
-    <!-- ====================logger==================== -->
+    <!-- ==============================logger============================== -->
     <!-- slf4j api -->
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -153,35 +153,61 @@
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
       <version>${slf4j.version}</version>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jul-to-slf4j</artifactId>
       <version>${slf4j.version}</version>
-      <scope>runtime</scope>
     </dependency>
+    <!-- log4j：当使用log4j为日志实现时，需注释此依赖项-->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>log4j-over-slf4j</artifactId>
       <version>${slf4j.version}</version>
-      <scope>runtime</scope>
     </dependency>
+    <!-- log4j2：当使用log4j2为日志实现时，需注释此依赖项 -->
+    <!-- <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-to-slf4j</artifactId>
+      <version>${log4j2.version}</version>
+    </dependency> -->
 
-    <!-- slf4j-api bridge to log4j2 -->
+
+
+    <!-- logback为日志实现：logback.xml -->
+    <!-- <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.2.3</version>
+      <scope>runtime</scope>
+    </dependency> -->
+
+
+    <!-- log4j为日志实现：log4j.properties -->
+    <!-- <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.17</version>
+    </dependency> -->
+
+
+
+    <!-- log4j2为日志实现：log4j2.xml -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
       <version>${log4j2.version}</version>
       <scope>runtime</scope>
     </dependency>
-
-    <!-- log4j2 -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
       <version>${log4j2.version}</version>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
@@ -214,6 +240,7 @@
       <scope>runtime</scope>
     </dependency> -->
     <!-- ====================logger==================== -->
+
 
 
     <!-- ====================本地jar依赖==================== -->
@@ -354,7 +381,7 @@
     <dependency>
       <groupId>net.lingala.zip4j</groupId>
       <artifactId>zip4j</artifactId>
-      <version>2.1.4</version>
+      <version>2.3.0</version>
     </dependency>
 
     <!-- ====================spring==================== -->
