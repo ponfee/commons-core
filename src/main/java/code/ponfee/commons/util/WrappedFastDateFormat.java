@@ -31,23 +31,22 @@ public class WrappedFastDateFormat extends DateFormat {
 
     private static final long serialVersionUID = 6837172676882367405L;
 
-    public static final FastDateFormat PATTERN02A = FastDateFormat.getInstance("yyyyMM");
-    public static final FastDateFormat PATTERN03A = FastDateFormat.getInstance("yyyy-MM");
-    public static final FastDateFormat PATTERN04A = FastDateFormat.getInstance("yyyyMMdd");
-    public static final FastDateFormat PATTERN05A = FastDateFormat.getInstance("yyyy-MM-dd");
-    public static final FastDateFormat PATTERN06A = FastDateFormat.getInstance("yyyyMMddHHmmss");
-    public static final FastDateFormat PATTERN07A = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
-    public static final FastDateFormat PATTERN08A = FastDateFormat.getInstance("yyyyMMddHHmmssSSS");
-    public static final FastDateFormat PATTERN09A = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss.SSS");
-    public static final FastDateFormat PATTERN10A = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-    public static final FastDateFormat PATTERN11A = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    public static final FastDateFormat PATTERN01 = FastDateFormat.getInstance("yyyyMM");
+    public static final FastDateFormat PATTERN02 = FastDateFormat.getInstance("yyyyMMdd");
+    public static final FastDateFormat PATTERN03 = FastDateFormat.getInstance("yyyyMMddHHmmss");
+    public static final FastDateFormat PATTERN04 = FastDateFormat.getInstance("yyyyMMddHHmmssSSS");
 
-    public static final FastDateFormat PATTERN03B = FastDateFormat.getInstance("yyyy/MM");
-    public static final FastDateFormat PATTERN05B = FastDateFormat.getInstance("yyyy/MM/dd");
-    public static final FastDateFormat PATTERN07B = FastDateFormat.getInstance("yyyy/MM/dd HH:mm:ss");
-    public static final FastDateFormat PATTERN09B = FastDateFormat.getInstance("yyyy/MM/dd HH:mm:ss.SSS");
-    public static final FastDateFormat PATTERN10B = FastDateFormat.getInstance("yyyy/MM/dd'T'HH:mm:ss.SSSZ");
-    public static final FastDateFormat PATTERN11B = FastDateFormat.getInstance("yyyy/MM/dd'T'HH:mm:ss.SSS'Z'");
+    public static final FastDateFormat PATTERN11 = FastDateFormat.getInstance("yyyy-MM");
+    public static final FastDateFormat PATTERN12 = FastDateFormat.getInstance("yyyy-MM-dd");
+    public static final FastDateFormat PATTERN13 = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
+    public static final FastDateFormat PATTERN14 = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss.SSS");
+    public static final FastDateFormat PATTERN15 = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
+    public static final FastDateFormat PATTERN21 = FastDateFormat.getInstance("yyyy/MM");
+    public static final FastDateFormat PATTERN22 = FastDateFormat.getInstance("yyyy/MM/dd");
+    public static final FastDateFormat PATTERN23 = FastDateFormat.getInstance("yyyy/MM/dd HH:mm:ss");
+    public static final FastDateFormat PATTERN24 = FastDateFormat.getInstance("yyyy/MM/dd HH:mm:ss.SSS");
+    public static final FastDateFormat PATTERN25 = FastDateFormat.getInstance("yyyy/MM/dd'T'HH:mm:ss.SSSZ");
 
     // thread-safe
     public static final WrappedFastDateFormat DEFAULT = new WrappedFastDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -105,22 +104,21 @@ public class WrappedFastDateFormat extends DateFormat {
             return null;
         }
         switch (length) {
-            case  6: return PATTERN02A.parse(source, pos);
-            case  7: return (isCrossbar(source) ? PATTERN03A : PATTERN03B).parse(source, pos);
-            case  8: return PATTERN04A.parse(source, pos);
+            case  6: return PATTERN01.parse(source, pos);
+            case  7: return (isCrossbar(source) ? PATTERN11 : PATTERN21).parse(source, pos);
+            case  8: return PATTERN02.parse(source, pos);
             case 10: 
                 switch (source.charAt(4)) {
-                    case '-': return PATTERN05A.parse(source, pos);
-                    case '/': return PATTERN05B.parse(source, pos);
+                    case '-': return PATTERN12.parse(source, pos);
+                    case '/': return PATTERN22.parse(source, pos);
                     default: return new Date(Long.parseLong(source) * 1000); // a long string of seconds unix timestamp 
                 }
             case 13: return new Date(Long.parseLong(source));  // a long string of mills unix timestamp 
-            case 14: return PATTERN06A.parse(source, pos);
-            case 19: return (isCrossbar(source) ? PATTERN07A : PATTERN07B).parse(source, pos);
-            case 17: return PATTERN08A.parse(source, pos);
-            case 23: return (isCrossbar(source) ? PATTERN09A : PATTERN09B).parse(source, pos);
-            case 28: return (isCrossbar(source) ? PATTERN10A : PATTERN10B).parse(source, pos);
-            case 24: return (isCrossbar(source) ? PATTERN11A : PATTERN11B).parse(source, pos);
+            case 14: return PATTERN03.parse(source, pos);
+            case 19: return (isCrossbar(source) ? PATTERN13 : PATTERN23).parse(source, pos);
+            case 17: return PATTERN04.parse(source, pos);
+            case 23: return (isCrossbar(source) ? PATTERN14 : PATTERN24).parse(source, pos);
+            case 28: return (isCrossbar(source) ? PATTERN15 : PATTERN25).parse(source, pos);
             default: return this.format.parse(source, pos);
         }
     }
@@ -140,22 +138,21 @@ public class WrappedFastDateFormat extends DateFormat {
             throw new ParseException("Invalid data format: " + source, 0);
         }
         switch (length) {
-            case  6: return PATTERN02A.parse(source);
-            case  7: return (isCrossbar(source) ? PATTERN03A : PATTERN03B).parse(source);
-            case  8: return PATTERN04A.parse(source);
+            case  6: return PATTERN01.parse(source);
+            case  7: return (isCrossbar(source) ? PATTERN11 : PATTERN21).parse(source);
+            case  8: return PATTERN02.parse(source);
             case 10: 
                 switch (source.charAt(4)) {
-                    case '-': return PATTERN05A.parse(source);
-                    case '/': return PATTERN05B.parse(source);
+                    case '-': return PATTERN12.parse(source);
+                    case '/': return PATTERN22.parse(source);
                     default: return new Date(Long.parseLong(source) * 1000);
                 }
             case 13: return new Date(Long.parseLong(source));
-            case 14: return PATTERN06A.parse(source);
-            case 19: return (isCrossbar(source) ? PATTERN07A : PATTERN07B).parse(source);
-            case 17: return PATTERN08A.parse(source);
-            case 23: return (isCrossbar(source) ? PATTERN09A : PATTERN09B).parse(source);
-            case 28: return (isCrossbar(source) ? PATTERN10A : PATTERN10B).parse(source);
-            case 24: return (isCrossbar(source) ? PATTERN11A : PATTERN11B).parse(source);
+            case 14: return PATTERN03.parse(source);
+            case 19: return (isCrossbar(source) ? PATTERN13 : PATTERN23).parse(source);
+            case 17: return PATTERN04.parse(source);
+            case 23: return (isCrossbar(source) ? PATTERN14 : PATTERN24).parse(source);
+            case 28: return (isCrossbar(source) ? PATTERN15 : PATTERN25).parse(source);
             default: return this.format.parse(source);
         }
     }
@@ -241,7 +238,7 @@ public class WrappedFastDateFormat extends DateFormat {
         throw new UnsupportedOperationException();
     }
 
-    private boolean isCrossbar(String str) {
+    private static boolean isCrossbar(String str) {
         return str.charAt(4) == '-';
     }
 

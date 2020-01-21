@@ -9,22 +9,20 @@ public class WrappedFastDateFormatTest {
         WrappedFastDateFormat format = WrappedFastDateFormat.DEFAULT;
         Date date = new Date();
 
-        System.out.println(format.parse(WrappedFastDateFormat.PATTERN02A.format(date)));
-        System.out.println(format.parse(WrappedFastDateFormat.PATTERN03A.format(date)));
-        System.out.println(format.parse(WrappedFastDateFormat.PATTERN04A.format(date)));
-        System.out.println(format.parse(WrappedFastDateFormat.PATTERN05A.format(date)));
-        System.out.println(format.parse(WrappedFastDateFormat.PATTERN06A.format(date)));
-        System.out.println(format.parse(WrappedFastDateFormat.PATTERN07A.format(date)));
-        System.out.println(format.parse(WrappedFastDateFormat.PATTERN08A.format(date)));
-        System.out.println(format.parse(WrappedFastDateFormat.PATTERN09A.format(date)));
-        System.out.println(format.parse(WrappedFastDateFormat.PATTERN10A.format(date)));
-        System.out.println(format.parse(WrappedFastDateFormat.PATTERN11A.format(date)));
-        System.out.println(format.parse(WrappedFastDateFormat.PATTERN03B.format(date)));
-        System.out.println(format.parse(WrappedFastDateFormat.PATTERN05B.format(date)));
-        System.out.println(format.parse(WrappedFastDateFormat.PATTERN07B.format(date)));
-        System.out.println(format.parse(WrappedFastDateFormat.PATTERN09B.format(date)));
-        System.out.println(format.parse(WrappedFastDateFormat.PATTERN10B.format(date)));
-        System.out.println(format.parse(WrappedFastDateFormat.PATTERN11B.format(date)));
+        System.out.println(format.parse(WrappedFastDateFormat.PATTERN01.format(date)));
+        System.out.println(format.parse(WrappedFastDateFormat.PATTERN11.format(date)));
+        System.out.println(format.parse(WrappedFastDateFormat.PATTERN02.format(date)));
+        System.out.println(format.parse(WrappedFastDateFormat.PATTERN12.format(date)));
+        System.out.println(format.parse(WrappedFastDateFormat.PATTERN03.format(date)));
+        System.out.println(format.parse(WrappedFastDateFormat.PATTERN13.format(date)));
+        System.out.println(format.parse(WrappedFastDateFormat.PATTERN04.format(date)));
+        System.out.println(format.parse(WrappedFastDateFormat.PATTERN14.format(date)));
+        System.out.println(format.parse(WrappedFastDateFormat.PATTERN15.format(date)));
+        System.out.println(format.parse(WrappedFastDateFormat.PATTERN21.format(date)));
+        System.out.println(format.parse(WrappedFastDateFormat.PATTERN22.format(date)));
+        System.out.println(format.parse(WrappedFastDateFormat.PATTERN23.format(date)));
+        System.out.println(format.parse(WrappedFastDateFormat.PATTERN24.format(date)));
+        System.out.println(format.parse(WrappedFastDateFormat.PATTERN25.format(date)));
         System.out.println(format.parse(String.valueOf(date.getTime())));
         System.out.println(format.parse(String.valueOf(date.getTime() / 1000)));
     }
