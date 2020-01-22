@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import code.ponfee.commons.tree.NodePath.NodePathDeserializeMarker;
+import code.ponfee.commons.tree.NodePath.NodePathFastjsonDeserializeMarker;
 import code.ponfee.commons.tree.NodePath.NodePathJacksondDeserializer;
 
 /**
@@ -45,7 +45,7 @@ import code.ponfee.commons.tree.NodePath.NodePathJacksondDeserializer;
  */
 // NodePath is extends ArrayList, so must be use mappingTo in fastjson
 // if not it then deserialized json as a collection type
-@JSONType(mappingTo = NodePathDeserializeMarker.class)
+@JSONType(mappingTo = NodePathFastjsonDeserializeMarker.class)
 @JsonDeserialize(using = NodePathJacksondDeserializer.class)
 public final class NodePath<T extends Serializable & Comparable<? super T>> 
     extends ArrayList<T> implements Serializable, Comparable<NodePath<T>>, Cloneable {
@@ -250,7 +250,7 @@ public final class NodePath<T extends Serializable & Comparable<? super T>>
 
     // -----------------------------------------------------custom fastjson deserialize
     @JSONType(deserializer = NodePathFastjsonDeserializer.class)
-    public static class NodePathDeserializeMarker {}
+    public static class NodePathFastjsonDeserializeMarker {}
 
     public static class NodePathFastjsonDeserializer<T extends Serializable & Comparable<? super T>> 
         implements ObjectDeserializer {

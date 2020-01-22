@@ -59,7 +59,7 @@ public class HtmlExporter extends AbstractDataExporter<String> {
        .append("  </head>                                                                         \n")
        .append("  <body>{1}</body>                                                                \n")
        .append("</html>                                                                           \n")
-       .toString().replaceAll(" +\n", "\n");
+       .toString().replaceAll("\\s+\n", "\n");
 
     private StringBuilder html; // StringBuilder扩容：(value.length << 1) + 2
                                 // 容量如果不够，直接扩充到需要的容量大小
