@@ -34,7 +34,7 @@
     slf4j-nop.jar         —>    (slf4j    —>  null)           slf4j的空接口输出绑定，丢弃所有日志输出
     slf4j-simple.jar      —>    (slf4j    —>  slf4j-simple)   slf4j的自带的简单日志输出实现
     slf4j-android.jar     —>    (android  —>  slf4j)          将android环境下的日志，桥接到slf4j
-    log4j-1.2-api.jar     —>    (log4j    —>  log4j2)         将log4j 的日志转接到log4j2日志框架
+    log4j-1.2-api.jar     —>    (log4j    —>  log4j2)         将log4j的日志转接到log4j2日志框架
 
     slf4j的具体实现：slf4j-simple，logback
 

@@ -20,6 +20,7 @@ public final class SqlUtils {
             return sql;
         }
 
+        //sql = sql.replaceAll("\\s{2,}", " ");
         int start = 0, n = sql.length() - 1, end = n;
 
         for (; start < n; start++) {
