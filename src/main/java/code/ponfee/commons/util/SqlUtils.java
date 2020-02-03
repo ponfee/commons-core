@@ -23,22 +23,16 @@ public final class SqlUtils {
         //sql = sql.replaceAll("\\s{2,}", " ");
         int start = 0, end, n = end = (sql.length() - 1);
 
-        for (; start < n; start++) {
-            char ch = sql.charAt(start);
-            if (isNotBlank(ch)) {
-                break;
-            }
+        while (start < n && isBlank(sql.charAt(start))) {
+            start++;
         }
 
         if (start >= n) {
             return "";
         }
 
-        for (; end > start; end--) {
-            char ch = sql.charAt(end);
-            if (isNotBlank(ch) && ch != ';') {
-                break;
-            }
+        while (end > start && isBlankOrSemicolon(sql.charAt(end))) {
+            end--;
         }
 
         return (start == end) 
@@ -145,12 +139,12 @@ public final class SqlUtils {
     }
 
     // --------------------------------------------------------------private methods
-    private static boolean isNotBlank(char ch) {
-        return !isBlank(ch);
-    }
-
     private static boolean isBlank(char ch) {
         return ch == ' ' || ch == '\t' || ch == '\r' || ch == '\n';
+    }
+
+    private static boolean isBlankOrSemicolon(char ch) {
+        return isBlank(ch) || ch == ';';
     }
 
     private static String outermostSql(String sql) {
