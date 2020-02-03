@@ -19,14 +19,19 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 
 /**
  * Wrapper the org.apache.commons.lang3.time.FastDateFormat
  * 
+ * @ThreadSafe
+ * 
  * @author Ponfee
  */
+@ThreadSafe
 public class WrappedFastDateFormat extends DateFormat {
 
     private static final long serialVersionUID = 6837172676882367405L;

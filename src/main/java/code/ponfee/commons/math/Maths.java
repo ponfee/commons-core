@@ -58,7 +58,7 @@ public class Maths {
         }
 
         long result = base;
-        for (int i = 1; i < exponent; i++) {
+        while (--exponent > 0) {
             result *= base;
         }
         return result;

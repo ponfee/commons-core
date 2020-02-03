@@ -44,6 +44,8 @@ import code.ponfee.commons.exception.CheckedThrowing;
  */
 public abstract class MultipleDataSourceAspect implements Ordered {
 
+    private static final int ORDER = Ordered.LOWEST_PRECEDENCE - 1;
+
     public Object doAround(ProceedingJoinPoint pjp, DataSourceNaming dsn) throws Throwable {
         return MultipleDataSourceAdvisor.around(
             ((MethodSignature) pjp.getSignature()).getMethod(), 
@@ -54,7 +56,7 @@ public abstract class MultipleDataSourceAspect implements Ordered {
 
     @Override
     public int getOrder() {
-        return Ordered.HIGHEST_PRECEDENCE;
+        return ORDER;
     }
 
 }

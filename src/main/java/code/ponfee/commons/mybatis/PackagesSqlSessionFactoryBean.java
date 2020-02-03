@@ -1,4 +1,4 @@
-package code.ponfee.commons.data;
+package code.ponfee.commons.mybatis;
 
 import java.util.HashSet;
 import java.util.Set;

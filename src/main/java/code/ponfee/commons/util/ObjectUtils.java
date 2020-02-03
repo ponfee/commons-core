@@ -54,6 +54,11 @@ public final class ObjectUtils {
     }
 
     @SuppressWarnings("unchecked")
+    public static <T> Class<T> typeOf(T obj) {
+        return obj != null ? (Class<T>) obj.getClass() : null;
+    }
+
+    @SuppressWarnings("unchecked")
     public static <T> Predicate<T> not(Predicate<? super T> target) {
         Objects.requireNonNull(target);
         return (Predicate<T>) target.negate();
@@ -126,8 +131,8 @@ public final class ObjectUtils {
 
         if (type.isEnum()) {
             return (value instanceof Number)
-                ? type.getEnumConstants()[((Number) value).intValue()]
-                : (T) Enums.ofIgnoreCase((Class<Enum>) type, value.toString());
+                 ? type.getEnumConstants()[((Number) value).intValue()]
+                 : (T) Enums.ofIgnoreCase((Class<Enum>) type, value.toString());
         }
 
         if (Date.class == type) {
