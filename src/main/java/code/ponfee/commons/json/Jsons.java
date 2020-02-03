@@ -3,6 +3,8 @@ package code.ponfee.commons.json;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -14,8 +16,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * The json utility based jackson
  * 
+ * @ThreadSafe
+ * 
  * @author Ponfee
  */
+@ThreadSafe
 public final class Jsons {
 
     /** 标准（不排除任何属性） */

@@ -21,7 +21,7 @@ public final class SqlUtils {
         }
 
         //sql = sql.replaceAll("\\s{2,}", " ");
-        int start = 0, n = sql.length() - 1, end = n;
+        int start = 0, end, n = end = (sql.length() - 1);
 
         for (; start < n; start++) {
             char ch = sql.charAt(start);
@@ -40,7 +40,12 @@ public final class SqlUtils {
                 break;
             }
         }
-        return start == end ? "" : (start == 0 && end == n) ? sql : sql.substring(start, end + 1);
+
+        return (start == end) 
+             ? "" 
+             : (start == 0 && end == n) 
+             ? sql 
+             : sql.substring(start, end + 1);
     }
 
     // --------------------------------------------------------------limit mysql
