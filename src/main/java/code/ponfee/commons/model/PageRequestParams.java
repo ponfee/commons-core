@@ -18,7 +18,10 @@ import com.google.common.collect.ImmutableList;
 import code.ponfee.commons.math.Numbers;
 
 /**
- * 分页请求参数封装类（不能继承Map，否则会被ModelMethodProcessor先处理）
+ * 分页请求参数封装类（不能继承Map，否则会被内置Map解析器优先处理）
+ * 
+ * @see org.springframework.web.method.annotation.MapMethodProcessor#supportsParameter(org.springframework.core.MethodParameter)
+ * @see org.springframework.web.method.annotation.RequestParamMapMethodArgumentResolver#supportsParameter(org.springframework.core.MethodParameter)
  * 
  * @author Ponfee
  */
