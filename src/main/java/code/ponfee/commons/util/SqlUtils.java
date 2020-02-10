@@ -27,7 +27,7 @@ public final class SqlUtils {
             start++;
         }
 
-        if (start >= n) {
+        if (start == n) {
             return "";
         }
 
@@ -35,11 +35,7 @@ public final class SqlUtils {
             end--;
         }
 
-        return (start == end) 
-             ? "" 
-             : (start == 0 && end == n) 
-             ? sql 
-             : sql.substring(start, end + 1);
+        return start == end ? "" : sql.substring(start, end + 1);
     }
 
     // --------------------------------------------------------------limit mysql
