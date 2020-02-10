@@ -144,27 +144,51 @@ public class PageRequestParams implements java.io.Serializable {
     }
 
     public String getString(String key) {
-        return Objects.toString(get(key), "");
+        return getString(key, "");
+    }
+
+    public String getString(String key, String defaultVal) {
+        return Objects.toString(get(key), defaultVal);
+    }
+
+    public Boolean getBoolean(String key) {
+        return Numbers.toWrapBoolean(get(key));
+    }
+
+    public boolean getBoolean(String key, boolean defaultVal) {
+        return Numbers.toBoolean(get(key), defaultVal);
     }
 
     public Integer getInt(String key) {
         return Numbers.toWrapInt(get(key));
     }
 
-    public Double getDouble(String key) {
-        return Numbers.toWrapDouble(get(key));
+    public int getInt(String key, int defaultVal) {
+        return Numbers.toInt(get(key), defaultVal);
     }
 
     public Long getLong(String key) {
         return Numbers.toWrapLong(get(key));
     }
 
+    public long getLong(String key, long defaultVal) {
+        return Numbers.toLong(get(key), defaultVal);
+    }
+
     public Float getFloat(String key) {
         return Numbers.toWrapFloat(get(key));
     }
 
-    public Boolean getBoolean(String key) {
-        return Numbers.toWrapBoolean(get(key));
+    public float getFloat(String key, float defaultVal) {
+        return Numbers.toFloat(get(key), defaultVal);
+    }
+
+    public Double getDouble(String key) {
+        return Numbers.toWrapDouble(get(key));
+    }
+
+    public double getDouble(String key, double defaultVal) {
+        return Numbers.toDouble(get(key), defaultVal);
     }
 
 }

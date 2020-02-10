@@ -1,5 +1,14 @@
 package code.ponfee.commons.mybatis;
 
+import static code.ponfee.commons.util.ObjectUtils.typeOf;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiFunction;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.ibatis.builder.StaticSqlSource;
 import org.apache.ibatis.exceptions.TooManyResultsException;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -9,11 +18,6 @@ import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 /**
  * MyBatis执行sql工具，在写SQL的时候建议使用参数形式的可以是${}或#{}
@@ -56,11 +60,11 @@ public class SqlMapper {
      * 查询返回一个结果，多个结果时抛出异常
      *
      * @param sql   执行的sql
-     * @param value 参数
+     * @param param 参数
      * @return
      */
-    public Map<String, Object> selectOne(String sql, Object value) {
-        return getOne(selectList(sql, value));
+    public Map<String, Object> selectOne(String sql, Object param) {
+        return getOne(selectList(sql, param));
     }
 
     /**
@@ -68,7 +72,6 @@ public class SqlMapper {
      *
      * @param sql        执行的sql
      * @param resultType 返回的结果类型
-     * @param <T>        泛型类型
      * @return
      */
     public <T> T selectOne(String sql, Class<T> resultType) {
@@ -79,13 +82,12 @@ public class SqlMapper {
      * 查询返回一个结果，多个结果时抛出异常
      *
      * @param sql        执行的sql
-     * @param value      参数
+     * @param param      参数
      * @param resultType 返回的结果类型
-     * @param <T>        泛型类型
      * @return
      */
-    public <T> T selectOne(String sql, Object value, Class<T> resultType) {
-        return getOne(selectList(sql, value, resultType));
+    public <T> T selectOne(String sql, Object param, Class<T> resultType) {
+        return getOne(selectList(sql, param, resultType));
     }
 
     /**
@@ -102,13 +104,13 @@ public class SqlMapper {
      * 查询返回List<Map<String, Object>>
      *
      * @param sql   执行的sql
-     * @param value 参数
+     * @param param 参数
      * @return
      */
-    public List<Map<String, Object>> selectList(String sql, Object value) {
-        Class<?> parameterType = value != null ? value.getClass() : null;
-        String msId = msUtils.selectDynamic(sql, parameterType);
-        return sqlSession.selectList(msId, value);
+    public List<Map<String, Object>> selectList(String sql, Object param) {
+        return sqlSession.selectList(
+            msUtils.selectDynamic(sql, typeOf(param)), param
+        );
     }
 
     /**
@@ -116,16 +118,12 @@ public class SqlMapper {
      *
      * @param sql        执行的sql
      * @param resultType 返回的结果类型
-     * @param <T>        泛型类型
      * @return
      */
     public <T> List<T> selectList(String sql, Class<T> resultType) {
-        String msId;
-        if (resultType == null) {
-            msId = msUtils.select(sql);
-        } else {
-            msId = msUtils.select(sql, resultType);
-        }
+        String msId = resultType == null 
+                    ? msUtils.select(sql) 
+                    : msUtils.select(sql, resultType);
         return sqlSession.selectList(msId);
     }
 
@@ -133,20 +131,44 @@ public class SqlMapper {
      * 查询返回指定的结果类型
      *
      * @param sql        执行的sql
-     * @param value      参数
+     * @param param      参数
      * @param resultType 返回的结果类型
-     * @param <T>        泛型类型
      * @return
      */
-    public <T> List<T> selectList(String sql, Object value, Class<T> resultType) {
-        String msId;
-        Class<?> parameterType = value != null ? value.getClass() : null;
-        if (resultType == null) {
-            msId = msUtils.selectDynamic(sql, parameterType);
-        } else {
-            msId = msUtils.selectDynamic(sql, parameterType, resultType);
-        }
-        return sqlSession.selectList(msId, value);
+    public <T> List<T> selectList(String sql, Object param, Class<T> resultType) {
+        String msId = resultType == null
+                    ? msUtils.selectDynamic(sql, typeOf(param))
+                    : msUtils.selectDynamic(sql, typeOf(param), resultType);
+        return sqlSession.selectList(msId, param);
+    }
+
+    /**
+     * <pre>
+     *  Query full scroll data
+     *  
+     *  &lt;script&gt;
+     *    SELECT id, name FROM t_test 
+     *    WHERE name IS NOT NULL &lt;if test='id!=null'&gt;AND id&gt;#{id}&lt;/if&gt;
+     *    ORDER BY id ASC 
+     *    LIMIT 5000
+     *  &lt;/script&gt;
+     * </pre>
+     * 
+     * @param sql        the mybatis sql script
+     * @param param      the param
+     * @param resultType the result type
+     * @param action     the action
+     */
+    public <P, R> void selectScroll(String sql, P param, Class<R> resultType, 
+                                    BiFunction<P, List<R>, P> action) {
+        List<R> list; boolean hasNext;
+        do {
+            list = selectList(sql, param, resultType);
+            hasNext = CollectionUtils.isNotEmpty(list);
+            if (hasNext) {
+                param = action.apply(param, list);
+            }
+        } while (hasNext);
     }
 
     /**
@@ -163,13 +185,13 @@ public class SqlMapper {
      * 插入数据
      *
      * @param sql   执行的sql
-     * @param value 参数
+     * @param param 参数
      * @return
      */
-    public int insert(String sql, Object value) {
-        Class<?> parameterType = value != null ? value.getClass() : null;
-        String msId = msUtils.insertDynamic(sql, parameterType);
-        return sqlSession.insert(msId, value);
+    public int insert(String sql, Object param) {
+        return sqlSession.insert(
+            msUtils.insertDynamic(sql, typeOf(param)), param
+        );
     }
 
     /**
@@ -186,13 +208,13 @@ public class SqlMapper {
      * 更新数据
      *
      * @param sql   执行的sql
-     * @param value 参数
+     * @param param 参数
      * @return
      */
-    public int update(String sql, Object value) {
-        Class<?> parameterType = value != null ? value.getClass() : null;
-        String msId = msUtils.updateDynamic(sql, parameterType);
-        return sqlSession.update(msId, value);
+    public int update(String sql, Object param) {
+        return sqlSession.update(
+            msUtils.updateDynamic(sql, typeOf(param)), param
+        );
     }
 
     /**
@@ -209,13 +231,13 @@ public class SqlMapper {
      * 删除数据
      *
      * @param sql   执行的sql
-     * @param value 参数
+     * @param param 参数
      * @return
      */
-    public int delete(String sql, Object value) {
-        Class<?> parameterType = value != null ? value.getClass() : null;
-        String msId = msUtils.deleteDynamic(sql, parameterType);
-        return sqlSession.delete(msId, value);
+    public int delete(String sql, Object param) {
+        return sqlSession.delete(
+            msUtils.deleteDynamic(sql, typeOf(param)), param
+        );
     }
 
     /**
@@ -226,22 +248,21 @@ public class SqlMapper {
      * @return
      */
     private <T> T getOne(List<T> list) {
-        if (list.size() == 1) {
-            return list.get(0);
-        } else if (list.size() > 1) {
-            throw new TooManyResultsException("Expected one result (or null) to be returned by selectOne(), but found: " + list.size());
-        } else {
-            return null;
+        int rowSize = list == null ? 0 : list.size();
+        if (rowSize > 1) {
+            throw new TooManyResultsException("Expected one row (or null) to be returned by selectOne(), but found: " + list.size());
         }
+        return rowSize == 1 ? list.get(0) : null;
     }
 
+    // ---------------------------------------------------------------------private class
     private static class MSUtils {
-        private Configuration configuration;
-        private LanguageDriver languageDriver;
+        private final Configuration configuration;
+        private final LanguageDriver languageDriver;
 
         private MSUtils(Configuration configuration) {
             this.configuration = configuration;
-            languageDriver = configuration.getDefaultScriptingLanguageInstance();
+            this.languageDriver = configuration.getDefaultScriptingLanguageInstance();
         }
 
         /**
@@ -252,9 +273,8 @@ public class SqlMapper {
          * @return
          */
         private String newMsId(String sql, SqlCommandType sqlCommandType) {
-            StringBuilder msIdBuilder = new StringBuilder(sqlCommandType.toString());
-            msIdBuilder.append(".").append(sql.hashCode());
-            return msIdBuilder.toString();
+            return new StringBuilder(sqlCommandType.toString())
+                .append(".").append(sql.hashCode()).toString();
         }
 
         /**
