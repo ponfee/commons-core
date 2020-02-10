@@ -33,8 +33,8 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
      *   <bean id="dsChangeAdvice" class="code.ponfee.commons.data.MultipleDataSourceAdvisor" />
      *   <aop:config proxy-target-class="true">
      *     <aop:pointcut id="dbTxMgrPointcut" expression="execution(public * cn.ponfee..*.service.impl..*..*(..))" />
-     *     <aop:advisor advice-ref="txManageAdvice" pointcut-ref="dbTxMgrPointcut" order="9" />
-     *     <aop:aspect ref="dsChangeAdvice" order="-2147483648">
+     *     <aop:advisor advice-ref="txManageAdvice" pointcut-ref="dbTxMgrPointcut" order="2147483647" />
+     *     <aop:aspect ref="dsChangeAdvice" order="2147483646">
      *       <aop:around method="doAround" pointcut-ref="dbTxMgrPointcut" />
      *     </aop:aspect>
      *   </aop:config>
@@ -85,8 +85,8 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
      *   <bean id="dsChangeAdvice" class="code.ponfee.commons.data.MultipleDataSourceAdvisor" />
      *   <aop:config proxy-target-class="true">
      *     <aop:pointcut id="dbTxMgrPointcut" expression="execution(public * cn.ponfee..*.service.impl..*..*(..))" />
-     *     <aop:advisor advice-ref="dsChangeAdvice" pointcut-ref="dbTxMgrPointcut" order="-2147483648" />
-     *     <aop:advisor advice-ref="txManageAdvice" pointcut-ref="dbTxMgrPointcut" order="9" />
+     *     <aop:advisor advice-ref="dsChangeAdvice" pointcut-ref="dbTxMgrPointcut" order="2147483646" />
+     *     <aop:advisor advice-ref="txManageAdvice" pointcut-ref="dbTxMgrPointcut" order="2147483647" />
      *   </aop:config>
      * }
 
@@ -122,12 +122,12 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
         return around(method, args, () -> method.invoke(invocation.getThis(), args));
     }
 
-    public static Object around(Method method, Object[] args, Callable<Object> call) throws Throwable {
+    private static Object around(Method method, Object[] args, Callable<Object> call) throws Throwable {
         return around(method, args, method.getAnnotation(DataSourceNaming.class), call);
     }
 
-    public static Object around(Method method, Object[] args, DataSourceNaming dsn, 
-                                Callable<Object> call) throws Throwable {
+    static Object around(Method method, Object[] args, DataSourceNaming dsn, 
+                         Callable<Object> call) throws Throwable {
         String name = null;
         if (dsn != null && StringUtils.isNotBlank(dsn.value())) {
             name = PARSER.parseExpression(dsn.value())
