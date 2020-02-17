@@ -128,9 +128,10 @@ public final class Collects {
 
     // ----------------------------------------------------------------to List, Map and Array
     /**
-     * 转map
-     * @param kv
-     * @return
+     * Converts array to map
+     * 
+     * @param kv the key value array
+     * @return a map
      */
     public static Map<String, Object> toMap(Object... kv) {
         if (kv == null) {
@@ -142,7 +143,7 @@ public final class Collects {
             throw new IllegalArgumentException("args must be pair.");
         }
 
-        Map<String, Object> map = new LinkedHashMap<>(length);
+        Map<String, Object> map = new LinkedHashMap<>(length/*>>>1*/);
         for (int i = 0; i < length; i += 2) {
             map.put((String) kv[i], kv[i + 1]);
         }

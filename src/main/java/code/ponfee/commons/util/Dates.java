@@ -441,6 +441,7 @@ public class Dates {
     }
 
     private static Date endOfDay(DateTime date) {
+        // 当毫秒数大于499时，存入到Mysql的（datatime）字段数据会自动加1秒，所以此处毫秒为000
         //date.secondOfDay().withMaximumValue().millisOfSecond().withMinimumValue().toDate();
         return date.withTime(23, 59, 59, 0).toDate();
     }

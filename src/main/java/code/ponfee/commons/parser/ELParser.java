@@ -5,6 +5,7 @@ import static com.google.common.base.CaseFormat.LOWER_UNDERSCORE;
 
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,13 +29,13 @@ public class ELParser {
     private static final Pattern SPEL_PATTERN   = Pattern.compile("\\{\\{\\s*([^\\{\\}]+)\\s*\\}\\}");
 
     public static String parse(String text) {
-        return parseDatetm(text);
+        return parseDateUDF(text);
     }
 
     public static String parse(String text, Map<String, ?> params) {
         text = parseParams(text, params);
-        text = parseDatetm(text);
         text = parseSpel(text, params);
+        text = parseDateUDF(text);
         return text;
     }
 
@@ -55,7 +56,7 @@ public class ELParser {
         return result;
     }
 
-    private static String parseDatetm(String text) {
+    private static String parseDateUDF(String text) {
         Matcher matcher = DATETM_PATTERN.matcher(text);
         String result = text;
         while (matcher.find()) {
@@ -95,7 +96,7 @@ public class ELParser {
         while (matcher.find()) {
             result = StringUtils.replace(
                 result, matcher.group(), 
-                String.valueOf(parser.parseExpression(matcher.group(1)).getValue(context))
+                Objects.toString(parser.parseExpression(matcher.group(1)).getValue(context), null)
             );
         }
         return result;
@@ -107,7 +108,7 @@ public class ELParser {
             int argsStart = text.indexOf('(');
 
             if (argsStart <= 0) {
-                return DateFuncs.now(text);
+                return DateUDF.now(text);
             }
 
             if (!text.endsWith(")")) {
@@ -121,14 +122,14 @@ public class ELParser {
             Method method;
             if (params.length == 1) {
                 if (StringUtils.isBlank(params[0])) {
-                    method = DateFuncs.class.getMethod(methodName);
+                    method = DateUDF.class.getMethod(methodName);
                     return (String) method.invoke(null);
                 } else {
-                    method = DateFuncs.class.getMethod(methodName, String.class);
+                    method = DateUDF.class.getMethod(methodName, String.class);
                     return (String) method.invoke(null, params[0].trim());
                 }
             } else if (params.length == 2) {
-                method = DateFuncs.class.getMethod(methodName, String.class, String.class);
+                method = DateUDF.class.getMethod(methodName, String.class, String.class);
                 return (String) method.invoke(null, params[0].trim(), params[1].trim());
             } else {
                 return null;

@@ -64,4 +64,12 @@ public class Maths {
         return result;
     }
 
+    public static int abs(int a) {
+        return (a == Integer.MIN_VALUE) ? Integer.MAX_VALUE : (a < 0) ? -a : a;
+    }
+
+    public static long abs(long a) {
+        return (a == Long.MIN_VALUE) ? Long.MAX_VALUE : (a < 0) ? -a : a;
+    }
+
 }

@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 
@@ -86,7 +87,7 @@ public final class Http {
     private Map<String, List<String>> respHeaders;
     private HttpStatus status;
 
-    private Http(String url, HttpMethod method) {
+    private Http(@Nonnull String url, @Nonnull HttpMethod method) {
         this.url = url;
         this.method = method;
     }

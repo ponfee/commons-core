@@ -10,9 +10,11 @@ import code.ponfee.commons.util.Dates;
 /**
  * https://www.cnblogs.com/qcfeng/p/7553500.html
  * 
+ * Date user defined functions
+ * 
  * @author Ponfee
  */
-public final class DateFuncs {
+public final class DateUDF {
 
     private static final Pattern PATTERN = Pattern.compile("[\\-\\+]?\\d+[YyMDdHhmWw]");
 
