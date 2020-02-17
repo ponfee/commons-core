@@ -47,7 +47,7 @@ public class NodeTreeTest {
         list.add(new BaseNode<>("400000", null, true, "nid400000"));
 
         // do mount first
-        TreeNode<String, String> subtree = TreeNodeBuilder.<String, String> newBuilder("400010", Comparator.comparing(n -> ThreadLocalRandom.current().nextInt(10))).pid("400000").enabled(true).build();
+        TreeNode<String, String> subtree = TreeNodeBuilder.<String, String> newBuilder("400010", Comparator.comparing(node -> ThreadLocalRandom.current().nextInt(10))).pid("400000").enabled(true).build();
 
         // do mount second
         subtree.mount(Arrays.asList(
@@ -147,7 +147,7 @@ public class NodeTreeTest {
 
         // do mount third
         Comparator< ? super TreeNode<String, String>> c = TreeNode.comparingThenComparingNid(Function.identity());
-        TreeNode<String, String> root = TreeNodeBuilder.<String, String> newBuilder(TreeNode.DEFAULT_ROOT_ID, c).build();
+        TreeNode<String, String> root = TreeNodeBuilder.newBuilder(TreeNode.DEFAULT_ROOT_ID, c).build();
         System.out.println(Jsons.toJson(root));
 
         // do mount fouth
