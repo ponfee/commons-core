@@ -1,8 +1,13 @@
 package code.ponfee.commons.resource;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
+
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.reflect.ClassUtils;
@@ -39,14 +44,14 @@ import code.ponfee.commons.util.Strings;
  */
 public final class ResourceLoaderFacade {
 
-    private static final String CP_PREFIX = "classpath:";
+    //private static final String CP_ALL_PREFIX = "classpath*:";
     private static final String WEB_PREFIX = "webapp:";
     static final String FS_PREFIX = "file:";
-    //private static final String CP_ALL_PREFIX = "classpath*:";
+    private static final Pattern PATTERN = Pattern.compile("^(\\s*(?i)(classpath|webapp|file)\\:\\s*)?(.+)$");
 
-    private static final ClassPathResourceLoader CP_LOADER = new ClassPathResourceLoader();
+    private static final ClassPathResourceLoader  CP_LOADER = new ClassPathResourceLoader();
     private static final FileSystemResourceLoader FS_LOADER = new FileSystemResourceLoader();
-    private static final WebappResourceLoader WEB_LOADER = new WebappResourceLoader();
+    private static final WebappResourceLoader    WEB_LOADER = new WebappResourceLoader();
 
     public static void setServletContext(ServletContext servletContext) {
         WEB_LOADER.setServletContext(servletContext);
@@ -72,22 +77,25 @@ public final class ResourceLoaderFacade {
      * @return
      */
     public static Resource getResource(String filePath, Class<?> contextClass, String encoding) {
-        if (encoding == null || encoding.length() == 0) {
+        Matcher matcher = PATTERN.matcher(filePath);
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException("Invalid file path: " + filePath);
+        }
+        if (StringUtils.isEmpty(encoding)) {
             encoding = Files.UTF_8;
         }
-        if (filePath == null) {
-            filePath = "";
-        }
-        String path = cleanPath(filePath);
-        if (filePath.startsWith(FS_PREFIX)) {
-            return FS_LOADER.getResource(path, encoding);
-        } else if (filePath.startsWith(WEB_PREFIX)) {
-            return WEB_LOADER.getResource(path, encoding);
-        } else {
-            // 内部用的classLoader加载，不能以“/”开头，XX.class.getResourceAsStream("/com/x/file/myfile.xml")才能以“/”开头
-            // "/"开头表示取根路径，非"/"开头则加上contextClass的包路径（如果contextClass不为空）
-            path = resolveClasspath(path, contextClass);
-            return CP_LOADER.getResource(path, contextClass, encoding); // 默认为classpath
+
+        filePath = Strings.cleanPath(matcher.group(3).trim());
+        switch (ObjectUtils.defaultIfNull(matcher.group(1), "").toLowerCase()) {
+            case FS_PREFIX:
+                return FS_LOADER.getResource(filePath, encoding);
+            case WEB_PREFIX:
+                return WEB_LOADER.getResource(resolveWebapp(filePath), encoding);
+            default:
+                // 内部用的classLoader加载，不能以“/”开头，XX.class.getResourceAsStream("/com/x/file/myfile.xml")才能以“/”开头
+                // "/"开头表示取根路径，非"/"开头则加上contextClass的包路径（如果contextClass不为空）
+                filePath = resolveClasspath(filePath, contextClass);
+                return CP_LOADER.getResource(filePath, contextClass, encoding); // 默认为classpath
         }
     }
 
@@ -122,20 +130,37 @@ public final class ResourceLoaderFacade {
      */
     public static List<Resource> listResources(String dir, String extensions[], boolean recursive,
                                                Class<?> contextClass, String encoding) {
-        if (dir == null) {
-            dir = "";
+        if (StringUtils.isBlank(dir)) {
+            dir = ".";
         }
-        String path = cleanPath(dir);
-        if (dir.startsWith(FS_PREFIX)) {
-            return FS_LOADER.listResources(path, extensions, recursive);
-        } else if (dir.startsWith(WEB_PREFIX)) {
-            return WEB_LOADER.listResources(path, extensions, recursive, encoding);
-        } else {
-            // 内部用的classLoader加载，不能以“/”开头，XX.class.getResourceAsStream("/com/x/file/myfile.xml")才能以“/”开头
-            // "/"开头表示取根路径，非"/"开头则加上contextClass的包路径（如果contextClass不为空）
-            path = resolveClasspath(path, contextClass);
-            return CP_LOADER.listResources(path, extensions, recursive, contextClass, encoding); // default classpath
+
+        Matcher matcher = PATTERN.matcher(dir);
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException("Invalid directory: " + dir);
         }
+        if (StringUtils.isEmpty(encoding)) {
+            encoding = Files.UTF_8;
+        }
+
+        dir = Strings.cleanPath(matcher.group(3).trim());
+        switch (ObjectUtils.defaultIfNull(matcher.group(1), "").toLowerCase()) {
+            case FS_PREFIX:
+                FS_LOADER.listResources(dir, extensions, recursive);
+            case WEB_PREFIX:
+                return WEB_LOADER.listResources(resolveWebapp(dir), extensions, recursive, encoding);
+            default:
+                // 内部用的classLoader加载，不能以“/”开头，XX.class.getResourceAsStream("/com/x/file/myfile.xml")才能以“/”开头
+                // "/"开头表示取根路径，非"/"开头则加上contextClass的包路径（如果contextClass不为空）
+                dir = resolveClasspath(dir, contextClass);
+                return CP_LOADER.listResources(dir, extensions, recursive, contextClass, encoding); // default classpath
+        }
+    }
+
+    private static String resolveWebapp(String path) {
+        if (!path.startsWith("/")) {
+            path = "/" + path;
+        }
+        return path;
     }
 
     private static String resolveClasspath(String path, Class<?> contextClass) {
@@ -143,25 +168,6 @@ public final class ResourceLoaderFacade {
             path = path.substring(1);
         } else if (contextClass != null) {
             path = ClassUtils.getPackagePath(contextClass) + "/" + path;
-        }
-        return path;
-    }
-
-    private static String cleanPath(String path) {
-        if (path.startsWith(WEB_PREFIX)) {
-            path = Strings.cleanPath(path.substring(WEB_PREFIX.length()));
-            if (!path.startsWith("/")) {
-                path = "/" + path;
-            }
-        } else if (path.startsWith(FS_PREFIX)) {
-            path = Strings.cleanPath(path.substring(FS_PREFIX.length()));
-        } else if (path.startsWith(CP_PREFIX)) {
-            path = Strings.cleanPath(path.substring(CP_PREFIX.length()));
-            if (path.startsWith("/")) {
-                path = path.substring(1);
-            }
-        } else {
-            path = Strings.cleanPath(path);
         }
         return path;
     }

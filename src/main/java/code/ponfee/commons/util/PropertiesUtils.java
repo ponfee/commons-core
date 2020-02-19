@@ -11,11 +11,10 @@ public class PropertiesUtils {
 
     // --------------------------------------------------------------string
     public static String getRequireString(Properties props, String name) {
-        String value = props.getProperty(name);
-        if (props.containsKey(name)) {
+        if (!props.containsKey(name)) {
             throw new IllegalArgumentException("Not presented config entry: " + name);
         }
-        return value;
+        return props.getProperty(name);
     }
 
     public static String getString(Properties props, String name) {
