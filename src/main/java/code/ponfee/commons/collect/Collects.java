@@ -128,9 +128,10 @@ public final class Collects {
 
     // ----------------------------------------------------------------to List, Map and Array
     /**
-     * 转map
-     * @param kv
-     * @return
+     * Converts array to map
+     * 
+     * @param kv the key value array
+     * @return a map
      */
     public static Map<String, Object> toMap(Object... kv) {
         if (kv == null) {

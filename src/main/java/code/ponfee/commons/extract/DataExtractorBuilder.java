@@ -100,12 +100,12 @@ public class DataExtractorBuilder {
             // csv, txt文本格式数据
             return new CsvExtractor(dataSource, headers, csvFormat, startRow, charset);
         } else if (EXCEL_EXTENSION.contains(extension)) {
-            // content-type
+            // Content-Type
             // xlsx: application/vnd.openxmlformats-officedocument.wordprocessingml.document
             //       application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
             //
             // xls: application/vnd.ms-excel
-            //      application/msword application/x-xls
+            //      application/x-xls
             ExcelType type = Enums.ofIgnoreCase(ExcelType.class, extension);
             return streaming 
                    ? new StreamingExcelExtractor(dataSource, headers, startRow, type, sheetIndex)

@@ -329,59 +329,59 @@ public class ValueOperations extends JedisOperations {
     /**
      * 对象序例化并缓存
      * @param key
-     * @param t
+     * @param value
      * @param isCompress
      * @param seconds
      * @return
      */
-    public boolean setObject(byte[] key, Object t,
+    public boolean setObject(byte[] key, Object value,
                              boolean isCompress, int seconds) {
-        if (t == null) {
+        if (value == null) {
             return false;
         }
 
         return call(shardedJedis -> {
-            byte[] data = jedisClient.serialize(t, isCompress);
+            byte[] data = jedisClient.serialize(value, isCompress);
             String rtn = shardedJedis.setex(key, getActualExpire(seconds), data);
             return SUCCESS_MSG.equalsIgnoreCase(rtn);
-        }, false, key, t, isCompress, seconds);
+        }, false, key, value, isCompress, seconds);
     }
 
-    public boolean setObject(byte[] key, Object t, boolean isCompress) {
-        return setObject(key, t, isCompress, DEFAULT_EXPIRE_SECONDS);
+    public boolean setObject(byte[] key, Object value, boolean isCompress) {
+        return setObject(key, value, isCompress, DEFAULT_EXPIRE_SECONDS);
     }
 
-    public boolean setObject(byte[] key, Object t, int seconds) {
-        return setObject(key, t, false, seconds);
+    public boolean setObject(byte[] key, Object value, int seconds) {
+        return setObject(key, value, false, seconds);
     }
 
-    public boolean setObject(byte[] key, Object t) {
-        return setObject(key, t, false, DEFAULT_EXPIRE_SECONDS);
+    public boolean setObject(byte[] key, Object value) {
+        return setObject(key, value, false, DEFAULT_EXPIRE_SECONDS);
     }
 
     /**
      * 对象序例化并缓存
      * @param key
-     * @param t
+     * @param value
      * @param isCompress
      * @param seconds
      * @return
      */
-    public boolean setObject(String key, Object t,
+    public boolean setObject(String key, Object value,
                              boolean isCompress, int seconds) {
-        return setObject(key.getBytes(StandardCharsets.UTF_8), t, isCompress, seconds);
+        return setObject(key.getBytes(StandardCharsets.UTF_8), value, isCompress, seconds);
     }
 
-    public boolean setObject(String key, Object t, boolean isCompress) {
-        return setObject(key, t, isCompress, DEFAULT_EXPIRE_SECONDS);
+    public boolean setObject(String key, Object value, boolean isCompress) {
+        return setObject(key, value, isCompress, DEFAULT_EXPIRE_SECONDS);
     }
 
-    public boolean setObject(String key, Object t, int seconds) {
-        return setObject(key, t, false, seconds);
+    public boolean setObject(String key, Object value, int seconds) {
+        return setObject(key, value, false, seconds);
     }
 
-    public boolean setObject(String key, Object t) {
-        return setObject(key, t, false, DEFAULT_EXPIRE_SECONDS);
+    public boolean setObject(String key, Object value) {
+        return setObject(key, value, false, DEFAULT_EXPIRE_SECONDS);
     }
 
     /**
@@ -395,12 +395,12 @@ public class ValueOperations extends JedisOperations {
     public <T> T getObject(byte[] key, Class<T> clazz, 
                            boolean isCompress, Integer seconds) {
         return call(shardedJedis -> {
-            T t = jedisClient.deserialize(shardedJedis.get(key), clazz, isCompress);
-            if (t != null) {
+            T value = jedisClient.deserialize(shardedJedis.get(key), clazz, isCompress);
+            if (value != null) {
                 // 存在则设置失效时间
                 expire(shardedJedis, key, seconds);
             }
-            return t;
+            return value;
         }, null, key, clazz, isCompress, seconds);
     }
 

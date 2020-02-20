@@ -29,13 +29,13 @@ public class ELParser {
     private static final Pattern SPEL_PATTERN   = Pattern.compile("\\{\\{\\s*([^\\{\\}]+)\\s*\\}\\}");
 
     public static String parse(String text) {
-        return parseDatetm(text);
+        return parseDateUDF(text);
     }
 
     public static String parse(String text, Map<String, ?> params) {
         text = parseParams(text, params);
-        text = parseDatetm(text);
         text = parseSpel(text, params);
+        text = parseDateUDF(text);
         return text;
     }
 
@@ -56,7 +56,7 @@ public class ELParser {
         return result;
     }
 
-    private static String parseDatetm(String text) {
+    private static String parseDateUDF(String text) {
         Matcher matcher = DATETM_PATTERN.matcher(text);
         String result = text;
         while (matcher.find()) {
