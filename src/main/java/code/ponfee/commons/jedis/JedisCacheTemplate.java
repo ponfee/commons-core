@@ -2,6 +2,8 @@ package code.ponfee.commons.jedis;
 
 import java.util.function.Supplier;
 
+import javax.annotation.Nonnull;
+
 /**
  * Jedis client cache template(template method pattern)
  * 
@@ -11,7 +13,7 @@ public class JedisCacheTemplate {
 
     private final JedisClient client;
 
-    public JedisCacheTemplate(JedisClient client) {
+    public JedisCacheTemplate(@Nonnull JedisClient client) {
         this.client = client;
     }
 

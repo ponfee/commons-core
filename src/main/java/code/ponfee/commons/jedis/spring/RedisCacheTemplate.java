@@ -3,6 +3,8 @@ package code.ponfee.commons.jedis.spring;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import javax.annotation.Nonnull;
+
 import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 
@@ -15,7 +17,7 @@ public class RedisCacheTemplate {
 
     private final RedisTemplate<String, Object> redis;
 
-    public RedisCacheTemplate(RedisTemplate<String, Object> redis) {
+    public RedisCacheTemplate(@Nonnull RedisTemplate<String, Object> redis) {
         this.redis = redis;
     }
 
