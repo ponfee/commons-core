@@ -42,4 +42,8 @@ public class RedisCacheTemplate {
         return value;
     }
 
+    public RedisTemplate<String, Object> getRedis() {
+        return redis;
+    }
+
 }

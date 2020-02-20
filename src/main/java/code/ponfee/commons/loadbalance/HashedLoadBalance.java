@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import code.ponfee.commons.math.Maths;
+
 /**
  * 源地址哈希法
  * 
@@ -22,11 +24,7 @@ public class HashedLoadBalance extends AbstractLoadBalance {
     }
 
     public String select(String invokeIp) {
-        int hash = invokeIp.hashCode();
-        if (hash == Integer.MIN_VALUE) {
-            hash = Integer.MAX_VALUE;
-        }
-        return servers.get(Math.abs(hash) % servers.size());
+        return servers.get(Maths.abs(invokeIp.hashCode()) % servers.size());
     }
 
 }

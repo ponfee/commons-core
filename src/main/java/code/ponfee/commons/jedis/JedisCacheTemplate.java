@@ -37,4 +37,8 @@ public class JedisCacheTemplate {
         return value;
     }
 
+    public JedisClient getClient() {
+        return client;
+    }
+
 }
