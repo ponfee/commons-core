@@ -2,8 +2,8 @@ package code.ponfee.commons.data.lookup;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
@@ -11,12 +11,11 @@ import javax.sql.DataSource;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.jdbc.datasource.AbstractDataSource;
-import org.springframework.util.Assert;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.ImmutableMap;
 
-import code.ponfee.commons.cache.Cache;
-import code.ponfee.commons.cache.CacheBuilder;
 import code.ponfee.commons.data.NamedDataSource;
 
 /**
@@ -25,87 +24,81 @@ import code.ponfee.commons.data.NamedDataSource;
  * @author Ponfee
  * @see org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource
  */
-public class MultipletCachedDataSource extends AbstractDataSource {
+public class MultipletCachedDataSource extends AbstractDataSource implements DataSourceLookup {
 
-    private final Cache<String, DataSource> dataSources = CacheBuilder.<String, DataSource>newBuilder()
-        .autoReleaseInSeconds(300).caseSensitiveKey(true)
-        .removalListener(nf -> MultipleDataSourceContext.remove(nf.getKey()))
-        .build();
-
-    private final Set<String> immutableDataSourceNames;
+    private final Map<String, DataSource> localDataSources;
     private final DataSource defaultDataSource;
 
-    public MultipletCachedDataSource(NamedDataSource dataSource) {
-        this(dataSource.getName(), dataSource.getDataSource());
+    private final Cache<String, DataSource> strangerDataSources;
+
+    public MultipletCachedDataSource(int expireSeconds, NamedDataSource dataSource) {
+        this(expireSeconds, dataSource.getName(), dataSource.getDataSource());
     }
 
-    public MultipletCachedDataSource(NamedDataSource... dataSources) {
+    public MultipletCachedDataSource(int expireSeconds, NamedDataSource... dataSources) {
         this(
+            expireSeconds,
             dataSources[0].getName(), 
             dataSources[0].getDataSource(), 
             ArrayUtils.subarray(dataSources, 1, dataSources.length)
         );
     }
 
-    public MultipletCachedDataSource(String defaultName, DataSource defaultDataSource, 
+    public MultipletCachedDataSource(int expireSeconds, String defaultName, DataSource defaultDataSource, 
                                      NamedDataSource... othersDataSource) {
-        Map<String, DataSource> dataSources = MultipleDataSourceContext.process(
-            defaultName, defaultDataSource, othersDataSource
-        );
-
         // set the default data source
         this.defaultDataSource = defaultDataSource;
 
-        // set all the data sources to cache container(inited data sources not expire)
-        dataSources.forEach(
-            (k, v) -> this.dataSources.set(k, v, Cache.KEEPALIVE_FOREVER)
+        this.localDataSources = ImmutableMap.copyOf(
+            MultipleDataSourceContext.process(defaultName, defaultDataSource, othersDataSource)
         );
 
-        this.immutableDataSourceNames = ImmutableSet.copyOf(dataSources.keySet());
+        this.strangerDataSources = CacheBuilder.newBuilder()
+            .expireAfterAccess(Duration.ofSeconds(expireSeconds))
+            .maximumSize(8192)
+            .build();
     }
 
     // -----------------------------------------------------------------add/remove
-    public synchronized boolean addIfAbsent(String dataSourceName, Supplier<DataSource> supplier, 
-                                            long expireTimeMillis) {
-        if (this.dataSources.containsKey(dataSourceName)) {
+    public synchronized boolean addIfAbsent(String dataSourceName, 
+                                            Supplier<DataSource> supplier) {
+        if (existsDatasourceName(dataSourceName)) {
             return false;
         }
 
-        this.add(dataSourceName, supplier.get(), expireTimeMillis);
+        this.add(dataSourceName, supplier.get());
         return true;
     }
 
-    public synchronized boolean addIfAbsent(String dataSourceName, DataSource datasource,
-                                            long expireTimeMillis) {
-        if (this.dataSources.containsKey(dataSourceName)) {
+    public synchronized boolean addIfAbsent(String dataSourceName, DataSource datasource) {
+        if (existsDatasourceName(dataSourceName)) {
             return false;
         }
 
-        this.add(dataSourceName, datasource, expireTimeMillis);
+        this.add(dataSourceName, datasource);
         return true;
     }
 
-    public synchronized void add(NamedDataSource ds, long expireTimeMillis) {
-        this.add(ds.getName(), ds.getDataSource(), expireTimeMillis);
+    public synchronized void add(NamedDataSource ds) {
+        this.add(ds.getName(), ds.getDataSource());
     }
 
     public synchronized void add(@Nonnull String dataSourceName, 
-                                 @Nonnull DataSource datasource,
-                                 long expireTimeMillis) {
-        Assert.isTrue(expireTimeMillis >= 0, "ExpireTimeMillis must be >= 0.");
-        if (dataSources.containsKey(dataSourceName)) { // check the datasource name not exists
+                                 @Nonnull DataSource datasource) {
+        if (existsDatasourceName(dataSourceName)) { // check the datasource name not exists
             throw new IllegalArgumentException("Duplicated datasource name: " + dataSourceName);
         }
 
-        dataSources.set(dataSourceName, datasource, expireTimeMillis);
+        this.strangerDataSources.put(dataSourceName, datasource);
         MultipleDataSourceContext.add(dataSourceName);
     }
 
     public synchronized void remove(String dataSourceName) {
-        if (immutableDataSourceNames.contains(dataSourceName)) {
-            throw new UnsupportedOperationException("Immutable datasource cannot remove: " + dataSourceName);
+        if (this.localDataSources.containsKey(dataSourceName)) {
+            throw new UnsupportedOperationException("Local datasource cannot remove: " + dataSourceName);
         }
-        dataSources.remove(dataSourceName);
+
+        this.strangerDataSources.invalidate(dataSourceName);
         MultipleDataSourceContext.remove(dataSourceName);
     }
 
@@ -131,9 +124,20 @@ public class MultipletCachedDataSource extends AbstractDataSource {
 
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return (iface.isInstance(this) || determineTargetDataSource().isWrapperFor(iface));
+        return iface.isInstance(this) || determineTargetDataSource().isWrapperFor(iface);
     }
 
+    @Override
+    public DataSource lookupDataSource(String name) {
+        DataSource dataSource = this.localDataSources.get(name);
+        if (dataSource != null) {
+            return dataSource;
+        }
+
+        return this.strangerDataSources.getIfPresent(name);
+    }
+
+    // -----------------------------------------------------------------private methods
     /**
      * Retrieve the current target DataSource. Determines the
      * {@link #determineCurrentLookupKey() current lookup key}, performs
@@ -142,15 +146,20 @@ public class MultipletCachedDataSource extends AbstractDataSource {
      * {@link #setDefaultTargetDataSource default target DataSource} if necessary.
      * @see #determineCurrentLookupKey()
      */
-    public DataSource determineTargetDataSource() {
+    private DataSource determineTargetDataSource() {
         String lookupKey = MultipleDataSourceContext.get();
         DataSource dataSource = (lookupKey == null) 
                               ? this.defaultDataSource 
-                              : this.dataSources.get(lookupKey);
+                              : lookupDataSource(lookupKey);
         if (dataSource == null) {
             throw new IllegalStateException("Cannot found DataSource for name [" + lookupKey + "]");
         }
         return dataSource;
+    }
+
+    private boolean existsDatasourceName(String name) {
+        return this.localDataSources.containsKey(name) 
+            || this.strangerDataSources.getIfPresent(name) != null;
     }
 
 }

@@ -7,6 +7,8 @@ import javax.sql.DataSource;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
+import com.google.common.collect.ImmutableMap;
+
 import code.ponfee.commons.data.NamedDataSource;
 
 /**
@@ -19,7 +21,9 @@ import code.ponfee.commons.data.NamedDataSource;
  * @see MultipletScalableDataSource
  * @see MultipletCachedDataSource
  */
-public class MultipleFixedDataSource extends AbstractRoutingDataSource {
+public class MultipleFixedDataSource extends AbstractRoutingDataSource implements DataSourceLookup {
+
+    private final Map<String, DataSource> dataSources;
 
     public MultipleFixedDataSource(NamedDataSource dataSource) {
         this(dataSource.getName(), dataSource.getDataSource());
@@ -45,6 +49,8 @@ public class MultipleFixedDataSource extends AbstractRoutingDataSource {
 
         // set all the data sources
         super.setTargetDataSources((Map) dataSources);
+
+        this.dataSources = ImmutableMap.copyOf(dataSources);
     }
 
     @Override
@@ -52,11 +58,9 @@ public class MultipleFixedDataSource extends AbstractRoutingDataSource {
         return MultipleDataSourceContext.get();
     }
 
-    /**
-     * Makes this method to public access purview
-     */
     @Override
-    public DataSource determineTargetDataSource() {
-        return super.determineTargetDataSource();
+    public DataSource lookupDataSource(String name) {
+        return this.dataSources.get(name);
     }
+
 }
