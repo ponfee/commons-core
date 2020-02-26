@@ -11,7 +11,7 @@ public class PropertiesUtils {
 
     // --------------------------------------------------------------string
     public static String getRequireString(Properties props, String name) {
-        if (!props.containsKey(name)) {
+        if (props == null || !props.containsKey(name)) {
             throw new IllegalArgumentException("Not presented config entry: " + name);
         }
         return props.getProperty(name);
@@ -22,7 +22,7 @@ public class PropertiesUtils {
     }
 
     public static String getString(Properties props, String name, String defaultValue) {
-        return props == null ? null : props.getProperty(name, defaultValue);
+        return props == null ? defaultValue : props.getProperty(name, defaultValue);
     }
 
     // --------------------------------------------------------------boolean
@@ -40,7 +40,7 @@ public class PropertiesUtils {
         return value == null ? null : "true".equalsIgnoreCase(value);
     }
 
-    // --------------------------------------------------------------integer
+    // --------------------------------------------------------------int
     public static int getRequireInteger(Properties props, String name) {
         return Integer.parseInt(getRequireString(props, name));
     }
@@ -70,7 +70,22 @@ public class PropertiesUtils {
         return value == null ? null : Long.parseLong(value);
     }
 
-    // --------------------------------------------------------------integer
+    // --------------------------------------------------------------float
+    public static float getRequireFloat(Properties props, String name) {
+        return Float.parseFloat(getRequireString(props, name));
+    }
+
+    public static float getFloat(Properties props, String name, float defaultValue) {
+        Float value = getFloat(props, name);
+        return value == null ? defaultValue : value;
+    }
+
+    public static Float getFloat(Properties props, String name) {
+        String value = getString(props, name);
+        return value == null ? null : Float.parseFloat(value);
+    }
+
+    // --------------------------------------------------------------double
     public static double getRequireDouble(Properties props, String name) {
         return Double.parseDouble(getRequireString(props, name));
     }
