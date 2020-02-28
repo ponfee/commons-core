@@ -329,7 +329,9 @@ public final class Collects {
      * @return batch collection
      */
     public static <T> List<List<T>> splinter(Collection<T> coll, int batchSize) {
-        List<List<T>> result = new ArrayList<>(PageHandler.computeTotalPages(coll.size(), batchSize));
+        List<List<T>> result = new ArrayList<>(
+            PageHandler.computeTotalPages(coll.size(), batchSize)
+        );
         splinter(coll, batchSize, result::add);
         return result;
     }
@@ -341,7 +343,8 @@ public final class Collects {
      * @param batchSize the batch size
      * @param action    the Consumer for process eatch batch
      */
-    public static <T> void splinter(Collection<T> coll, int batchSize, Consumer<List<T>> action) {
+    public static <T> void splinter(Collection<T> coll, int batchSize, 
+                                    Consumer<List<T>> action) {
         List<T> batch = new ArrayList<>(batchSize);
         for (T item : coll) {
             batch.add(item);
@@ -363,7 +366,9 @@ public final class Collects {
      * @return batch collection
      */
     public static <T> List<List<T>> splinter(List<T> list, int batchSize) {
-        List<List<T>> result = new ArrayList<>(PageHandler.computeTotalPages(list.size(), batchSize));
+        List<List<T>> result = new ArrayList<>(
+            PageHandler.computeTotalPages(list.size(), batchSize)
+        );
         splinter(list, batchSize, result::add);
         return result;
     }
@@ -418,7 +423,8 @@ public final class Collects {
      * @param fun convert A and B to T
      * @return a list of type T
      */
-    public static <A, B, T> List<T> cartesian(List<A> x, List<B> y, BiFunction<A, B, T> fun) {
+    public static <A, B, T> List<T> cartesian(List<A> x, List<B> y, 
+                                              BiFunction<A, B, T> fun) {
         List<T> product = new ArrayList<>(x.size() * y.size());
         for (A a : x) {
             for (B b : y) {
@@ -437,6 +443,31 @@ public final class Collects {
         T t = x[a];
         x[a] = x[b];
         x[b] = t;
+    }
+
+    /**
+     * Reverse list array data
+     * 
+     * [[a,b,c,d],[1,2,3,4]] -> [[a,1],[b,2],[c,3],[d,4]]
+     * 
+     * @param list the list
+     * @return a list array result
+     */
+    public static List<Object[]> reverse(List<Object[]> list) {
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+
+        int length = list.get(0).length, size = list.size();
+        List<Object[]> result = new ArrayList<>(length);
+        for (int i = 0; i < length; i++) {
+            Object[] array = new Object[size];
+            for (int j = 0; j < size; j++) {
+                array[j] = list.get(j)[i];
+            }
+            result.add(array);
+        }
+        return result;
     }
 
 }
