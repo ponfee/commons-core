@@ -191,14 +191,16 @@ public abstract class CryptoProvider {
         return new CryptoProvider() {
             @Override
             public byte[] encrypt(byte[] original) {
-                Objects.requireNonNull(original);
-                return symmetricKey.encrypt(original);
+                return symmetricKey.encrypt(
+                    Objects.requireNonNull(original)
+                );
             }
 
             @Override
             public byte[] decrypt(byte[] encrypted) {
-                Objects.requireNonNull(encrypted);
-                return symmetricKey.decrypt(encrypted);
+                return symmetricKey.decrypt(
+                    Objects.requireNonNull(encrypted)
+                );
             }
         };
     }
@@ -216,8 +218,9 @@ public abstract class CryptoProvider {
 
             @Override
             public byte[] encrypt(byte[] original) {
-                Objects.requireNonNull(original);
-                return RSACryptor.encrypt(original, pubKey); // 公钥加密
+                return RSACryptor.encrypt(
+                    Objects.requireNonNull(original), pubKey
+                ); // 公钥加密
             }
 
             @Override
@@ -257,17 +260,19 @@ public abstract class CryptoProvider {
         return new CryptoProvider() {
             @Override
             public byte[] encrypt(byte[] original) {
-                Objects.requireNonNull(original);
                 // only support public key encrypt
                 // forbid encrypt with private key
-                return RSACryptor.encrypt(original, pubKey); // 公钥加密
+                return RSACryptor.encrypt(
+                    Objects.requireNonNull(original), pubKey
+                ); // 公钥加密
             }
 
             @Override
             public byte[] decrypt(byte[] encrypted) {
-                Objects.requireNonNull(encrypted);
                 // only support private key decrypt
-                return RSACryptor.decrypt(encrypted, priKey); // 私钥解密
+                return RSACryptor.decrypt(
+                    Objects.requireNonNull(encrypted), priKey
+                ); // 私钥解密
             }
 
             @Override

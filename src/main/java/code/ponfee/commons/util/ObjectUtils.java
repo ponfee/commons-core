@@ -60,8 +60,7 @@ public final class ObjectUtils {
 
     @SuppressWarnings("unchecked")
     public static <T> Predicate<T> not(Predicate<? super T> target) {
-        Objects.requireNonNull(target);
-        return (Predicate<T>) target.negate();
+        return (Predicate<T>) Objects.requireNonNull(target).negate();
     }
 
     /**

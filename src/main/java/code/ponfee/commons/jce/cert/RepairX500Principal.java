@@ -29,8 +29,9 @@ public class RepairX500Principal implements Principal {
     private final ByteArrayInputStream input;
 
     public RepairX500Principal(X500Principal principal) {
-        Objects.requireNonNull(principal);
-        input = new ByteArrayInputStream(principal.getEncoded());
+        input = new ByteArrayInputStream(
+            Objects.requireNonNull(principal).getEncoded()
+        );
     }
 
     @Override

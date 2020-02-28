@@ -22,7 +22,7 @@ import code.ponfee.commons.data.NamedDataSource;
  * @author Ponfee
  * @see org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource
  */
-public class MultipletScalableDataSource extends AbstractDataSource {
+public class MultipletScalableDataSource extends AbstractDataSource implements DataSourceLookup {
 
     private final Map<String, DataSource> dataSources = new HashMap<>();
     private final DataSource defaultDataSource;
@@ -102,7 +102,12 @@ public class MultipletScalableDataSource extends AbstractDataSource {
 
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return (iface.isInstance(this) || determineTargetDataSource().isWrapperFor(iface));
+        return iface.isInstance(this) || determineTargetDataSource().isWrapperFor(iface);
+    }
+
+    @Override
+    public DataSource lookupDataSource(String name) {
+        return this.dataSources.get(name);
     }
 
     /**
@@ -113,7 +118,7 @@ public class MultipletScalableDataSource extends AbstractDataSource {
      * {@link #setDefaultTargetDataSource default target DataSource} if necessary.
      * @see #determineCurrentLookupKey()
      */
-    public DataSource determineTargetDataSource() {
+    private DataSource determineTargetDataSource() {
         String lookupKey = MultipleDataSourceContext.get();
         DataSource dataSource = (lookupKey == null) 
                               ? this.defaultDataSource 
