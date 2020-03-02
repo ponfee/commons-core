@@ -596,7 +596,7 @@ public final class WebUtils {
      * @param replaceBackSlash Should '\\' be replaced with '/'
      * @return normalized path
      */
-    private static String normalize(String path, boolean replaceBackSlash) {
+    public static String normalize(String path, boolean replaceBackSlash) {
         if (path == null) {
             return null;
         }

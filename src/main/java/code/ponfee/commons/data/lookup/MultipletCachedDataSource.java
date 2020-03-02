@@ -55,6 +55,7 @@ public class MultipletCachedDataSource extends AbstractDataSource implements Dat
 
         this.strangerDataSources = CacheBuilder.newBuilder()
             .expireAfterAccess(Duration.ofSeconds(expireSeconds))
+            .maximumSize(8192)
             .build();
     }
 

@@ -13,16 +13,16 @@ public final class Throwables {
     /**
      * Gets the throwable stack trace
      * 
-     * @param e the Throwable
+     * @param throwable the Throwable
      * @return a string of throwable stack trace information
      */
-    public static String getStackTrace(Throwable e) {
-        if (e == null) {
+    public static String getStackTrace(Throwable throwable) {
+        if (throwable == null) {
             return null;
         }
 
         try (StringPrintWriter writer = new StringPrintWriter()) {
-            e.printStackTrace(writer);
+            throwable.printStackTrace(writer);
             return writer.getString();
         }
     }
@@ -52,10 +52,10 @@ public final class Throwables {
     /**
      * Prints the throwable stack trace to console
      * 
-     * @param t the Throwable
+     * @param throwable the Throwable
      */
-    public static void console(Throwable t) {
-        t.printStackTrace();
+    public static void console(Throwable throwable) {
+        throwable.printStackTrace();
     }
 
 }
