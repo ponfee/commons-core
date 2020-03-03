@@ -26,8 +26,17 @@ public class PropertiesUtils {
     }
 
     // --------------------------------------------------------------boolean
-    public static Boolean getRequireBoolean(Properties props, String name) {
-        return "true".equalsIgnoreCase(getRequireString(props, name));
+    public static boolean getRequireBoolean(Properties props, String name) {
+        String value = getRequireString(props, name);
+        if (value == null) {
+            throw new IllegalArgumentException("Invalid boolean value, cannot be null.");
+        }
+
+        switch (value) {
+            case "TRUE" : case "True" : case "true" : return true;
+            case "FALSE": case "False": case "false": return false;
+            default: throw new IllegalArgumentException("Invalid boolean value: " + value);
+        }
     }
 
     public static boolean getBoolean(Properties props, String name, boolean defaultValue) {
@@ -98,6 +107,19 @@ public class PropertiesUtils {
     public static Double getDouble(Properties props, String name) {
         String value = getString(props, name);
         return value == null ? null : Double.parseDouble(value);
+    }
+
+    // --------------------------------------------------------------others methods
+    public static Properties filterProperties(Properties props, String prefixKey) {
+        Properties properties = new Properties();
+        int prefixLen = prefixKey.length();
+        props.forEach((k, v) -> {
+            String key = k.toString();
+            if (key.startsWith(prefixKey)) {
+                properties.put(key.substring(prefixLen, key.length()), v);
+            }
+        });
+        return properties;
     }
 
 }

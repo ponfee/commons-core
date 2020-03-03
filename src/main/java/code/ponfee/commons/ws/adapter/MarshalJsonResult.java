@@ -7,9 +7,9 @@ import code.ponfee.commons.json.Jsons;
  * 
  * @author Ponfee
  */
-public interface MarshalJsonResult {
+public interface MarshalJsonResult/*<E>*/ {
 
-    default MarshalJsonResult fromJson(String json) {
+    default /*E*/ MarshalJsonResult fromJson(String json) {
         return Jsons.fromJson(json, this.getClass());
     }
 }

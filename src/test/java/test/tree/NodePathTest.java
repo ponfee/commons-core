@@ -117,18 +117,22 @@ public class NodePathTest {
     private static String DATA = "{\"id\":123,\"path\":[1,2,3,4]}";
     @Test
     public void test91() {
+        System.out.println(Jsons.fromJson(DATA, NodePathBean1.class).getPath());
         System.out.println(JSON.parseObject(DATA, NodePathBean1.class).getPath());
     }
     @Test
     public void test92() {
+        System.out.println(Jsons.fromJson(DATA, NodePathBean2.class).getPath());
         System.out.println(JSON.parseObject(DATA, NodePathBean2.class).getPath());
     }
     @Test
     public void test93() {
+        System.out.println(Jsons.fromJson(DATA, NodePathBean3.class).getPath());
         System.out.println(JSON.parseObject(DATA, NodePathBean3.class).getPath());
     }
     @Test
     public void test94() {
+        System.out.println(Jsons.fromJson(DATA, NodePathBean4.class).getPath());
         System.out.println(JSON.parseObject(DATA, NodePathBean4.class).getPath());
     }
 
@@ -191,8 +195,9 @@ public class NodePathTest {
     public static class NodePathBean4 implements java.io.Serializable {
         private static final long serialVersionUID = 1L;
         private int id;
+        // FIXME ERROR
         // 当字段有泛型参数时的类型信息type为ParameterizedType，所以必须用JSONField注解，
-        // 否则当成Collection来解析
+        // 否则当成Collection来解析（此字段的类型不是NodePath，而是ParameterizedType）
         private NodePath<Integer> path;
         public int getId() {
             return id;

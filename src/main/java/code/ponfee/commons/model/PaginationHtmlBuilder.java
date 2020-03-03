@@ -25,6 +25,7 @@ import code.ponfee.commons.http.HttpParams;
 public final class PaginationHtmlBuilder {
 
     public static final String CDN_JQUERY = "<script src=\"http://libs.baidu.com/jquery/2.1.4/jquery.min.js\"></script>";
+    public static final String CDN_BASE64 = "<script src=\"https://cdn.bootcss.com/Base64/1.1.0/base64.min.js\"></script>";
 
     private final String title;
     private final String url;
@@ -87,7 +88,7 @@ public final class PaginationHtmlBuilder {
     }
 
     public PaginationHtmlBuilder params(PageRequestParams pageParams) {
-        return this.params(pageParams.getParams());
+        return this.params(pageParams.origin());
     }
 
     public PaginationHtmlBuilder foot(String foot) {

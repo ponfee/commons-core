@@ -124,7 +124,7 @@ public class MultipletScalableDataSource extends AbstractDataSource implements D
                               ? this.defaultDataSource 
                               : this.dataSources.get(lookupKey);
         if (dataSource == null) {
-            throw new IllegalStateException("Cannot found DataSource for name [" + lookupKey + "]");
+            throw new IllegalStateException("Cannot found DataSource by name [" + lookupKey + "]");
         }
         return dataSource;
     }

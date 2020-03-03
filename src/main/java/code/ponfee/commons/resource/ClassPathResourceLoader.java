@@ -66,8 +66,8 @@ final class ClassPathResourceLoader {
                 switch (url.getProtocol()) {
                     case URL_PROTOCOL_FILE:
                         String path = URLDecoder.decode(url.getFile(), encoding);
-                        // 判断是否是指定类所在Jar包中的文件
-                        if (!checkWithinClass(contextClass, path.substring(0, path.lastIndexOf(filePath)), encoding)) {
+                        // 判断是否是指定类所在Jar包中的文件：path.length()-filePath.length() == path.lastIndexOf(filePath)
+                        if (!checkWithinClass(contextClass, path.substring(0, path.length() - filePath.length()), encoding)) {
                             continue;
                         }
                         return new Resource(path, new File(path).getName(), new FileInputStream(path));
@@ -160,8 +160,8 @@ final class ClassPathResourceLoader {
                 switch (url.getProtocol()) {
                     case URL_PROTOCOL_FILE:
                         String path = URLDecoder.decode(url.getFile(), encoding);
-                        // 判断是否是指定类所在Jar包中的文件
-                        if (!checkWithinClass(contextClass, path.substring(0, path.lastIndexOf(directory)), encoding)) {
+                        // 判断是否是指定类所在Jar包中的文件：path.length()-directory.length() == path.lastIndexOf(directory)
+                        if (!checkWithinClass(contextClass, path.substring(0, path.length() - directory.length()), encoding)) {
                             continue;
                         }
                         Collection<File> files = FileUtils.listFiles(new File(path), extensions, recursive);

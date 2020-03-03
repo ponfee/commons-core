@@ -5,17 +5,13 @@ import static code.ponfee.commons.model.PageHandler.DEFAULT_OFFSET;
 import static code.ponfee.commons.model.PageHandler.DEFAULT_PAGE_NUM;
 import static code.ponfee.commons.model.PageHandler.DEFAULT_PAGE_SIZE;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.ImmutableList;
-
-import code.ponfee.commons.math.Numbers;
 
 /**
  * 分页请求参数封装类（不能继承Map，否则会被内置Map解析器优先处理）
@@ -25,7 +21,7 @@ import code.ponfee.commons.math.Numbers;
  * 
  * @author Ponfee
  */
-public class PageRequestParams implements java.io.Serializable {
+public class PageRequestParams implements MapTrait<String, Object>, java.io.Serializable {
 
     private static final long serialVersionUID = 6176654946390797217L;
 
@@ -46,12 +42,12 @@ public class PageRequestParams implements java.io.Serializable {
     private String sort = null;
 
     // 包含pageNum、pageSize、offset、limit、sort
-    private final Map<String, Object> params = new LinkedHashMap<>();
+    private final ExtendedLinkedHashMap<String, Object> params = new ExtendedLinkedHashMap<>();
 
     public PageRequestParams() {}
 
-    public PageRequestParams(Map<String, Object> params) {
-        this.params.putAll(params);
+    public PageRequestParams(Map<? extends String, ? extends Object> map) {
+        this.params.putAll(map);
     }
 
     public PageRequestParams searchAll() {
@@ -88,8 +84,13 @@ public class PageRequestParams implements java.io.Serializable {
         }
     }
 
+    public ExtendedLinkedHashMap<String, Object> origin() {
+        return this.params;
+    }
+
+    // ----------------------------------------------page operators
     public int getPageNum() {
-        return pageNum;
+        return this.pageNum;
     }
 
     public void setPageNum(int pageNum) {
@@ -98,7 +99,7 @@ public class PageRequestParams implements java.io.Serializable {
     }
 
     public int getPageSize() {
-        return pageSize;
+        return this.pageSize;
     }
 
     public void setPageSize(int pageSize) {
@@ -107,7 +108,7 @@ public class PageRequestParams implements java.io.Serializable {
     }
 
     public int getOffset() {
-        return offset;
+        return this.offset;
     }
 
     public void setOffset(int offset) {
@@ -116,7 +117,7 @@ public class PageRequestParams implements java.io.Serializable {
     }
 
     public int getLimit() {
-        return limit;
+        return this.limit;
     }
 
     public void setLimit(int limit) {
@@ -125,7 +126,7 @@ public class PageRequestParams implements java.io.Serializable {
     }
 
     public String getSort() {
-        return sort;
+        return this.sort;
     }
 
     public void setSort(String sort) {
@@ -133,65 +134,14 @@ public class PageRequestParams implements java.io.Serializable {
         this.put(SORT_PARAM, sort);
     }
 
-    public Map<String, Object> getParams() {
-        return params;
-    }
-
     // ----------------------------------------------map operators
-    public void put(String key, Object value) {
-        this.params.put(key, value);
+    public Object put(String key, Object value) {
+        return this.params.put(key, value);
     }
 
-    public Object get(String key) {
-        return params.get(key);
-    }
-
-    public String getString(String key) {
-        return getString(key, "");
-    }
-
-    public String getString(String key, String defaultVal) {
-        return Objects.toString(get(key), defaultVal);
-    }
-
-    public Boolean getBoolean(String key) {
-        return Numbers.toWrapBoolean(get(key));
-    }
-
-    public boolean getBoolean(String key, boolean defaultVal) {
-        return Numbers.toBoolean(get(key), defaultVal);
-    }
-
-    public Integer getInt(String key) {
-        return Numbers.toWrapInt(get(key));
-    }
-
-    public int getInt(String key, int defaultVal) {
-        return Numbers.toInt(get(key), defaultVal);
-    }
-
-    public Long getLong(String key) {
-        return Numbers.toWrapLong(get(key));
-    }
-
-    public long getLong(String key, long defaultVal) {
-        return Numbers.toLong(get(key), defaultVal);
-    }
-
-    public Float getFloat(String key) {
-        return Numbers.toWrapFloat(get(key));
-    }
-
-    public float getFloat(String key, float defaultVal) {
-        return Numbers.toFloat(get(key), defaultVal);
-    }
-
-    public Double getDouble(String key) {
-        return Numbers.toWrapDouble(get(key));
-    }
-
-    public double getDouble(String key, double defaultVal) {
-        return Numbers.toDouble(get(key), defaultVal);
+    @Override
+    public Object getValue(String key) {
+        return this.params.get(key);
     }
 
 }

@@ -44,7 +44,7 @@ import code.ponfee.commons.tree.NodePath.NodePathJacksondDeserializer;
  * @param <T> the node id type
  */
 // NodePath is extends ArrayList, so must be use mappingTo in fastjson
-// if not it then deserialized json as a collection type
+// if not do it then deserialized json as a collection type
 @JSONType(mappingTo = NodePathFastjsonDeserializeMarker.class)
 @JsonDeserialize(using = NodePathJacksondDeserializer.class)
 public final class NodePath<T extends Serializable & Comparable<? super T>> 
