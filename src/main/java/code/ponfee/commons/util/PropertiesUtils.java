@@ -100,4 +100,16 @@ public class PropertiesUtils {
         return value == null ? null : Double.parseDouble(value);
     }
 
+    public static Properties filterProperties(Properties props, String prefixKey) {
+        Properties properties = new Properties();
+        int prefixLen = prefixKey.length();
+        props.forEach((k, v) -> {
+            String key = k.toString();
+            if (key.startsWith(prefixKey)) {
+                properties.put(key.substring(prefixLen, key.length()), v);
+            }
+        });
+        return properties;
+    }
+
 }

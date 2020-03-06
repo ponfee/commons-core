@@ -4,15 +4,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.alibaba.fastjson.TypeReference;
 
 /**
- * The Jackson TypeReference holder
+ * The Fastjson TypeReference holder
  *  
  * @author Ponfee
  */
-public final class JacksonTypeReferences {
-    private JacksonTypeReferences() {}
+public final class FastjsonTypeReferences {
+    private FastjsonTypeReferences() {}
 
     public static final TypeReference<Map<String, Object>> MAP_NORMAL = new TypeReference<Map<String, Object>>() {};
     public static final TypeReference<Map<String, String>> MAP_STRING = new TypeReference<Map<String, String>>() {};

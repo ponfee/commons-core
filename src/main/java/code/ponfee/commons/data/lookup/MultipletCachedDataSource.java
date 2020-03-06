@@ -152,7 +152,7 @@ public class MultipletCachedDataSource extends AbstractDataSource implements Dat
                               ? this.defaultDataSource 
                               : lookupDataSource(lookupKey);
         if (dataSource == null) {
-            throw new IllegalStateException("Cannot found DataSource for name [" + lookupKey + "]");
+            throw new IllegalStateException("Cannot found DataSource by name [" + lookupKey + "]");
         }
         return dataSource;
     }
