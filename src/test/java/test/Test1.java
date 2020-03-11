@@ -19,12 +19,15 @@ import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 
 import code.ponfee.commons.concurrent.ThreadPoolExecutors;
+import code.ponfee.commons.jce.CryptoProvider;
+import code.ponfee.commons.resource.ResourceLoaderFacade;
 import code.ponfee.commons.util.Bytes;
 import code.ponfee.commons.util.Dates;
 import code.ponfee.commons.util.MavenProjects;
@@ -165,4 +168,11 @@ public class Test1 {
         
         //System.out.println(Bytes.hexDump(Bytes.fromChar(Numbers.CHAR_ZERO)));
     }
+    
+    @Test
+    public void test6() throws Exception {
+        //System.out.println(IOUtils.toString(ResourceLoaderFacade.getResource("/gbkxxx.txt", CryptoProvider.class).getStream(), "GBK"));
+        System.out.println(IOUtils.toString(ResourceLoaderFacade.getResource("cert/gbkyyy.txt", CryptoProvider.class).getStream(), "GBK"));
+    }
+    
 }
