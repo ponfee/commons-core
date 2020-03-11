@@ -1,37 +1,32 @@
 package code.ponfee.commons.model;
 
-import java.util.Map;
-
 /**
  * Extended Map
  * 
  * @author 01367825
  * @param <K>
  * @param <V>
- * @param <E>
  */
-public interface ExtendedMap<K, V, E> extends Map<K, V> {
+public interface MapTrait<K, V> {
 
-    @SuppressWarnings("unchecked")
-    default E convert(V value) {
-        return (E) value;
-    }
+    V getValue(K key);
 
     // --------------------------------------------------------string
     default String getRequireString(K key) {
-        if (!this.containsKey(key)) {
+        V value = getValue(key);
+        if (value == null) {
             throw new IllegalArgumentException("Not exists: " + key);
         }
-        return getString(key);
+        return value.toString();
     }
 
     default String getString(K key, String defaultVal) {
-        Object value = convert(get(key));
+        V value = getValue(key);
         return value == null ? defaultVal : value.toString();
     }
 
     default String getString(K key) {
-        Object value = convert(get(key));
+        V value = getValue(key);
         return value == null ? null : value.toString();
     }
 

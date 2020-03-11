@@ -4,7 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 
 /**
@@ -12,7 +11,7 @@ import org.springframework.util.LinkedMultiValueMap;
  * 
  * @author Ponfee
  */
-public class ExtendedLinkedMultiValueMap<K, V> extends LinkedMultiValueMap<K, V> implements ExtendedMap<K, List<V>, V> {
+public class ExtendedLinkedMultiValueMap<K, V> extends LinkedMultiValueMap<K, V> implements MapTrait<K, V> {
 
     private static final long serialVersionUID = 4369022038293264189L;
 
@@ -29,8 +28,8 @@ public class ExtendedLinkedMultiValueMap<K, V> extends LinkedMultiValueMap<K, V>
     }
 
     @Override
-    public V convert(List<V> value) {
-        return CollectionUtils.isEmpty(value) ? null : value.get(0);
+    public V getValue(K key) {
+        return getFirst(key);
     }
 
 }

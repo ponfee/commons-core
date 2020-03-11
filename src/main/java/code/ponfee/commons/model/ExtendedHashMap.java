@@ -8,7 +8,7 @@ import java.util.Map;
  * 
  * @author Ponfee
  */
-public class ExtendedHashMap<K, V> extends HashMap<K, V> implements ExtendedMap<K, V, V> {
+public class ExtendedHashMap<K, V> extends HashMap<K, V> implements MapTrait<K, V> {
 
     private static final long serialVersionUID = -4207327688392334942L;
 
@@ -22,6 +22,11 @@ public class ExtendedHashMap<K, V> extends HashMap<K, V> implements ExtendedMap<
 
     public ExtendedHashMap(Map<? extends K, ? extends V> m) {
         super(m);
+    }
+
+    @Override
+    public V getValue(K key) {
+        return get(key);
     }
 
 }
