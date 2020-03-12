@@ -29,4 +29,9 @@ public class ExtendedHashMap<K, V> extends HashMap<K, V> implements MapTrait<K, 
         return get(key);
     }
 
+    @Override
+    public V removeValue(K key) {
+        return remove(key);
+    }
+
 }

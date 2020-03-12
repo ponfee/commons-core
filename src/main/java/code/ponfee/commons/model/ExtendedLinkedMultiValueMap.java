@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 
 /**
@@ -30,6 +31,12 @@ public class ExtendedLinkedMultiValueMap<K, V> extends LinkedMultiValueMap<K, V>
     @Override
     public V getValue(K key) {
         return getFirst(key);
+    }
+
+    @Override
+    public V removeValue(K key) {
+        List<V> values = remove(key);
+        return CollectionUtils.isEmpty(values) ? null : values.get(0);
     }
 
 }

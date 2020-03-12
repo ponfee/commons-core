@@ -144,4 +144,9 @@ public class PageRequestParams implements MapTrait<String, Object>, java.io.Seri
         return this.params.get(key);
     }
 
+    @Override
+    public Object removeValue(String key) {
+        return this.params.remove(key);
+    }
+
 }

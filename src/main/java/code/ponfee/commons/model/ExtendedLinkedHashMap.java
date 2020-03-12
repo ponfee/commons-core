@@ -29,4 +29,9 @@ public class ExtendedLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements 
         return get(key);
     }
 
+    @Override
+    public V removeValue(K key) {
+        return remove(key);
+    }
+
 }
