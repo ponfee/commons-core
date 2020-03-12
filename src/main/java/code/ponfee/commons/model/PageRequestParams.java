@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableList;
  * 
  * @author Ponfee
  */
-public class PageRequestParams implements MapTrait<String, Object>, java.io.Serializable {
+public class PageRequestParams implements PairTrait<String, Object>, java.io.Serializable {
 
     private static final long serialVersionUID = 6176654946390797217L;
 
@@ -46,7 +46,7 @@ public class PageRequestParams implements MapTrait<String, Object>, java.io.Seri
 
     public PageRequestParams() {}
 
-    public PageRequestParams(Map<? extends String, ? extends Object> map) {
+    public PageRequestParams(Map<? extends String, ?> map) {
         this.params.putAll(map);
     }
 
@@ -142,6 +142,11 @@ public class PageRequestParams implements MapTrait<String, Object>, java.io.Seri
     @Override
     public Object getValue(String key) {
         return this.params.get(key);
+    }
+
+    @Override
+    public Object removeValue(String key) {
+        return this.params.remove(key);
     }
 
 }

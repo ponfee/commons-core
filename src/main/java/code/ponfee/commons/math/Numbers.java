@@ -1,15 +1,17 @@
 package code.ponfee.commons.math;
 
-import com.google.common.primitives.Chars;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Arrays;
+
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.primitives.Chars;
 
 /**
  * 数字工具类
@@ -319,15 +321,15 @@ public final class Numbers {
     }
 
     public static int sum(Integer a, Integer b) {
-        return ObjectUtils.defaultIfNull(a, 0) + ObjectUtils.defaultIfNull(b, 0);
+        return defaultIfNull(a, 0) + defaultIfNull(b, 0);
     }
 
     public static long sum(Long a, Long b) {
-        return ObjectUtils.defaultIfNull(a, 0L) + ObjectUtils.defaultIfNull(b, 0L);
+        return defaultIfNull(a, 0L) + defaultIfNull(b, 0L);
     }
 
     public static double sum(Double a, Double b) {
-        return ObjectUtils.defaultIfNull(a, 0.0D) + ObjectUtils.defaultIfNull(b, 0.0D);
+        return defaultIfNull(a, 0.0D) + defaultIfNull(b, 0.0D);
     }
 
     /**

@@ -1,6 +1,8 @@
 package code.ponfee.commons.model;
 
 import static code.ponfee.commons.reflect.GenericUtils.getActualTypeArgument;
+import static code.ponfee.commons.util.ObjectUtils.isBeanType;
+import static code.ponfee.commons.util.ObjectUtils.newInstance;
 
 import java.util.List;
 import java.util.Map;
@@ -11,7 +13,6 @@ import org.springframework.cglib.beans.BeanCopier;
 
 import code.ponfee.commons.reflect.BeanMaps;
 import code.ponfee.commons.reflect.CglibUtils;
-import code.ponfee.commons.util.ObjectUtils;
 
 /**
  * Converts model object to the data transfer object
@@ -22,14 +23,15 @@ import code.ponfee.commons.util.ObjectUtils;
  * @author Ponfee
  */
 public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
- 
+
     private final Class<T> targetType;
     private final BeanCopier copier;
 
     public AbstractDataConverter() {
-        this.targetType = getActualTypeArgument(getClass(), 1);
-        this.copier = (this instanceof MapDataConverter) 
-                     ? null : createBeanCopier(getActualTypeArgument(getClass(), 0), this.targetType);
+        this.copier = createBeanCopier(
+            getActualTypeArgument(getClass(), 0), 
+            this.targetType = getActualTypeArgument(getClass(), 1)
+        );
     }
 
     /**
@@ -44,12 +46,12 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
         if (source == null) {
             return null;
         }
-        return convert(source, targetType, copier);
+        return convert(source, this.targetType, this.copier);
     }
 
     // -------------------------------------------------------------final methods
     public final void copyProperties(S source, T target) {
-        copy(source, target, copier);
+        copy(source, target, this.copier);
     }
 
     public final List<T> convert(List<S> list) {
@@ -112,7 +114,7 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
         } else if (source instanceof Map) {
             return BeanMaps.CGLIB.toBean((Map<String, Object>) source, targetType);
         } else {
-            T target = ObjectUtils.newInstance(targetType);
+            T target = newInstance(targetType);
             if (copier != null) {
                 copier.copy(source, target, null);
             } else {
@@ -136,7 +138,7 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
             return;
         }
 
-        // convert
+        // convert the source object from source type to target type
         if (target instanceof Map) {
             if (source instanceof Map) {
                 ((Map) target).putAll((Map<?, ?>) source);
@@ -145,12 +147,10 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
             }
         } else if (source instanceof Map) {
             BeanMaps.CGLIB.copyFromMap((Map) source, target);
+        } else if (copier != null) {
+            copier.copy(source, target, null);
         } else {
-            if (copier != null) {
-                copier.copy(source, target, null);
-            } else {
-                CglibUtils.copyProperties(source, target);
-            }
+            CglibUtils.copyProperties(source, target);
         }
     }
 
@@ -197,12 +197,11 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
     }
 
     // -----------------------------------------------------------------------------------private methods
-    private static final BeanCopier createBeanCopier(Class<?> sourceType, Class<?> targetType) {
-        if (sourceType == Object.class || targetType == Object.class) {
-            throw new UnsupportedOperationException(
-                "Bean class cannot be java.lang.Object: " + sourceType + " -> " + targetType
-            );
+    private static BeanCopier createBeanCopier(Class<?> sourceType, Class<?> targetType) {
+        if (!isBeanType(sourceType) || !isBeanType(targetType)) {
+            return null;
         }
+
         try {
             return BeanCopier.create(sourceType, targetType, false);
         } catch (Exception e) {

@@ -1,27 +1,36 @@
 package code.ponfee.commons.exception;
 
+import code.ponfee.commons.model.ResultCode;
+
 /**
- * Exception for unauthorized
+ * Unauthorized exception definition
  * 
  * @author Ponfee
  */
 public class UnauthorizedException extends BasicException {
+
     private static final long serialVersionUID = -5678901285130119481L;
+    private static final int CODE = ResultCode.UNAUTHORIZED.getCode();
 
     public UnauthorizedException() {
-        super(401);
+        super(CODE);
     }
 
     public UnauthorizedException(String message) {
-        super(401, message);
+        super(CODE, message);
     }
 
     public UnauthorizedException(Throwable cause) {
-        super(401, cause);
+        super(CODE, cause);
     }
 
     public UnauthorizedException(String message, Throwable cause) {
-        super(401, message, cause);
+        super(CODE, message, cause);
+    }
+
+    public UnauthorizedException(String message, Throwable cause, 
+                                 boolean enableSuppression, boolean writableStackTrace) {
+        super(CODE, message, cause, enableSuppression, writableStackTrace);
     }
 
 }

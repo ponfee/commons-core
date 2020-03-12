@@ -13,7 +13,7 @@ public interface CodeMsg extends Serializable {
 
     String getMsg();
 
-    static enum CodeMsgEnum implements CodeMsg {
+    enum CodeMsgEnum implements CodeMsg {
         EXIT(0, "EXIT");
 
         private final int code;

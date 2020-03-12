@@ -14,7 +14,7 @@ public enum SortOrder {
     }
 
     public static enum NullHandling {
-        NATIVE, NULLS_FIRST, NULLS_LAST;
+        NATIVE, NULLS_FIRST, NULLS_LAST
     }
 
 }

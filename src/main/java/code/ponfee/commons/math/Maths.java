@@ -72,4 +72,46 @@ public class Maths {
         return (a == Long.MIN_VALUE) ? Long.MAX_VALUE : (a < 0) ? -a : a;
     }
 
+    // ------------------------------------------------------------------------int plus/minus
+    public static int plus(int a, int b) {
+        if (a > 0 && b > 0) {
+            return Integer.MAX_VALUE - b < a ? Integer.MAX_VALUE : a + b;
+        } else if (a < 0 && b < 0) {
+            return Integer.MIN_VALUE - b > a ? Integer.MIN_VALUE : a + b;
+        } else {
+            return a + b;
+        }
+    }
+
+    public static int minus(int a, int b) {
+        if (a > 0 && b < 0) {
+            return Integer.MAX_VALUE + b < a ? Integer.MAX_VALUE : a - b;
+        } else if (a < 0 && b > 0) {
+            return Integer.MIN_VALUE + b > a ? Integer.MIN_VALUE : a - b;
+        } else {
+            return a - b;
+        }
+    }
+
+    // ------------------------------------------------------------------------long plus/minus
+    public static long plus(long a, long b) {
+        if (a > 0 && b > 0) {
+            return Long.MAX_VALUE - b < a ? Long.MAX_VALUE : a + b;
+        } else if (a < 0 && b < 0) {
+            return Long.MIN_VALUE - b > a ? Long.MIN_VALUE : a + b;
+        } else {
+            return a + b;
+        }
+    }
+
+    public static long minus(long a, long b) {
+        if (a > 0 && b < 0) {
+            return Long.MAX_VALUE + b < a ? Long.MAX_VALUE : a - b;
+        } else if (a < 0 && b > 0) {
+            return Long.MIN_VALUE + b > a ? Long.MIN_VALUE : a - b;
+        } else {
+            return a - b;
+        }
+    }
+
 }

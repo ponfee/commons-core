@@ -24,9 +24,4 @@ public class ExtendedLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements 
         super(m);
     }
 
-    @Override
-    public V getValue(K key) {
-        return get(key);
-    }
-
 }

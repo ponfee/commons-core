@@ -67,14 +67,14 @@ final class ClassPathResourceLoader {
                     case URL_PROTOCOL_FILE:
                         String path = URLDecoder.decode(url.getFile(), encoding);
                         // 判断是否是指定类所在Jar包中的文件：path.length()-filePath.length() == path.lastIndexOf(filePath)
-                        if (!checkWithinClass(contextClass, path.substring(0, path.length() - filePath.length()), encoding)) {
+                        if (checkWithoutClass(contextClass, path.substring(0, path.length() - filePath.length()), encoding)) {
                             continue;
                         }
                         return new Resource(path, new File(path).getName(), new FileInputStream(path));
                     case URL_PROTOCOL_JAR:
                         jar = ((JarURLConnection) url.openConnection()).getJarFile(); // 获取jar
                         // 判断是否是指定类所在Jar包中的文件
-                        if (!checkWithinClass(contextClass, jar.getName(), encoding)) {
+                        if (checkWithoutClass(contextClass, jar.getName(), encoding)) {
                             continue;
                         }
                         Enumeration<JarEntry> entries = jar.entries(); // 从此jar包 得到一个枚举类
@@ -104,7 +104,7 @@ final class ClassPathResourceLoader {
                         }
                         zipPath = zipPath.substring(0, zipPath.lastIndexOf(JAR_URL_SEPARATOR));
                         // 判断是否是指定类所在Jar包中的文件
-                        if (!checkWithinClass(contextClass, zipPath, encoding)) {
+                        if (checkWithoutClass(contextClass, zipPath, encoding)) {
                             continue;
                         }
                         zip = new ZipFile(zipPath);
@@ -161,7 +161,7 @@ final class ClassPathResourceLoader {
                     case URL_PROTOCOL_FILE:
                         String path = URLDecoder.decode(url.getFile(), encoding);
                         // 判断是否是指定类所在Jar包中的文件：path.length()-directory.length() == path.lastIndexOf(directory)
-                        if (!checkWithinClass(contextClass, path.substring(0, path.length() - directory.length()), encoding)) {
+                        if (checkWithoutClass(contextClass, path.substring(0, path.length() - directory.length()), encoding)) {
                             continue;
                         }
                         Collection<File> files = FileUtils.listFiles(new File(path), extensions, recursive);
@@ -174,7 +174,7 @@ final class ClassPathResourceLoader {
                     case URL_PROTOCOL_JAR:
                         jar = ((JarURLConnection) url.openConnection()).getJarFile(); // 读取Jar包
                         // 判断是否是指定类所在Jar包中的文件
-                        if (!checkWithinClass(contextClass, jar.getName(), encoding)) {
+                        if (checkWithoutClass(contextClass, jar.getName(), encoding)) {
                             continue;
                         }
                         Enumeration<JarEntry> entries = jar.entries(); // 从此jar包 得到一个枚举类
@@ -211,7 +211,7 @@ final class ClassPathResourceLoader {
                         }
                         zipPath = zipPath.substring(0, zipPath.lastIndexOf(JAR_URL_SEPARATOR));
                         // 判断是否是指定类所在Jar包中的文件
-                        if (!checkWithinClass(contextClass, zipPath, encoding)) {
+                        if (checkWithoutClass(contextClass, zipPath, encoding)) {
                             continue;
                         }
                         zip = new ZipFile(zipPath);
@@ -259,15 +259,15 @@ final class ClassPathResourceLoader {
      * @return
      * @throws IOException
      */
-    private static boolean checkWithinClass(Class<?> contextClass, String filepath, 
-                                            String encoding) throws IOException {
+    private static boolean checkWithoutClass(Class<?> contextClass, String filepath,
+                                             String encoding) throws IOException {
         if (contextClass == null) {
-            return true;
+            return false;
         }
 
         String destPath = contextClass.getProtectionDomain().getCodeSource().getLocation().getFile();
         destPath = URLDecoder.decode(destPath, encoding);
-        return new File(destPath).getCanonicalFile().equals(new File(filepath).getCanonicalFile());
+        return !new File(destPath).getCanonicalFile().equals(new File(filepath).getCanonicalFile());
     }
 
     /**

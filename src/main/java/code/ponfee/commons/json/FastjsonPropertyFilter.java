@@ -11,12 +11,12 @@ import com.alibaba.fastjson.serializer.PropertyFilter;
  * 
  * {@code
  *   Map<String, Object> map = ImmutableMap.of("a", 1, "b", true, "c", "x");
- *   JSONObject.toJSONString(map, new JsonPropertyFilter(FilterType.INCLUDES, "a", "b"))
- *   JSONObject.toJSONString(map, new JsonPropertyFilter(FilterType.EXCLUDES, "a", "b"))
+ *   JSON.toJSONString(map, new JsonPropertyFilter(FilterType.INCLUDES, "a", "b"))
+ *   JSON.toJSONString(map, new JsonPropertyFilter(FilterType.EXCLUDES, "a", "b"))
  *   
  *   Or 
  *   
- *   JSONObject.toJSONString(map, new SimplePropertyPreFilter("a", "b"))
+ *   JSON.toJSONString(map, new SimplePropertyPreFilter("a", "b"))
  * }
  * 
  * @author Ponfee
@@ -62,7 +62,7 @@ public class FastjsonPropertyFilter implements PropertyFilter {
         return new FastjsonPropertyFilter(PropertyFilterType.INCLUDES, forceNonNull, fields);
     }
 
-    private static enum PropertyFilterType {
+    private enum PropertyFilterType {
         INCLUDES, EXCLUDES
     }
 }

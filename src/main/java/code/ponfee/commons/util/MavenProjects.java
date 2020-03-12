@@ -22,7 +22,7 @@ public class MavenProjects {
 
     public static String getProjectBaseDir() {
         String path = Thread.currentThread().getContextClassLoader().getResource("").getFile();
-        return new File(path).getParentFile().getParentFile().getPath();
+        return Strings.cleanPath(new File(path).getParentFile().getParentFile().getPath());
     }
 
     // --------------------------------------------------------------------------------------java

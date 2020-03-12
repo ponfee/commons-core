@@ -13,23 +13,23 @@ import org.springframework.data.redis.core.RedisTemplate;
  * 
  * @author Ponfee
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class RedisCacheTemplate {
 
-    private final RedisTemplate<String, Object> redis;
+    private final  RedisTemplate redis;
 
-    public RedisCacheTemplate(@Nonnull RedisTemplate<String, Object> redis) {
+    public <K, V> RedisCacheTemplate(@Nonnull RedisTemplate<K, V> redis) {
         this.redis = redis;
     }
 
-    public <T> T execute(String redisKey, Supplier<T> supplier) {
-        return execute(redisKey, 24, TimeUnit.HOURS, supplier);
+    public <K, V> V execute(K redisKey, Supplier<V> supplier) {
+        return execute(redisKey, 12, TimeUnit.HOURS, supplier);
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> T execute(String redisKey, long timeout, TimeUnit unit, Supplier<T> supplier) {
-        BoundValueOperations<String, T> ops = (BoundValueOperations<String, T>) redis.boundValueOps(redisKey);
+    public <K, V> V execute(K redisKey, long timeout, TimeUnit unit, Supplier<V> supplier) {
+        BoundValueOperations<K, V> ops = redis.boundValueOps(redisKey);
 
-        T value;
+        V value;
 
         if ((value = ops.get()) != null) {
             return value;
@@ -42,7 +42,7 @@ public class RedisCacheTemplate {
         return value;
     }
 
-    public RedisTemplate<String, Object> getRedis() {
+    public <K, V> RedisTemplate<K, V> getRedis() {
         return redis;
     }
 

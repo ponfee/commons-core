@@ -24,7 +24,7 @@ import code.ponfee.commons.math.Numbers;
 public class Strings {
 
     public static final char   BLANK_CHAR               = ' ';
-    public static final String UNIX_FOLDER_SEPARATOR         = "/";
+    public static final String UNIX_FOLDER_SEPARATOR    = "/";
     public static final String WINDOWS_FOLDER_SEPARATOR = "\\";
     public static final String TOP_PATH                 = "..";
     public static final String CURRENT_PATH             = ".";
@@ -43,7 +43,7 @@ public class Strings {
      * @param delimiter 分隔符
      * @param open      每个元素添加的前缀
      * @param close     每个元素添加的后缀
-     * @return a String for joined
+     * @return a String with joined
      * 
      * @see java.lang.String#join(CharSequence, CharSequence...)
      * @see java.util.stream.Collectors#joining(CharSequence, CharSequence, CharSequence)
@@ -62,18 +62,18 @@ public class Strings {
         }
 
         StringBuilder builder = new StringBuilder(256);
-        for (Iterator<?> it = coll.iterator(); it.hasNext();) {
-            builder.append(open).append(it.next()).append(close).append(delimiter);
+        for (Object o : coll) {
+            builder.append(open).append(o).append(close).append(delimiter);
         }
         builder.setLength(builder.length() - delimiter.length());
         return builder.toString();
     }
 
     /**
-     * 解析参数
+     * Parse main method args, such as: [name1=value,name2=value2,...]
      * 
-     * @param args
-     * @return
+     * @param args the args
+     * @return a map object params
      */
     public static Map<String, String> fromArgs(String[] args) {
         if (args == null) {
@@ -431,7 +431,7 @@ public class Strings {
     // ---------------------------------------------------------------------------csv split
     /**
     * Parse a CSV string using {@link #csvSplit(List,String, int, int)}
-    * use in {@link code.ponfee.commons.web.CrossOriginFilter)
+    * use in {@link code.ponfee.commons.web.WebContext.WebContextFilter)
     * 
     * @param s The string to parse
     * @return An array of parsed values.

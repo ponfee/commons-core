@@ -7,7 +7,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Lambda checked exception
+ * Checked exception for use in lambda
  * 
  * @author Ponfee
  */
@@ -34,7 +34,7 @@ public final class CheckedThrowing {
         return ThrowingRunnable.checked(r);
     }
 
-    // -------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------definitions
     /**
      * Lambda function checked exception
      * 

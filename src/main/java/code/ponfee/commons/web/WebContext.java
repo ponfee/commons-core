@@ -84,7 +84,7 @@ public final class WebContext {
         if (null != request) {
             return request.getParameter(name);
         } else {
-            String[] values = INJECTED_PARAMS.get().get(name); // CUST_PARAMS.get().remove(name)
+            String[] values = INJECTED_PARAMS.get().get(name); // INJECTED_PARAMS.get().remove(name)
             return (values == null || values.length == 0) ? null : values[0];
         }
     }
@@ -462,8 +462,7 @@ public final class WebContext {
             return false;
         }
 
-        private void cros(HttpServletRequest request, HttpServletResponse response, FilterChain chain) 
-            throws IOException, ServletException {
+        private void cros(HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
             String origin = request.getHeader(ORIGIN_HEADER);
             // Is it a cross origin request ?
             if (origin == null || !corsEnable || !isEnabled(request)) {

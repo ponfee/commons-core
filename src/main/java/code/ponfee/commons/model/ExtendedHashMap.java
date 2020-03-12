@@ -24,9 +24,4 @@ public class ExtendedHashMap<K, V> extends HashMap<K, V> implements MapTrait<K, 
         super(m);
     }
 
-    @Override
-    public V getValue(K key) {
-        return get(key);
-    }
-
 }
