@@ -298,11 +298,12 @@ public final class ObjectUtils {
      * @param type the type class
      * @return a boolean
      */
-    public boolean isBean(Class<?> type) {
+    public static boolean isBeanType(Class<?> type) {
         if (type == null) {
             return false;
         }
-        return !org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper(type)
+        return Object.class != type
+            && !org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper(type)
             && !CharSequence.class.isAssignableFrom(type) 
             && !Map.class.isAssignableFrom(type) 
             && !Dictionary.class.isAssignableFrom(type) 

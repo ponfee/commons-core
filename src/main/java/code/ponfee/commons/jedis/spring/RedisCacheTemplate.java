@@ -22,7 +22,7 @@ public class RedisCacheTemplate {
     }
 
     public <T> T execute(String redisKey, Supplier<T> supplier) {
-        return execute(redisKey, 24, TimeUnit.HOURS, supplier);
+        return execute(redisKey, 12, TimeUnit.HOURS, supplier);
     }
 
     @SuppressWarnings("unchecked")

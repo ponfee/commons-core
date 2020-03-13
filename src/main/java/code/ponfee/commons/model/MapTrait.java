@@ -1,7 +1,7 @@
 package code.ponfee.commons.model;
 
 /**
- * Extended Map
+ * Map trait for get the value with typed
  * 
  * @author Ponfee
  * @param <K>
