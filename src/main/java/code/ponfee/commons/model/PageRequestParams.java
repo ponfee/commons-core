@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableList;
  * 
  * @author Ponfee
  */
-public class PageRequestParams implements MapTrait<String, Object>, java.io.Serializable {
+public class PageRequestParams implements PairTrait<String, Object>, java.io.Serializable {
 
     private static final long serialVersionUID = 6176654946390797217L;
 

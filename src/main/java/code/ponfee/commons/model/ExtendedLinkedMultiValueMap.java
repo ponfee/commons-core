@@ -12,7 +12,7 @@ import org.springframework.util.LinkedMultiValueMap;
  * 
  * @author Ponfee
  */
-public class ExtendedLinkedMultiValueMap<K, V> extends LinkedMultiValueMap<K, V> implements MapTrait<K, V> {
+public class ExtendedLinkedMultiValueMap<K, V> extends LinkedMultiValueMap<K, V> implements PairTrait<K, V> {
 
     private static final long serialVersionUID = 4369022038293264189L;
 
