@@ -18,10 +18,19 @@ public class JedisCacheTemplate {
     }
 
     public <T> T execute(String redisKey, Class<T> type, Supplier<T> supplier) {
+        return execute(redisKey.getBytes(), 86400, type, supplier);
+    }
+
+    public <T> T execute(byte[] redisKey, Class<T> type, Supplier<T> supplier) {
         return execute(redisKey, 86400, type, supplier);
     }
 
-    public <T> T execute(String redisKey, int timeoutSeconds, 
+    public <T> T execute(String redisKey, int timeoutSeconds,
+                         Class<T> type, Supplier<T> supplier) {
+        return this.execute(redisKey.getBytes(), timeoutSeconds, type, supplier);
+    }
+
+    public <T> T execute(byte[] redisKey, int timeoutSeconds, 
                          Class<T> type, Supplier<T> supplier) {
         ValueOperations ops = client.valueOps();
         T value;

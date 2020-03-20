@@ -84,7 +84,7 @@ public final class WebContext {
         if (null != request) {
             return request.getParameter(name);
         } else {
-            String[] values = INJECTED_PARAMS.get().get(name); // CUST_PARAMS.get().remove(name)
+            String[] values = INJECTED_PARAMS.get().get(name); // INJECTED_PARAMS.get().remove(name)
             return (values == null || values.length == 0) ? null : values[0];
         }
     }
