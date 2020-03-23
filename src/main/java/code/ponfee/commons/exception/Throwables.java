@@ -58,16 +58,25 @@ public final class Throwables {
         throwable.printStackTrace();
     }
 
+    public static void checked(Throwable throwable) {
+        checked(throwable, null);
+    }
+
     /**
      * Checked the throwable
      * 
      * @param throwable the throwable
+     * @param msg the msg
      */
-    public static void checked(Throwable throwable) {
+    public static void checked(Throwable throwable, String msg) {
         if (throwable instanceof RuntimeException) {
             throw (RuntimeException) throwable;
         } else {
-            throw new RuntimeException(throwable);
+            if (msg != null) {
+                throw new RuntimeException(msg, throwable);
+            } else {
+                throw new RuntimeException(throwable);
+            }
         }
     }
 

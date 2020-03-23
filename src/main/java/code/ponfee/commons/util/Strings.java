@@ -70,10 +70,10 @@ public class Strings {
     }
 
     /**
-     * 解析参数
+     * Parse main method args, such as: [name1=value,name2=value2,...]
      * 
-     * @param args
-     * @return
+     * @param args the args
+     * @return a map object params
      */
     public static Map<String, String> fromArgs(String[] args) {
         if (args == null) {
