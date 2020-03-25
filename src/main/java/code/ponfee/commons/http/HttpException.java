@@ -1,7 +1,8 @@
 package code.ponfee.commons.http;
 
 /**
- * http exception
+ * Http exception
+ * 
  * @author Ponfee
  */
 public class HttpException extends RuntimeException {
@@ -29,4 +30,5 @@ public class HttpException extends RuntimeException {
                             boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
+
 }

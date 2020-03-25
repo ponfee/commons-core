@@ -23,7 +23,8 @@ import code.ponfee.commons.jce.digest.DigestUtils;
  * byte b = a byte number;
  * int i = b & 0xff; // 使得i与b的二进制补码一致
  * 
- * 0xff is the bit length mask, calc bit length mask can use: (1&lt;&lt;bits)-1 or -1L^(-1L&lt;&lt;bits)
+ * 0xff is the bit length mask, calc bit length mask can use: 
+ *      (1&lt;&lt;bits)-1 or -1L^(-1L&lt;&lt;bits)
  * 
  * Base58 code：except number 0, uppercase letter I and O, lowercase latter l
  * Reference from internet

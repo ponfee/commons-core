@@ -1,43 +1,36 @@
 package code.ponfee.commons.exception;
 
+import code.ponfee.commons.model.ResultCode;
+
 /**
- * 未实现（方法）的异常
+ * Unimplemented exception definition
  * 
  * @author Ponfee
  */
 public class UnimplementedException extends BasicException {
-    private static final long serialVersionUID = 8031675925487573509L;
+
+    private static final long serialVersionUID = -5983398403463732650L;
+    private static final int CODE = ResultCode.SERVER_UNSUPPORT.getCode();
 
     public UnimplementedException() {
-        super();
-    }
-
-    public UnimplementedException(int code) {
-        super(code);
+        super(CODE);
     }
 
     public UnimplementedException(String message) {
-        super(message);
+        super(CODE, message);
     }
 
     public UnimplementedException(Throwable cause) {
-        super(cause);
+        super(CODE, cause);
     }
 
     public UnimplementedException(String message, Throwable cause) {
-        super(message, cause);
+        super(CODE, message, cause);
     }
 
-    public UnimplementedException(int code, String message) {
-        super(code, message);
-    }
-
-    public UnimplementedException(int code, Throwable cause) {
-        super(code, cause);
-    }
-
-    public UnimplementedException(int code, String message, Throwable cause) {
-        super(code, message, cause);
+    public UnimplementedException(String message, Throwable cause, 
+                                  boolean enableSuppression, boolean writableStackTrace) {
+        super(CODE, message, cause, enableSuppression, writableStackTrace);
     }
 
 }
