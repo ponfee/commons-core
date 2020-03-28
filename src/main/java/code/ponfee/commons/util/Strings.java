@@ -24,7 +24,7 @@ import code.ponfee.commons.math.Numbers;
 public class Strings {
 
     public static final char   BLANK_CHAR               = ' ';
-    public static final String UNIX_FOLDER_SEPARATOR         = "/";
+    public static final String UNIX_FOLDER_SEPARATOR    = "/";
     public static final String WINDOWS_FOLDER_SEPARATOR = "\\";
     public static final String TOP_PATH                 = "..";
     public static final String CURRENT_PATH             = ".";
@@ -43,7 +43,7 @@ public class Strings {
      * @param delimiter 分隔符
      * @param open      每个元素添加的前缀
      * @param close     每个元素添加的后缀
-     * @return a String for joined
+     * @return a String with joined
      * 
      * @see java.lang.String#join(CharSequence, CharSequence...)
      * @see java.util.stream.Collectors#joining(CharSequence, CharSequence, CharSequence)

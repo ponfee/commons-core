@@ -586,7 +586,7 @@
     <dependency>
       <groupId>org.mybatis</groupId>
       <artifactId>mybatis</artifactId>
-      <version>3.5.3</version>
+      <version>3.5.4</version>
     </dependency>
     <dependency>
       <groupId>org.mybatis</groupId>
@@ -688,7 +688,7 @@
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
-      <version>1.13</version>
+      <version>1.14</version>
     </dependency>
     <!-- ====================加解密==================== -->
 
