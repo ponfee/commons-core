@@ -23,15 +23,15 @@ import code.ponfee.commons.reflect.CglibUtils;
  * @author Ponfee
  */
 public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
- 
-    private final Class<T> sourceType;
+
     private final Class<T> targetType;
     private final BeanCopier copier;
 
     public AbstractDataConverter() {
-        this.sourceType = getActualTypeArgument(getClass(), 0);
-        this.targetType = getActualTypeArgument(getClass(), 1);
-        this.copier = createBeanCopier(this.sourceType, this.targetType);
+        this.copier = createBeanCopier(
+            getActualTypeArgument(getClass(), 0), 
+            this.targetType = getActualTypeArgument(getClass(), 1)
+        );
     }
 
     /**
@@ -46,12 +46,12 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
         if (source == null) {
             return null;
         }
-        return convert(source, targetType, copier);
+        return convert(source, this.targetType, this.copier);
     }
 
     // -------------------------------------------------------------final methods
     public final void copyProperties(S source, T target) {
-        copy(source, target, copier);
+        copy(source, target, this.copier);
     }
 
     public final List<T> convert(List<S> list) {
@@ -197,7 +197,7 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
     }
 
     // -----------------------------------------------------------------------------------private methods
-    private static final BeanCopier createBeanCopier(Class<?> sourceType, Class<?> targetType) {
+    private static BeanCopier createBeanCopier(Class<?> sourceType, Class<?> targetType) {
         if (!isBeanType(sourceType) || !isBeanType(targetType)) {
             return null;
         }

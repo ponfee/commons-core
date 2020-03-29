@@ -112,11 +112,6 @@ public class MultipletScalableDataSource extends AbstractDataSource implements D
 
     /**
      * Retrieve the current target DataSource. Determines the
-     * {@link #determineCurrentLookupKey() current lookup key}, performs
-     * a lookup in the {@link #setTargetDataSources targetDataSources} map,
-     * falls back to the specified
-     * {@link #setDefaultTargetDataSource default target DataSource} if necessary.
-     * @see #determineCurrentLookupKey()
      */
     private DataSource determineTargetDataSource() {
         String lookupKey = MultipleDataSourceContext.get();

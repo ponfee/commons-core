@@ -46,7 +46,7 @@ public class PageRequestParams implements PairTrait<String, Object>, java.io.Ser
 
     public PageRequestParams() {}
 
-    public PageRequestParams(Map<? extends String, ? extends Object> map) {
+    public PageRequestParams(Map<? extends String, ?> map) {
         this.params.putAll(map);
     }
 

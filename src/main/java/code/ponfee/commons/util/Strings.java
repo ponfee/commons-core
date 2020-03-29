@@ -62,8 +62,8 @@ public class Strings {
         }
 
         StringBuilder builder = new StringBuilder(256);
-        for (Iterator<?> it = coll.iterator(); it.hasNext();) {
-            builder.append(open).append(it.next()).append(close).append(delimiter);
+        for (Object o : coll) {
+            builder.append(open).append(o).append(close).append(delimiter);
         }
         builder.setLength(builder.length() - delimiter.length());
         return builder.toString();
@@ -431,7 +431,7 @@ public class Strings {
     // ---------------------------------------------------------------------------csv split
     /**
     * Parse a CSV string using {@link #csvSplit(List,String, int, int)}
-    * use in {@link code.ponfee.commons.web.CrossOriginFilter)
+    * use in {@link code.ponfee.commons.web.WebContext.WebContextFilter)
     * 
     * @param s The string to parse
     * @return An array of parsed values.

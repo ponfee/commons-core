@@ -462,8 +462,7 @@ public final class WebContext {
             return false;
         }
 
-        private void cros(HttpServletRequest request, HttpServletResponse response, FilterChain chain) 
-            throws IOException, ServletException {
+        private void cros(HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
             String origin = request.getHeader(ORIGIN_HEADER);
             // Is it a cross origin request ?
             if (origin == null || !corsEnable || !isEnabled(request)) {

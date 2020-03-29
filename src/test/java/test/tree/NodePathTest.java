@@ -132,6 +132,7 @@ public class NodePathTest {
     }
     @Test
     public void test94() {
+        // ERROR
         System.out.println(Jsons.fromJson(DATA, NodePathBean4.class).getPath());
         System.out.println(JSON.parseObject(DATA, NodePathBean4.class).getPath());
     }

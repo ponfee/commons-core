@@ -62,7 +62,7 @@ public class FastjsonPropertyFilter implements PropertyFilter {
         return new FastjsonPropertyFilter(PropertyFilterType.INCLUDES, forceNonNull, fields);
     }
 
-    private static enum PropertyFilterType {
+    private enum PropertyFilterType {
         INCLUDES, EXCLUDES
     }
 }
