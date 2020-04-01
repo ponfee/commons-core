@@ -404,11 +404,11 @@ public final class WebContext {
 
             try {
                 //WebUtils.cors(request, response);
-                this.cros(request, response, chain);
-
-                WebContext.setRequest(request);
-                WebContext.setResponse(response);
-                chain.doFilter(request, response);
+                if (this.cros(request, response, chain)) {
+                    WebContext.setRequest(request);
+                    WebContext.setResponse(response);
+                    chain.doFilter(request, response);
+                }
             } finally {
                 WebContext.removeRequest();
                 WebContext.removeResponse();
@@ -462,11 +462,11 @@ public final class WebContext {
             return false;
         }
 
-        private void cros(HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
+        private boolean cros(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException {
             String origin = request.getHeader(ORIGIN_HEADER);
             // Is it a cross origin request ?
             if (origin == null || !corsEnable || !isEnabled(request)) {
-                return;
+                return true;
             }
 
             if (!anyOriginAllowed && !originMatches(allowedOrigins, origin)) {
@@ -474,7 +474,8 @@ public final class WebContext {
                      "Cross-origin request to {} with origin {} does not match allowed origins {}", 
                      request.getRequestURI(), origin, allowedOrigins
                  );
-                return;
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid CORS request.");
+                return false;
             }
 
             if (isSimpleRequest(request)) {
@@ -486,7 +487,7 @@ public final class WebContext {
                 if (chainPreflight) {
                     logger.debug("Preflight cross-origin request to {} forwarded to application", request.getRequestURI());
                 } else {
-                    return;
+                    return false;
                 }
             } else {
                 logger.debug("Cross-origin request to {} is a non-simple cross-origin request", request.getRequestURI());
@@ -501,6 +502,8 @@ public final class WebContext {
                     request.getRequestURI(), origin, allowedTimingOrigins
                 );
             }
+
+            return true;
         }
 
         private boolean originMatches(List<String> allowedOrigins, String originList) {

@@ -51,6 +51,10 @@ public class JacksonDateDeserializer extends JsonDeserializer<Date> {
         return new JacksonDateDeserializer(pattern);
     }
 
+    public static JacksonDateDeserializer of(String pattern, boolean strict) {
+        return new JacksonDateDeserializer(pattern, strict);
+    }
+
     public static JacksonDateDeserializer of(WrappedFastDateFormat format) {
         return new JacksonDateDeserializer(format);
     }

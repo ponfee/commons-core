@@ -22,4 +22,11 @@ public final class JacksonTypeReferences {
 
     public static final TypeReference<Set<Object>> SET_OBJECT = new TypeReference<Set<Object>>() {};
     public static final TypeReference<Set<String>> SET_STRING = new TypeReference<Set<String>>() {};
+
+    public static final TypeReference<List<Map<String, Object>>> LIST_MAP_NORMAL = new TypeReference<List<Map<String, Object>>>() {};
+    public static final TypeReference<List<Map<String, String>>> LIST_MAP_STRING = new TypeReference<List<Map<String, String>>>() {};
+
+    public static final TypeReference<Set<Map<String, Object>>> SET_MAP_NORMAL = new TypeReference<Set<Map<String, Object>>>() {};
+    public static final TypeReference<Set<Map<String, String>>> SET_MAP_STRING = new TypeReference<Set<Map<String, String>>>() {};
+
 }
