@@ -13,7 +13,7 @@ import java.io.Closeable;
 public interface DataExporter<T> extends Closeable {
 
     /** 提示无结果 */
-    String NO_RESULT_TIP = "data not found";
+    String NO_RESULT_TIP = "No results found";
 
     /**
      * 构建表格

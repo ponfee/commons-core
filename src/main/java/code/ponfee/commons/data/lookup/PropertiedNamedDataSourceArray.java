@@ -3,7 +3,6 @@ package code.ponfee.commons.data.lookup;
 import static code.ponfee.commons.util.PropertiesUtils.getString;
 
 import java.io.Closeable;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -14,12 +13,11 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.alibaba.druid.pool.DruidDataSource;
-
 import code.ponfee.commons.base.Initializable;
+import code.ponfee.commons.base.Releasable;
 import code.ponfee.commons.data.DataSources;
 import code.ponfee.commons.data.NamedDataSource;
-import code.ponfee.commons.io.Closeables;
+import code.ponfee.commons.exception.Throwables;
 import code.ponfee.commons.util.Strings;
 
 /**
@@ -68,18 +66,18 @@ public class PropertiedNamedDataSourceArray implements Initializable, Closeable 
     @Override
     public void init() {
         for (NamedDataSource nds : array) {
-            try {
-                ((DruidDataSource) nds.getDataSource()).init();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+            Initializable.init(nds.getDataSource());
         }
     }
 
     @Override
     public void close() {
         for (NamedDataSource nds : array) {
-            Closeables.log((DruidDataSource) nds.getDataSource());
+            try {
+                Releasable.release(nds.getDataSource());
+            } catch (Exception e) {
+                Throwables.console(e); // ignored
+            }
         }
     }
 

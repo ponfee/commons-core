@@ -1,6 +1,7 @@
 package code.ponfee.commons.model;
 
 import java.beans.Transient;
+import java.io.Serializable;
 import java.util.function.Function;
 
 import com.google.common.base.Preconditions;
@@ -10,12 +11,12 @@ import code.ponfee.commons.json.Jsons;
 /**
  * 返回结果数据结构体封装类
  * 
- * @see org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.CREATED).build()
+ * @see org.springframework.http.ResponseEntity#status(org.springframework.http.HttpStatus)
  * 
  * @param <T>
  * @author Ponfee
  */
-public class Result<T> implements java.io.Serializable {
+public class Result<T/* extends Serializable*/> implements Serializable {
 
     private static final long serialVersionUID = -2804195259517755050L;
     public static final Result<Void> SUCCESS = new SuccessResult();

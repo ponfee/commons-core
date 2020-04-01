@@ -45,11 +45,12 @@ public class Strings {
      * @param close     每个元素添加的后缀
      * @return a String with joined
      * 
+     * @see org.apache.commons.collections4.IteratorUtils#toString(Iterator, org.apache.commons.collections4.Transformer, String, String, String)
+     * @see org.apache.commons.collections4.IterableUtils#toString(Iterable, org.apache.commons.collections4.Transformer, String, String, String)
+     * 
      * @see java.lang.String#join(CharSequence, CharSequence...)
      * @see java.util.stream.Collectors#joining(CharSequence, CharSequence, CharSequence)
      * @see org.apache.commons.lang3.StringUtils#join(List, String, int, int)
-     * @see org.apache.commons.collections4.IteratorUtils#toString(Iterator, org.apache.commons.collections4.Transformer, String, String, String)
-     * @see org.apache.commons.collections4.IterableUtils#toString(Iterable, org.apache.commons.collections4.Transformer, String, String, String)
      * @see com.google.common.base.Joiner#join(Object, Object, Object...)
      * @see java.util.StringJoiner#StringJoiner(CharSequence, CharSequence, CharSequence)
      */
@@ -330,7 +331,7 @@ public class Strings {
      * @param str the string
      * @return  校验码
      */
-    public static int buildIemeCode(String str) {
+    public static int ieme(String str) {
         int checkSum = 0;
         for (int i = 0, len = str.length(), num; i < len; i++) {
             num = str.charAt(i) - '0'; // ascii to num  

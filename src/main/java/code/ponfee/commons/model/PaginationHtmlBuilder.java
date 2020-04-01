@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+
 import code.ponfee.commons.http.HttpParams;
 
 /**
@@ -214,12 +216,13 @@ public final class PaginationHtmlBuilder {
 
     // -------------------------------------------------------------------------------
     private static final String PAGE_ARROW = 
-        "<li><a href=\"{0}?pageNum={1}&pageSize={2}&{3}\"></a></li>";
+        "<li><a href=\"{0}?pageNum={1}&pageSize={2}{3}\"></a></li>";
     private static String buildPageArrow(String url, int pageNum, int pageSize, 
                                          int totalPages, String params) {
         if (pageNum < 1 || pageNum > totalPages) {
             return EMPTY;
         }
+        params = StringUtils.isBlank(params) ? "" : "&" + params;
         return MessageFormat.format(PAGE_ARROW, url, pageNum, pageSize, params);
     }
 

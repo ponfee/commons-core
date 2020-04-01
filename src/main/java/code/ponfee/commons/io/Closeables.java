@@ -1,7 +1,6 @@
 package code.ponfee.commons.io;
 
 import javax.annotation.Nullable;
-import javax.security.auth.Destroyable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +32,6 @@ public final class Closeables {
         }
     }
 
-    // ---------------------------------------------------------------------------AutoCloseable
     /**
      * Close with console if occur exception
      * 
@@ -63,42 +61,6 @@ public final class Closeables {
         if (closeable != null) {
             try {
                 closeable.close();
-            } catch (Exception e) {
-                logger.error(errMsg, e);
-            }
-        }
-    }
-
-    // ---------------------------------------------------------------------------Destroyable
-    /**
-     * Destroy with console if occur exception
-     * 
-     * @param destroyable the Destroyable
-     */
-    public static void console(@Nullable Destroyable destroyable) {
-        if (destroyable != null) {
-            try {
-                destroyable.destroy();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static void log(@Nullable Destroyable destroyable) {
-        log(destroyable, "");
-    }
-
-    /**
-     * Destroy the Destroyable, if occur exception then log error message
-     * 
-     * @param destroyable the Destroyable
-     * @param errMsg      the error message
-     */
-    public static void log(@Nullable Destroyable destroyable, String errMsg) {
-        if (destroyable != null) {
-            try {
-                destroyable.destroy();
             } catch (Exception e) {
                 logger.error(errMsg, e);
             }

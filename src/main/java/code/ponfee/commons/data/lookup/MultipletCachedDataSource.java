@@ -1,15 +1,12 @@
 package code.ponfee.commons.data.lookup;
 
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
-import javax.security.auth.Destroyable;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -19,9 +16,9 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
 
+import code.ponfee.commons.base.Releasable;
 import code.ponfee.commons.data.NamedDataSource;
 import code.ponfee.commons.exception.Throwables;
-import code.ponfee.commons.io.Closeables;
 
 /**
  * 可动态增加/移除数据源/数据源自动超时失效
@@ -49,7 +46,8 @@ public class MultipletCachedDataSource extends AbstractDataSource implements Dat
         );
     }
 
-    public MultipletCachedDataSource(int expireSeconds, String defaultName, DataSource defaultDataSource, 
+    public MultipletCachedDataSource(int expireSeconds, String defaultName, 
+                                     DataSource defaultDataSource, 
                                      NamedDataSource... othersDataSource) {
         // set the default data source
         this.defaultDataSource = defaultDataSource;
@@ -61,23 +59,15 @@ public class MultipletCachedDataSource extends AbstractDataSource implements Dat
         this.strangerDataSources = CacheBuilder.newBuilder()
             .expireAfterAccess(Duration.ofSeconds(expireSeconds))
             .maximumSize(8192)
-            .<String, DataSource> removalListener(notification -> {
-                DataSource ds = notification.getValue();
-                if (ds instanceof AutoCloseable) {
-                    Closeables.log((AutoCloseable) ds);
-                } else if (ds instanceof Destroyable) {
-                    Closeables.log((Destroyable) ds);
-                } else {
-                    Method close = findCloseMethod(ds.getClass());
-                    if (close != null) {
-                        try {
-                            close.invoke(ds);
-                        } catch (Exception e) {
-                            throw new RuntimeException("Invoke '" + ds.getClass().getName() + ".close' method occur error.", e);
-                        }
+            .<String, DataSource> removalListener(
+                notification -> {
+                    try {
+                        Releasable.release(notification.getValue());
+                    } catch (Exception e) {
+                        Throwables.console(e); // ignored
                     }
                 }
-            })
+            )
             .build();
     }
 
@@ -177,26 +167,6 @@ public class MultipletCachedDataSource extends AbstractDataSource implements Dat
     private boolean existsDatasourceName(String name) {
         return this.localDataSources.containsKey(name) 
             || this.strangerDataSources.getIfPresent(name) != null;
-    }
-
-    private static final Map<Class<?>, Object> MAPPING = new HashMap<>();
-    private static final Object PLACE_HOLDER = new Object();
-    private static <T extends DataSource> Method findCloseMethod(Class<T> type) {
-        Object value;
-        if ((value = MAPPING.get(type)) == null) {
-            synchronized (MAPPING) {
-                if ((value = MAPPING.get(type)) == null) {
-                    try {
-                        value = type.getDeclaredMethod("close");
-                    } catch (Exception e) {
-                        value = PLACE_HOLDER;
-                        Throwables.console(e); // Has not 'close' method 
-                    }
-                    MAPPING.put(type, value);
-                }
-            }
-        }
-        return PLACE_HOLDER == value ? null : (Method) value;
     }
 
 }

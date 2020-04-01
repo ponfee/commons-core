@@ -58,7 +58,6 @@ public enum DataSources {
             ds.setMaxWait(getInteger(props, prefix + "maxWait", DEFAULT_MAX_WAIT));
             ds.setTimeBetweenEvictionRunsMillis(getLong(props, prefix + "timeBetweenEvictionRunsMillis", DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS));
             ds.setMinEvictableIdleTimeMillis(getLong(props, prefix + "minEvictableIdleTimeMillis", DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS));
-            ds.setRemoveAbandonedTimeoutMillis(getInteger(props, prefix + "removeAbandonedTimeoutMillis", 300000));
             ds.setValidationQuery(getString(props, prefix + "validationQuery"));
 
             ds.setTestWhileIdle(getBoolean(props, prefix + "testWhileIdle", DEFAULT_WHILE_IDLE));
@@ -67,6 +66,10 @@ public enum DataSources {
             ds.setPoolPreparedStatements(getBoolean(props, prefix + "poolPreparedStatements", false));
             ds.setMaxOpenPreparedStatements(getInteger(props, prefix + "maxOpenPreparedStatements", 10));
             ds.setBreakAfterAcquireFailure(getBoolean(props, prefix + "breakAfterAcquireFailure", false)); // 尝试连接失败后是否中断连接
+
+            ds.setRemoveAbandoned(getBoolean(props, prefix + "removeAbandoned", false));
+            ds.setRemoveAbandonedTimeoutMillis(getInteger(props, prefix + "removeAbandonedTimeoutMillis", 300000));
+            ds.setLogAbandoned(getBoolean(props, prefix + "logAbandoned", false));
 
             // filters and monitor
             try {

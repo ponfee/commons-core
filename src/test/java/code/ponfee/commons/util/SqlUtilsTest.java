@@ -55,4 +55,14 @@ public class SqlUtilsTest {
         assertEquals("select * from (select TOP 100 * from a) b",         SqlUtils.limitMssql("select * from (select TOP 1000 * from a) b", 100));
         assertEquals("select TOP 100 * from (select TOP 1000 * from a) b",SqlUtils.limitMssql("select TOP 101 * from (select TOP 1000 * from a) b", 100));
     }
+
+    @Test
+    public void limitHive() {
+        assertEquals("select * from t lImit 10",                   SqlUtils.limitHive("select * from t lImit 10", 100));
+        assertEquals("select * from t LIMIT 100",                  SqlUtils.limitHive("select * from t lImit 118", 100));
+        assertEquals("select * from t  LIMIT 100",                 SqlUtils.limitHive("select * from t ", 100));
+        assertEquals("select * from t lImit 1000,10 LIMIT 100",    SqlUtils.limitHive("select * from t lImit 1000,10", 100));
+        assertEquals("select * from t liMiT 1951 , 210 LIMIT 100", SqlUtils.limitHive("select * from t liMiT 1951 , 210", 100));
+    }
+
 }

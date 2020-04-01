@@ -7,5 +7,21 @@ package code.ponfee.commons.base;
  */
 @FunctionalInterface
 public interface Initializable {
+
+    MethodInvoker INITIATOR = new MethodInvoker("init", "initialize");
+
     void init();
+
+    static void init(Object caller) {
+        if (caller == null) {
+            return;
+        }
+
+        if (caller instanceof Initializable) {
+            ((Initializable) caller).init();
+        } else {
+            INITIATOR.invoke(caller);
+        }
+    }
+
 }

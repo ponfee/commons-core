@@ -1,4 +1,4 @@
-package code.ponfee.commons.wechat;
+package code.ponfee.commons.util;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

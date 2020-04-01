@@ -15,12 +15,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.security.auth.Destroyable;
-
 import com.google.common.base.Preconditions;
 
+import code.ponfee.commons.base.Releasable;
 import code.ponfee.commons.cache.RemovalNotification.RemovalReason;
-import code.ponfee.commons.io.Closeables;
+import code.ponfee.commons.exception.Throwables;
 import code.ponfee.commons.jce.digest.DigestUtils;
 import code.ponfee.commons.util.Base64UrlSafe;
 
@@ -360,11 +359,10 @@ public class Cache<K, V> {
             return;
         }
 
-        // Closeable, Destroyable
-        if (value instanceof Destroyable) {
-            Closeables.log((Destroyable) value);
-        } else if (value instanceof AutoCloseable) {
-            Closeables.log((AutoCloseable) value);
+        try {
+            Releasable.release(value);
+        } catch (Exception e) {
+            Throwables.console(e); // ignored
         }
 
         if (this.removalListener != null) {
