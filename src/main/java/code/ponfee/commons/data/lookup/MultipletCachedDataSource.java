@@ -16,7 +16,9 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
 
+import code.ponfee.commons.base.Releasable;
 import code.ponfee.commons.data.NamedDataSource;
+import code.ponfee.commons.exception.Throwables;
 
 /**
  * 可动态增加/移除数据源/数据源自动超时失效
@@ -44,7 +46,8 @@ public class MultipletCachedDataSource extends AbstractDataSource implements Dat
         );
     }
 
-    public MultipletCachedDataSource(int expireSeconds, String defaultName, DataSource defaultDataSource, 
+    public MultipletCachedDataSource(int expireSeconds, String defaultName, 
+                                     DataSource defaultDataSource, 
                                      NamedDataSource... othersDataSource) {
         // set the default data source
         this.defaultDataSource = defaultDataSource;
@@ -56,7 +59,15 @@ public class MultipletCachedDataSource extends AbstractDataSource implements Dat
         this.strangerDataSources = CacheBuilder.newBuilder()
             .expireAfterAccess(Duration.ofSeconds(expireSeconds))
             .maximumSize(8192)
-            .<String, DataSource> removalListener(n -> DataSourceUtils.close(n.getValue()))
+            .<String, DataSource> removalListener(
+                notification -> {
+                    try {
+                        Releasable.release(notification.getValue());
+                    } catch (Exception e) {
+                        Throwables.console(e); // ignored
+                    }
+                }
+            )
             .build();
     }
 

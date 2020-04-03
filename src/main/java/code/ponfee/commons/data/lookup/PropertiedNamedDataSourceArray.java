@@ -14,8 +14,10 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
 import code.ponfee.commons.base.Initializable;
+import code.ponfee.commons.base.Releasable;
 import code.ponfee.commons.data.DataSources;
 import code.ponfee.commons.data.NamedDataSource;
+import code.ponfee.commons.exception.Throwables;
 import code.ponfee.commons.util.Strings;
 
 /**
@@ -64,14 +66,18 @@ public class PropertiedNamedDataSourceArray implements Initializable, Closeable 
     @Override
     public void init() {
         for (NamedDataSource nds : array) {
-            DataSourceUtils.init(nds.getDataSource());
+            Initializable.init(nds.getDataSource());
         }
     }
 
     @Override
     public void close() {
         for (NamedDataSource nds : array) {
-            DataSourceUtils.close(nds.getDataSource());
+            try {
+                Releasable.release(nds.getDataSource());
+            } catch (Exception e) {
+                Throwables.console(e); // ignored
+            }
         }
     }
 
