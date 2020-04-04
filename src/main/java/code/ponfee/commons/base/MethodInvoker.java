@@ -56,8 +56,7 @@ public final class MethodInvoker {
                     for (String name : methodNames) {
                         try {
                             Method m = type.getMethod(name); // find the public method
-                            int mod = m.getModifiers();
-                            if (!Modifier.isStatic(mod)) {
+                            if (!Modifier.isStatic(m.getModifiers())) {
                                 method = m;
                                 break; // find an exists method
                             }
@@ -77,6 +76,7 @@ public final class MethodInvoker {
                 }
             }
         }
+
         return PLACE_HOLDER == method ? null : (Method) method;
     }
 
