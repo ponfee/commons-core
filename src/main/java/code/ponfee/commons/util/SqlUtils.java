@@ -134,6 +134,27 @@ public final class SqlUtils {
         return matcher.group(1) + " TOP " + limit + " " + matcher.group(4);
     }
 
+    // --------------------------------------------------------------limit hive
+    private static final Pattern LIMIT_HIVE = Pattern.compile(
+        "^(.+)(\\s+(?i)LIMIT\\s+(\\d+)?\\s*)$"/*, Pattern.CASE_INSENSITIVE*/
+    );
+    public static String limitHive(String sql, int limit) {
+        String outermostSql = outermostSql(sql);
+        Matcher matcher = LIMIT_HIVE.matcher(outermostSql);
+        if (!matcher.matches()) {
+            return sql + " LIMIT " + limit;
+        }
+
+        String a = matcher.group(3);
+        if (Integer.parseInt(a) <= limit) {
+            return sql;
+        }
+
+
+        return sql.substring(0, sql.length() - outermostSql.length()) 
+             + matcher.group(1) + " LIMIT " + Integer.toString(limit);
+    }
+
     // --------------------------------------------------------------private methods
     private static boolean isBlank(char ch) {
         return ch == ' ' || ch == '\t' || ch == '\r' || ch == '\n';
