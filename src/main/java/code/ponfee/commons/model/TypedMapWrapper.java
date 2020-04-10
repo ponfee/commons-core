@@ -4,8 +4,10 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 /**
- * Get the value with typed, wrapped {@link Map}
+ * Wrapped the {@link Map} for with gets typed value trait 
  * 
  * @author Ponfee
  * @param <K>
@@ -15,8 +17,8 @@ public class TypedMapWrapper<K, V> implements TypedMap<K, V> {
 
     private final Map<K, V> map;
 
-    public TypedMapWrapper(Map<K, V> map) {
-        this.map = map;
+    public TypedMapWrapper(@Nonnull Map<K, V> otherMap) {
+        this.map = otherMap;
     }
 
     @Override

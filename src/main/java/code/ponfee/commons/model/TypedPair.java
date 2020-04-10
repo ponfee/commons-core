@@ -1,7 +1,7 @@
 package code.ponfee.commons.model;
 
 /**
- * Get the value with typed for pair key,value
+ * Get the value with typed for pair key-value
  * 
  * @author Ponfee
  * @param <K>

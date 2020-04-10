@@ -1,11 +1,11 @@
 package code.ponfee.commons.model;
 
 /**
- * Extended BaseEntity
+ * Base entity with modifier filed
  * 
  * @author Ponfee
  */
-public abstract class ExtendedBaseEntity<I, U> extends BaseEntity<I, U> {
+public abstract class BaseModifierEntity<I, U> extends BaseEntity<I, U> {
 
     private static final long serialVersionUID = 5333847915253038118L;
 
