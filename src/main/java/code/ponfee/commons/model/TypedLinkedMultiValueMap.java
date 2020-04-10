@@ -1,6 +1,5 @@
 package code.ponfee.commons.model;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,23 +7,23 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 
 /**
- * Extended {@link LinkedHashMap} with pre-defined get methods
+ * Typed {@link LinkedMultiValueMap} with pre-defined get methods
  * 
  * @author Ponfee
  */
-public class ExtendedLinkedMultiValueMap<K, V> extends LinkedMultiValueMap<K, V> implements PairTrait<K, V> {
+public class TypedLinkedMultiValueMap<K, V> extends LinkedMultiValueMap<K, V> implements TypedPair<K, V> {
 
     private static final long serialVersionUID = 4369022038293264189L;
 
-    public ExtendedLinkedMultiValueMap() {
+    public TypedLinkedMultiValueMap() {
         super();
     }
 
-    public ExtendedLinkedMultiValueMap(int initialCapacity) {
+    public TypedLinkedMultiValueMap(int initialCapacity) {
         super(initialCapacity);
     }
 
-    public ExtendedLinkedMultiValueMap(Map<K, List<V>> otherMap) {
+    public TypedLinkedMultiValueMap(Map<K, List<V>> otherMap) {
         super(otherMap);
     }
 
@@ -34,7 +33,7 @@ public class ExtendedLinkedMultiValueMap<K, V> extends LinkedMultiValueMap<K, V>
     }
 
     @Override
-    public V removeValue(K key) {
+    public V removeKey(K key) {
         List<V> values = remove(key);
         return CollectionUtils.isEmpty(values) ? null : values.get(0);
     }

@@ -25,6 +25,7 @@ public class Dates {
 
     /**
      * 简单的日期格式校验(yyyy-MM-dd HH:mm:ss)
+     * 
      * @param date 输入日期
      * @return 有效返回true, 反之false
      */
@@ -34,6 +35,7 @@ public class Dates {
 
     /**
      * 简单的日期格式校验
+     * 
      * @param date 输入日期，如(yyyy-MM-dd)
      * @param pattern 日期格式
      * @return 有效返回true, 反之false
@@ -53,6 +55,7 @@ public class Dates {
 
     /**
      * 获取当前日期对象
+     * 
      * @return 当前日期对象
      */
     public static Date now() {
@@ -61,6 +64,7 @@ public class Dates {
 
     /**
      * 获取当前日期字符串
+     * 
      * @param format 日期格式
      * @return 当前日期字符串
      */
@@ -70,6 +74,7 @@ public class Dates {
 
     /**
      * 转换日期字符串为日期对象(默认格式: yyyy-MM-dd HH:mm:ss)
+     * 
      * @param dateStr 日期字符串
      * @return 日期对象
      */
@@ -79,6 +84,7 @@ public class Dates {
 
     /**
      * 转换日期即字符串为Date对象
+     * 
      * @param dateStr 日期字符串
      * @param pattern 日期格式
      * @return 日期对象
@@ -89,6 +95,7 @@ public class Dates {
 
     /**
      * java（毫秒）时间戳
+     * 
      * @param millis 毫秒
      * @return 日期
      */
@@ -98,6 +105,7 @@ public class Dates {
 
     /**
      * unix时间戳
+     * 
      * @param seconds 秒
      * @return
      */
@@ -107,6 +115,7 @@ public class Dates {
 
     /**
      * 格式化日期对象
+     * 
      * @param date 日期对象
      * @param format 日期格式
      * @return 当前日期字符串
@@ -120,6 +129,7 @@ public class Dates {
 
     /**
      * 格式化日期对象，格式为yyyy-MM-dd HH:mm:ss
+     * 
      * @param date 日期对象
      * @return 日期字符串
      */
@@ -132,6 +142,7 @@ public class Dates {
 
     /**
      * 格式化日期对象
+     * 
      * @param mills 毫秒
      * @param pattern 格式
      * @return 日期字符串
@@ -140,23 +151,10 @@ public class Dates {
         return new DateTime(mills).toString(pattern);
     }
 
-    /**
-     * 计算两个日期的时间差（单位：秒）
-     * 
-     * @param start 开始时间
-     * @param end 结束时间
-     * @return 时间间隔
-     */
-    public static long clockdiff(@Nonnull Date start, @Nonnull Date end) {
-        return (end.getTime() - start.getTime()) / 1000;
-    }
-
-    public static int daysbetween(Date start, Date end) {
-        return Days.daysBetween(new DateTime(start), new DateTime(end)).getDays();
-    }
-
+    // ----------------------------------------------------------------plus
     /**
      * 增加毫秒数
+     * 
      * @param date 时间
      * @param numOfMillis 毫秒数
      * @return 时间
@@ -167,6 +165,7 @@ public class Dates {
 
     /**
      * 增加秒数
+     * 
      * @param date 时间
      * @param numOfSeconds 秒数
      * @return 时间
@@ -177,6 +176,7 @@ public class Dates {
 
     /**
      * 增加分钟
+     * 
      * @param date 时间
      * @param numOfMinutes 分钟数
      * @return 时间
@@ -187,6 +187,7 @@ public class Dates {
 
     /**
      * 增加小时
+     * 
      * @param date 时间
      * @param numOfHours 小时数
      * @return 时间
@@ -197,6 +198,7 @@ public class Dates {
 
     /**
      * 增加天数
+     * 
      * @param date 时间
      * @param numdays 天数
      * @return 时间
@@ -207,6 +209,7 @@ public class Dates {
 
     /**
      * 增加周
+     * 
      * @param date 时间
      * @param numWeeks 周数
      * @return 时间
@@ -217,6 +220,7 @@ public class Dates {
 
     /**
      * 增加月份
+     * 
      * @param date 时间
      * @param numMonths 月数
      * @return 时间
@@ -227,6 +231,7 @@ public class Dates {
 
     /**
      * 增加年
+     * 
      * @param date 时间
      * @param numYears 年数
      * @return 时间
@@ -235,37 +240,109 @@ public class Dates {
         return new DateTime(date).plusYears(numYears).toDate();
     }
 
+    // ----------------------------------------------------------------minus
     /**
-     * 日期a是否大于日期b
-     * @param source 待比较日期
-     * @param target 目标日期
-     * @return 大于返回true，反之false
+     * 减少毫秒数
+     * 
+     * @param date 时间
+     * @param numOfMillis 毫秒数
+     * @return 时间
      */
-    public static boolean isAfter(@Nonnull Date source, @Nonnull Date target) {
-        return new DateTime(source).isAfter(target.getTime());
+    public static Date minusMillis(@Nonnull Date date, int numOfMillis) {
+        return new DateTime(date).minusMillis(numOfMillis).toDate();
     }
 
     /**
-     * 日期a是否小于日期b
-     * @param source 待比较日期
-     * @param target 目标日期
-     * @return 小于返回true，反之false
+     * 减少秒数
+     * 
+     * @param date 时间
+     * @param numOfSeconds 秒数
+     * @return 时间
      */
-    public static boolean isBefore(@Nonnull Date source, @Nonnull Date target) {
-        return new DateTime(source).isBefore(target.getTime());
+    public static Date minusSeconds(@Nonnull Date date, int numOfSeconds) {
+        return new DateTime(date).minusSeconds(numOfSeconds).toDate();
     }
 
+    /**
+     * 减少分钟
+     * 
+     * @param date 时间
+     * @param numOfMinutes 分钟数
+     * @return 时间
+     */
+    public static Date minusMinutes(@Nonnull Date date, int numOfMinutes) {
+        return new DateTime(date).minusMinutes(numOfMinutes).toDate();
+    }
+
+    /**
+     * 减少小时
+     * 
+     * @param date 时间
+     * @param numOfHours 小时数
+     * @return 时间
+     */
+    public static Date minusHours(@Nonnull Date date, int numOfHours) {
+        return new DateTime(date).minusHours(numOfHours).toDate();
+    }
+
+    /**
+     * 减少天数
+     * 
+     * @param date 时间
+     * @param numdays 天数
+     * @return 时间
+     */
+    public static Date minusDays(@Nonnull Date date, int numdays) {
+        return new DateTime(date).minusDays(numdays).toDate();
+    }
+
+    /**
+     * 减少周
+     * 
+     * @param date 时间
+     * @param numWeeks 周数
+     * @return 时间
+     */
+    public static Date minusWeeks(@Nonnull Date date, int numWeeks) {
+        return new DateTime(date).minusWeeks(numWeeks).toDate();
+    }
+
+    /**
+     * 减少月份
+     * 
+     * @param date 时间
+     * @param numMonths 月数
+     * @return 时间
+     */
+    public static Date minusMonths(@Nonnull Date date, int numMonths) {
+        return new DateTime(date).minusMonths(numMonths).toDate();
+    }
+
+    /**
+     * 减少年 
+     * 
+     * @param date 时间
+     * @param numYears 年数
+     * @return 时间
+     */
+    public static Date minusYears(@Nonnull Date date, int numYears) {
+        return new DateTime(date).minusYears(numYears).toDate();
+    }
+
+    // ----------------------------------------------------------------start/end
     /**
      * 获取指定日期所在天的开始时间：yyyy-MM-dd 00:00:00
+     * 
      * @param date 时间
      * @return 时间
      */
     public static Date startOfDay(@Nonnull Date date) {
-        return new DateTime(date).withTimeAtStartOfDay().toDate();
+        return startOfDay(new DateTime(date));
     }
 
     /**
      * 获取指定日期所在天的结束时间：yyyy-MM-dd 23:59:59
+     * 
      * @param date 时间
      * @return 时间
      */
@@ -275,16 +352,17 @@ public class Dates {
 
     /**
      * 获取指定日期所在周的开始时间：yyyy-MM-周一 00:00:00
+     * 
      * @param date 日期
      * @return 当前周第一天
      */
     public static Date startOfWeek(@Nonnull Date date) {
-        return new DateTime(date).dayOfWeek().withMinimumValue()
-                                 .withTimeAtStartOfDay().toDate();
+        return startOfDay(new DateTime(date).dayOfWeek().withMinimumValue());
     }
 
     /**
      * 获取指定日期所在周的结束时间：yyyy-MM-周日 23:59:59
+     * 
      * @param date 日期
      * @return 当前周最后一天
      */
@@ -294,16 +372,17 @@ public class Dates {
 
     /**
      * 获取指定日期所在月的开始时间：yyyy-MM-01 00:00:00
+     * 
      * @param date 日期
      * @return 当前月的第一天
      */
     public static Date startOfMonth(@Nonnull Date date) {
-        return new DateTime(date).dayOfMonth().withMinimumValue()
-                                 .withTimeAtStartOfDay().toDate();
+        return startOfDay(new DateTime(date).dayOfMonth().withMinimumValue());
     }
 
     /**
      * 获取指定日期所在月的结束时间：yyyy-MM-月未 23:59:59
+     * 
      * @param date 日期
      * @return 当前月的最后一天
      */
@@ -313,16 +392,17 @@ public class Dates {
 
     /**
      * 获取指定日期所在月的开始时间：yyyy-01-01 00:00:00
+     * 
      * @param date 日期
      * @return 当前年的第一天
      */
     public static Date startOfYear(@Nonnull Date date) {
-        return new DateTime(date).dayOfYear().withMinimumValue()
-                                 .withTimeAtStartOfDay().toDate();
+        return startOfDay(new DateTime(date).dayOfYear().withMinimumValue());
     }
 
     /**
      * 获取指定日期所在月的结束时间：yyyy-12-31 23:59:59
+     * 
      * @param date 日期
      * @return 当前年的最后一天
      */
@@ -330,36 +410,41 @@ public class Dates {
         return endOfDay(new DateTime(date).dayOfYear().withMaximumValue());
     }
 
+    // ----------------------------------------------------------------day of
     /**
      * 获取指定时间所在周的周n，1<=day<=7
+     * 
      * @param date 相对日期
      * @param day 1:星期一，2:星期二，...
      * @return 本周周几的日期对象
      */
-    public static Date dayOfWeek(@Nonnull Date date, int day) {
-        return new DateTime(startOfDay(date)).withDayOfWeek(day).toDate();
+    public static Date withDayOfWeek(@Nonnull Date date, int day) {
+        return startOfDay(new DateTime(date).withDayOfWeek(day));
     }
 
     /**
      * 获取指定时间所在月的n号，1<=day<=31
+     * 
      * @param date
      * @param day
      * @return
      */
-    public static Date dayOfMonth(@Nonnull Date date, int day) {
-        return new DateTime(startOfDay(date)).withDayOfMonth(day).toDate();
+    public static Date withDayOfMonth(@Nonnull Date date, int day) {
+        return startOfDay(new DateTime(date).withDayOfMonth(day));
     }
 
     /**
      * 获取指定时间所在年的n天，1<=day<=366
+     * 
      * @param date
      * @param day
      * @return
      */
-    public static Date dayOfYear(@Nonnull Date date, int day) {
-        return new DateTime(startOfDay(date)).withDayOfYear(day).toDate();
+    public static Date withDayOfYear(@Nonnull Date date, int day) {
+        return startOfDay(new DateTime(date).withDayOfYear(day));
     }
 
+    // ----------------------------------------------------------------day of
     public static int dayOfYear(@Nonnull Date date) {
         return new DateTime(date).getDayOfYear();
     }
@@ -376,8 +461,54 @@ public class Dates {
         return new DateTime(date).getHourOfDay();
     }
 
+    // ----------------------------------------------------------------others
+    /**
+     * 计算两个日期的时间差（单位：秒）
+     * 
+     * @param start 开始时间
+     * @param end 结束时间
+     * @return 时间间隔
+     */
+    public static long clockdiff(@Nonnull Date start, @Nonnull Date end) {
+        return (end.getTime() - start.getTime()) / 1000;
+    }
+
+    /**
+     * Returns a days between the two date(end-start)
+     * 
+     * @param start the start date
+     * @param end   the end date
+     * @return a number of between start to end days
+     */
+    public static int daysbetween(Date start, Date end) {
+        return Days.daysBetween(new DateTime(start), new DateTime(end)).getDays();
+    }
+
+    /**
+     * 日期a是否大于日期b
+     * 
+     * @param source 待比较日期
+     * @param target 目标日期
+     * @return 大于返回true，反之false
+     */
+    public static boolean isAfter(@Nonnull Date source, @Nonnull Date target) {
+        return source.after(target);
+    }
+
+    /**
+     * 日期a是否小于日期b
+     * 
+     * @param source 待比较日期
+     * @param target 目标日期
+     * @return 小于返回true，反之false
+     */
+    public static boolean isBefore(@Nonnull Date source, @Nonnull Date target) {
+        return source.before(target);
+    }
+
     /**
      * 日期随机
+     * 
      * @param begin  开发日期
      * @param end    结束日期
      * @return
@@ -440,10 +571,15 @@ public class Dates {
         return localDate.atTime(localTime);
     }
 
+    // ----------------------------------------------------------------private methods
     private static Date endOfDay(DateTime date) {
         // 当毫秒数大于499时，存入到Mysql的（datatime）字段数据会自动加1秒，所以此处毫秒为000
         //date.secondOfDay().withMaximumValue().millisOfSecond().withMinimumValue().toDate();
         return date.withTime(23, 59, 59, 0).toDate();
+    }
+
+    private static Date startOfDay(DateTime date) {
+        return date.withTimeAtStartOfDay().toDate();
     }
 
 }

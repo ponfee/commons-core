@@ -14,6 +14,8 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import code.ponfee.commons.exception.CheckedException;
+
 /**
  * The class use in fork {@link Stream},
  * from book "Java 8 In Action"<p>
@@ -128,7 +130,8 @@ public class StreamForker<T> {
                 try {
                     t = q.take();
                     break;
-                } catch (InterruptedException ignored) {
+                } catch (InterruptedException e) {
+                    throw new CheckedException(e);
                 }
             }
 

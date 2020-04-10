@@ -12,6 +12,7 @@
   <!-- 
     mvn package -Dmaven.test.skip=true：不执行测试用例，也不编译测试用例类；
     mvn package -DskipTests：跳过单元测试，但是会继续编译；
+    mvn clean install -Dmaven.test.skip=true -Dhadoop.version=2.7.7 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true
 
     https://www.jianshu.com/p/88da01804d3c
     mvn versions:set -DnewVersion=1.17-SNAPSHOT

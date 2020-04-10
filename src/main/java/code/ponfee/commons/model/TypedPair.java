@@ -1,17 +1,17 @@
 package code.ponfee.commons.model;
 
 /**
- * Pair trait for get the value with typed
+ * Get the value with typed for pair key-value
  * 
  * @author Ponfee
  * @param <K>
  * @param <V>
  */
-public interface PairTrait<K, V> {
+public interface TypedPair<K, V> {
 
     V getValue(K key);
 
-    V removeValue(K key);
+    V removeKey(K key);
 
     // --------------------------------------------------------string
     default String getRequireString(K key) {
@@ -36,7 +36,7 @@ public interface PairTrait<K, V> {
     }
 
     default String removeString(K key, String defaultVal) {
-        V value = removeValue(key);
+        V value = removeKey(key);
         return value == null ? defaultVal : value.toString();
     }
 

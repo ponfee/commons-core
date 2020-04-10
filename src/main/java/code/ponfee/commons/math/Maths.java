@@ -46,6 +46,20 @@ public class Maths {
     }
 
     /**
+     * Returns a long value of bit conut mask
+     * calculate the bit counts mask long value
+     *   a: (1 << bits) - 1
+     *   b: -1L ^ (-1L << bits)
+     *   c: Long.MAX_VALUE >>> (63 - bits)
+     * 
+     * @param bits the bit count
+     * @return a long value
+     */
+    public static long bitsMask(int bits) {
+        return (1L << bits) - 1;
+    }
+
+    /**
      * Returns a long value for {@code base}<sup>{@code exponent}</sup>.
      * 
      * @param base      the base

@@ -70,9 +70,9 @@ public final class Http {
     private final String     url;    // url
     private final HttpMethod method; // 请求方法
 
-    private final Map<String, String> headers = new HashMap<>(1);   // http请求头
-    private final Map<String, Object> params  = new HashMap<>(1);   // http请求参数(query string)
-    private final List<MimePart>      parts   = new ArrayList<>(1); // http文件上传
+    private final Map<String, String> headers = new HashMap<>(0);   // http请求头
+    private final Map<String, Object> params  = new HashMap<>(0);   // http请求参数(query string)
+    private final List<MimePart>      parts   = new ArrayList<>(0); // http文件上传
 
     private String data;                       // request body（json or form params, such as name1=value1&name2=value2&...&namen=valuen）
     private int connectTimeout = 1000 * 3;     // 连接超时时间

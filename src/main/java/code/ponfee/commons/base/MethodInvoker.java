@@ -5,6 +5,8 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import code.ponfee.commons.exception.CheckedException;
 import code.ponfee.commons.exception.Throwables;
 
@@ -15,14 +17,17 @@ import code.ponfee.commons.exception.Throwables;
  */
 public final class MethodInvoker {
 
-    private static final Object PLACE_HOLDER = new Object();
+    private static final Object NOT_FOUND_PLACEHOLDER = new Object();
 
     private final Map<Class<?>, Object> methodMappings = new HashMap<>();
     private final String[] methodNames;
 
-    public MethodInvoker(String... methodNames) {
+    /**
+     * @param methodNames the no-arg method list
+     */
+    public MethodInvoker(@Nonnull String... methodNames) {
         if (methodNames == null || methodNames.length == 0) {
-            throw new IllegalArgumentException("Method names must be specified.");
+            throw new IllegalArgumentException("Must be specified least once no-arg method name.");
         }
         this.methodNames = methodNames;
     }
@@ -57,6 +62,7 @@ public final class MethodInvoker {
                         try {
                             Method m = type.getMethod(name); // find the public method
                             if (!Modifier.isStatic(m.getModifiers())) {
+                                //m.setAccessible(true);
                                 method = m;
                                 break; // find an exists method
                             }
@@ -67,7 +73,7 @@ public final class MethodInvoker {
                         }
                     }
                     if (method == null) {
-                        method = PLACE_HOLDER;
+                        method = NOT_FOUND_PLACEHOLDER;
                         if (reason != null) {
                             Throwables.console(reason); // Has not such method 
                         }
@@ -77,7 +83,7 @@ public final class MethodInvoker {
             }
         }
 
-        return PLACE_HOLDER == method ? null : (Method) method;
+        return NOT_FOUND_PLACEHOLDER == method ? null : (Method) method;
     }
 
 }

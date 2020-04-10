@@ -186,7 +186,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
         SXSSFSheet sheet = getSheet(name);
 
         // 3、判断工作簿是否已创建过行数据
-        CursorRowNumber cursorRow = new CursorRowNumber(sheet.getLastRowNum());
+        CursorRowNumber cursorRow = new CursorRowNumber(Math.max(sheet.getLastRowNum(), 0));
         if (cursorRow.get() > 0) {
             // 创建两行空白行
             cursorRow.increment();
@@ -227,7 +227,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
 
         // 7、判断是否有数据
         SXSSFRow row;
-        int totalLeafCount = flats.get(0).getChildLeafCount();
+        int totalLeafCount = flats.get(0).getTreeLeafCount();
         if (table.isEmptyTbody()) {
             createBlankRow(NO_RESULT_TIP, sheet, tipStyle, cursorRow, totalLeafCount);
         } else {
@@ -290,18 +290,19 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
         images.put(getName(), endRow + 2);
 
         SXSSFDrawing drawing = sheet.createDrawingPatriarch();
-        XSSFClientAnchor anchor = new XSSFClientAnchor(0, 0, width, height, startCol,
-                                                       startRow, (short) endCol, endRow);
+        XSSFClientAnchor anchor = new XSSFClientAnchor(
+            0, 0, width, height, startCol, startRow, (short) endCol, endRow
+        );
 
         anchor.setAnchorType(AnchorType.DONT_MOVE_AND_RESIZE);
         drawing.createPicture(anchor, workbook.addPicture(imageBytes, SXSSFWorkbook.PICTURE_TYPE_PNG));
 
         /*int pictureIdx = workbook.addPicture(imageBytes, Workbook.PICTURE_TYPE_PNG);
         CreationHelper helper = workbook.getCreationHelper();
-        Drawing drawing = sheet.createDrawingPatriarch();
+        SXSSFDrawing drawing = sheet.createDrawingPatriarch();
         ClientAnchor anchor = helper.createClientAnchor();
         anchor.setCol1(0);
-        anchor.setRow1(sheet.getLastRowNum());
+        anchor.setRow1(Math.max(sheet.getLastRowNum(), 0));
         Picture pict = drawing.createPicture(anchor, pictureIdx);
         pict.resize(1);*/
     }
@@ -408,7 +409,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
     private <E> void buildComplexThead(Table<E> table, SXSSFSheet sheet, CursorRowNumber cursorRow) {
         List<FlatNode<Integer, Thead>> flats = table.getThead();
         FlatNode<Integer, Thead> root = flats.get(0);
-        int totalLeafCount = root.getChildLeafCount();
+        int totalLeafCount = root.getTreeLeafCount();
         List<FlatNode<Integer, Thead>> thead = flats.subList(1, flats.size());
 
         // create caption
@@ -421,7 +422,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
         // 约定非叶子节点不能跨行
         Set<Integer> rows = new HashSet<>();
         int beginCol, endRow, endCol, lastLevel = 1;
-        int cellLevel, treeMaxDepth = root.getTreeMaxDepth() - 1; 
+        int cellLevel, treeMaxDepth = root.getTreeDepth() - 1; 
         for (int n = thead.size(), i = 0; i < n; i++) {
             FlatNode<Integer, Thead> flat = thead.get(i);
             cellLevel = flat.getLevel() - 1;
@@ -431,7 +432,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
             }
 
             beginCol = flat.getLeftLeafCount();
-            endCol = beginCol + flat.getChildLeafCount() - 1;
+            endCol = beginCol + flat.getTreeLeafCount() - 1;
             if (flat.isLeaf()) {
                 endRow = cursorRow.get() + treeMaxDepth - cellLevel;
                 sheet.setColumnWidth(beginCol, DEFAULT_WIDTH);

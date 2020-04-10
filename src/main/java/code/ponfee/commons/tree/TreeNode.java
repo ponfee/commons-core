@@ -270,6 +270,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
                 nt.mount0(super.path, nodes, ignoreOrphan, mountPidIfNull);
             }
         }
+        super.degree = (this.children == null) ? 0 : this.children.size();
     }
 
     private void dfs(List<FlatNode<T, A>> collect) {
@@ -294,8 +295,8 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
 
     private void count() {
         if (CollectionUtils.isNotEmpty(this.children)) { // 非叶子节点
-            int maxChildTreeDepth = 0, sumTreeNodeCount = 0, 
-                sumChildLeafCount = 0;
+            int maxChildTreeDepth        = 0, maxChildTreeMaxDegree    = 0,
+                sumChildrenTreeLeafCount = 0, sumChildrenTreeNodeCount = 0;
             TreeNode<T, A> child;
             for (int i = 0; i < this.children.size(); i++) {
                 child = this.children.get(i);
@@ -309,24 +310,28 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
                     // 相邻左兄弟节点的左叶子节点个数+该兄弟节点的子节点个数
                     TreeNode<T, A> prevSibling = this.children.get(i - 1);
                     child.leftLeafCount = prevSibling.leftLeafCount 
-                                        + prevSibling.childLeafCount;
+                                        + prevSibling.treeLeafCount;
                 }
 
                 // 2、递归
                 child.count();
 
                 // 3、统计子叶子节点数量及整棵树节点的数量
-                sumChildLeafCount += child.childLeafCount;
-                maxChildTreeDepth = Math.max(maxChildTreeDepth, child.treeMaxDepth);
-                sumTreeNodeCount += child.treeNodeCount;
+                maxChildTreeDepth         = Math.max(maxChildTreeDepth, child.treeDepth);
+                maxChildTreeMaxDegree     = Math.max(maxChildTreeMaxDegree, child.degree);
+                sumChildrenTreeLeafCount += child.treeLeafCount;
+                sumChildrenTreeNodeCount += child.treeNodeCount;
             }
-            super.childLeafCount = sumChildLeafCount;     // 子节点的叶子节点之和
-            super.treeMaxDepth   = maxChildTreeDepth + 1; // 加上父（自身）节点层级
-            super.treeNodeCount  = sumTreeNodeCount + 1;  // 要包含节点本身
+
+            super.treeDepth     = maxChildTreeDepth + 1;                         // 加上自身节点的层级
+            super.treeMaxDegree = Math.max(maxChildTreeMaxDegree, super.degree); // 树中的最大度数
+            super.treeLeafCount = sumChildrenTreeLeafCount;                      // 子节点的叶子节点之和
+            super.treeNodeCount = sumChildrenTreeNodeCount + 1;                  // 要包含节点本身
         } else { // 叶子节点
+            super.treeDepth     = 1;
+            super.treeMaxDegree = 0;
+            super.treeLeafCount = 1;
             super.treeNodeCount = 1;
-            super.childLeafCount = 1;
-            super.treeMaxDepth = 1;
         }
     }
 
@@ -386,11 +391,15 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
 
     public static <T extends Serializable & Comparable<? super T>, A extends Serializable, O extends Serializable & Comparable<? super O>> 
         Comparator<? super TreeNode<T, A>> comparing(Function<? super A, ? extends O> keyExtractor, boolean asc) {
-        // First nullsLast will handle the cases when the "node" objects are null.
-        // Second nullsLast will handle the cases when the return value of "keyExtractor.apply(node.attach)" is null.
-        //Comparator.nullsLast(Comparator.<TreeNode<T, A>, O> comparing(node -> keyExtractor.apply(node.attach), Comparator.nullsLast(Comparators.order(asc))));
+        /*Comparator.nullsLast( // First nullsLast will handle the cases when the "node" objects are null.
+            Comparator.<TreeNode<T, A>, O> comparing(
+                // Second nullsLast will handle the cases when the return value of "keyExtractor.apply(node.attach)" is null.
+                node -> keyExtractor.apply(node.attach), Comparator.nullsLast(Comparators.order(asc)) 
+            )
+        );*/
 
-        return Comparator.comparing(n -> keyExtractor.apply(n.attach), Comparator.nullsLast(Comparators.order(asc)));
+        // node be null cannot happened
+        return Comparator.comparing(node -> keyExtractor.apply(node.attach), Comparator.nullsLast(Comparators.order(asc)));
     }
 
     // -----------------------------------------------------------------------------comparing by Attach then after with TreeNode.nid

@@ -10,6 +10,11 @@ import com.google.common.base.Preconditions;
 
 /**
  * 异步批量数据中转站
+ * 
+ * https://www.jianshu.com/p/d9b54670fa20
+ *  {@link Thread#setUncaughtExceptionHandler(java.lang.Thread.UncaughtExceptionHandler)}
+ *  {@link java.util.concurrent.Executors#newCachedThreadPool(java.util.concurrent.ThreadFactory)}
+ * 
  * @author Ponfee
  * @param <T>
  */

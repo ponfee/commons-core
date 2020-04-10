@@ -109,7 +109,7 @@ public class HtmlExporter extends AbstractDataExporter<String> {
             html.append("</tr>");
         });
 
-        int totalLeafCount = flats.get(0).getChildLeafCount();
+        int totalLeafCount = flats.get(0).getTreeLeafCount();
         if (table.isEmptyTbody()) {
             html.append("<tr><td colspan=\"")
                 .append(totalLeafCount)
@@ -224,7 +224,7 @@ public class HtmlExporter extends AbstractDataExporter<String> {
     // 复合表头
     private void buildComplexThead(List<FlatNode<Integer, Thead>> flats) {
         html.append("<thead><tr>");
-        int lastLevel = 1, treeMaxDepth = flats.get(0).getTreeMaxDepth() - 1, cellLevel;
+        int lastLevel = 1, treeMaxDepth = flats.get(0).getTreeDepth() - 1, cellLevel;
         for (FlatNode<Integer, Thead> flat : flats.subList(1, flats.size())) {
             cellLevel = flat.getLevel() - 1;
             if (lastLevel < cellLevel) {
@@ -238,8 +238,8 @@ public class HtmlExporter extends AbstractDataExporter<String> {
                     html.append(" rowspan=\"").append(treeMaxDepth - cellLevel + 1).append("\"");
                 }
             } else { // 非叶子节点，跨列
-                if (flat.getChildLeafCount() > 1) {
-                    html.append(" colspan=\"").append(flat.getChildLeafCount()).append("\"");
+                if (flat.getTreeLeafCount() > 1) {
+                    html.append(" colspan=\"").append(flat.getTreeLeafCount()).append("\"");
                 }
             }
             html.append(">").append(flat.getAttach().getName()).append("</th>");

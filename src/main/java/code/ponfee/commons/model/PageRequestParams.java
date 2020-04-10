@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableList;
  * 
  * @author Ponfee
  */
-public class PageRequestParams implements PairTrait<String, Object>, java.io.Serializable {
+public class PageRequestParams implements TypedPair<String, Object>, java.io.Serializable {
 
     private static final long serialVersionUID = 6176654946390797217L;
 
@@ -42,7 +42,7 @@ public class PageRequestParams implements PairTrait<String, Object>, java.io.Ser
     private String sort = null;
 
     // 包含pageNum、pageSize、offset、limit、sort
-    private final ExtendedLinkedHashMap<String, Object> params = new ExtendedLinkedHashMap<>();
+    private final TypedLinkedHashMap<String, Object> params = new TypedLinkedHashMap<>();
 
     public PageRequestParams() {}
 
@@ -84,7 +84,7 @@ public class PageRequestParams implements PairTrait<String, Object>, java.io.Ser
         }
     }
 
-    public ExtendedLinkedHashMap<String, Object> origin() {
+    public TypedLinkedHashMap<String, Object> origin() {
         return this.params;
     }
 
@@ -145,7 +145,7 @@ public class PageRequestParams implements PairTrait<String, Object>, java.io.Ser
     }
 
     @Override
-    public Object removeValue(String key) {
+    public Object removeKey(String key) {
         return this.params.remove(key);
     }
 
