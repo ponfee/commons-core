@@ -1,13 +1,13 @@
 package code.ponfee.commons.model;
 
 /**
- * Pair trait for get the value with typed
+ * Get the value with typed for pair key,value
  * 
  * @author Ponfee
  * @param <K>
  * @param <V>
  */
-public interface PairTrait<K, V> {
+public interface TypedPair<K, V> {
 
     V getValue(K key);
 

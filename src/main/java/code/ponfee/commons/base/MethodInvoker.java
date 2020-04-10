@@ -57,6 +57,7 @@ public final class MethodInvoker {
                         try {
                             Method m = type.getMethod(name); // find the public method
                             if (!Modifier.isStatic(m.getModifiers())) {
+                                //m.setAccessible(true);
                                 method = m;
                                 break; // find an exists method
                             }
