@@ -1,8 +1,10 @@
 package code.ponfee.commons.model;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -13,7 +15,9 @@ import javax.annotation.Nonnull;
  * @param <K>
  * @param <V>
  */
-public class TypedMapWrapper<K, V> implements TypedMap<K, V> {
+public class TypedMapWrapper<K, V> implements TypedMap<K, V>, Serializable, Cloneable {
+
+    private static final long serialVersionUID = 6899012847958938043L;
 
     private final Map<K, V> map;
 
@@ -79,6 +83,32 @@ public class TypedMapWrapper<K, V> implements TypedMap<K, V> {
     @Override
     public Set<Entry<K, V>> entrySet() {
         return this.map.entrySet();
+    }
+
+    public TypedMapWrapper<K, V> deepCopy() {
+        return new TypedMapWrapper<>(
+            this.map.entrySet().stream().collect(Collectors.toMap(Entry::getKey, Entry::getValue))
+        );
+    }
+
+    @Override
+    public TypedMapWrapper<K, V> clone() {
+        return new TypedMapWrapper<K, V>(this);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this.map.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.map.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return this.map.toString();
     }
 
 }

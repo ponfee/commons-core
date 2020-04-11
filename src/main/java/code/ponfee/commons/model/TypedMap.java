@@ -15,7 +15,7 @@ public interface TypedMap<K, V> extends Map<K, V>, TypedPair<K, V> {
         return this.get(key);
     }
 
-    default V removeValue(K key) {
+    default V removeKey(K key) {
         return this.remove(key);
     }
 

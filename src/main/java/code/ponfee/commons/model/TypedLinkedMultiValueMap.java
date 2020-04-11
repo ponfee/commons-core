@@ -33,7 +33,7 @@ public class TypedLinkedMultiValueMap<K, V> extends LinkedMultiValueMap<K, V> im
     }
 
     @Override
-    public V removeValue(K key) {
+    public V removeKey(K key) {
         List<V> values = remove(key);
         return CollectionUtils.isEmpty(values) ? null : values.get(0);
     }

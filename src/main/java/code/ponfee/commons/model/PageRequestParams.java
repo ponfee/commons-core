@@ -145,7 +145,7 @@ public class PageRequestParams implements TypedPair<String, Object>, java.io.Ser
     }
 
     @Override
-    public Object removeValue(String key) {
+    public Object removeKey(String key) {
         return this.params.remove(key);
     }
 

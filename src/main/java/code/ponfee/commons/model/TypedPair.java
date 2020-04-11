@@ -11,7 +11,7 @@ public interface TypedPair<K, V> {
 
     V getValue(K key);
 
-    V removeValue(K key);
+    V removeKey(K key);
 
     // --------------------------------------------------------string
     default String getRequireString(K key) {
@@ -36,7 +36,7 @@ public interface TypedPair<K, V> {
     }
 
     default String removeString(K key, String defaultVal) {
-        V value = removeValue(key);
+        V value = removeKey(key);
         return value == null ? defaultVal : value.toString();
     }
 
