@@ -5,7 +5,7 @@ import javax.security.auth.Destroyable;
 import code.ponfee.commons.exception.CheckedException;
 
 /**
- * Data source utility
+ * Release resources
  * 
  * @author Ponfee
  */
