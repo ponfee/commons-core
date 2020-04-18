@@ -36,14 +36,15 @@ public class BaseNode<T extends Serializable & Comparable<? super T>, A extends 
     protected final boolean available; // 是否可用（parent.available & this.enabled）
     protected final A          attach; // 附加信息（与业务相关）
 
-    protected int    level;  // 节点层级（以根节点为1开始，往下逐级加1）
-    //protected int    degree; // 节点的度（子节点数量）
-    protected List<T> path;  // 节点路径list<nid>（父节点在前，末尾元素是节点本身的nid）
+    protected int    level; // 节点层级（以根节点为1开始，往下逐级加1）
+    protected List<T> path; // 节点路径list<nid>（父节点在前，末尾元素是节点本身的nid）
+    protected int   degree; // 节点的度数（子节点数量，叶子节点的度为0）
 
-    protected int childLeafCount; // 子叶子节点数量（若为叶子节点则为1）
-    protected int leftLeafCount;  // 左叶子节点数量（在其左边的所有叶子节点数量：相邻左兄弟节点的左叶子节点个数+该兄弟节点的子节点个数）
-    protected int treeNodeCount;  // 整棵树的节点数量（包括根节点）
-    protected int treeMaxDepth;   // 节点树的最大深度（包括自身层级）
+    protected int treeDepth;     // 树的深度（叶子节点的树深度为1）
+    protected int treeNodeCount; // 树中节点数量
+    protected int treeMaxDegree; // 树中最大的度数（树中所有节点数目=所有节点度数之和+1）
+    protected int treeLeafCount; // 树中叶子节点数量（叶子节点为1）
+    protected int leftLeafCount; // 左叶子节点数量（在其左边的所有叶子节点数量：相邻左兄弟节点的左叶子节点个数+该兄弟节点的子节点个数）
 
     public BaseNode(T nid, T pid, A attach) {
         this(nid, pid, true, attach);
@@ -72,15 +73,18 @@ public class BaseNode<T extends Serializable & Comparable<? super T>, A extends 
             this.nid, this.pid, this.enabled, this.available, this.attach
         );
         node.level = this.level;
+        node.degree = this.degree;
         node.path = this.path;
-        node.childLeafCount = this.childLeafCount;
-        node.leftLeafCount = this.leftLeafCount;
-        node.treeNodeCount = this.treeNodeCount;
-        node.treeMaxDepth = this.treeMaxDepth;
+
+        node.treeDepth      = this.treeDepth;
+        node.treeNodeCount  = this.treeNodeCount;
+        node.treeMaxDegree  = this.treeMaxDegree;
+        node.treeLeafCount = this.treeLeafCount;
+        node.leftLeafCount  = this.leftLeafCount;
         return node;
     }
 
-    // -----------------------------------------------getter/setter
+    // -----------------------------------------------getter
     public T getPid() {
         return pid;
     }
@@ -97,28 +101,38 @@ public class BaseNode<T extends Serializable & Comparable<? super T>, A extends 
         return attach;
     }
 
-    public int getLevel() {
-        return level;
-    }
-
     public boolean isAvailable() {
         return available;
+    }
+
+    // ----------------------------------------------------
+    public int getLevel() {
+        return level;
     }
 
     public List<T> getPath() {
         return path;
     }
 
+    public int getDegree() {
+        return degree;
+    }
+
+    // ----------------------------------------------------
+    public int getTreeDepth() {
+        return treeDepth;
+    }
+
     public int getTreeNodeCount() {
         return treeNodeCount;
     }
 
-    public int getChildLeafCount() {
-        return childLeafCount;
+    public int getTreeMaxDegree() {
+        return treeMaxDegree;
     }
 
-    public int getTreeMaxDepth() {
-        return treeMaxDepth;
+    public int getTreeLeafCount() {
+        return treeLeafCount;
     }
 
     public int getLeftLeafCount() {

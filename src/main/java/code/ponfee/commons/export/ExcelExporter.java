@@ -227,7 +227,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
 
         // 7、判断是否有数据
         SXSSFRow row;
-        int totalLeafCount = flats.get(0).getChildLeafCount();
+        int totalLeafCount = flats.get(0).getTreeLeafCount();
         if (table.isEmptyTbody()) {
             createBlankRow(NO_RESULT_TIP, sheet, tipStyle, cursorRow, totalLeafCount);
         } else {
@@ -408,7 +408,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
     private <E> void buildComplexThead(Table<E> table, SXSSFSheet sheet, CursorRowNumber cursorRow) {
         List<FlatNode<Integer, Thead>> flats = table.getThead();
         FlatNode<Integer, Thead> root = flats.get(0);
-        int totalLeafCount = root.getChildLeafCount();
+        int totalLeafCount = root.getTreeLeafCount();
         List<FlatNode<Integer, Thead>> thead = flats.subList(1, flats.size());
 
         // create caption
@@ -421,7 +421,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
         // 约定非叶子节点不能跨行
         Set<Integer> rows = new HashSet<>();
         int beginCol, endRow, endCol, lastLevel = 1;
-        int cellLevel, treeMaxDepth = root.getTreeMaxDepth() - 1; 
+        int cellLevel, treeMaxDepth = root.getTreeDepth() - 1; 
         for (int n = thead.size(), i = 0; i < n; i++) {
             FlatNode<Integer, Thead> flat = thead.get(i);
             cellLevel = flat.getLevel() - 1;
@@ -431,7 +431,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
             }
 
             beginCol = flat.getLeftLeafCount();
-            endCol = beginCol + flat.getChildLeafCount() - 1;
+            endCol = beginCol + flat.getTreeLeafCount() - 1;
             if (flat.isLeaf()) {
                 endRow = cursorRow.get() + treeMaxDepth - cellLevel;
                 sheet.setColumnWidth(beginCol, DEFAULT_WIDTH);

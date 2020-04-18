@@ -30,13 +30,15 @@ public final class FlatNode<T extends Serializable & Comparable<? super T>, A ex
     FlatNode(TreeNode<T, A> nt) {
         super(nt.nid, nt.pid, nt.enabled, nt.available, nt.attach);
 
-        super.level = nt.level;
-        super.path  = nt.path;
+        super.level  = nt.level;
+        super.degree = nt.degree;
+        super.path   = nt.path;
 
-        super.treeNodeCount  = nt.treeNodeCount;
-        super.childLeafCount = nt.childLeafCount;
-        super.leftLeafCount  = nt.leftLeafCount;
-        super.treeMaxDepth   = nt.treeMaxDepth;
+        super.treeDepth     = nt.treeDepth;
+        super.treeNodeCount = nt.treeNodeCount;
+        super.treeMaxDegree = nt.treeMaxDegree;
+        super.treeLeafCount = nt.treeLeafCount;
+        super.leftLeafCount = nt.leftLeafCount;
 
         this.leaf = CollectionUtils.isEmpty(nt.getChildren());
     }

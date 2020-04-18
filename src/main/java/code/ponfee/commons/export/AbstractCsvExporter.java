@@ -74,11 +74,11 @@ public abstract class AbstractCsvExporter<T> extends AbstractDataExporter<T> {
             // tfoot---------
             if (ArrayUtils.isNotEmpty(table.getTfoot())) {
                 FlatNode<Integer, Thead> root = thead.get(0);
-                if (table.getTfoot().length > root.getChildLeafCount()) {
+                if (table.getTfoot().length > root.getTreeLeafCount()) {
                     throw new IllegalStateException("Tfoot length cannot more than total leaf count.");
                 }
 
-                int n = root.getChildLeafCount(), m = table.getTfoot().length, mergeNum = n - m;
+                int n = root.getTreeLeafCount(), m = table.getTfoot().length, mergeNum = n - m;
                 for (int i = 0; i < mergeNum; i++) {
                     if (i == mergeNum - 1) {
                         csv.append("合计");
