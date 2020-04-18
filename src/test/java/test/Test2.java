@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -21,6 +22,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.objenesis.ObjenesisHelper;
@@ -30,9 +32,12 @@ import com.google.common.base.Stopwatch;
 import code.ponfee.commons.collect.ValueSortedMap;
 import code.ponfee.commons.io.HumanReadables;
 import code.ponfee.commons.json.Jsons;
+import code.ponfee.commons.math.Maths;
 import code.ponfee.commons.model.Page;
 import code.ponfee.commons.reflect.CglibUtils;
+import code.ponfee.commons.util.Bytes;
 import code.ponfee.commons.util.Dates;
+import code.ponfee.commons.util.IdWorker;
 
 /**
  * 
@@ -299,4 +304,29 @@ public class Test2 {
         //System.out.println(HumanReadables.BINARY.parse("TB", false));
         //System.out.println(HumanReadables.BINARY.parse("xTB", false));
     }
+
+    @Test
+    public void test26() throws IOException {
+        String format = "yyyy-MM-dd HH:mm:ss.SSS";
+        System.out.println(Long.toBinaryString(Long.MAX_VALUE));
+        System.out.println(Long.toBinaryString(System.currentTimeMillis()));
+        System.out.println(Bytes.toBinary(Bytes.toBytes(Long.MAX_VALUE)));
+        System.out.println(Dates.format(new Date(0B0000000000000000000000011111111111111111111111111111111111111111L), format));
+        System.out.println(Dates.format(new Date(0B0000000000000000000011111111111111111111111111111111111111111111L), format));
+        System.out.println(Long.toBinaryString(Long.MAX_VALUE).length());
+        System.out.println(Maths.bitsMask(12));
+
+        System.out.println(Dates.format(new Date(17592186044415L), format));
+        new IdWorker(10);
+
+        int bits = 41;
+        System.out.println((1L << bits) - 1);
+        Assert.assertEquals((1L << bits) - 1, -1L ^ (-1L << bits));
+        Assert.assertEquals((1L << bits) - 1, Long.MAX_VALUE >>> (63 - bits));
+
+        System.out.println(Long.toBinaryString((1L << bits) - 1));
+        System.out.println(Long.toBinaryString(-1L ^ (-1L << bits)));
+        System.out.println(Long.toBinaryString(Long.MAX_VALUE >>> (63 - 41)));
+    }
+
 }

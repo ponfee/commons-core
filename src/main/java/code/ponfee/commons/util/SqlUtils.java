@@ -111,7 +111,11 @@ public final class SqlUtils {
 
     // --------------------------------------------------------------limit microsoft sql(SQL Server)
     private static final Pattern LIMIT_SQLSERVER = Pattern.compile(
-        "^(.+?)(\\s+(?i)TOP\\s+(\\d+)\\s+)(.+)$" // “.+?”非贪婪模式
+        // .+? / X*?：非贪婪模式/懒汉模式；
+        // (?i)：忽略大小写；
+        // (?s)：所在位置右侧的表达式开启单行模式；
+        // (?m)：所在位置右侧的表达式开启多行模式；
+        "^(.+?)(\\s+(?i)TOP\\s+(\\d+)\\s+)(.+)$"
     );
     private static final Pattern SELECT_SQLSERVER = Pattern.compile(
         "^(\\s*(?i)SELECT\\s)(.+)$"

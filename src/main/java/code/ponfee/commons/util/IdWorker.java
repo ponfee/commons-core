@@ -1,11 +1,17 @@
 package code.ponfee.commons.util;
 
+import code.ponfee.commons.math.Maths;
+
 /**
  * <pre>
+ * BINARY(Long.MAX_VALUE         )=0111111111111111111111111111111111111111111111111111111111111111
+ * BINARY(2039-09-07 23:47:35.551)=0000000000000000000000011111111111111111111111111111111111111111
+ * 
  * 0 | 0000000000 0000000000 0000000000 0000000000 0 | 00000 | 00000 | 0000000000 00
- * - | --------------------时间戳--------------------- | -did- | -wid- | -----seq-----
- *  0 ~  0：1位未使用（实际上也可作为long的符号位）
- *  1 ~ 41：41位为毫秒级时间（能到2039-09-07 23:47:35，超过会溢出）
+ * - | ------------------timestamp------------------ | -did- | -wid- | -----seq-----
+ * 
+ * 00 ~ 00：1位未使用（实际上也是作为long的符号位）
+ * 01 ~ 41：41位为毫秒级时间（能到“2039-09-07 23:47:35.551”，41位bit的最大Long值，超过会溢出）
  * 42 ~ 46：5位datacenterId
  * 47 ~ 51：5位workerId（并不算标识符，实际是为线程标识），
  * 52 ~ 63：12位该毫秒内的当前毫秒内的计数
@@ -14,54 +20,58 @@ package code.ponfee.commons.util;
  * snowflake每秒能够产生26万ID左右，完全满足需要。
  * </pre>
  *
- * 计算掩码方式：(1<<bits)-1 或 -1L^(-1L<<bits)
+ * 计算掩码的三种方式：
+ *   a：(1 << bits) - 1
+ *   b：-1L ^ (-1L << bits)
+ *   c：Long.MAX_VALUE >>> (63 - bits)
+ *   
  * 基于snowflake算法的ID生成器
  *
  * @author Ponfee
  */
 public final class IdWorker {
 
-    private static final int MAX_SIZE = Long.toBinaryString(Long.MAX_VALUE).length();
+    private static final int MAX_BIT_LENGTH = Long.toBinaryString(Long.MAX_VALUE).length(); // 63位
     private static final long TWEPOCH = 1514736000000L; // 起始基准时间点(2018-01-01)
 
+    private final int datacenterId; // 数据中心ID
+    private final int workerId;     // 工作机器ID
+
+    private final int workerIdShift;
+    private final int datacenterIdShift;
+    private final int timestampShift;
+
     private final long sequenceMask;
-    private final long workerIdShift;
-    private final long datacenterIdShift;
-    private final long timestampShift;
     private final long timestampMask;
 
-    private final int datacenterId; // 数据中心id
-    private final int workerId; // 工作机器id
-
-    private long lastTimestamp = -1L; // 时间戳
-    private long sequence = 0L; // 0，并发控制
+    private long lastTimestamp = -1L;
+    private long sequence      = 0L;
 
     public IdWorker(int workerId, int datacenterId,
                     int sequenceBits, int workerIdBits, 
                     int datacenterIdBits) {
-        long maxWorkerId = (1L << workerIdBits) - 1;
+        long maxWorkerId = Maths.bitsMask(workerIdBits);
         if (workerId > maxWorkerId || workerId < 0) {
             throw new IllegalArgumentException(
-                String.format("worker Id can't be greater than %d "
-                            + "or less than 0", maxWorkerId)
+                String.format("worker Id can't be greater than %d or less than 0", maxWorkerId)
             );
         }
 
-        long maxDatacenterId = (1L << datacenterIdBits) - 1;
+        long maxDatacenterId = Maths.bitsMask(datacenterIdBits);
         if (datacenterId > maxDatacenterId || datacenterId < 0) {
             throw new IllegalArgumentException(
-                String.format("datacenter Id can't be greater than %d "
-                            + "or less than 0", maxDatacenterId)
+                String.format("datacenter Id can't be greater than %d or less than 0", maxDatacenterId)
             );
         }
 
-        this.sequenceMask = (1L << sequenceBits) - 1;
-        this.workerIdShift = sequenceBits;
-        this.datacenterIdShift = this.workerIdShift + workerIdBits;
-        this.timestampShift = this.datacenterIdShift + datacenterIdBits;
-        this.timestampMask = (1L << (MAX_SIZE - this.timestampShift)) - 1;
+        this.workerIdShift     = sequenceBits;
+        this.datacenterIdShift = sequenceBits + workerIdBits;
+        this.timestampShift    = sequenceBits + workerIdBits + datacenterIdBits;
 
-        this.workerId = workerId;
+        this.sequenceMask  = Maths.bitsMask(sequenceBits);
+        this.timestampMask = Maths.bitsMask(MAX_BIT_LENGTH - this.timestampShift);
+
+        this.workerId     = workerId;
         this.datacenterId = datacenterId;
     }
 
@@ -83,34 +93,50 @@ public final class IdWorker {
         this(workerId, datacenterId, 12, 5, 5);
     }
 
+    /**
+     * no datacenterId
+     * max sequence count: 16384
+     * max work count    : 32
+     * max time at       : 2527-06-23 14:20:44.415
+     * 
+     * @param workerId
+     */
     public IdWorker(int workerId) {
-        this(workerId, 0);
+        this(workerId, 0, 14, 5, 0);
     }
 
     public synchronized long nextId() {
         long timestamp = timeGen();
-        if (timestamp < lastTimestamp) {
+        if (timestamp < this.lastTimestamp) {
+            // 时间戳只能单调递增
             throw new RuntimeException(
-                String.format("Clock moved backwards. Refusing to generate id "
-                            + "for %d milliseconds", lastTimestamp - timestamp)
+                String.format("Clock moved backwards. Refusing to generate id for %d milliseconds", this.lastTimestamp - timestamp)
             );
         }
-        if (lastTimestamp == timestamp) {
-            sequence = (sequence + 1) & sequenceMask;
-            if (sequence == 0) {
-                timestamp = tilNextMillis(lastTimestamp);
+        if (this.lastTimestamp == timestamp) {
+            // sequence递增
+            this.sequence = (this.sequence + 1) & this.sequenceMask;
+            if (this.sequence == 0) {
+                // 已经到最大，则获取下一个时间点的毫秒数
+                timestamp = tilNextMillis(this.lastTimestamp);
             }
         } else {
-            sequence = 0L;
+            this.sequence = 0L;
         }
-        lastTimestamp = timestamp;
+        this.lastTimestamp = timestamp;
 
-        return (((timestamp - TWEPOCH) << timestampShift) & timestampMask)
-             | (datacenterId << datacenterIdShift)
-             | (workerId << workerIdShift)
-             | sequence;
+        return (((timestamp - TWEPOCH) << this.timestampShift) & this.timestampMask)
+             | (this.datacenterId << this.datacenterIdShift)
+             | (this.workerId << this.workerIdShift)
+             | this.sequence;
     }
 
+    /**
+     * 获取下一个时间戳毫秒，一直循环直到获取到为止
+     * 
+     * @param lastTimestamp the lastTimestamp
+     * @return
+     */
     protected long tilNextMillis(long lastTimestamp) {
         long timestamp;
         do {
@@ -121,33 +147,6 @@ public final class IdWorker {
 
     protected long timeGen() {
         return System.currentTimeMillis();
-    }
-
-    /**
-     * <pre>
-     * 0 | 0000000000 0000000000 0000000000 0000000000 00 | 0000000000 0 | 0000000000
-     * - | --------------------－时间戳--------------------－ | -----wid---- | ----seq---
-     *   0 ~ 0：1位未使用（实际上也可作为long的符号位）
-     *  1 ~ 42：42位为毫秒级时间（能到2109-05-15 15:35:11，超过会溢出）
-     *    ~   ：0位datacenterId
-     * 43 ~ 53：11位workerId（机器ip），
-     * 54 ~ 63：10位该毫秒内的当前毫秒内的计数
-     * </pre>
-     * 
-     * Builds a IdWorker based local ip address
-     */
-    public static final IdWorker LOCAL_WORKER;
-    static {
-        int sequenceBits = 10; // specified 10 bit length
-        int workerIdBits = 11; // specified 11 bit length
-        int datacenterIdBits = 0; // specified 0 bit length
-
-        int maxWorkerId = (int) (1L << workerIdBits) - 1; // 2047(max and mask)
-        int workerId = (int) Networks.toLong(Networks.HOST_IP) & maxWorkerId;
-        int datacenterId = (int) (1L << datacenterIdBits) - 1;
-
-        LOCAL_WORKER = new IdWorker(workerId, datacenterId, sequenceBits,
-                                    workerIdBits, datacenterIdBits);
     }
 
 }

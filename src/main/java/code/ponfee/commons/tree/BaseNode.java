@@ -36,8 +36,9 @@ public class BaseNode<T extends Serializable & Comparable<? super T>, A extends 
     protected final boolean available; // 是否可用（parent.available & this.enabled）
     protected final A          attach; // 附加信息（与业务相关）
 
-    protected int    level; // 节点层级（以根节点为1开始，往下逐级加1）
-    protected List<T> path; // 节点路径list<nid>（父节点在前，末尾元素是节点本身的nid）
+    protected int    level;  // 节点层级（以根节点为1开始，往下逐级加1）
+    //protected int    degree; // 节点的度（子节点数量）
+    protected List<T> path;  // 节点路径list<nid>（父节点在前，末尾元素是节点本身的nid）
 
     protected int childLeafCount; // 子叶子节点数量（若为叶子节点则为1）
     protected int leftLeafCount;  // 左叶子节点数量（在其左边的所有叶子节点数量：相邻左兄弟节点的左叶子节点个数+该兄弟节点的子节点个数）
