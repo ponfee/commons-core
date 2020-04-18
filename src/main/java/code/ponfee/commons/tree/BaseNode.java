@@ -40,10 +40,12 @@ public class BaseNode<T extends Serializable & Comparable<? super T>, A extends 
     protected List<T> path; // 节点路径list<nid>（父节点在前，末尾元素是节点本身的nid）
     protected int   degree; // 节点的度数（子节点数量，叶子节点的度为0）
 
+    // -------------------------------------------------------------------以当前节点做为根的节点树
     protected int treeDepth;     // 树的深度（叶子节点的树深度为1）
     protected int treeNodeCount; // 树中节点数量
     protected int treeMaxDegree; // 树中最大的度数（树中所有节点数目=所有节点度数之和+1）
     protected int treeLeafCount; // 树中叶子节点数量（叶子节点为1）
+
     protected int leftLeafCount; // 左叶子节点数量（在其左边的所有叶子节点数量：相邻左兄弟节点的左叶子节点个数+该兄弟节点的子节点个数）
 
     public BaseNode(T nid, T pid, A attach) {

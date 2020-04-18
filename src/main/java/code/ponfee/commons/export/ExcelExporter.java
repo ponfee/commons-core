@@ -186,7 +186,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
         SXSSFSheet sheet = getSheet(name);
 
         // 3、判断工作簿是否已创建过行数据
-        CursorRowNumber cursorRow = new CursorRowNumber(sheet.getLastRowNum());
+        CursorRowNumber cursorRow = new CursorRowNumber(Math.max(sheet.getLastRowNum(), 0));
         if (cursorRow.get() > 0) {
             // 创建两行空白行
             cursorRow.increment();
@@ -290,18 +290,19 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
         images.put(getName(), endRow + 2);
 
         SXSSFDrawing drawing = sheet.createDrawingPatriarch();
-        XSSFClientAnchor anchor = new XSSFClientAnchor(0, 0, width, height, startCol,
-                                                       startRow, (short) endCol, endRow);
+        XSSFClientAnchor anchor = new XSSFClientAnchor(
+            0, 0, width, height, startCol, startRow, (short) endCol, endRow
+        );
 
         anchor.setAnchorType(AnchorType.DONT_MOVE_AND_RESIZE);
         drawing.createPicture(anchor, workbook.addPicture(imageBytes, SXSSFWorkbook.PICTURE_TYPE_PNG));
 
         /*int pictureIdx = workbook.addPicture(imageBytes, Workbook.PICTURE_TYPE_PNG);
         CreationHelper helper = workbook.getCreationHelper();
-        Drawing drawing = sheet.createDrawingPatriarch();
+        SXSSFDrawing drawing = sheet.createDrawingPatriarch();
         ClientAnchor anchor = helper.createClientAnchor();
         anchor.setCol1(0);
-        anchor.setRow1(sheet.getLastRowNum());
+        anchor.setRow1(Math.max(sheet.getLastRowNum(), 0));
         Picture pict = drawing.createPicture(anchor, pictureIdx);
         pict.resize(1);*/
     }
