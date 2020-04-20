@@ -9,7 +9,7 @@ import com.google.common.base.Preconditions;
 import code.ponfee.commons.json.Jsons;
 
 /**
- * 返回结果数据结构体封装类
+ * Representing the result-data structure
  * 
  * @see org.springframework.http.ResponseEntity#status(org.springframework.http.HttpStatus)
  * 
@@ -21,21 +21,16 @@ public class Result<T/* extends Serializable*/> implements Serializable {
     private static final long serialVersionUID = -2804195259517755050L;
     public static final Result<Void> SUCCESS = new SuccessResult();
 
-    private Integer code; // 状态码
-    private String  msg;  // 返回信息
-    private T       data; // 结果数据
+    private Integer    code; // 状态码
+    private String      msg; // 返回信息
+    private T          data; // 结果数据
+    private boolean success; // 结果数据
 
     // -------------------------------------------constructor methods
     public Result() {} // code is null
 
     public Result(int code, String msg) {
         this(code, msg, null);
-    }
-
-    public Result(int code, String msg, T data) {
-        this.code = code;
-        this.msg = msg;
-        this.data = data;
     }
 
     public Result(CodeMsg cm, String msg) {
@@ -46,6 +41,14 @@ public class Result<T/* extends Serializable*/> implements Serializable {
         this(cm.getCode(), cm.getMsg(), null);
     }
 
+    public Result(int code, String msg, T data) {
+        this.code    = code;
+        this.msg     = msg;
+        this.data    = data;
+        this.success = ResultCode.isSuccessCode(code);
+    }
+
+    // -------------------------------------------others methods
     @SuppressWarnings("unchecked")
     public <E> Result<E> copy() {
         return copy((E) data);
@@ -158,9 +161,8 @@ public class Result<T/* extends Serializable*/> implements Serializable {
         this.data = data;
     }
 
-    @Transient
     public boolean isSuccess() {
-        return ResultCode.isSuccessCode(code);
+        return this.success;
     }
 
     @Transient

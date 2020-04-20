@@ -34,18 +34,18 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import code.ponfee.commons.tree.NodePath.NodePathFastjsonDeserializeMarker;
-import code.ponfee.commons.tree.NodePath.NodePathJacksondDeserializer;
+import code.ponfee.commons.tree.NodePath.NodePathJacksonDeserializer;
 
 /**
- * Representing node path array
+ * Representing immutable node path array
  * 
  * @author Ponfee
  * @param <T> the node id type
  */
 // NodePath is extends ArrayList, so must be use mappingTo in fastjson
-// if not do it then deserialized json as a collection type
+// if not do it then deserialized json as a collection type(java.util.ArrayList)
 @JSONType(mappingTo = NodePathFastjsonDeserializeMarker.class)
-@JsonDeserialize(using = NodePathJacksondDeserializer.class)
+@JsonDeserialize(using = NodePathJacksonDeserializer.class)
 public final class NodePath<T extends Serializable & Comparable<? super T>> 
     extends ArrayList<T> implements Serializable, Comparable<NodePath<T>>, Cloneable {
 
@@ -310,7 +310,7 @@ public final class NodePath<T extends Serializable & Comparable<? super T>>
     }*/
 
     // -----------------------------------------------------custom jackson deserialize
-    public static class NodePathJacksondDeserializer<T extends Serializable & Comparable<? super T>> 
+    public static class NodePathJacksonDeserializer<T extends Serializable & Comparable<? super T>>
         extends JsonDeserializer<NodePath<T>> {
         @Override @SuppressWarnings("unchecked")
         public NodePath<T> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {

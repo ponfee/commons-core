@@ -62,11 +62,13 @@ public abstract class AbstractSplitExporter extends AbstractDataExporter<Void> {
     protected abstract AsnycSplitExporter splitExporter(Table<Object[]> subTable, 
                                                         String savingFilePath);
 
-    public @Override final Void export() {
+    @Override
+    public final Void export() {
         throw new UnsupportedOperationException();
     }
 
-    public @Override final void close() {}
+    @Override
+    public final void close() {}
 
     private String buildFilePath(int fileNo) {
         return savingFilePathPrefix + String.format("%04d", fileNo) + fileSuffix;

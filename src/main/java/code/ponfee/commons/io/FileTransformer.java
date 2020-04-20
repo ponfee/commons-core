@@ -17,7 +17,9 @@ public class FileTransformer {
 
     private static final int FIX_LENGTH = 85;
     private static final String[] CHARSETS = {
-        "GBK", "GB2312", "UTF-8", "UTF-16", "UTF-16LE", "UTF-16BE"
+        "GBK", "GB2312", "UTF-8", 
+        "UTF-16", "UTF-16LE", "UTF-16BE", 
+        "UTF-32", "UTF-32LE", "UTF-32BE"
     };
 
     private String includeFileExtensions = regexExtensions(
@@ -112,6 +114,7 @@ public class FileTransformer {
         try {
             target.getParentFile().mkdirs();
             //com.google.common.io.Files.copy(source, source);
+            //sourceChannel.transferTo(0, sourceChannel.size(), targetChannel);
             java.nio.file.Files.copy(source.toPath(), target.toPath());
         } catch (IOException e) {
             throw new RuntimeException(e);

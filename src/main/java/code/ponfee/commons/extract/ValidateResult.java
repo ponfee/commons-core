@@ -2,7 +2,6 @@ package code.ponfee.commons.extract;
 
 import java.util.List;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Lists;
@@ -10,21 +9,21 @@ import com.google.common.collect.Lists;
 import code.ponfee.commons.io.Files;
 
 /**
- * 处理结果
+ * Validate result
  * 
  * @author Ponfee
  */
 public class ValidateResult {
 
-    private final List<String[]> data = Lists.newArrayList();
-    private final List<String> errors = Lists.newArrayList();
+    private final List<String[]> data = Lists.newLinkedList();
+    private final List<String> errors = Lists.newLinkedList();
 
     public boolean hasErrors() {
-        return CollectionUtils.isNotEmpty(errors);
+        return !errors.isEmpty();
     }
 
     public boolean isEmpty() {
-        return CollectionUtils.isEmpty(data);
+        return data.isEmpty();
     }
 
     public String getErrorsAsString() {

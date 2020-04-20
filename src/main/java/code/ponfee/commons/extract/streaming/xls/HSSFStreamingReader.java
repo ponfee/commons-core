@@ -67,8 +67,9 @@ public class HSSFStreamingReader {
     }
 
     public HSSFStreamingWorkbook open(InputStream input, ExecutorService executor) {
-        return new HSSFStreamingWorkbook(input, rowCacheSize, 
-                                         sheetIndexs, sheetNames, executor);
+        return new HSSFStreamingWorkbook(
+            input, rowCacheSize, sheetIndexs, sheetNames, executor
+        );
     }
 
     public HSSFStreamingWorkbook open(File file, ExecutorService executor) {

@@ -52,7 +52,7 @@ public final class CacheBuilder<K, V> {
                            autoReleaseInSeconds, executor, removalListener);
     }
 
-    public static <K, V> CacheBuilder<K, V>  newBuilder() {
+    public static <K, V> CacheBuilder<K, V> newBuilder() {
         return new CacheBuilder<>();
     }
 }

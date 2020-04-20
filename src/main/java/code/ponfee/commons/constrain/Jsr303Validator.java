@@ -21,7 +21,7 @@ import code.ponfee.commons.model.Result;
  */
 //@ControllerAdvice
 //@Aspect
-//@Order(1)
+//@Order(Ordered.HIGHEST_PRECEDENCE)
 public abstract class Jsr303Validator {
 
     //@Around("execution(public * cn.ponfee.xxx.controller..*Controller..*(..)) && args(..,bindingResult)")

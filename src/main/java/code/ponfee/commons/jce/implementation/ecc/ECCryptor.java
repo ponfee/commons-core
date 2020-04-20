@@ -56,7 +56,8 @@ public class ECCryptor extends Cryptor {
      * 加密数据逻辑：
      * origin ≡ origin ⊕ data ⊕ data
      */
-    public @Override byte[] encrypt(byte[] input, int length, Key ek) {
+    @Override
+    public byte[] encrypt(byte[] input, int length, Key ek) {
         // ek is an Elliptic key (dk=secret, beta=public)
         ECKey ecKey = (ECKey) ek;
 
@@ -95,7 +96,8 @@ public class ECCryptor extends Cryptor {
         return result;
     }
 
-    public @Override byte[] decrypt(byte[] input, Key dk) {
+    @Override
+    public byte[] decrypt(byte[] input, Key dk) {
         ECKey ecKey = (ECKey) dk;
         int offset = ecKey.curve.getPCS();
 
@@ -131,11 +133,13 @@ public class ECCryptor extends Cryptor {
     /**
      * generate ECKey
      */
-    public @Override Key generateKey() {
+    @Override
+    public Key generateKey() {
         return new ECKey(curve);
     }
 
-    public @Override String toString() {
+    @Override
+    public String toString() {
         return "ECCryptor - " + curve.toString();
     }
 

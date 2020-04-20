@@ -10,15 +10,13 @@
   <packaging>jar</packaging>
 
   <!-- 
-    mvn package -Dmaven.test.skip=true：不执行测试用例，也不编译测试用例类；
-    mvn package -DskipTests：跳过单元测试，但是会继续编译；
-    mvn clean install -Dmaven.test.skip=true -Dhadoop.version=2.7.7 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true
-
-    https://www.jianshu.com/p/88da01804d3c
-    mvn versions:set -DnewVersion=1.17-SNAPSHOT
-
-    https://github.com/alibaba/p3c
-    sonar:https://www.jianshu.com/p/68a3ed571314
+    > 不编译也不执行单元测试类：mvn package -Dmaven.test.skip=true
+    > 编译但不会执行单元测试类：mvn package -DskipTests
+    > 指定参数：mvn clean install -Dmaven.test.skip=true -Dhadoop.version=2.7.7 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true
+    > 安装Maven Wrapper：mvn -N io.takari:maven:wrapper -Dmaven=3.6.3
+    > Alibaba P3C手册：https://github.com/alibaba/p3c
+    > sonar参考文章：https://www.jianshu.com/p/68a3ed571314
+    > 项目版本号批量修改插件文章：https://www.jianshu.com/p/88da01804d3c，mvn versions:set -DnewVersion=1.17-SNAPSHOT
 
     javac: 不加“-g”则默认为“-g:source,lines”
       -g                     生成所有调试信息
@@ -39,14 +37,14 @@
 
     slf4j的具体实现：slf4j-simple，logback
 
-    slf4j bridge to impl(LogImpl)
+    slf4j adapter to impl(LogImpl)
       log4j  : slf4j-api -> org.slf4j:slf4j-log4j12, log4j:log4j
       log4j2 : slf4j-api -> org.apache.logging.log4j:(log4j-slf4j-impl, log4j-api, log4j-core)
       logback: slf4j-api -> ch.qos.logback:(logback-classic, logback-core)
       jcl    : slf4j-api -> org.slf4j:slf4j-jcl, commons-logging:commons-logging
       jul    : slf4j-api -> org.slf4j:slf4j-jdk14, java.util.logging
 
-    log api adapter to slf4j
+    log api bridge to slf4j
       log4j            : log4j-over-slf4j(log4j api)  -> slf4j-api -> LogImpl
       log4j2           : log4j-to-slf4j  (log4j2 api) -> slf4j-api -> LogImpl
       logback          : logback就是slf4j的原生实现（即logback的api就是slf4j-api）
@@ -62,11 +60,11 @@
     <!-- javac -serouce 1.8 -target 1.8 -->
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
-    <spring.version>4.3.26.RELEASE</spring.version>
+    <spring.version>4.3.27.RELEASE</spring.version>
     <slf4j.version>1.7.30</slf4j.version>
-    <log4j2.version>2.13.1</log4j2.version><!-- Java 9 Modular: 2.13.0[2.8.2] -->
-    <bouncycastle.version>1.64</bouncycastle.version><!-- Java 9 Modular: 1.64[1.60] -->
-    <jackson.version>2.10.3</jackson.version><!-- Java 9 Modular: 2.10.1[2.9.10] -->
+    <log4j2.version>2.13.3</log4j2.version><!-- Java 9 Modular: 2.13.0[2.8.2] -->
+    <bouncycastle.version>1.65</bouncycastle.version><!-- Java 9 Modular: 1.64[1.60] -->
+    <jackson.version>2.11.3</jackson.version><!-- Java 9 Modular: 2.11.3[2.9.10] -->
   </properties>
 
   <profiles>
@@ -114,8 +112,7 @@
       </distributionManagement>
       <properties>
         <publish.version>2.2</publish.version>
-        <separator>;</separator>
-        <!-- <separator>:</separator> -->
+        <separator>:</separator>
       </properties>
     </profile>
   </profiles>
@@ -244,60 +241,11 @@
 
 
 
-    <!-- ====================本地jar依赖==================== -->
-    <!-- world to pdf -->
-    <dependency>
-      <groupId>aspose</groupId>
-      <artifactId>words-jdk16</artifactId>
-      <version>1.0</version>
-      <!-- <scope>system</scope>
-      <systemPath>${pom.basedir}/lib/aspose-words-jdk16-1.0.jar</systemPath> -->
-    </dependency>
-
-    <!-- 文件编码探测 -->
-    <dependency>
-      <groupId>antlr</groupId>
-      <artifactId>antlr</artifactId>
-      <version>2.7.7</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sourceforge.jargs</groupId>
-      <artifactId>jargs</artifactId>
-      <version>1.0</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sourceforge.jchardet</groupId>
-      <artifactId>jchardet</artifactId>
-      <version>1.1</version>
-      <!-- https://sourceforge.net/projects/jchardet/
-      <scope>system</scope>
-      <systemPath>${pom.basedir}/lib/jchardet-1.1.jar</systemPath> -->
-    </dependency>
-    <dependency>
-      <groupId>net.sourceforge.cpdetector</groupId>
-      <artifactId>cpdetector</artifactId>
-      <version>1.0.10</version>
-      <!-- https://sourceforge.net/projects/cpdetector/
-      <scope>system</scope>
-      <systemPath>${pom.basedir}/lib/cpdetector-1.0.10.jar</systemPath> -->
-    </dependency>
-
-    <!-- 数字信封 -->
-    <dependency>
-      <groupId>third-jce</groupId>
-      <artifactId>third-jce</artifactId>
-      <version>1.0</version>
-      <!-- <scope>system</scope>
-      <systemPath>${pom.basedir}/lib/third-jce-1.0.jar</systemPath> -->
-    </dependency>
-    <!-- ====================本地jar依赖==================== -->
-
-
     <!-- commons -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.9</version>
+      <version>3.10</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -353,14 +301,14 @@
     <dependency>
       <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator</artifactId>
-      <version>6.1.2.Final</version>
+      <version>6.1.5.Final</version>
     </dependency>
 
     <!-- dom4j -->
     <dependency>
       <groupId>org.dom4j</groupId>
       <artifactId>dom4j</artifactId>
-      <version>2.1.1</version>
+      <version>[2.1.3,)</version>
       <exclusions>
         <exclusion>
           <groupId>xml-apis</groupId>
@@ -373,21 +321,21 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>28.2-jre</version>
+      <version>29.0-jre</version>
     </dependency>
 
     <!-- joda-time -->
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
-      <version>2.10.5</version>
+      <version>2.10.6</version>
     </dependency>
 
     <!-- zip压缩 -->
     <dependency>
       <groupId>net.lingala.zip4j</groupId>
       <artifactId>zip4j</artifactId>
-      <version>2.5.0</version>
+      <version>2.5.2</version>
     </dependency>
 
     <!-- ====================spring==================== -->
@@ -546,17 +494,17 @@
     <dependency>
       <groupId>io.protostuff</groupId>
       <artifactId>protostuff-runtime</artifactId>
-      <version>1.7.0</version>
+      <version>1.7.2</version>
     </dependency>
     <dependency>
       <groupId>io.protostuff</groupId>
       <artifactId>protostuff-core</artifactId>
-      <version>1.7.0</version>
+      <version>1.7.2</version>
     </dependency>
     <dependency>
       <groupId>com.alibaba</groupId>
       <artifactId>fastjson</artifactId>
-      <version>1.2.67</version>
+      <version>1.2.68</version>
     </dependency>
     <!-- ====================序列化==================== -->
 
@@ -566,7 +514,7 @@
     <dependency>
       <groupId>com.alibaba</groupId>
       <artifactId>druid</artifactId>
-      <version>1.1.21</version>
+      <version>1.1.22</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -648,6 +596,41 @@
       </exclusions>
     </dependency>
     <!-- ====================文件类型处理==================== -->
+
+
+
+    <!-- 文件编码探测（若有jar包无法下载可手动安装：lib/README.md） -->
+    <dependency>
+      <groupId>antlr</groupId>
+      <artifactId>antlr</artifactId>
+      <version>2.7.7</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sourceforge.jargs</groupId>
+      <artifactId>jargs</artifactId>
+      <version>1.0</version>
+      <!-- https://sourceforge.net/projects/jargs/
+      <scope>system</scope>
+      <systemPath>${pom.basedir}/lib/jargs-1.0.jar</systemPath> -->
+    </dependency>
+    <dependency>
+      <groupId>net.sourceforge.jchardet</groupId>
+      <artifactId>jchardet</artifactId>
+      <version>1.0</version>
+      <!-- https://sourceforge.net/projects/jchardet/
+      <scope>system</scope>
+      <systemPath>${pom.basedir}/lib/jchardet-1.0.jar</systemPath> -->
+    </dependency>
+    <dependency>
+      <groupId>net.sourceforge.cpdetector</groupId>
+      <artifactId>cpdetector</artifactId>
+      <version>1.0.7</version>
+      <!-- https://sourceforge.net/projects/cpdetector/
+      <scope>system</scope>
+      <systemPath>${pom.basedir}/lib/cpdetector-1.0.7.jar</systemPath> -->
+    </dependency>
+    <!-- 文件编码探测（若有jar包无法下载可手动安装：lib/README.md） -->
+
 
 
     <!-- ====================加解密==================== -->
@@ -746,19 +729,20 @@
     <dependency>
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-catalina</artifactId>
-      <version>9.0.33</version>
+      <!-- <version>[9.0.35,)</version> -->
+      <version>9.0.35</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-jasper</artifactId>
-      <version>9.0.33</version>
+      <version>9.0.35</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-core</artifactId>
-      <version>9.0.33</version>
+      <version>9.0.35</version>
       <scope>test</scope>
     </dependency>
 

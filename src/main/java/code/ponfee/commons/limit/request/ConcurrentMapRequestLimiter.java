@@ -45,26 +45,30 @@ public final class ConcurrentMapRequestLimiter extends RequestLimiter {
     }
 
     // ---------------------------------------------------------------------request limit
-    @Override public ConcurrentMapRequestLimiter limitFrequency(String key, int period, String message)
+    @Override
+    public ConcurrentMapRequestLimiter limitFrequency(String key, int period, String message)
         throws RequestLimitException {
         checkLimit(CHECK_FREQ_KEY + key, period, 1, message);
         return this;
     }
 
-    @Override public ConcurrentMapRequestLimiter limitThreshold(String key, int period, 
-                                                              int limit, String message) 
+    @Override
+    public ConcurrentMapRequestLimiter limitThreshold(String key, int period, 
+                                                      int limit, String message) 
         throws RequestLimitException {
         checkLimit(CHECK_THRE_KEY + key, period, limit, message);
         return this;
     }
 
     // ---------------------------------------------------------------------cache sms code
-    @Override public void cacheCode(String key, String code, int ttl) {
+    @Override
+    public void cacheCode(String key, String code, int ttl) {
         add(CACHE_CODE_KEY + key, code, ttl);
         remove(CHECK_CODE_KEY + key);
     }
 
-    @Override public ConcurrentMapRequestLimiter checkCode(String key, String code, int limit)
+    @Override
+    public ConcurrentMapRequestLimiter checkCode(String key, String code, int limit)
         throws RequestLimitException {
         if (StringUtils.isEmpty(code)) {
             throw new RequestLimitException("验证码不能为空！");
@@ -98,11 +102,13 @@ public final class ConcurrentMapRequestLimiter extends RequestLimiter {
     }
 
     // ---------------------------------------------------------------------cache captcha
-    @Override public void cacheCaptcha(String key, String captcha, int expire) {
+    @Override
+    public void cacheCaptcha(String key, String captcha, int expire) {
         add(CACHE_CAPTCHA_KEY + key, captcha, expire);
     }
 
-    @Override public boolean checkCaptcha(String key, String captcha, boolean caseSensitive) {
+    @Override
+    public boolean checkCaptcha(String key, String captcha, boolean caseSensitive) {
         CacheValue<String> value = getAndRemove(CACHE_CAPTCHA_KEY + key);
 
         if (value == null || value.get() == null) {
@@ -115,16 +121,19 @@ public final class ConcurrentMapRequestLimiter extends RequestLimiter {
     }
 
     // ---------------------------------------------------------------------action
-    @Override public void recordAction(String key, int period) {
+    @Override
+    public void recordAction(String key, int period) {
         incrementAndGet(TRACE_ACTION_KEY + key, expire(period));
     }
 
-    @Override public long countAction(String key) {
+    @Override
+    public long countAction(String key) {
         CacheValue<Void> cache = get(TRACE_ACTION_KEY + key);
         return cache == null ? 0 : cache.count();
     }
 
-    @Override public void resetAction(String key) {
+    @Override
+    public void resetAction(String key) {
         remove(TRACE_ACTION_KEY + key);
     }
 

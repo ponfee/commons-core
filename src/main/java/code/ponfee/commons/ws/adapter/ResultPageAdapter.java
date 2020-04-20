@@ -35,7 +35,8 @@ public abstract class ResultPageAdapter<T> extends XmlAdapter<Result<TransitPage
         return v.copy(TransitPage.recover(v.getData()));
     }
 
-    public @Override Result<TransitPage<T>> marshal(Result<Page<T>> v) {
+    @Override
+    public Result<TransitPage<T>> marshal(Result<Page<T>> v) {
         if (v.getData() == null) {
             return v.copy(null);
         } else if (v.getData().getRows() == null) {

@@ -6,8 +6,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
-import code.ponfee.commons.util.Strings;
-
 /**
  * Sql utility
  * 
@@ -21,7 +19,7 @@ public final class SqlUtils {
         }
 
         //sql = sql.replaceAll("\\s{2,}", " ");
-        int start = 0, end, n = end = (sql.length() - 1);
+        int start = 0, end = (sql.length() - 1), n = end;
 
         while (start < n && isBlank(sql.charAt(start))) {
             start++;

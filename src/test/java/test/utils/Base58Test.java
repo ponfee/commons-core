@@ -1,19 +1,3 @@
-/*
- * Copyright 2011 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package test.utils;
 
 import java.math.BigInteger;
@@ -24,18 +8,23 @@ import org.junit.Test;
 import code.ponfee.commons.util.Base58;
 import junit.framework.TestCase;
 
+/**
+ * https://blog.csdn.net/qq_41185868/article/details/80806532
+ * 
+ * @author Ponfee
+ */
 public class Base58Test extends TestCase {
     @Test
     public void testEncode() {
         byte[] testbytes = "Hello World".getBytes();
         assertEquals("JxF12TrwUP45BMd", Base58.encode(testbytes));
-        
+
         BigInteger bi = BigInteger.valueOf(3471844090L);
         assertEquals("16Ho7Hs", Base58.encode(bi.toByteArray()));
-        
+
         byte[] zeroBytes1 = new byte[1];
         assertEquals("1", Base58.encode(zeroBytes1));
-        
+
         byte[] zeroBytes7 = new byte[7];
         assertEquals("1111111", Base58.encode(zeroBytes7));
 
@@ -48,10 +37,10 @@ public class Base58Test extends TestCase {
         byte[] testbytes = "Hello World".getBytes();
         byte[] actualbytes = Base58.decode("JxF12TrwUP45BMd");
         assertTrue(new String(actualbytes), Arrays.equals(testbytes, actualbytes));
-        
+
         assertTrue("1", Arrays.equals(Base58.decode("1"), new byte[1]));
         assertTrue("1111", Arrays.equals(Base58.decode("1111"), new byte[4]));
-        
+
         try {
             Base58.decode("This isn't valid base58");
             fail();
@@ -83,6 +72,9 @@ public class Base58Test extends TestCase {
         // Now check we can correctly decode the case where the high bit of the first byte is not zero, so BigInteger
         // sign extends. Fix for a bug that stopped us parsing keys exported using sipas patch.
         Base58.decodeChecked("93VYUMzRG9DdbRP72uQXjaWibbQwygnvaCu9DumcqDjGybD864T");
+        Base58.decodeChecked("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa");
+        Base58.decodeChecked("1XPTgDRhN8RFnzniWCddobD9iKZatrvH4");
+        Base58.decodeChecked("14rE7Jqy4a6P27qWCCsngkUfBxtevZhPHB");
     }
 
     @Test

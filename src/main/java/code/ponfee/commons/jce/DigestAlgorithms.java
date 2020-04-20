@@ -1,7 +1,12 @@
 package code.ponfee.commons.jce;
 
 /**
- * The Digest Algorithms
+ * The Digest Algorithms<p>
+ * 
+ * SHA-3
+ *   <li>https://www.oschina.net/translate/keccak-the-new-sha-3-encryption-standard </li>
+ *   <li>http://www.cnblogs.com/dacainiao/p/5554756.html</li>
+ *   <li>SHA256算法原理：https://zhuanlan.zhihu.com/p/94619052</li>
  * 
  * @author Ponfee
  */

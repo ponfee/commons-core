@@ -34,7 +34,7 @@ public abstract class Serializer {
         if (obj == null) {
             return null;
         }
-        return serialize0(obj, compress);
+        return Serializer.this.serialize0(obj, compress);
     }
 
     public final byte[] serialize(Object obj) {
@@ -45,7 +45,7 @@ public abstract class Serializer {
         if (bytes == null) {
             return null;
         }
-        return deserialize0(bytes, clazz, compress);
+        return Serializer.this.deserialize0(bytes, clazz, compress);
     }
 
     public final <T> T deserialize(byte[] bytes, Class<T> clazz) {

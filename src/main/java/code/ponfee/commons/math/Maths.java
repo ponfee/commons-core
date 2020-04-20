@@ -1,5 +1,6 @@
 package code.ponfee.commons.math;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 /**
@@ -41,7 +42,7 @@ public class Maths {
      * @param n shift bit len
      * @return a number of rotate left result
      */
-    public static int rotateLeft(int x, int n) {
+    public static int rotateLeft(int x, @Min(0) @Max(32) int n) {
         return (x << n) | (x >>> (32 - n));
     }
 
@@ -79,11 +80,70 @@ public class Maths {
     }
 
     public static int abs(int a) {
+        // Integer.MIN_VALUE & 0x7FFFFFFF = 0
         return (a == Integer.MIN_VALUE) ? Integer.MAX_VALUE : (a < 0) ? -a : a;
     }
 
     public static long abs(long a) {
         return (a == Long.MIN_VALUE) ? Long.MAX_VALUE : (a < 0) ? -a : a;
+    }
+
+    /**
+     * Returns square root of specified double value<p>
+     * Use binary search method
+     * 
+     * @param value the value
+     * @return square root
+     */
+    public static strictfp double sqrtBinary(double value) {
+        if (value < 0.0D) {
+            return Double.NaN;
+        }
+        if (value == 0.0D || value == 1.0D) {
+            return value;
+        }
+
+        double start = 0.0D, end = Math.max(value, 1.0D), square, r;
+        while (!isBorderline(r = (start + end) / 2, start, end) && (square = r * r) != value) {
+            if (square > value) end = r; // lower
+            else              start = r; // upper
+        }
+
+        return r; // cannot find a more rounded value
+    }
+
+    public static boolean isBorderline(double value, double start, double end) {
+        return value == start || value == end;
+    }
+
+    /**
+     * Returns square root of specified double value<p>
+     * Use newton iteration method: X(n+1)=[X(n)+p/Xn]/2
+     * 
+     * @param value the value
+     * @return square root
+     */
+    public static strictfp double sqrtNewton(double value) {
+        if (value < 0) {
+            return Double.NaN;
+        }
+        if (value == 0.0D || value == 1.0D) {
+            return value;
+        }
+
+        double r = 1.0D;
+        while (r != (r = (r + value / r) / 2)) {
+            // do nothing
+        }
+        return r;
+    }
+
+    public static boolean isBorderline(int value, int start, int end) {
+        return value == start || value == end;
+    }
+
+    public static boolean isBorderline(long value, long start, long end) {
+        return value == start || value == end;
     }
 
     // ------------------------------------------------------------------------int plus/minus
@@ -126,6 +186,44 @@ public class Maths {
         } else {
             return a - b;
         }
+    }
+
+    /**
+     * Returns the greatest common divisor
+     *
+     * @param a the first number
+     * @param b the second number
+     * @return gcd
+     */
+    public static int gcd(int a, int b) {
+        if (a < 0 || b < 0) {
+            throw new ArithmeticException();
+        }
+
+        if (a == 0 || b == 0) {
+            return Math.abs(a - b);
+        }
+
+        for (int c; (c = a % b) != 0;) {
+            a = b;
+            b = c;
+        }
+        return b;
+    }
+
+    /**
+     * Returns the greatest common divisor in array
+     *
+     * @param array the int array
+     * @return gcd
+     */
+    public static int gcd(int[] array) {
+        int result = array[0];
+        for (int i = 1; i < array.length; i++) {
+            result = gcd(result, array[i]);
+        }
+
+        return result;
     }
 
 }

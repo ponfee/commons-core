@@ -33,6 +33,7 @@ import code.ponfee.commons.collect.ValueSortedMap;
 import code.ponfee.commons.io.HumanReadables;
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.math.Maths;
+import code.ponfee.commons.math.Numbers;
 import code.ponfee.commons.model.Page;
 import code.ponfee.commons.reflect.CglibUtils;
 import code.ponfee.commons.util.Bytes;
@@ -329,4 +330,28 @@ public class Test2 {
         System.out.println(Long.toBinaryString(Long.MAX_VALUE >>> (63 - 41)));
     }
 
+    @Test
+    public void test27() throws IOException {
+        System.out.println(10);
+        System.out.println(0B010);
+        System.out.println(0010);
+        System.out.println(010);
+        System.out.println(0X010);
+        System.out.println(0E10);
+    }
+
+    @Test
+    public void test28() throws IOException {
+        try {
+            Long.parseLong("321.0");
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void test29() throws IOException {
+        System.out.println("321.0".indexOf('.'));
+        System.out.println(Numbers.toInt("321.0"));
+    }
 }

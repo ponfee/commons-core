@@ -31,7 +31,8 @@ import code.ponfee.commons.math.Maths;
  */
 public final class IdWorker {
 
-    private static final int MAX_BIT_LENGTH = Long.toBinaryString(Long.MAX_VALUE).length(); // 63位
+    // Long.toBinaryString(Long.MAX_VALUE).length()
+    private static final int SIZE = Long.SIZE - 1; // 63位（除去最开头的一个符号位）
     private static final long TWEPOCH = 1514736000000L; // 起始基准时间点(2018-01-01)
 
     private final int datacenterId; // 数据中心ID
@@ -69,7 +70,7 @@ public final class IdWorker {
         this.timestampShift    = sequenceBits + workerIdBits + datacenterIdBits;
 
         this.sequenceMask  = Maths.bitsMask(sequenceBits);
-        this.timestampMask = Maths.bitsMask(MAX_BIT_LENGTH - this.timestampShift);
+        this.timestampMask = Maths.bitsMask(SIZE - this.timestampShift);
 
         this.workerId     = workerId;
         this.datacenterId = datacenterId;

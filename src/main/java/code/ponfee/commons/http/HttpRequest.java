@@ -266,15 +266,18 @@ public class HttpRequest {
 
             context.init(null, new TrustManager[] {
                 new X509TrustManager() {
-                    public @Override X509Certificate[] getAcceptedIssuers() {
+                    @Override
+                    public X509Certificate[] getAcceptedIssuers() {
                         return new X509Certificate[0];
                     }
 
-                    public @Override void checkClientTrusted(X509Certificate[] chain, String authType) {
+                    @Override
+                    public void checkClientTrusted(X509Certificate[] chain, String authType) {
                         // Intentionally left blank
                     }
 
-                    public @Override void checkServerTrusted(X509Certificate[] chain, String authType) {
+                    @Override
+                    public void checkServerTrusted(X509Certificate[] chain, String authType) {
                         // Intentionally left blank
                     }
                 }
@@ -1653,7 +1656,8 @@ public class HttpRequest {
         BufferedReader reader = bufferedReader();
 
         return new CloseOperation<HttpRequest>(reader, ignoreCloseExceptions) {
-            public @Override HttpRequest run() throws IOException {
+            @Override
+            public HttpRequest run() throws IOException {
                 CharBuffer buffer = CharBuffer.allocate(bufferSize);
                 int read;
                 while ((read = reader.read(buffer)) != -1) {
@@ -1677,7 +1681,8 @@ public class HttpRequest {
         BufferedReader reader = bufferedReader();
 
         return new CloseOperation<HttpRequest>(reader, ignoreCloseExceptions) {
-            public @Override HttpRequest run() {
+            @Override
+            public HttpRequest run() {
                 return copy(reader, writer);
             }
         }.call();
@@ -2278,7 +2283,8 @@ public class HttpRequest {
      */
     protected HttpRequest copy(InputStream input, OutputStream output) {
         return new CloseOperation<HttpRequest>(input, ignoreCloseExceptions) {
-            public @Override HttpRequest run() throws IOException {
+            @Override
+            public HttpRequest run() throws IOException {
                 byte[] buffer = new byte[bufferSize];
                 int read;
                 while ((read = input.read(buffer)) != -1) {
@@ -2301,7 +2307,8 @@ public class HttpRequest {
      */
     protected HttpRequest copy(Reader input, Writer output) {
         return new CloseOperation<HttpRequest>(input, ignoreCloseExceptions) {
-            public @Override HttpRequest run() throws IOException {
+            @Override
+            public HttpRequest run() throws IOException {
                 char[] buffer = new char[bufferSize];
                 int read;
                 while ((read = input.read(buffer)) != -1) {
@@ -2690,7 +2697,8 @@ public class HttpRequest {
         Writer writer = new OutputStreamWriter(output, output.encoder.charset());
 
         return new FlushOperation<HttpRequest>(writer) {
-            protected @Override HttpRequest run() {
+            @Override
+            protected HttpRequest run() {
                 return copy(input, writer);
             }
         }.call();

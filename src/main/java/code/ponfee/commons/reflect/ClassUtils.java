@@ -69,13 +69,15 @@ public final class ClassUtils {
 
         final String[] paramNames = new String[method.getParameterTypes().length];
         classReader.accept(new ClassVisitor(Opcodes.ASM5, new ClassWriter(ClassWriter.COMPUTE_MAXS)) {
-            public @Override MethodVisitor visitMethod(int access, String name, String desc, String sign, String[] ex) {
+            @Override
+            public MethodVisitor visitMethod(int access, String name, String desc, String sign, String[] ex) {
                 if (!name.equals(method.getName()) || !sameType(Type.getArgumentTypes(desc), method.getParameterTypes())) {
                     return super.visitMethod(access, name, desc, sign, ex); // 方法名相同并且参数个数相同
                 }
 
                 return new MethodVisitor(Opcodes.ASM5, cv.visitMethod(access, name, desc, sign, ex)) {
-                    public @Override void visitLocalVariable(String name, String desc, String sign, Label start, Label end, int index) {
+                    @Override
+                    public void visitLocalVariable(String name, String desc, String sign, Label start, Label end, int index) {
                         int i = index;
                         if (!Modifier.isStatic(method.getModifiers())) {
                             i -= 1; // 非静态方法第一个参数是“this”
@@ -296,6 +298,7 @@ public final class ClassUtils {
     // -----------------------------------------------------------------------------new instance
     public static <T> T newInstance(Class<T> type, Object... args) {
         if (args.getClass() != Object[].class) {
+            // newInstance(XXX.class, new String[]{"s1", "s2"});
             return newInstance(type, args.getClass(), args);
         }
 

@@ -172,7 +172,8 @@ public class ECPoint {
         return curve;
     }
 
-    public @Override String toString() {
+    @Override
+    public String toString() {
         return "(" + x.toString() + ", " + y.toString() + ")";
     }
 

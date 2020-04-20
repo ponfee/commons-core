@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,7 +30,7 @@ public final class MessageFormats {
         for (Entry<String, Object> entry : args.entrySet()) {
             text = text.replaceAll(PREFIX + entry.getKey() + SUFFIX, "{" + i++ + "}");
             // toString reason：MessageFormat.format("{0}", 10000) -> 10,000
-            arguments.add(String.valueOf(entry.getValue()));
+            arguments.add(Objects.toString(entry.getValue(), ""));
         }
         return MessageFormat.format(text, arguments.toArray());
     }

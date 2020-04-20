@@ -70,6 +70,8 @@
  *          target_bits：TARGET_MAX/difficulty，创世区块时的difficulty=1
  *          TARGET_MAX=0x00000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
  *
+ *
+ *          https://www.liaoxuefeng.com/article/1124144362997184
  *          ┌─────────────────────────────────────────────┐
  *          │Tx: abcd...1234                              │
  *          ├─────────────────────┬───────────────────────┤

@@ -83,7 +83,7 @@ public class Strings {
         return Arrays.stream(args)
                      .filter(s -> s != null && s.contains("="))
                      .map(s -> s.split("=", 2))
-                     .collect(Collectors.toMap(p -> p[0], p -> p[1]));
+                     .collect(Collectors.toMap(p -> p[0], p -> p[1], (v1, v2) -> v1));
     }
 
     public static String mask(String text, String regex, String replacement) {
@@ -130,7 +130,7 @@ public class Strings {
      * @return
      */
     public static String[] slice(String str, int segment) {
-        int[] array = Numbers.average(str.length(), segment);
+        int[] array = Numbers.slice(str.length(), segment);
         String[] result = new String[array.length];
         for (int j = 0, i = 0; i < array.length; i++) {
             result[i] = str.substring(j, (j += array[i]));

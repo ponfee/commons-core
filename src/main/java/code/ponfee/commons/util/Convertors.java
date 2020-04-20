@@ -22,83 +22,114 @@ import code.ponfee.commons.math.Numbers;
 public enum Convertors {
 
     BOOLEAN(boolean.class) {
-        public @Override <T> T to(Object value) {
-            return (T) (Boolean) Numbers.toBoolean(value);
+        @Override
+        public Boolean to(Object value) {
+            return Numbers.toBoolean(value);
         }
     },
+
     WRAP_BOOLEAN(Boolean.class) {
-        public @Override <T> T to(Object value) {
-            return (T) Numbers.toWrapBoolean(value);
+        @Override
+        public Boolean to(Object value) {
+            return Numbers.toWrapBoolean(value);
         }
     },
+
     BYTE(byte.class) {
-        public @Override <T> T to(Object value) {
-            return (T) (Byte) Numbers.toByte(value);
+        @Override
+        public Byte to(Object value) {
+            return Numbers.toByte(value);
         }
     },
+
     WRAP_BYTE(Byte.class) {
-        public @Override <T> T to(Object value) {
-            return (T) Numbers.toWrapByte(value);
+        @Override
+        public Byte to(Object value) {
+            return Numbers.toWrapByte(value);
         }
     },
+
     SHORT(short.class) {
-        public @Override <T> T to(Object value) {
-            return (T) (Short) Numbers.toShort(value);
+        @Override
+        public Short to(Object value) {
+            return Numbers.toShort(value);
         }
     },
+
     WRAP_SHORT(Short.class) {
-        public @Override <T> T to(Object value) {
-            return (T) Numbers.toWrapShort(value);
+        @Override
+        public Short to(Object value) {
+            return Numbers.toWrapShort(value);
         }
     },
+
     CHAR(char.class) {
-        public @Override <T> T to(Object value) {
-            return (T) (Character) Numbers.toChar(value);
+        @Override
+        public Character to(Object value) {
+            return Numbers.toChar(value);
         }
     },
+
     WRAP_CHAR(Character.class) {
-        public @Override <T> T to(Object value) {
-            return (T) Numbers.toWrapChar(value);
+        @Override
+        public Character to(Object value) {
+            return Numbers.toWrapChar(value);
         }
     },
+
     INT(int.class) {
-        public @Override <T> T to(Object value) {
-            return (T) (Integer) Numbers.toInt(value);
+        @Override
+        public Integer to(Object value) {
+            return Numbers.toInt(value);
         }
     },
+
     WRAP_INT(Integer.class) {
-        public @Override <T> T to(Object value) {
-            return (T) Numbers.toWrapInt(value);
+        @Override
+        public Integer to(Object value) {
+            return Numbers.toWrapInt(value);
         }
     },
+
     LONG(long.class) {
-        public @Override <T> T to(Object value) {
-            return (T) (Long) Numbers.toLong(value);
+        @Override
+        public Long to(Object value) {
+            return Numbers.toLong(value);
         }
     },
+
     WRAP_LONG(Long.class) {
-        public @Override <T> T to(Object value) {
-            return (T) Numbers.toWrapLong(value);
+        @Override
+        public Long to(Object value) {
+            return Numbers.toWrapLong(value);
         }
     },
+
     FLOAT(float.class) {
-        public @Override <T> T to(Object value) {
-            return (T) (Float) Numbers.toFloat(value);
+        @Override
+        public Float to(Object value) {
+            return Numbers.toFloat(value);
         }
     },
+
     WRAP_FLOAT(Float.class) {
-        public @Override <T> T to(Object value) {
-            return (T) Numbers.toWrapFloat(value);
+        @Override
+        public Float to(Object value) {
+            return Numbers.toWrapFloat(value);
         }
     },
+
     DOUBLE(double.class) {
-        public @Override <T> T to(Object value) {
-            return (T) (Double) Numbers.toDouble(value);
+        @Override
+        public Double to(Object value) {
+            return Numbers.toDouble(value);
         }
     },
+
     WRAP_DOUBLE(Double.class) {
-        public @Override <T> T to(Object value) {
-            return (T) Numbers.toWrapDouble(value);
+        @Override
+        public Double to(Object value) {
+            return Numbers.toWrapDouble(value);
         }
     };
 
@@ -115,4 +146,5 @@ public enum Convertors {
     private static class Hide {
         private static final Map<Class<?>, Convertors> MAPPING = new HashMap<>();
     }
+
 }

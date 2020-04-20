@@ -1,7 +1,7 @@
 package code.ponfee.commons.http;
 
 /**
- * The class is http content-type enum
+ * Representing http 'Content-Type' header
  * 
  * @author Ponfee
  */

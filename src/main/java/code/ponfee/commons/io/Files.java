@@ -10,8 +10,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -208,47 +208,26 @@ public final class Files {
     }
 
     // ---------------------------------------------------------------read line
-    public static List<String> readLines(File file) throws FileNotFoundException {
-        return readLines(new FileInputStream(file), null);
-    }
-
     public static List<String> readLines(File file, String charset)
         throws FileNotFoundException {
         return readLines(new FileInputStream(file), charset);
     }
 
-    public static List<String> readLines(InputStream input) {
-        return readLines(input, null);
-    }
-
-    /**
-     * 读取文件全部行数据
-     * 
-     * @param input
-     * @param charset
-     * @return
-     */
     public static List<String> readLines(InputStream input, String charset) {
-        List<String> list = new ArrayList<>();
-        try (Scanner scanner = (charset == null) 
-                               ? new Scanner(input) 
-                               : new Scanner(input, charset)
-        ) {
-            while (scanner.hasNextLine()) {
-                list.add(scanner.nextLine());
-            }
-        }
+        List<String> list = new LinkedList<>();
+        readLines(input, charset, list::add);
         return list;
     }
 
     /**
-     * 读取文件
+     * Read input-stream as text line
+     * 
      * @param input
      * @param charset
      * @param consumer
      */
-    public static void readFile(InputStream input, String charset, 
-                                Consumer<String> consumer) {
+    public static void readLines(InputStream input, String charset, 
+                                 Consumer<String> consumer) {
         try (Scanner scanner = (charset == null)
                                ? new Scanner(input)
                                : new Scanner(input, charset)) {

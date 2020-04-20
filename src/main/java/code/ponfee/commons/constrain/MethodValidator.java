@@ -69,11 +69,11 @@ public abstract class MethodValidator extends FieldValidator {
         }
 
         Method method = ((MethodSignature) pjp.getSignature()).getMethod();
-        String[] argsName = METHOD_ARGSNAME.get(method);
+        String[] argsName = METHOD_ARGSNAME.getIfPresent(method);
         if (argsName == null) {
             // 要用到asm字节码操作，消耗性能，所以缓存
             argsName = ClassUtils.getMethodParamNames(method);
-            METHOD_ARGSNAME.set(method, argsName);
+            METHOD_ARGSNAME.put(method, argsName);
         }
 
         // 校验开始

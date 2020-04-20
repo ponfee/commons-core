@@ -8,20 +8,16 @@ import code.ponfee.commons.util.Bytes;
 
 /**
  * The SHA-1 digest implementation（maximum 2^64 bit length）
- * http://www.oschina.net/translate/keccak-the-new-sha-3-encryption-standard
  * 
  * 异或⊕，同或⊙
  * 同或 = 异或  ^ 1
  * a与b的异或：a ^ b
  * a与b的同或：(a ^ b) ^ 1
  * https://www.cnblogs.com/scu-cjx/p/6878853.html
- * http://www.cnblogs.com/dacainiao/p/5554756.html
  * 
  * 安全性：SHA1所产生的摘要比MD5长32位。若两种散列函数在结构上没有任何问题的话，SHA1比MD5更安全。
- *  速度：两种方法都是主要考虑以32位处理器为基础的系统结构。但SHA1的运算步骤比MD5多了16步，
- *      而且SHA1记录单元的长度比MD5多了32位。因此若是以硬件来实现SHA1，其速度大约比MD5慢了25％。
- * 简易性：两种方法都是相当的简单，在实现上不需要很复杂的程序或是大量存储空间。然而总体上来讲，SHA1对每一步骤的操作描述比MD5简单<p>
- *      与MD5不同的是SHA1的原始报文长度不能超过2的64次方，另外SHA1的明文长度从低位开始填充<p>
+ * 速度：两种方法都是主要考虑以32位处理器为基础的系统结构。但SHA1的运算步骤比MD5多了16步，而且SHA1记录单元的长度比MD5多了32位。因此若是以硬件来实现SHA1，其速度大约比MD5慢了25％。
+ * 简易性：两种方法都是相当的简单，在实现上不需要很复杂的程序或是大量存储空间。然而总体上来讲，SHA1对每一步骤的操作描述比MD5简单与MD5不同的是SHA1的原始报文长度不能超过2的64次方，另外SHA1的明文长度从低位开始填充<p>
  * 
  * 1、按每512bit（64byte）长度进行分组block，可以划分成L份明文分组，我们用Y0,Y1, ...YL-1表示，对于每一个明文分组，都要重复反复的处理
  * 
@@ -115,23 +111,17 @@ public class SHA1Digest {
     /** 填充的边界 */
     private static final int PADDING_BOUNDS = 448 >>> 3; // 56，long=8byte=64bit
 
-    /** 五个链变量A,B,C,D,E */
-    private static final int A = 0x67452301,
-                             B = 0xEFCDAB89,
-                             C = 0x98BADCFE,
-                             D = 0x10325476,
-                             E = 0xC3D2E1F0;
-
     /** 4个常数K */
     private static final int K0 = 0x5A827999,
                              K1 = 0x6ED9EBA1,
                              K2 = 0x8F1BBCDC,
                              K3 = 0xCA62C1D6;
 
+    // ---------------------------------------------fields
     private final  int[]  work = new int[WORK_SIZE];
     private final byte[] block = new byte[BLOCK_SIZE];
 
-    private int a, b, c, d, e, blockOffset;
+    private int H0, H1, H2, H3, H4, blockOffset;
     private long dataByteCount;
 
     private SHA1Digest() {
@@ -139,11 +129,11 @@ public class SHA1Digest {
     }
 
     private SHA1Digest(SHA1Digest d) {
-        this.a = d.a;
-        this.b = d.b;
-        this.c = d.c;
-        this.d = d.d;
-        this.e = d.e;
+        this.H0 = d.H0;
+        this.H1 = d.H1;
+        this.H2 = d.H2;
+        this.H3 = d.H3;
+        this.H4 = d.H4;
 
         System.arraycopy(d.block, 0, this.block, 0, BLOCK_SIZE);
         this.blockOffset = d.blockOffset;
@@ -197,22 +187,19 @@ public class SHA1Digest {
         Arrays.fill(this.block, this.blockOffset, PADDING_BOUNDS, BYTE_ZERO);
 
         long dataLongBitLen = this.dataByteCount << 3; // bitLen=byteCount*8
-
         // dataLongBitLen value to byte array and padding in block tail
-        /*for (int i = 0, j = (Long.BYTES - 1) << 3; i < Long.BYTES; i++, j -= 8) {
+        for (int i = 0, j = (Long.BYTES - 1) << 3; i < Long.BYTES; i++, j -= 8) {
             this.block[PADDING_BOUNDS + i] = (byte) (dataLongBitLen >>> j);
-        }*/
-        byte[] dataLongBytes = Bytes.toBytes(dataLongBitLen); // 8 byte
-        System.arraycopy(dataLongBytes, 0, this.block, PADDING_BOUNDS, dataLongBytes.length);
+        }
 
         this.digestBlock(this.block);
 
         byte[] digest = new byte[DIGEST_SIZE];
-        Bytes.putInt(this.a, digest,  0);
-        Bytes.putInt(this.b, digest,  4);
-        Bytes.putInt(this.c, digest,  8);
-        Bytes.putInt(this.d, digest, 12);
-        Bytes.putInt(this.e, digest, 16);
+        Bytes.putInt(this.H0, digest,  0);
+        Bytes.putInt(this.H1, digest,  4);
+        Bytes.putInt(this.H2, digest,  8);
+        Bytes.putInt(this.H3, digest, 12);
+        Bytes.putInt(this.H4, digest, 16);
 
         this.reset();
 
@@ -220,13 +207,13 @@ public class SHA1Digest {
     }
 
     public void reset() {
-        this.a = A;
-        this.b = B;
-        this.c = C;
-        this.d = D;
-        this.e = E;
+        this.H0 = 0x67452301;
+        this.H1 = 0xEFCDAB89;
+        this.H2 = 0x98BADCFE;
+        this.H3 = 0x10325476;
+        this.H4 = 0xC3D2E1F0;
 
-        this.blockOffset = 0;
+        this.blockOffset   = 0;
         this.dataByteCount = 0;
     }
 
@@ -235,71 +222,54 @@ public class SHA1Digest {
     }
 
     // --------------------------------------------------private methods
-    private void digestBlock(byte[] data) {
+    private void digestBlock(byte[] block) {
         int i = 0;
 
         // sub-block（子明文分组）
         for (int j = 0; i < 16; j += 4) {
-            work[i++] = Bytes.toInt(data, j);
+            work[i++] = Bytes.toInt(block, j);
         }
 
         // ext-block（扩展明文分组）
         for (; i < WORK_SIZE; i++) {
-            work[i] = Maths.rotateLeft(work[i -  3] ^ work[i -  8] 
-                                     ^ work[i - 14] ^ work[i - 16], 1);
+            work[i] = Maths.rotateLeft(work[i - 3] ^ work[i - 8] ^ work[i - 14] ^ work[i - 16], 1);
         }
 
-        int a1 = this.a, b1 = this.b,
-            c1 = this.c, d1 = this.d,
-            e1 = this.e, t = 0, tmp;
+        int A = this.H0, B = this.H1, C = this.H2, D = this.H3, E = this.H4, tmp, t = 0;
 
         // round first
         for (; t < 20; t++) {
-            // 将Kt+Ft(b,c,d)+(a<<5)+e+W[t]的结果赋值给临时变量tmp
-            tmp = K0 + f0(b1, c1, d1) + Maths.rotateLeft(a1, 5) + e1 + work[t];
-            e1 = d1; // 将链接变量d初始值赋值给链接变量e
-            d1 = c1; // 将链接变量c初始值赋值给链接变量d
-            c1 = Maths.rotateLeft(b1, 30); // 将链接变量b初始值循环左移30位赋值给链接变量c
-            b1 = a1; // 将链接变量a初始值赋值给链接变量b
-            a1 = tmp; // tmp赋值给a
+            // temp = Ki + fi(B, C, D) + S5(A) + E + Wt
+            tmp = K0 + f0(B, C, D) + Maths.rotateLeft(A, 5) + E + work[t];
+
+            // E = D; D = C; C = S30(B); B = A; A = temp;
+            E = D; D = C; C = Maths.rotateLeft(B, 30); B = A; A = tmp;
         }
 
         // round second
         for (; t < 40; t++) {
-            tmp = K1 + f1(b1, c1, d1) + Maths.rotateLeft(a1, 5) + e1 + work[t];
-            e1 = d1;
-            d1 = c1;
-            c1 = Maths.rotateLeft(b1, 30);
-            b1 = a1;
-            a1 = tmp;
+            tmp = K1 + f1(B, C, D) + Maths.rotateLeft(A, 5) + E + work[t];
+            E = D; D = C; C = Maths.rotateLeft(B, 30); B = A; A = tmp;
         }
 
         // round third
         for (; t < 60; t++) {
-            tmp = K2 + f2(b1, c1, d1) + Maths.rotateLeft(a1, 5) + e1 + work[t];
-            e1 = d1;
-            d1 = c1;
-            c1 = Maths.rotateLeft(b1, 30);
-            b1 = a1;
-            a1 = tmp;
+            tmp = K2 + f2(B, C, D) + Maths.rotateLeft(A, 5) + E + work[t];
+            E = D; D = C; C = Maths.rotateLeft(B, 30); B = A; A = tmp;
         }
 
         // round fourth
         for (; t < WORK_SIZE; t++) {
-            tmp = K3 + f3(b1, c1, d1) + Maths.rotateLeft(a1, 5) + e1 + work[t];
-            e1 = d1;
-            d1 = c1;
-            c1 = Maths.rotateLeft(b1, 30);
-            b1 = a1;
-            a1 = tmp;
+            tmp = K3 + f3(B, C, D) + Maths.rotateLeft(A, 5) + E + work[t];
+            E = D; D = C; C = Maths.rotateLeft(B, 30); B = A; A = tmp;
         }
 
         // add chain variable
-        this.a += a1;
-        this.b += b1;
-        this.c += c1;
-        this.d += d1;
-        this.e += e1;
+        this.H0 += A;
+        this.H1 += B;
+        this.H2 += C;
+        this.H3 += D;
+        this.H4 += E;
     }
 
     private static int f0(int b, int c, int d) {

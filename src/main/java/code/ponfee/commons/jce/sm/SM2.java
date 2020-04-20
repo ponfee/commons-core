@@ -428,7 +428,8 @@ public final class SM2 {
             return out;
         }
 
-        public @Override String toString() {
+        @Override
+        public String toString() {
             return Base64UrlSafe.encode(toByteArray());
         }
     }

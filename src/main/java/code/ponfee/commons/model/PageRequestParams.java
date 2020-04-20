@@ -5,6 +5,7 @@ import static code.ponfee.commons.model.PageHandler.DEFAULT_OFFSET;
 import static code.ponfee.commons.model.PageHandler.DEFAULT_PAGE_NUM;
 import static code.ponfee.commons.model.PageHandler.DEFAULT_PAGE_SIZE;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ import com.google.common.collect.ImmutableList;
  * 
  * @author Ponfee
  */
-public class PageRequestParams implements TypedPair<String, Object>, java.io.Serializable {
+public class PageRequestParams extends TypedMapRequestParams {
 
     private static final long serialVersionUID = 6176654946390797217L;
 
@@ -33,23 +34,28 @@ public class PageRequestParams implements TypedPair<String, Object>, java.io.Ser
 
     private static final String[] ORDER_DIRECTION = { "ASC", "DESC" };
 
-    private int pageNum = -1;
+    private int pageNum  = -1;
     private int pageSize = -1;
 
-    private int offset = -1;
-    private int limit = -1;
+    private int offset   = -1;
+    private int limit    = -1;
 
-    private String sort = null;
+    private String sort  = null;
 
-    // 包含pageNum、pageSize、offset、limit、sort
-    private final TypedLinkedHashMap<String, Object> params = new TypedLinkedHashMap<>();
-
-    public PageRequestParams() {}
-
-    public PageRequestParams(Map<? extends String, ?> map) {
-        this.params.putAll(map);
+    // -----------------------------------------------------constructors
+    public PageRequestParams() {
+        this(new LinkedHashMap<>());
     }
 
+    public PageRequestParams(int initialCapacity) {
+        this(new LinkedHashMap<>(initialCapacity));
+    }
+
+    public PageRequestParams(Map<String, Object> params) {
+        super(params);
+    }
+
+    // ----------------------------------------------------- methods
     public PageRequestParams searchAll() {
         this.setPageNum(1);
         this.setPageSize(0);
@@ -82,10 +88,6 @@ public class PageRequestParams implements TypedPair<String, Object>, java.io.Ser
                 throw new IllegalArgumentException("Illegal sort param: " + sort);
             }
         }
-    }
-
-    public TypedLinkedHashMap<String, Object> origin() {
-        return this.params;
     }
 
     // ----------------------------------------------page operators
@@ -132,21 +134,6 @@ public class PageRequestParams implements TypedPair<String, Object>, java.io.Ser
     public void setSort(String sort) {
         this.sort = sort;
         this.put(SORT_PARAM, sort);
-    }
-
-    // ----------------------------------------------map operators
-    public Object put(String key, Object value) {
-        return this.params.put(key, value);
-    }
-
-    @Override
-    public Object getValue(String key) {
-        return this.params.get(key);
-    }
-
-    @Override
-    public Object removeKey(String key) {
-        return this.params.remove(key);
     }
 
 }

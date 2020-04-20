@@ -200,7 +200,8 @@ public class ECParameters implements java.io.Serializable {
         this.keyPairGenerator = keyPairGenerator;
     }
 
-    public @Override String toString() {
+    @Override
+    public String toString() {
         return new StringBuilder()
                    .append(name).append(SEPARATOR)
                    .append(Numbers.toHex(p)).append(SEPARATOR)

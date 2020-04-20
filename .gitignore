@@ -24,7 +24,6 @@ nbdist/
 
 # Gradle
 /**/.gradle/
-gradle/
 
 # SBT
 

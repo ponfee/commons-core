@@ -1,23 +1,19 @@
 package code.ponfee.commons.extract;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import code.ponfee.commons.io.BeforeReadInputStream;
-import code.ponfee.commons.io.CharacterEncodingDetector;
 import code.ponfee.commons.io.ByteOrderMarks;
+import code.ponfee.commons.io.CharacterEncodingDetector;
 
 /**
  * Csv file data extractor
@@ -31,9 +27,8 @@ public class CsvExtractor extends DataExtractor {
     private final int startRow; // start with 0
     private final Charset charset;
 
-    protected CsvExtractor(Object dataSource, String[] headers, 
-                           CSVFormat csvFormat, int startRow, 
-                           Charset charset) {
+    protected CsvExtractor(ExtractableDataSource dataSource, String[] headers, 
+                           CSVFormat csvFormat, int startRow, Charset charset) {
         super(dataSource, headers);
         this.withHeader = ArrayUtils.isNotEmpty(headers);
         this.csvFormat = Optional.ofNullable(csvFormat).orElse(CSVFormat.DEFAULT);
@@ -45,9 +40,9 @@ public class CsvExtractor extends DataExtractor {
     }
 
     @Override
-    public void extract(RowProcessor processor) throws IOException {
+    public void extract(BiConsumer<Integer, String[]> processor) throws IOException {
         BeforeReadInputStream bris = new BeforeReadInputStream(
-            asInputStream(), CharacterEncodingDetector.DETECT_COUNT
+            super.dataSource.asInputStream(), CharacterEncodingDetector.DETECT_COUNT
         );
 
         // 检测文件编码
@@ -85,24 +80,13 @@ public class CsvExtractor extends DataExtractor {
                     data[j] = record.get(j);
                 }
                 for (; j < columnSize; j++) {
-                    data[j] = StringUtils.EMPTY;
+                    data[j] = null;
                 }
                 if (isNotEmpty(data)) {
-                    processor.process(i++, data);
+                    processor.accept(i++, data);
                 }
             }
         }
     }
 
-    private InputStream asInputStream() {
-        if (dataSource instanceof File) {
-            try {
-                return new FileInputStream((File) dataSource);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            return (InputStream) dataSource;
-        }
-    }
 }

@@ -22,7 +22,7 @@ import code.ponfee.commons.collect.ByteArrayWrapper;
 import code.ponfee.commons.util.Bytes;
 
 /**
- * 
+ * Build-in data type Serializer
  * 
  * @author Ponfee
  */
@@ -30,120 +30,158 @@ import code.ponfee.commons.util.Bytes;
 public enum Serializers {
 
     BOOLEAN(boolean.class, Boolean.class) {
-        public @Override byte[] toBytes(Object value) {
+        @Override
+        public byte[] toBytes(Object value) {
             return new byte[] { (Boolean) value ? BOOL_TRUE_BYTE : BOOL_FALSE_BYTE };
         }
 
-        public @Override <T> T fromBytes(byte[] value) {
-            return (T) (Boolean) (value[0] != BOOL_FALSE_BYTE);
+        @Override
+        public Boolean fromBytes(byte[] value) {
+            return value[0] != BOOL_FALSE_BYTE;
         }
     },
+
     BYTE(byte.class, Byte.class) {
-        public @Override byte[] toBytes(Object value) {
+        @Override
+        public byte[] toBytes(Object value) {
             return new byte[] { (Byte) value };
         }
 
-        public @Override <T> T fromBytes(byte[] value) {
-            return (T) (Byte) value[0];
+        @Override
+        public Byte fromBytes(byte[] value) {
+            return value[0];
         }
     },
+
     SHORT(short.class, Short.class) {
-        public @Override byte[] toBytes(Object value) {
+        @Override
+        public byte[] toBytes(Object value) {
             return Bytes.toBytes((Short) value);
         }
 
-        public @Override <T> T fromBytes(byte[] value) {
-            return (T) (Short) Bytes.toShort(value);
+        @Override
+        public Short fromBytes(byte[] value) {
+            return Bytes.toShort(value);
         }
     },
+
     CHAR(char.class, Character.class) {
-        public @Override byte[] toBytes(Object value) {
+        @Override
+        public byte[] toBytes(Object value) {
             return Bytes.toBytes((Character) value);
         }
 
-        public @Override <T> T fromBytes(byte[] value) {
-            return (T) (Character) Bytes.toChar(value);
+        @Override
+        public Character fromBytes(byte[] value) {
+            return Bytes.toChar(value);
         }
     },
+
     INT(int.class, Integer.class) {
-        public @Override byte[] toBytes(Object value) {
+        @Override
+        public byte[] toBytes(Object value) {
             return Bytes.toBytes((Integer) value);
         }
 
-        public @Override <T> T fromBytes(byte[] value) {
-            return (T) (Integer) Bytes.toInt(value);
+        @Override
+        public Integer fromBytes(byte[] value) {
+            return Bytes.toInt(value);
         }
     },
+
     LONG(long.class, Long.class) {
-        public @Override byte[] toBytes(Object value) {
+        @Override
+        public byte[] toBytes(Object value) {
             return Bytes.toBytes((Long) value);
         }
 
-        public @Override <T> T fromBytes(byte[] value) {
-            return (T) (Long) Bytes.toLong(value);
+        @Override
+        public Long fromBytes(byte[] value) {
+            return Bytes.toLong(value);
         }
     },
+
     FLOAT(float.class, Float.class) {
-        public @Override byte[] toBytes(Object value) {
+        @Override
+        public byte[] toBytes(Object value) {
             return Bytes.toBytes((Float) value);
         }
 
-        public @Override <T> T fromBytes(byte[] value) {
-            return (T) (Float) Bytes.toFloat(value);
+        @Override
+        public Float fromBytes(byte[] value) {
+            return Bytes.toFloat(value);
         }
     },
+
     DOUBLE(double.class, Double.class) {
-        public @Override byte[] toBytes(Object value) {
+        @Override
+        public byte[] toBytes(Object value) {
             return Bytes.toBytes((Double) value);
         }
 
-        public @Override <T> T fromBytes(byte[] value) {
-            return (T) (Double) Bytes.toDouble(value);
+        @Override
+        public Double fromBytes(byte[] value) {
+            return Bytes.toDouble(value);
         }
     },
+
     PRIMITIVE_BYTES(byte[].class) {
-        public @Override byte[] toBytes(Object value) {
+        @Override
+        public byte[] toBytes(Object value) {
             return (byte[]) value;
         }
 
-        public @Override <T> T fromBytes(byte[] value) {
-            return (T) value;
+        @Override
+        public byte[] fromBytes(byte[] value) {
+            return value;
         }
     },
+
     WRAP_BYTES(Byte[].class) {
-        public @Override byte[] toBytes(Object value) {
+        @Override
+        public byte[] toBytes(Object value) {
             return ArrayUtils.toPrimitive((Byte[]) value);
         }
 
-        public @Override <T> T fromBytes(byte[] value) {
-            return (T) ArrayUtils.toObject(value);
+        @Override
+        public Byte[] fromBytes(byte[] value) {
+            return ArrayUtils.toObject(value);
         }
     },
+
     STRING(String.class) {
-        public @Override byte[] toBytes(Object value) {
+        @Override
+        public byte[] toBytes(Object value) {
             return ((String) value).getBytes(UTF_8);
         }
 
-        public @Override <T> T fromBytes(byte[] value) {
-            return (T) new String(value, UTF_8);
+        @Override
+        public String fromBytes(byte[] value) {
+            return new String(value, UTF_8);
         }
     },
+
     DATE(Date.class) {
-        public @Override byte[] toBytes(Object value) {
+        @Override
+        public byte[] toBytes(Object value) {
             return Bytes.toBytes(((Date) value).getTime());
         }
 
-        public @Override <T> T fromBytes(byte[] value) {
-            return (T) new Date(Bytes.toLong(value));
+        @Override
+        public Date fromBytes(byte[] value) {
+            return new Date(Bytes.toLong(value));
         }
     },
+
     BYTE_ARRAY_WRAP(ByteArrayWrapper.class) {
-        public @Override byte[] toBytes(Object value) {
+        @Override
+        public byte[] toBytes(Object value) {
             return ((ByteArrayWrapper) value).getArray();
         }
 
-        public @Override <T> T fromBytes(byte[] value) {
-            return (T) ByteArrayWrapper.of(value);
+        @Override
+        public ByteArrayWrapper fromBytes(byte[] value) {
+            return ByteArrayWrapper.of(value);
         }
     };
 
@@ -164,4 +202,5 @@ public enum Serializers {
     private static class Hide {
         private static final Map<Class<?>, Serializers> MAPPING = new HashMap<>();
     }
+
 }

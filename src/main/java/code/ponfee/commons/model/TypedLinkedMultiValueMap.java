@@ -11,7 +11,7 @@ import org.springframework.util.LinkedMultiValueMap;
  * 
  * @author Ponfee
  */
-public class TypedLinkedMultiValueMap<K, V> extends LinkedMultiValueMap<K, V> implements TypedPair<K, V> {
+public class TypedLinkedMultiValueMap<K, V> extends LinkedMultiValueMap<K, V> implements TypedDictionary<K, V> {
 
     private static final long serialVersionUID = 4369022038293264189L;
 

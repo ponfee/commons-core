@@ -35,7 +35,8 @@ public class RSAHashCryptor extends AbstractRSACryptor {
      * @param ek
      * @return
      */
-    public @Override byte[] encrypt(byte[] input, int length, Key ek) {
+    @Override
+    public byte[] encrypt(byte[] input, int length, Key ek) {
         RSAKey rsaKey = (RSAKey) ek;
         int keyByteLen = rsaKey.n.bitLength() / 8, count = 1;
         BigInteger exponent = getExponent(rsaKey);
@@ -63,7 +64,8 @@ public class RSAHashCryptor extends AbstractRSACryptor {
         return result;
     }
 
-    public @Override byte[] decrypt(byte[] input, Key dk) {
+    @Override
+    public byte[] decrypt(byte[] input, Key dk) {
         RSAKey rsaKey = (RSAKey) dk;
         int keyByteLen = rsaKey.n.bitLength() / 8, count = 1;
         BigInteger exponent = getExponent(rsaKey);
@@ -88,7 +90,8 @@ public class RSAHashCryptor extends AbstractRSACryptor {
         return result;
     }
 
-    public @Override void encrypt(InputStream input, Key ek, OutputStream output) {
+    @Override
+    public void encrypt(InputStream input, Key ek, OutputStream output) {
         RSAKey rsaKey = (RSAKey) ek;
         int keyByteLen = rsaKey.n.bitLength() / 8, count = 1;
         BigInteger exponent = getExponent(rsaKey);
@@ -122,7 +125,8 @@ public class RSAHashCryptor extends AbstractRSACryptor {
         }
     }
 
-    public @Override void decrypt(InputStream input, Key dk, OutputStream output) {
+    @Override
+    public void decrypt(InputStream input, Key dk, OutputStream output) {
         RSAKey rsaKey = (RSAKey) dk;
         int keyByteLen = rsaKey.n.bitLength() / 8, count = 1;
         BigInteger exponent = getExponent(rsaKey);
@@ -156,11 +160,13 @@ public class RSAHashCryptor extends AbstractRSACryptor {
         }
     }
 
-    public @Override int getOriginBlockSize(RSAKey rsaKey) {
+    @Override
+    public int getOriginBlockSize(RSAKey rsaKey) {
         return 4096;
     }
 
-    public @Override int getCipherBlockSize(RSAKey rsaKey) {
+    @Override
+    public int getCipherBlockSize(RSAKey rsaKey) {
         return this.getOriginBlockSize(rsaKey);
     }
 

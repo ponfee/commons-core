@@ -1,6 +1,13 @@
 package code.ponfee.commons.data.lookup;
 
-import static code.ponfee.commons.util.PropertiesUtils.getString;
+import code.ponfee.commons.base.Initializable;
+import code.ponfee.commons.base.Releasable;
+import code.ponfee.commons.data.DataSources;
+import code.ponfee.commons.data.NamedDataSource;
+import code.ponfee.commons.exception.Throwables;
+import code.ponfee.commons.model.TypedMapWrapper;
+import code.ponfee.commons.util.Strings;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -11,18 +18,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-
-import code.ponfee.commons.base.Initializable;
-import code.ponfee.commons.base.Releasable;
-import code.ponfee.commons.data.DataSources;
-import code.ponfee.commons.data.NamedDataSource;
-import code.ponfee.commons.exception.Throwables;
-import code.ponfee.commons.util.Strings;
-
 /**
  * NamedDataSource array from properties configuration
- * 
+ *
  * @author Ponfee
  */
 public class PropertiedNamedDataSourceArray implements Initializable, Closeable {
@@ -42,14 +40,15 @@ public class PropertiedNamedDataSourceArray implements Initializable, Closeable 
             return matcher.matches() ? matcher.group(1) : null;
         }).filter(Objects::nonNull).collect(Collectors.toList());
 
-        String defaultDsName = getString(props, prefix + "default", names.get(0));
-        String defaultType = getString(props, prefix + "type"); // default datasource type
+        TypedMapWrapper<Object, Object> p = new TypedMapWrapper<>(props);
+        String defaultDsName = p.getString(prefix + "default", names.get(0));
+        String defaultType = p.getString(prefix + "type"); // default datasource type
 
         String dsType;
         List<NamedDataSource> dataSources = new ArrayList<>();
         for (String name : names) {
             // specify "{prefix}.{name}.type" of default "{prefix}.type" for datasource type
-            dsType = getString(props, prefix + name + ".type", defaultType);
+            dsType = p.getString(prefix + name + ".type", defaultType);
             NamedDataSource namedDs = NamedDataSource.of(
                 name, DataSources.createDataSource(dsType, name, props, prefix)
             );

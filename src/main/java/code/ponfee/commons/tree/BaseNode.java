@@ -30,23 +30,25 @@ public class BaseNode<T extends Serializable & Comparable<? super T>, A extends 
 
     private static final long serialVersionUID = -4116799955526185765L;
 
+    // -------------------------------------------------------------------基础信息
     protected final T             nid; // node id
     protected final T             pid; // parent node id
     protected final boolean   enabled; // 状态（业务相关）：false无效；true有效；
     protected final boolean available; // 是否可用（parent.available & this.enabled）
     protected final A          attach; // 附加信息（与业务相关）
 
+    // -------------------------------------------------------------------以ROOT为根的整棵树
     protected int    level; // 节点层级（以根节点为1开始，往下逐级加1）
     protected List<T> path; // 节点路径list<nid>（父节点在前，末尾元素是节点本身的nid）
     protected int   degree; // 节点的度数（子节点数量，叶子节点的度为0）
 
-    // -------------------------------------------------------------------以当前节点做为根的节点树
-    protected int treeDepth;     // 树的深度（叶子节点的树深度为1）
-    protected int treeNodeCount; // 树中节点数量
-    protected int treeMaxDegree; // 树中最大的度数（树中所有节点数目=所有节点度数之和+1）
-    protected int treeLeafCount; // 树中叶子节点数量（叶子节点为1）
-
     protected int leftLeafCount; // 左叶子节点数量（在其左边的所有叶子节点数量：相邻左兄弟节点的左叶子节点个数+该兄弟节点的子节点个数）
+
+    // -------------------------------------------------------------------以当前节点为根的子树
+    protected int     treeDepth; // 树的深度（叶子节点的树深度为1）
+    protected int treeNodeCount; // 树的节点数量
+    protected int treeMaxDegree; // 树中最大的度数（树中所有节点数目=所有节点度数之和+1）
+    protected int treeLeafCount; // 树的叶子节点数量（叶子节点为1）
 
     public BaseNode(T nid, T pid, A attach) {
         this(nid, pid, true, attach);
@@ -74,15 +76,16 @@ public class BaseNode<T extends Serializable & Comparable<? super T>, A extends 
         BaseNode<T, A> node = new BaseNode<>(
             this.nid, this.pid, this.enabled, this.available, this.attach
         );
-        node.level = this.level;
+        node.level  = this.level;
         node.degree = this.degree;
-        node.path = this.path;
+        node.path   = this.path;
 
-        node.treeDepth      = this.treeDepth;
-        node.treeNodeCount  = this.treeNodeCount;
-        node.treeMaxDegree  = this.treeMaxDegree;
+        node.leftLeafCount = this.leftLeafCount;
+
+        node.treeDepth     = this.treeDepth;
+        node.treeNodeCount = this.treeNodeCount;
+        node.treeMaxDegree = this.treeMaxDegree;
         node.treeLeafCount = this.treeLeafCount;
-        node.leftLeafCount  = this.leftLeafCount;
         return node;
     }
 
@@ -121,6 +124,10 @@ public class BaseNode<T extends Serializable & Comparable<? super T>, A extends 
     }
 
     // ----------------------------------------------------
+    public int getLeftLeafCount() {
+        return leftLeafCount;
+    }
+
     public int getTreeDepth() {
         return treeDepth;
     }
@@ -135,10 +142,6 @@ public class BaseNode<T extends Serializable & Comparable<? super T>, A extends 
 
     public int getTreeLeafCount() {
         return treeLeafCount;
-    }
-
-    public int getLeftLeafCount() {
-        return leftLeafCount;
     }
 
 }

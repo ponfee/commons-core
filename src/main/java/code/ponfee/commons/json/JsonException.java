@@ -1,7 +1,7 @@
 package code.ponfee.commons.json;
 
 /**
- * json异常类
+ * The json exception
  * 
  * @author Ponfee
  */

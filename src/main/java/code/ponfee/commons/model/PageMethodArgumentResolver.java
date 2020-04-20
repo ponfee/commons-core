@@ -4,6 +4,7 @@ import static code.ponfee.commons.model.PageHandler.DEFAULT_LIMIT;
 import static code.ponfee.commons.model.PageHandler.DEFAULT_PAGE_SIZE;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.MethodParameter;
@@ -18,15 +19,21 @@ import code.ponfee.commons.math.Numbers;
 import code.ponfee.commons.reflect.Fields;
 
 /**
- * 分页查询方法参数解析
+ * 分页查询方法参数解析，在spring-mvc配置文件中做如下配置
+ *  <mvc:annotation-driven>
+ *    <mvc:argument-resolvers>
+ *      <bean class="code.ponfee.commons.model.PageMethodArgumentResolver" />
+ *    </mvc:argument-resolvers>
+ *  </mvc:annotation-driven>
+ * 
+ * 配置完之后PageMethodArgumentResolver这个spring bean会被注入到RequestMappingHandlerAdapter.argumentResolvers中
  * 
  * https://blog.csdn.net/lqzkcx3/article/details/78794636
  * 
+ * @see org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
  * @see org.springframework.web.method.support.HandlerMethodArgumentResolverComposite
  * @see org.springframework.web.method.annotation.RequestParamMapMethodArgumentResolver
  * @see org.springframework.web.method.annotation.RequestParamMethodArgumentResolver
- * 
- * 被注入到RequestMappingHandlerAdapter中的argumentResolvers字段
  * 
  * @author Ponfee
  */
@@ -48,8 +55,9 @@ public class PageMethodArgumentResolver implements HandlerMethodArgumentResolver
     @Override
     public PageRequestParams resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                              NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-        PageRequestParams page = new PageRequestParams();
-        webRequest.getParameterMap().forEach((key, value) -> {
+        Map<String, String[]> params = webRequest.getParameterMap();
+        PageRequestParams page = new PageRequestParams(params.size());
+        params.forEach((key, value) -> {
             if (PageRequestParams.PAGE_PARAMS.contains(key)) {
                 int value0 = Numbers.toInt(value[0], 0);
                 if (value0 < 1 && SIZE_PARAMS.contains(key)) {
@@ -87,10 +95,5 @@ public class PageMethodArgumentResolver implements HandlerMethodArgumentResolver
 
         return page;
     }
-
-    /*@Target(ElementType.PARAMETER)
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
-    public static @interface PageRequestParam {}*/
 
 }

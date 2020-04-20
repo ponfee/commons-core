@@ -5,6 +5,7 @@ import java.math.MathContext;
 
 /**
  * 包装BigDecimal，用于lamda方法体内计算
+ * 
  * @author Ponfee
  */
 public class WrappedBigDecimal {
@@ -12,38 +13,43 @@ public class WrappedBigDecimal {
     private BigDecimal decimal;
 
     public WrappedBigDecimal(Number num) {
-        decimal = BigDecimal.valueOf(num.doubleValue());
+        this.decimal = BigDecimal.valueOf(num.doubleValue());
     }
 
     public synchronized void add(Number num) {
-        decimal = decimal.add(BigDecimal.valueOf(num.doubleValue()));
+        this.decimal = this.decimal.add(BigDecimal.valueOf(num.doubleValue()));
     }
 
     public synchronized void divide(BigDecimal divisor) {
-        decimal = decimal.divide(divisor);
+        this.decimal = this.decimal.divide(divisor);
     }
 
     public synchronized void remainder(BigDecimal divisor) {
-        decimal = decimal.remainder(divisor);
+        this.decimal = this.decimal.remainder(divisor);
     }
 
     public synchronized void abs(MathContext mc) {
-        decimal = decimal.abs(mc);
+        this.decimal = this.decimal.abs(mc);
     }
 
     public double getDouble() {
-        return decimal.doubleValue();
+        return this.decimal.doubleValue();
     }
 
     public int getInt() {
-        return decimal.intValue();
+        return this.decimal.intValue();
     }
 
     public long getLong() {
-        return decimal.longValue();
+        return this.decimal.longValue();
     }
 
     public float getFloat() {
-        return decimal.floatValue();
+        return this.decimal.floatValue();
     }
+
+    public String toString() {
+        return this.decimal.toString();
+    }
+
 }

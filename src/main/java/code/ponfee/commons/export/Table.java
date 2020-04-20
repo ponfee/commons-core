@@ -63,8 +63,8 @@ public class Table<E> implements Serializable {
 
     public Table(String[] names, Function<E, Object[]> converter) {
         List<BaseNode<Integer, Thead>> list = new ArrayList<>(names.length);
-        for (int i = 1; i <= names.length; i++) {
-            list.add(new BaseNode<>(i, ROOT_PID, new Thead(names[i - 1])));
+        for (int i = 0; i < names.length; i++) {
+            list.add(new BaseNode<>(i + 1, ROOT_PID, new Thead(names[i])));
         }
         this.thead = TreeNodeBuilder.<Integer, Thead> newBuilder(ROOT_PID).build().mount(list).bfsFlat();
         this.converter = converter;

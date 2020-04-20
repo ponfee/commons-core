@@ -14,7 +14,7 @@ import com.alibaba.fastjson.serializer.PropertyFilter;
  *   JSON.toJSONString(map, JsonPropertyFilter.include("a", "b"))
  *   JSON.toJSONString(map, JsonPropertyFilter.exclude("a", "b"))
  *   
- *   Or 
+ *   OR 
  *   
  *   JSON.toJSONString(map, new SimplePropertyPreFilter("a", "b"))
  * }

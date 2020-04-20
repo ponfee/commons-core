@@ -59,15 +59,13 @@ public class MultipletCachedDataSource extends AbstractDataSource implements Dat
         this.strangerDataSources = CacheBuilder.newBuilder()
             .expireAfterAccess(Duration.ofSeconds(expireSeconds))
             .maximumSize(8192)
-            .<String, DataSource> removalListener(
-                notification -> {
-                    try {
-                        Releasable.release(notification.getValue());
-                    } catch (Exception e) {
-                        Throwables.console(e); // ignored
-                    }
+            .removalListener(notification -> {
+                try {
+                    Releasable.release(notification.getValue());
+                } catch (Exception e) {
+                    Throwables.console(e); // ignored
                 }
-            )
+            })
             .build();
     }
 
@@ -142,11 +140,9 @@ public class MultipletCachedDataSource extends AbstractDataSource implements Dat
     @Override
     public DataSource lookupDataSource(String name) {
         DataSource dataSource = this.localDataSources.get(name);
-        if (dataSource != null) {
-            return dataSource;
-        }
-
-        return this.strangerDataSources.getIfPresent(name);
+        return dataSource != null 
+             ? dataSource 
+             : this.strangerDataSources.getIfPresent(name);
     }
 
     // -----------------------------------------------------------------private methods
