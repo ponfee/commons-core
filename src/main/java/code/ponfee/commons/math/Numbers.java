@@ -15,7 +15,11 @@ import com.google.common.primitives.Chars;
 
 /**
  * 数字工具类
- *
+ * 十进制：10
+ * 二进制：0B10
+ * 八进制：010
+ * 十六进制：0X10
+ * 
  * @author Ponfee
  */
 public final class Numbers {

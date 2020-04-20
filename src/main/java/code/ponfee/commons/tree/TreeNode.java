@@ -303,14 +303,12 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
 
                 // 1、统计左叶子节点数量
                 if (i == 0) {
-                    // 最左子节点：左叶子节点个数=父节点的左叶子节点个数
+                    // 是最左子节点：左叶子节点个数=父节点的左叶子节点个数
                     child.leftLeafCount = super.leftLeafCount;
                 } else {
-                    // 若不是最左子节点，则其左叶子节点个数=
-                    // 相邻左兄弟节点的左叶子节点个数+该兄弟节点的子节点个数
+                    // 非最左子节点：左叶子节点个数=相邻左兄弟节点的左叶子节点个数+该兄弟节点的子节点个数
                     TreeNode<T, A> prevSibling = this.children.get(i - 1);
-                    child.leftLeafCount = prevSibling.leftLeafCount 
-                                        + prevSibling.treeLeafCount;
+                    child.leftLeafCount = prevSibling.leftLeafCount + prevSibling.treeLeafCount;
                 }
 
                 // 2、递归

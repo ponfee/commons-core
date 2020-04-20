@@ -185,7 +185,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
         String name = this.getName();
         SXSSFSheet sheet = getSheet(name);
 
-        // 3、判断工作簿是否已创建过行数据
+        // 3、判断工作簿是否已创建过行数据，还没有创建行时sheet.getLastRowNum()返回-1
         CursorRowNumber cursorRow = new CursorRowNumber(Math.max(sheet.getLastRowNum(), 0));
         if (cursorRow.get() > 0) {
             // 创建两行空白行

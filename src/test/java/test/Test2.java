@@ -329,4 +329,13 @@ public class Test2 {
         System.out.println(Long.toBinaryString(Long.MAX_VALUE >>> (63 - 41)));
     }
 
+    @Test
+    public void test27() throws IOException {
+        System.out.println(10);
+        System.out.println(0B010);
+        System.out.println(0010);
+        System.out.println(010);
+        System.out.println(0X010);
+        System.out.println(0E10);
+    }
 }
