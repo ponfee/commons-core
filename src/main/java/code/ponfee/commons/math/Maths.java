@@ -86,6 +86,64 @@ public class Maths {
         return (a == Long.MIN_VALUE) ? Long.MAX_VALUE : (a < 0) ? -a : a;
     }
 
+    /**
+     * Returns square root of specified double value<p>
+     * Use binary search method
+     * 
+     * @param value the value
+     * @return square root
+     */
+    public static strictfp double sqrtBinary(double value) {
+        if (value < 0.0D) {
+            return Double.NaN;
+        }
+        if (value == 0.0D || value == 1.0D) {
+            return value;
+        }
+
+        double start = 0.0D, end = Math.max(value, 1.0D), square, r;
+        while (!isBorderline(r = (start + end) / 2, start, end) && (square = r * r) != value) {
+            if (square > value) end = r; // lower
+            else start = r; // upper
+        }
+
+        return r; // cannot find a more rounded value
+    }
+
+    public static boolean isBorderline(double value, double start, double end) {
+        return value == start || value == end;
+    }
+
+    /**
+     * Returns square root of specified double value<p>
+     * Use newton iteration method: X(n+1)=[X(n)+p/Xn]/2
+     * 
+     * @param value the value
+     * @return square root
+     */
+    public static strictfp double sqrtNewton(double value) {
+        if (value < 0) {
+            return Double.NaN;
+        }
+        if (value == 0.0D || value == 1.0D) {
+            return value;
+        }
+
+        double r = 1.0D;
+        while (r != (r = (r + value / r) / 2)) {
+            // Nothing to do
+        }
+        return r;
+    }
+
+    public static boolean isBorderline(int value, int start, int end) {
+        return value == start || value == end;
+    }
+
+    public static boolean isBorderline(long value, long start, long end) {
+        return value == start || value == end;
+    }
+
     // ------------------------------------------------------------------------int plus/minus
     public static int plus(int a, int b) {
         if (a > 0 && b > 0) {

@@ -8,6 +8,8 @@ import java.util.function.BiFunction;
 
 import com.google.common.base.Preconditions;
 
+import code.ponfee.commons.exception.CheckedException;
+
 /**
  * 异步批量数据中转站
  * 
@@ -49,13 +51,16 @@ public final class AsyncBatchTransmitter<T> {
     }
 
     /**
-     * put one
+     * Puts an element to queue
+     * 
      * @param t
      * @return
      */
     public void put(T t) {
-        if (!this.queue.offer(t)) {
-            throw new RuntimeException("Offer a element to queue failed.");
+        try {
+            this.queue.put(t);
+        } catch (InterruptedException e) {
+            throw new CheckedException(e);
         }
     }
 
@@ -71,9 +76,7 @@ public final class AsyncBatchTransmitter<T> {
         }
 
         for (T t : ts) {
-            if (!this.queue.offer(t)) {
-                throw new RuntimeException("Offer a element to queue failed.");
-            }
+            this.put(t);
         }
     }
 
@@ -88,9 +91,7 @@ public final class AsyncBatchTransmitter<T> {
         }
 
         for (T t : list) {
-            if (!this.queue.offer(t)) {
-                throw new RuntimeException("Offer a element to queue failed.");
-            }
+            this.put(t);
         }
     }
 

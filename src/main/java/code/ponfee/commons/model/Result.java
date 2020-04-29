@@ -9,7 +9,7 @@ import com.google.common.base.Preconditions;
 import code.ponfee.commons.json.Jsons;
 
 /**
- * 返回结果数据结构体封装类
+ * Representing the result-data structure
  * 
  * @see org.springframework.http.ResponseEntity#status(org.springframework.http.HttpStatus)
  * 
@@ -22,7 +22,7 @@ public class Result<T/* extends Serializable*/> implements Serializable {
     public static final Result<Void> SUCCESS = new SuccessResult();
 
     private Integer code; // 状态码
-    private String  msg;  // 返回信息
+    private String   msg; // 返回信息
     private T       data; // 结果数据
 
     // -------------------------------------------constructor methods

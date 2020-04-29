@@ -22,7 +22,7 @@ import code.ponfee.commons.collect.ByteArrayWrapper;
 import code.ponfee.commons.util.Bytes;
 
 /**
- * 
+ * Build-in data type Serializer
  * 
  * @author Ponfee
  */

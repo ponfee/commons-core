@@ -3,7 +3,7 @@ package code.ponfee.commons.model;
 import java.io.Serializable;
 
 /**
- * It a code and message for result
+ * The code and message for {@link Result}
  * 
  * @author Ponfee
  */
@@ -13,13 +13,13 @@ public interface CodeMsg extends Serializable {
 
     String getMsg();
 
-    enum CodeMsgEnum implements CodeMsg {
+    enum SystemExit implements CodeMsg {
         EXIT(0, "EXIT");
 
         private final int code;
         private final String msg;
 
-        CodeMsgEnum(int code, String msg) {
+        SystemExit(int code, String msg) {
             this.code = code;
             this.msg = msg;
         }

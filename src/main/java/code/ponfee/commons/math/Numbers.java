@@ -14,11 +14,13 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.common.primitives.Chars;
 
 /**
- * 数字工具类
+ * Number utility
+ * 
  * 十进制：10
  * 二进制：0B10
  * 八进制：010
  * 十六进制：0X10
+ * 小数点：1e-9
  * 
  * @author Ponfee
  */
@@ -248,7 +250,7 @@ public final class Numbers {
      * @return
      */
     public static String percent(double numerator, double denominator, int scale) {
-        if (denominator == 0) {
+        if (denominator == 0.0D) {
             return "--";
         }
 
@@ -304,6 +306,20 @@ public final class Numbers {
         } else {
             return fmt.format(obj);
         }
+    }
+
+    /**
+     * Returns a string value of double
+     * 
+     * @param d      the double value
+     * @param scale  the scale
+     * @return a string
+     */
+    public static String format(double d, int scale) {
+        NumberFormat nf = NumberFormat.getInstance();
+        nf.setMaximumFractionDigits(scale);
+        nf.setGroupingUsed(false);
+        return nf.format(d);
     }
 
     /**
