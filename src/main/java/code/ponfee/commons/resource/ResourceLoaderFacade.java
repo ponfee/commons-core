@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nonnull;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -53,8 +54,10 @@ public final class ResourceLoaderFacade {
     private static final FileSystemResourceLoader FS_LOADER = new FileSystemResourceLoader();
     private static final WebappResourceLoader    WEB_LOADER = new WebappResourceLoader();
 
-    public static void setServletContext(ServletContext servletContext) {
-        WEB_LOADER.setServletContext(servletContext);
+    public static void setServletContext(@Nonnull ServletContext servletContext) {
+        if (servletContext != null) {
+            WEB_LOADER.setServletContext(servletContext);
+        }
     }
 
     public static Resource getResource(String filePath, Class<?> contextClass) {

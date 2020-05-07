@@ -224,7 +224,7 @@ public class HtmlExporter extends AbstractDataExporter<String> {
     // 复合表头
     private void buildComplexThead(List<FlatNode<Integer, Thead>> flats) {
         html.append("<thead><tr>");
-        int lastLevel = 1, treeMaxDepth = flats.get(0).getTreeDepth() - 1, cellLevel;
+        int lastLevel = 1, treeDepth = flats.get(0).getTreeDepth() - 1, cellLevel;
         for (FlatNode<Integer, Thead> flat : flats.subList(1, flats.size())) {
             cellLevel = flat.getLevel() - 1;
             if (lastLevel < cellLevel) {
@@ -233,9 +233,8 @@ public class HtmlExporter extends AbstractDataExporter<String> {
             }
             html.append("<th");
             if (flat.isLeaf()) { // 叶子节点，跨行
-
-                if (treeMaxDepth - cellLevel > 0) {
-                    html.append(" rowspan=\"").append(treeMaxDepth - cellLevel + 1).append("\"");
+                if (treeDepth - cellLevel > 0) {
+                    html.append(" rowspan=\"").append(treeDepth - cellLevel + 1).append("\"");
                 }
             } else { // 非叶子节点，跨列
                 if (flat.getTreeLeafCount() > 1) {

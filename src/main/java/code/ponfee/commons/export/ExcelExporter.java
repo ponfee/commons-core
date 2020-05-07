@@ -422,7 +422,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
         // 约定非叶子节点不能跨行
         Set<Integer> rows = new HashSet<>();
         int beginCol, endRow, endCol, lastLevel = 1;
-        int cellLevel, treeMaxDepth = root.getTreeDepth() - 1; 
+        int cellLevel, treeDepth = root.getTreeDepth() - 1;
         for (int n = thead.size(), i = 0; i < n; i++) {
             FlatNode<Integer, Thead> flat = thead.get(i);
             cellLevel = flat.getLevel() - 1;
@@ -434,7 +434,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
             beginCol = flat.getLeftLeafCount();
             endCol = beginCol + flat.getTreeLeafCount() - 1;
             if (flat.isLeaf()) {
-                endRow = cursorRow.get() + treeMaxDepth - cellLevel;
+                endRow = cursorRow.get() + treeDepth - cellLevel;
                 sheet.setColumnWidth(beginCol, DEFAULT_WIDTH);
                 //sheet.autoSizeColumn(beginCol); // 设置自动列宽，要在autoSizeColumn前使用trackAllColumnsForAutoSizing()
             } else {
