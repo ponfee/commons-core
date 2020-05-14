@@ -5,6 +5,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.Ordered;
 
 import code.ponfee.commons.exception.CheckedThrowing;
+import code.ponfee.commons.math.Maths;
 
 /**
  * <pre>
@@ -44,7 +45,7 @@ import code.ponfee.commons.exception.CheckedThrowing;
  */
 public abstract class MultipleDataSourceAspect implements Ordered {
 
-    private static final int ORDER = Ordered.LOWEST_PRECEDENCE - 1;
+    private static final int ORDER = Maths.minus(Ordered.LOWEST_PRECEDENCE, 1);
 
     public Object doAround(ProceedingJoinPoint pjp, DataSourceNaming dsn) throws Throwable {
         return MultipleDataSourceAdvisor.around(

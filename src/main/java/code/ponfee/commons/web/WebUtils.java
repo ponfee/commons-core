@@ -236,14 +236,13 @@ public final class WebUtils {
         try (InputStream in = input;
              OutputStream out = resp.getOutputStream()
         ) {
-            long len;
+            streamHeader(resp, -1, filename, charset);
             if (isGzip) {
                 resp.setHeader("Content-Encoding", "gzip");
-                len = GzipProcessor.compress(in, out);
+                GzipProcessor.compress(in, out);
             } else {
-                len = IOUtils.copyLarge(in, out);
+                IOUtils.copyLarge(in, out);
             }
-            respStream(resp, len, filename, charset);
         } catch (IOException e) {
             // cannot happened
             throw new RuntimeException("response input stream occur error", e);
@@ -273,7 +272,7 @@ public final class WebUtils {
     public static void response(HttpServletResponse resp, byte[] data,
                                 String filename, String charset, boolean isGzip) {
         try (OutputStream out = resp.getOutputStream()) {
-            respStream(resp, data.length, filename, charset);
+            streamHeader(resp, data.length, filename, charset);
             if (isGzip) {
                 resp.setHeader("Content-Encoding", "gzip");
                 GzipProcessor.compress(data, out);
@@ -661,14 +660,22 @@ public final class WebUtils {
                : Jsons.toJson(data);
     }
 
-    private static void respStream(HttpServletResponse resp, long size,
-                                   String filename, String charset) {
+    private static void streamHeader(HttpServletResponse resp, long size,
+                                     String filename, String charset) {
         filename = UrlCoder.encodeURIComponent(filename, charset); // others web browse
-        //filename = new String(filename.getBytes(StandardCharsets.UTF_8), 
-        //                      StandardCharsets.ISO_8859_1); // firefox web browse
+        //filename = new String(filename.getBytes(charset), ISO_8859_1); // firefox web browse
+
         resp.setContentType(ContentType.APPLICATION_OCTET_STREAM.value());
-        resp.setHeader("Content-Length", Long.toString(size));
-        resp.setHeader("Content-Disposition", "form-data; name=\"attachment\";filename=\"" + filename + "\"");
+
+        /*if (size > 0) {
+            resp.setHeader("Content-Length", Long.toString(size));
+        }*/
+
+        resp.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+        //resp.setHeader("Content-Disposition", "form-data; name=\"attachment\"; filename=\"" + filename + "\"");
+
+        //resp.setHeader("Set-Cookie", "fileDownload=true; path=/");
+
         resp.setCharacterEncoding(charset);
     }
 
