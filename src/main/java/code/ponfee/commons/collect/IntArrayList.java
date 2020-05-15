@@ -92,12 +92,7 @@ public class IntArrayList extends AbstractArrayList<Integer> {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder(size << 2);
-        builder.append('[').append(array[start]);
-        for (int i = start + 1; i < end; i++) {
-            builder.append(",").append(array[i]);
-        }
-        return builder.append(']').toString();
+        return Arrays.toString(array);
     }
 
     public int[] getArray() {

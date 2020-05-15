@@ -50,7 +50,7 @@ public class ELParser {
             String name = matcher.group(1);
             if (params.containsKey(name)) {
                 // matcher.group() -> matcher.group(0)
-                result = StringUtils.replace(result, matcher.group(), String.valueOf(params.get(name)));
+                result = StringUtils.replace(result, matcher.group(), Objects.toString(params.get(name), ""));
             }
         }
         return result;

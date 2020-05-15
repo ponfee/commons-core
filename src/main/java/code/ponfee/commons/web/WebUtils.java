@@ -1,9 +1,12 @@
 package code.ponfee.commons.web;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.SequenceInputStream;
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -18,6 +21,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import code.ponfee.commons.http.ContentType;
+import code.ponfee.commons.io.ByteOrderMarks;
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.io.GzipProcessor;
 import code.ponfee.commons.json.Jsons;
@@ -217,30 +221,40 @@ public final class WebUtils {
      * @param input    the input stream
      * @param filename the resp attachment filename
      */
-    public static void response(HttpServletResponse resp, 
+    public static void download(HttpServletResponse resp, 
                                 InputStream input, String filename) {
-        response(resp, input, filename, Files.UTF_8, false);
+        download(resp, input, filename, Files.UTF_8, false, false);
     }
 
     /**
-     * Response to input stream
+     * Response as a stream attachment
      * 
      * @param resp      the HttpServletResponse
      * @param input     the input stream
      * @param filename  the resp attachment filename
      * @param charset   the attachment filename encoding
      * @param isGzip    {@code true} to use gzip compress
+     * @param withBom    {@code true} with bom header
      */
-    public static void response(HttpServletResponse resp, InputStream input, 
-                                String filename, String charset, boolean isGzip) {
-        try (InputStream in = input;
-             OutputStream out = resp.getOutputStream()
-        ) {
-            streamHeader(resp, -1, filename, charset);
+    public static void download(HttpServletResponse resp, InputStream input, 
+                                String filename, String charset, 
+                                boolean isGzip, boolean withBom) {
+        try (InputStream in = input; OutputStream out = resp.getOutputStream()) {
+            addStreamHeader(resp, filename, charset);
+
+            byte[] bom = withBom ? ByteOrderMarks.get(Charset.forName(charset)) : null;
             if (isGzip) {
                 resp.setHeader("Content-Encoding", "gzip");
-                GzipProcessor.compress(in, out);
+                if (bom != null) {
+                    InputStream stream = new SequenceInputStream(new ByteArrayInputStream(bom), in);
+                    GzipProcessor.compress(stream, out);
+                } else {
+                    GzipProcessor.compress(in, out);
+                }
             } else {
+                if (bom != null) {
+                    out.write(bom);
+                }
                 IOUtils.copyLarge(in, out);
             }
         } catch (IOException e) {
@@ -249,34 +263,42 @@ public final class WebUtils {
         }
     }
 
-    /**
-     * response to byte array
-     * @param resp     the HttpServletResponse
-     * @param data     the byte array data
-     * @param filename the resp attachment filename
-     */
-    public static void response(HttpServletResponse resp, 
+    public static void download(HttpServletResponse resp, 
                                 byte[] data, String filename) {
-        response(resp, data, filename, Files.UTF_8, false);
+        download(resp, data, filename, Files.UTF_8, false, false);
     }
 
     /**
-     * 响应流数据
+     * Response as a stream attachment
      * 
      * @param resp      the HttpServletResponse
      * @param data      the resp byte array data
      * @param filename  the resp attachment filename
      * @param charset   the attachment filename encoding
      * @param isGzip    {@code true} to use gzip compress
+     * @param withBom    {@code true} with bom header
      */
-    public static void response(HttpServletResponse resp, byte[] data,
-                                String filename, String charset, boolean isGzip) {
+    public static void download(HttpServletResponse resp, byte[] data,
+                                String filename, String charset, 
+                                boolean isGzip, boolean withBom) {
         try (OutputStream out = resp.getOutputStream()) {
-            streamHeader(resp, data.length, filename, charset);
+            addStreamHeader(resp, filename, charset);
+
+            byte[] bom = withBom ? ByteOrderMarks.get(Charset.forName(charset)) : null;
             if (isGzip) {
                 resp.setHeader("Content-Encoding", "gzip");
-                GzipProcessor.compress(data, out);
+                if (bom != null) {
+                    InputStream stream = new SequenceInputStream(
+                        new ByteArrayInputStream(bom), new ByteArrayInputStream(data)
+                    );
+                    GzipProcessor.compress(stream, out);
+                } else {
+                    GzipProcessor.compress(data, out);
+                }
             } else {
+                if (bom != null) {
+                    out.write(bom);
+                }
                 out.write(data);
             }
         } catch (IOException e) {
@@ -660,21 +682,18 @@ public final class WebUtils {
                : Jsons.toJson(data);
     }
 
-    private static void streamHeader(HttpServletResponse resp, long size,
-                                     String filename, String charset) {
+    private static void addStreamHeader(HttpServletResponse resp, String filename, String charset) {
         filename = UrlCoder.encodeURIComponent(filename, charset); // others web browse
         //filename = new String(filename.getBytes(charset), ISO_8859_1); // firefox web browse
 
         resp.setContentType(ContentType.APPLICATION_OCTET_STREAM.value());
 
-        /*if (size > 0) {
-            resp.setHeader("Content-Length", Long.toString(size));
-        }*/
+        //resp.setHeader("Content-Length", Long.toString(length));
 
         resp.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         //resp.setHeader("Content-Disposition", "form-data; name=\"attachment\"; filename=\"" + filename + "\"");
 
-        //resp.setHeader("Set-Cookie", "fileDownload=true; path=/");
+        //resp.setHeader("Set-Cookie", "fileDownload=true; path=/"); // JQuery $.fileDownload plugin
 
         resp.setCharacterEncoding(charset);
     }

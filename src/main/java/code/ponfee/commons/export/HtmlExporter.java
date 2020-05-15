@@ -176,7 +176,6 @@ public class HtmlExporter extends AbstractDataExporter<String> {
     @Override
     public String export() {
         return MessageFormat.format(TEMPLATE, super.getName(), html.toString());
-        //return html.insert(0, "before").append("after").toString();
     }
 
     public String body() {

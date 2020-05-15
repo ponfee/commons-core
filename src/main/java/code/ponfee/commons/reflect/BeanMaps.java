@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.cglib.beans.BeanMap;
@@ -36,7 +37,7 @@ public enum BeanMaps {
             BeanMap beanMap = BeanMap.create(bean);
             Map<String, Object> map = new HashMap<>(beanMap.size());
             for (Object key : beanMap.keySet()) {
-                map.put(String.valueOf(key), beanMap.get(key));
+                map.put(Objects.toString(key, null), beanMap.get(key));
             }
             return map;
         }

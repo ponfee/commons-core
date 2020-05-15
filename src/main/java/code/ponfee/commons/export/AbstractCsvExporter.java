@@ -49,8 +49,8 @@ public abstract class AbstractCsvExporter<T> extends AbstractDataExporter<T> {
         rollingTbody(table, (data, i) -> {
             try {
                 for (int m = data.length - 1, j = 0; j <= m; j++) {
-                    // escapeCsv(String.valueOf(data[j]), csvSeparator);
-                    csv.append(String.valueOf(data[j]));
+                    // escapeCsv(toString(data[j]), csvSeparator);
+                    csv.append(toString(data[j]));
                     if (j < m) {
                         csv.append(csvSeparator);
                     }
@@ -86,8 +86,8 @@ public abstract class AbstractCsvExporter<T> extends AbstractDataExporter<T> {
                     csv.append(csvSeparator);
                 }
                 for (int i = mergeNum; i < n; i++) {
-                    // escapeCsv(String.valueOf((table.getTfoot()[i - mergeNum])), csvSeparator);
-                    csv.append(String.valueOf(table.getTfoot()[i - mergeNum]));
+                    // escapeCsv(toString((table.getTfoot()[i - mergeNum])), csvSeparator);
+                    csv.append(toString(table.getTfoot()[i - mergeNum]));
                     if (i != n - 1) {
                         csv.append(csvSeparator);
                     }
@@ -140,10 +140,12 @@ public abstract class AbstractCsvExporter<T> extends AbstractDataExporter<T> {
         }
         if (StringUtils.contains(text, separator)) {
             //String.format("\"%s\"", text)
-            text = new StringBuilder(text.length() + 2)
-                .append('"').append(text).append('"').toString();
+            text = new StringBuilder(text.length() + 2).append('"').append(text).append('"').toString();
         }
         return text;
     }
 
+    private static String toString(Object value) {
+        return value == null ? "" : value.toString();
+    }
 }

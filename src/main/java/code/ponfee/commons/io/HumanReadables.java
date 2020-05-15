@@ -71,7 +71,7 @@ public enum HumanReadables {
         }
 
         /*int unit = (int) Maths.log(size, this.base);
-        return signed + format(size / Math.pow(this.base, unit)) + " " + this.units[unit];*/
+        return sign + new DecimalFormat(FORMAT).format(size / Math.pow(this.base, unit)) + " " + this.units[unit];*/
 
         int unit = find(size);
         return new StringBuilder(13) // 13 max length like as "-1,023.45 GiB"

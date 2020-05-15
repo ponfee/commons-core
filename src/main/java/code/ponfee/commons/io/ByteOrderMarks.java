@@ -25,6 +25,10 @@ import org.bouncycastle.util.Arrays;
 
 /**
  * <pre>
+ * BOM（byte order mark）是为UTF-16和UTF-32准备的，用于标记字节序（byte order）。
+ * 微软在UTF-8中使用BOM是为了可以把UTF-8和ASCII等编码区分开，不含BOM的UTF-8才是标准形式
+ * http://www.unicode.org/faq/utf_bom.html
+ * 
  * BOM(byte-order mark) Encoding: 
  *   EF BB BF       UTF-8
  *   FF FE          UTF-16 (little-endian)
@@ -48,6 +52,8 @@ public enum ByteOrderMarks {
     UTF_32LE(Charset.forName("UTF-32LE"), (byte) 0xFF, (byte) 0xFE, (byte) 0x00, (byte) 0x00), //
 
     UTF_32BE(Charset.forName("UTF-32BE"), (byte) 0x00, (byte) 0x00, (byte) 0xFE, (byte) 0xFF), //
+
+    //GB_18030(Charset.forName("GB18030") , (byte) 0x84, (byte) 0x31, (byte) 0x95, (byte) 0x33), //
 
     ;
 

@@ -1,5 +1,6 @@
 package code.ponfee.commons.math;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 /**
@@ -41,7 +42,7 @@ public class Maths {
      * @param n shift bit len
      * @return a number of rotate left result
      */
-    public static int rotateLeft(int x, int n) {
+    public static int rotateLeft(int x, @Min(0) @Max(32) int n) {
         return (x << n) | (x >>> (32 - n));
     }
 
@@ -104,7 +105,7 @@ public class Maths {
         double start = 0.0D, end = Math.max(value, 1.0D), square, r;
         while (!isBorderline(r = (start + end) / 2, start, end) && (square = r * r) != value) {
             if (square > value) end = r; // lower
-            else start = r; // upper
+            else              start = r; // upper
         }
 
         return r; // cannot find a more rounded value
@@ -131,7 +132,7 @@ public class Maths {
 
         double r = 1.0D;
         while (r != (r = (r + value / r) / 2)) {
-            // Nothing to do
+            // do nothing
         }
         return r;
     }
