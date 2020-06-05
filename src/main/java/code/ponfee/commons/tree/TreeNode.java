@@ -206,6 +206,45 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         return root;
     }
 
+    // -----------------------------------------------------------getter/setter
+    public List<TreeNode<T, A>> getChildren() {
+        return this.children;
+    }
+
+    // -----------------------------------------------------------comparing by Attach
+    public static <T extends Serializable & Comparable<? super T>, A extends Serializable, O extends Serializable & Comparable<? super O>> 
+        Comparator<? super TreeNode<T, A>> comparing(Function<? super A, ? extends O> keyExtractor) {
+        return comparing(keyExtractor, true);
+    }
+
+    public static <T extends Serializable & Comparable<? super T>, A extends Serializable, O extends Serializable & Comparable<? super O>> 
+        Comparator<? super TreeNode<T, A>> comparing(Function<? super A, ? extends O> keyExtractor, boolean asc) {
+        /*Comparator.nullsLast( // First nullsLast will handle the cases when the "node" objects are null.
+            Comparator.<TreeNode<T, A>, O> comparing(
+                // Second nullsLast will handle the cases when the return value of "keyExtractor.apply(node.attach)" is null.
+                node -> keyExtractor.apply(node.attach), Comparator.nullsLast(Comparators.order(asc)) 
+            )
+        );*/
+
+        // node be null cannot happened
+        return Comparator.comparing(node -> keyExtractor.apply(node.attach), Comparator.nullsLast(Comparators.order(asc)));
+    }
+
+    // -----------------------------------------------------------comparing by Attach then after with TreeNode.nid
+    public static <T extends Serializable & Comparable<? super T>, A extends Serializable, O extends Serializable & Comparable<? super O>> 
+        Comparator<? super TreeNode<T, A>> comparingThenComparingNid(Function<? super A, ? extends O> keyExtractor) {
+        return comparingThenComparingNid(keyExtractor, true);
+    }
+
+    public static <T extends Serializable & Comparable<? super T>, A extends Serializable, O extends Serializable & Comparable<? super O>> 
+        Comparator<? super TreeNode<T, A>> comparingThenComparingNid(Function<? super A, ? extends O> keyExtractor, boolean asc) {
+        return Comparator.<TreeNode<T, A>, O> comparing(
+            n -> keyExtractor.apply(n.attach), Comparator.nullsLast(Comparators.order(asc))
+        ).thenComparing(
+            TreeNode::getNid
+        );
+    }
+
     // -----------------------------------------------------------private methods
     private <E extends BaseNode<T, A>> List<BaseNode<T, A>> prepare(List<E> nodes) {
         List<BaseNode<T, A>> list = Lists.newLinkedList();
@@ -374,45 +413,6 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         } else {
             parent.setChildren(null);
         }
-    }
-
-    // -----------------------------------------------------------getter/setter
-    public List<TreeNode<T, A>> getChildren() {
-        return this.children;
-    }
-
-    // -----------------------------------------------------------comparing by Attach
-    public static <T extends Serializable & Comparable<? super T>, A extends Serializable, O extends Serializable & Comparable<? super O>> 
-        Comparator<? super TreeNode<T, A>> comparing(Function<? super A, ? extends O> keyExtractor) {
-        return comparing(keyExtractor, true);
-    }
-
-    public static <T extends Serializable & Comparable<? super T>, A extends Serializable, O extends Serializable & Comparable<? super O>> 
-        Comparator<? super TreeNode<T, A>> comparing(Function<? super A, ? extends O> keyExtractor, boolean asc) {
-        /*Comparator.nullsLast( // First nullsLast will handle the cases when the "node" objects are null.
-            Comparator.<TreeNode<T, A>, O> comparing(
-                // Second nullsLast will handle the cases when the return value of "keyExtractor.apply(node.attach)" is null.
-                node -> keyExtractor.apply(node.attach), Comparator.nullsLast(Comparators.order(asc)) 
-            )
-        );*/
-
-        // node be null cannot happened
-        return Comparator.comparing(node -> keyExtractor.apply(node.attach), Comparator.nullsLast(Comparators.order(asc)));
-    }
-
-    // -----------------------------------------------------------comparing by Attach then after with TreeNode.nid
-    public static <T extends Serializable & Comparable<? super T>, A extends Serializable, O extends Serializable & Comparable<? super O>> 
-        Comparator<? super TreeNode<T, A>> comparingThenComparingNid(Function<? super A, ? extends O> keyExtractor) {
-        return comparingThenComparingNid(keyExtractor, true);
-    }
-
-    public static <T extends Serializable & Comparable<? super T>, A extends Serializable, O extends Serializable & Comparable<? super O>> 
-        Comparator<? super TreeNode<T, A>> comparingThenComparingNid(Function<? super A, ? extends O> keyExtractor, boolean asc) {
-        return Comparator.<TreeNode<T, A>, O> comparing(
-            n -> keyExtractor.apply(n.attach), Comparator.nullsLast(Comparators.order(asc))
-        ).thenComparing(
-            TreeNode::getNid
-        );
     }
 
     private static <E> LinkedList<E> newLinkedList(E element) {

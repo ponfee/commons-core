@@ -194,7 +194,8 @@ public abstract class AbstractRSACryptor extends Cryptor {
      * This method generates a new key for the cryptosystem.
      * @return the new key generated
      */
-    public @Override final Key generateKey() {
+    @Override
+    public final Key generateKey() {
         return generateKey(2048);
     }
 
@@ -202,7 +203,8 @@ public abstract class AbstractRSACryptor extends Cryptor {
         return new RSAKey(keySize);
     }
 
-    public @Override final String toString() {
+    @Override
+    public final String toString() {
         return this.getClass().getSimpleName();
     }
 
@@ -321,8 +323,8 @@ public abstract class AbstractRSACryptor extends Cryptor {
      * @throws IOException if occur IOException
      * @see code.ponfee.commons.util.Bytes#toBinary(byte...)
      */
-    private static void decodeBlock(byte[] input, int cipherBlockSize, 
-                                    OutputStream out) throws IOException {
+    private static void decodeBlock(byte[] input, int cipherBlockSize, OutputStream out) 
+        throws IOException {
         // BigInteger to byte array will be removed the prefix 0 (one or more) 
         // or added one byte 0 
         // 0x00 [0x01 | 0x02], so signum is definite on [0x01 | 0x02] then 

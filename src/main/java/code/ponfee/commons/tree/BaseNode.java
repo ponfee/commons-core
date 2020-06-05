@@ -76,9 +76,9 @@ public class BaseNode<T extends Serializable & Comparable<? super T>, A extends 
         BaseNode<T, A> node = new BaseNode<>(
             this.nid, this.pid, this.enabled, this.available, this.attach
         );
-        node.level = this.level;
+        node.level  = this.level;
         node.degree = this.degree;
-        node.path = this.path;
+        node.path   = this.path;
 
         node.leftLeafCount = this.leftLeafCount;
 

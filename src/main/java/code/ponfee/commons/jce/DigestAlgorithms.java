@@ -3,6 +3,8 @@ package code.ponfee.commons.jce;
 /**
  * The Digest Algorithms
  * 
+ * https://www.oschina.net/translate/keccak-the-new-sha-3-encryption-standard
+ * 
  * @author Ponfee
  */
 public enum DigestAlgorithms {

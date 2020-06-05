@@ -98,7 +98,8 @@ public class DataExtractorBuilder {
             || CSV_EXTENSION.contains(extension)
         ) {
             // csv, txt文本格式数据
-            return new CsvExtractor(dataSource, headers, csvFormat, startRow, charset);
+            ExtractableDataSource ds = new ExtractableDataSource(dataSource);
+            return new CsvExtractor(ds, headers, csvFormat, startRow, charset);
         } else if (EXCEL_EXTENSION.contains(extension)) {
             // Content-Type
             // xlsx: application/vnd.openxmlformats-officedocument.wordprocessingml.document
@@ -106,12 +107,14 @@ public class DataExtractorBuilder {
             //
             // xls: application/vnd.ms-excel
             //      application/x-xls
+            ExtractableDataSource ds = new ExtractableDataSource(dataSource);
             ExcelType type = Enums.ofIgnoreCase(ExcelType.class, extension);
             return streaming 
-                   ? new StreamingExcelExtractor(dataSource, headers, startRow, type, sheetIndex)
-                   : new ExcelExtractor(dataSource, headers, startRow, type, sheetIndex);
+                   ? new StreamingExcelExtractor(ds, headers, startRow, type, sheetIndex)
+                   : new ExcelExtractor(ds, headers, startRow, type, sheetIndex);
         } else {
             throw new RuntimeException("File content type not supported: " + fileName);
         }
     }
+
 }

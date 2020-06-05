@@ -144,7 +144,10 @@ public final class Numbers {
             return ((Number) obj).longValue();
         }
         try {
-            return Long.parseLong(obj.toString());
+            String val = obj.toString();
+            return val.indexOf('.') == -1 
+                 ? Long.parseLong(val) 
+                 : (long) Double.parseDouble(val);
         } catch (NumberFormatException ignored) {
             return null;
         }
@@ -359,7 +362,7 @@ public final class Numbers {
      * @param segment
      * @return
      */
-    public static int[] average(int quantity, int segment) {
+    public static int[] slice(int quantity, int segment) {
         int[] array = new int[segment];
         int remainder = quantity % segment;
         int quotient = quantity / segment;
@@ -411,6 +414,20 @@ public final class Numbers {
      */
     public static boolean equals(Double a, Double b) {
         return (a == b) || (a != null && a.equals(b));
+    }
+
+    /**
+     * To upper hex string and remove prefix 0
+     *
+     * @param num the BigInteger
+     * @return upper hex string
+     */
+    public static String toHex(BigInteger num) {
+        String hex = Hex.encodeHexString(num.toByteArray(), false);
+        if (hex.matches("^0+$")) {
+            return "0";
+        }
+        return hex.replaceFirst("^0*", "");
     }
 
     // --------------------------------------------------------------------------金额汉化
@@ -491,20 +508,6 @@ public final class Numbers {
             builder.append("整"); // 整数
         }
         return builder.toString();
-    }
-
-    /**
-     * To upper hex string and remove prefix 0
-     *
-     * @param num the BigInteger
-     * @return upper hex string
-     */
-    public static String toHex(BigInteger num) {
-        String hex = Hex.encodeHexString(num.toByteArray(), false);
-        if (hex.matches("^0+$")) {
-            return "0";
-        }
-        return hex.replaceFirst("^0*", "");
     }
 
 }

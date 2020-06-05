@@ -1,10 +1,11 @@
 package code.ponfee.commons.extract;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -19,26 +20,19 @@ import code.ponfee.commons.util.Holder;
  */
 public abstract class DataExtractor {
 
-    protected final Object dataSource;
+    protected final ExtractableDataSource dataSource;
     protected final String[] headers;
     protected volatile boolean end = false;
 
-    protected DataExtractor(Object dataSource, String[] headers) {
-        if (   !(dataSource instanceof File)
-            && !(dataSource instanceof InputStream)
-        ) {
-            throw new IllegalArgumentException(
-                "Datasouce only support such type as File, InputStream"
-            );
-        }
+    protected DataExtractor(ExtractableDataSource dataSource, String[] headers) {
         this.dataSource = dataSource;
         this.headers = headers;
     }
 
-    public abstract void extract(RowProcessor processor) throws IOException;
+    public abstract void extract(BiConsumer<Integer, String[]> processor) throws IOException;
 
     public final List<String[]> extract() throws IOException {
-        List<String[]> list = new ArrayList<>();
+        List<String[]> list = new LinkedList<>();
         this.extract((rowNumber, data) -> list.add(data));
         return list;
     }
@@ -84,17 +78,18 @@ public abstract class DataExtractor {
      * @return
      * @throws IOException
      */
-    public final ValidateResult verify(RowValidator validator) throws IOException {
+    public final ValidateResult verify(BiFunction<Integer, String[], String> validator) 
+        throws IOException {
         ValidateResult result = new ValidateResult();
         this.extract((rowNumber, data) -> {
-            String error = validator.verify(rowNumber, data);
+            String error = validator.apply(rowNumber, data);
             if (StringUtils.isBlank(error)) {
                 result.addData(data);
             } else {
                 result.addError(
                     new StringBuilder(error.length() + 12)
-                        .append("第").append(rowNumber)
-                        .append("行错误：").append(error).toString()
+                        .append("第[").append(rowNumber + 1) // rowNumber start 0
+                        .append("]行错误：").append(error).toString()
                 );
             }
         });

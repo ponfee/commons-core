@@ -6,16 +6,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
-import code.ponfee.commons.io.Closeables;
 import code.ponfee.commons.util.Dates;
 
 /**
@@ -29,9 +28,9 @@ public class ExcelExtractor extends DataExtractor {
 
     protected final ExcelType type;
     protected final int sheetIndex; // start with 0
-    private final int startRow; // start with 0
+    private final int startRow;     // start with 0
 
-    protected ExcelExtractor(Object dataSource, String[] headers, 
+    protected ExcelExtractor(ExtractableDataSource dataSource, String[] headers, 
                              int startRow, ExcelType type, int sheetIndex) {
         super(dataSource, headers);
         this.startRow = startRow;
@@ -40,28 +39,22 @@ public class ExcelExtractor extends DataExtractor {
     }
 
     @Override
-    public final void extract(RowProcessor processor) throws IOException {
-        Workbook workbook = null;
-        try {
-            extract(workbook = createWorkbook(), processor);
-        } finally {
-            Closeables.console(workbook);
-            if (dataSource instanceof InputStream) {
-                Closeables.console((InputStream) dataSource);
-            }
+    public final void extract(BiConsumer<Integer, String[]> processor) throws IOException {
+        try (ExtractableDataSource ds = dataSource; Workbook workbook = createWorkbook(ds)) {
+            extract(workbook, processor);
         }
     }
 
-    protected Workbook createWorkbook() throws IOException {
-        // sheet.getPhysicalNumberOfRows()
-        if (dataSource instanceof File) {
-            return WorkbookFactory.create((File) dataSource);
+    protected Workbook createWorkbook(ExtractableDataSource dataSource) throws IOException {
+        Object ds = dataSource.getDataSource();
+        if (ds instanceof File) {
+            return WorkbookFactory.create((File) ds);
         } else {
-            return WorkbookFactory.create((InputStream) dataSource);
+            return WorkbookFactory.create((InputStream) ds);
         }
     }
 
-    private void extract(Workbook workbook, RowProcessor processor) {
+    private void extract(Workbook workbook, BiConsumer<Integer, String[]> processor) {
         boolean specHeaders; int columnSize;
         if (ArrayUtils.isNotEmpty(headers)) {
             specHeaders = true;
@@ -72,6 +65,7 @@ public class ExcelExtractor extends DataExtractor {
         }
 
         Row row; String[] data;
+        // sheet.getPhysicalNumberOfRows()
         Iterator<Row> iter = workbook.getSheetAt(sheetIndex).iterator();
         for (int i = 0, k = 0, m, j; iter.hasNext(); i++) {
             if (super.end) {
@@ -92,10 +86,10 @@ public class ExcelExtractor extends DataExtractor {
                 data[j] = getStringCellValue(row.getCell(j, RETURN_NULL_AND_BLANK));
             }
             for (; j < columnSize; j++) {
-                data[j] = StringUtils.EMPTY;
+                data[j] = null; // padding
             }
             if (isNotEmpty(data)) {
-                processor.process(k++, data);
+                processor.accept(k++, data);
             }
         }
     }
@@ -106,10 +100,11 @@ public class ExcelExtractor extends DataExtractor {
      * @param cell
      * @return
      */
-    private String getStringCellValue(Cell cell) {
+    private static String getStringCellValue(Cell cell) {
         if (cell == null) {
-            return StringUtils.EMPTY;
+            return null;
         }
+
         switch (cell.getCellType()) {
             case NUMERIC:
                 return getNumericAsString(cell);
@@ -131,14 +126,13 @@ public class ExcelExtractor extends DataExtractor {
                 return "Error: " + Byte.toString(cell.getErrorCellValue());
 
             default:
-                return StringUtils.EMPTY;
+                return cell.getRichStringCellValue().getString();
         }
     }
 
-    private String getNumericAsString(Cell cell) {
-        return DateUtil.isCellDateFormatted(cell)
-             ? Dates.format(cell.getDateCellValue()) 
-             : String.valueOf(cell.getNumericCellValue());
+    private static String getNumericAsString(Cell cell) {
+        return (DateUtil.isCellDateFormatted(cell) || DateUtil.isCellInternalDateFormatted(cell))
+             ? Dates.format(cell.getDateCellValue()) : String.valueOf(cell.getNumericCellValue());
     }
 
     public enum ExcelType {

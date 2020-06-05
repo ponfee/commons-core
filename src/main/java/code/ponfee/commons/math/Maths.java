@@ -187,4 +187,42 @@ public class Maths {
         }
     }
 
+    /**
+     * Returns the greatest common divisor
+     *
+     * @param a the first number
+     * @param b the second number
+     * @return gcd
+     */
+    public static int gcd(int a, int b) {
+        if (a < 0 || b < 0) {
+            throw new ArithmeticException();
+        }
+
+        if (a == 0 || b == 0) {
+            return Math.abs(a - b);
+        }
+
+        for (int c; (c = a % b) != 0;) {
+            a = b;
+            b = c;
+        }
+        return b;
+    }
+
+    /**
+     * Returns the greatest common divisor in array
+     *
+     * @param array the int array
+     * @return gcd
+     */
+    public static int gcd(int[] array) {
+        int result = array[0];
+        for (int i = 1; i < array.length; i++) {
+            result = gcd(result, array[i]);
+        }
+
+        return result;
+    }
+
 }

@@ -130,7 +130,7 @@ public class Strings {
      * @return
      */
     public static String[] slice(String str, int segment) {
-        int[] array = Numbers.average(str.length(), segment);
+        int[] array = Numbers.slice(str.length(), segment);
         String[] result = new String[array.length];
         for (int j = 0, i = 0; i < array.length; i++) {
             result[i] = str.substring(j, (j += array[i]));

@@ -7,6 +7,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.SequenceInputStream;
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -89,6 +91,9 @@ public final class WebUtils {
         }
     }
 
+    private static final List<String> LOCAL_IPS = Arrays.asList(
+        "127.0.0.1", "0:0:0:0:0:0:0:1", "::1"
+    );
     /**
      * 获取客户端ip
      * @param req
@@ -121,10 +126,7 @@ public final class WebUtils {
             ip = ip.substring(0, ip.indexOf(","));
         }
 
-        if (   "127.0.0.1".equals(ip) 
-            || "0:0:0:0:0:0:0:1".equals(ip) 
-            || "::1".equals(ip)
-        ) {
+        if (LOCAL_IPS.contains(ip)) {
             ip = Networks.HOST_IP; // 如果是本机ip
         }
         return ip;
@@ -215,6 +217,27 @@ public final class WebUtils {
         respJson(resp, callback + "(" + toJson(data) + ");", charset);
     }
 
+    public static void download(HttpServletResponse resp,
+                                byte[] data, String filename) {
+        download(resp, data, filename, Files.UTF_8, false, false);
+    }
+
+    /**
+    * Response as a stream attachment
+    * 
+    * @param resp     the HttpServletResponse
+    * @param data     the resp byte array data
+    * @param filename the resp attachment filename
+    * @param charset  the attachment filename encoding
+    * @param isGzip   {@code true} to use gzip compress
+    * @param withBom  {@code true} with bom header
+    */
+    public static void download(HttpServletResponse resp, byte[] data,
+                                String filename, String charset,
+                                boolean isGzip, boolean withBom) {
+        download(resp, new ByteArrayInputStream(data), filename, charset, isGzip, withBom);
+    }
+
     /**
      * response to input stream
      * @param resp     the HttpServletResponse
@@ -229,25 +252,28 @@ public final class WebUtils {
     /**
      * Response as a stream attachment
      * 
-     * @param resp      the HttpServletResponse
-     * @param input     the input stream
-     * @param filename  the resp attachment filename
-     * @param charset   the attachment filename encoding
-     * @param isGzip    {@code true} to use gzip compress
-     * @param withBom    {@code true} with bom header
+     * @param resp     the HttpServletResponse
+     * @param input    the input stream
+     * @param filename the resp attachment filename
+     * @param charset  the attachment filename encoding
+     * @param isGzip   {@code true} to use gzip compress
+     * @param withBom  {@code true} with bom header
      */
     public static void download(HttpServletResponse resp, InputStream input, 
                                 String filename, String charset, 
                                 boolean isGzip, boolean withBom) {
-        try (InputStream in = input; OutputStream out = resp.getOutputStream()) {
+        try (InputStream in = input; 
+             OutputStream out = resp.getOutputStream()
+        ) {
             addStreamHeader(resp, filename, charset);
 
             byte[] bom = withBom ? ByteOrderMarks.get(Charset.forName(charset)) : null;
             if (isGzip) {
                 resp.setHeader("Content-Encoding", "gzip");
                 if (bom != null) {
-                    InputStream stream = new SequenceInputStream(new ByteArrayInputStream(bom), in);
-                    GzipProcessor.compress(stream, out);
+                    GzipProcessor.compress(
+                        new SequenceInputStream(new ByteArrayInputStream(bom), in), out
+                    );
                 } else {
                     GzipProcessor.compress(in, out);
                 }
@@ -263,50 +289,6 @@ public final class WebUtils {
         }
     }
 
-    public static void download(HttpServletResponse resp, 
-                                byte[] data, String filename) {
-        download(resp, data, filename, Files.UTF_8, false, false);
-    }
-
-    /**
-     * Response as a stream attachment
-     * 
-     * @param resp      the HttpServletResponse
-     * @param data      the resp byte array data
-     * @param filename  the resp attachment filename
-     * @param charset   the attachment filename encoding
-     * @param isGzip    {@code true} to use gzip compress
-     * @param withBom    {@code true} with bom header
-     */
-    public static void download(HttpServletResponse resp, byte[] data,
-                                String filename, String charset, 
-                                boolean isGzip, boolean withBom) {
-        try (OutputStream out = resp.getOutputStream()) {
-            addStreamHeader(resp, filename, charset);
-
-            byte[] bom = withBom ? ByteOrderMarks.get(Charset.forName(charset)) : null;
-            if (isGzip) {
-                resp.setHeader("Content-Encoding", "gzip");
-                if (bom != null) {
-                    InputStream stream = new SequenceInputStream(
-                        new ByteArrayInputStream(bom), new ByteArrayInputStream(data)
-                    );
-                    GzipProcessor.compress(stream, out);
-                } else {
-                    GzipProcessor.compress(data, out);
-                }
-            } else {
-                if (bom != null) {
-                    out.write(bom);
-                }
-                out.write(data);
-            }
-        } catch (IOException e) {
-            // cannot happened
-            throw new RuntimeException("response byte array data occur error", e);
-        }
-    }
-
     /**
      * 响应数据流，如图片数据
      * 
@@ -319,18 +301,7 @@ public final class WebUtils {
      */
     public static void response(HttpServletResponse resp, byte[] data,
                                 ContentType contentType, boolean isGzip) {
-        try (OutputStream out = resp.getOutputStream()) {
-            resp.setContentType(contentType.value());
-            if (isGzip) {
-                resp.setHeader("Content-Encoding", "gzip");
-                GzipProcessor.compress(data, out);
-            } else {
-                out.write(data);
-            }
-        } catch (IOException e) {
-            // cannot happened
-            throw new RuntimeException("response byte array data occur error", e);
-        }
+        response(resp, new ByteArrayInputStream(data), contentType, isGzip);
     }
 
     /**
