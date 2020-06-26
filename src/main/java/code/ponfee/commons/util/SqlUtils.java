@@ -6,8 +6,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
-import code.ponfee.commons.util.Strings;
-
 /**
  * Sql utility
  * 

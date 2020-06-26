@@ -9,7 +9,6 @@ import code.ponfee.commons.http.HttpParams;
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.jce.digest.DigestUtils;
 import code.ponfee.commons.json.Jsons;
-import code.ponfee.commons.util.ObjectUtils;
 
 /**
  * 微信工具类：https://www.cnblogs.com/txw1958/p/weixin76-user-info.html

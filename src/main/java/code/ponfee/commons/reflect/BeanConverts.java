@@ -8,8 +8,6 @@ import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableMap;
 
-import code.ponfee.commons.reflect.Fields;
-
 /**
  * Extract bean to array, list and map
  * 
