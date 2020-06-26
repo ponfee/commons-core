@@ -245,55 +245,6 @@
 
 
 
-    <!-- ====================本地jar依赖==================== -->
-    <!-- world to pdf -->
-    <dependency>
-      <groupId>aspose</groupId>
-      <artifactId>words-jdk16</artifactId>
-      <version>1.0</version>
-      <!-- <scope>system</scope>
-      <systemPath>${pom.basedir}/lib/aspose-words-jdk16-1.0.jar</systemPath> -->
-    </dependency>
-
-    <!-- 文件编码探测 -->
-    <dependency>
-      <groupId>antlr</groupId>
-      <artifactId>antlr</artifactId>
-      <version>2.7.7</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sourceforge.jargs</groupId>
-      <artifactId>jargs</artifactId>
-      <version>1.0</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sourceforge.jchardet</groupId>
-      <artifactId>jchardet</artifactId>
-      <version>1.1</version>
-      <!-- https://sourceforge.net/projects/jchardet/
-      <scope>system</scope>
-      <systemPath>${pom.basedir}/lib/jchardet-1.1.jar</systemPath> -->
-    </dependency>
-    <dependency>
-      <groupId>net.sourceforge.cpdetector</groupId>
-      <artifactId>cpdetector</artifactId>
-      <version>1.0.10</version>
-      <!-- https://sourceforge.net/projects/cpdetector/
-      <scope>system</scope>
-      <systemPath>${pom.basedir}/lib/cpdetector-1.0.10.jar</systemPath> -->
-    </dependency>
-
-    <!-- 数字信封 -->
-    <dependency>
-      <groupId>third-jce</groupId>
-      <artifactId>third-jce</artifactId>
-      <version>1.0</version>
-      <!-- <scope>system</scope>
-      <systemPath>${pom.basedir}/lib/third-jce-1.0.jar</systemPath> -->
-    </dependency>
-    <!-- ====================本地jar依赖==================== -->
-
-
     <!-- commons -->
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -649,6 +600,41 @@
       </exclusions>
     </dependency>
     <!-- ====================文件类型处理==================== -->
+
+
+
+    <!-- 文件编码探测（若有jar包无法下载可手动安装：lib/README.md） -->
+    <dependency>
+      <groupId>antlr</groupId>
+      <artifactId>antlr</artifactId>
+      <version>2.7.7</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sourceforge.jargs</groupId>
+      <artifactId>jargs</artifactId>
+      <version>1.0</version>
+      <!-- https://sourceforge.net/projects/jargs/
+      <scope>system</scope>
+      <systemPath>${pom.basedir}/lib/jargs-1.0.jar</systemPath> -->
+    </dependency>
+    <dependency>
+      <groupId>net.sourceforge.jchardet</groupId>
+      <artifactId>jchardet</artifactId>
+      <version>1.0</version>
+      <!-- https://sourceforge.net/projects/jchardet/
+      <scope>system</scope>
+      <systemPath>${pom.basedir}/lib/jchardet-1.0.jar</systemPath> -->
+    </dependency>
+    <dependency>
+      <groupId>net.sourceforge.cpdetector</groupId>
+      <artifactId>cpdetector</artifactId>
+      <version>1.0.7</version>
+      <!-- https://sourceforge.net/projects/cpdetector/
+      <scope>system</scope>
+      <systemPath>${pom.basedir}/lib/cpdetector-1.0.7.jar</systemPath> -->
+    </dependency>
+    <!-- 文件编码探测（若有jar包无法下载可手动安装：lib/README.md） -->
+
 
 
     <!-- ====================加解密==================== -->
