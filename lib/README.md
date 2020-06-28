@@ -1,4 +1,4 @@
-## 本地非标准maven依赖库安装（解决无法传递依赖问题）
+## 若无法从中央仓库下载的jar包可通过以下命令进行本地安装
 
 ## --------------------------------------------------------------------------------install
 ### mvn install:install-file  -Dfile=jargs-1.0.jar         -DgroupId=net.sourceforge.jargs       -DartifactId=jargs       -Dversion=1.0    -Dpackaging=jar
