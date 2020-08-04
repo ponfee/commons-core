@@ -23,8 +23,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import code.ponfee.commons.cache.Cache;
-import code.ponfee.commons.cache.CacheBuilder;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 import code.ponfee.commons.collect.ObjectArrayWrapper;
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.reflect.Fields;
@@ -53,11 +54,9 @@ public class FieldValidator {
     private static final String CFG_ERR = "约束配置错误[";
     private static final String EMPTY = "";
 
-    static final Cache<Method, String[]> METHOD_ARGSNAME =
-        CacheBuilder.<Method, String[]> newBuilder().build();
+    static final Cache<Method, String[]> METHOD_ARGSNAME = CacheBuilder.newBuilder().build();
 
-    private static final Cache<ObjectArrayWrapper<Object>, Pair<Boolean, String>> META_CFG_CACHE =
-        CacheBuilder.<ObjectArrayWrapper<Object>, Pair<Boolean, String>> newBuilder().build();
+    private static final Cache<ObjectArrayWrapper<Object>, Pair<Boolean, String>> META_CFG_CACHE = CacheBuilder.newBuilder().build();
 
     protected FieldValidator() {}
 
@@ -114,7 +113,7 @@ public class FieldValidator {
 
     protected Object handleFailure(Class<?> returnType, String errMsg) {
         if (returnType == Result.class) {
-            return Result.failure(BAD_REQUEST, BAD_REQUEST.getMsg() + ": " + errMsg);
+            return Result.failure(BAD_REQUEST, errMsg);
         } else {
             throw new IllegalArgumentException(errMsg);
         }
@@ -123,17 +122,17 @@ public class FieldValidator {
     protected final String constrain(GenericDeclaration classOrMethod, String field, 
                                      Object value, Constraint cst, Class<?> type) {
         ObjectArrayWrapper<Object> key = ObjectArrayWrapper.of(classOrMethod, field);
-        Pair<Boolean, String> result = META_CFG_CACHE.get(key);
+        Pair<Boolean, String> result = META_CFG_CACHE.getIfPresent(key);
         if (result == null) {
             synchronized (META_CFG_CACHE) {
-                if ((result = META_CFG_CACHE.get(key)) == null) {
+                if ((result = META_CFG_CACHE.getIfPresent(key)) == null) {
                     try {
                         verifyMeta(field, cst, type);
                         result = ImmutablePair.of(true, null);
-                        META_CFG_CACHE.set(key, result);
+                        META_CFG_CACHE.put(key, result);
                     } catch (Exception e) {
                         result = ImmutablePair.of(false, e.getMessage());
-                        META_CFG_CACHE.set(key, result);
+                        META_CFG_CACHE.put(key, result);
                         throw e;
                     }
                 }

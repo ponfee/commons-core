@@ -296,6 +296,7 @@ public final class ClassUtils {
     // -----------------------------------------------------------------------------new instance
     public static <T> T newInstance(Class<T> type, Object... args) {
         if (args.getClass() != Object[].class) {
+            // newInstance(XXX.class, new String[]{"s1", "s2"});
             return newInstance(type, args.getClass(), args);
         }
 

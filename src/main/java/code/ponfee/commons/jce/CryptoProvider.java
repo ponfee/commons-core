@@ -186,7 +186,7 @@ public abstract class CryptoProvider {
      * @param symmetricKey {@link SymmetricCryptor}
      * @return
      */
-    public static CryptoProvider symmetricKeyProvider(final SymmetricCryptor symmetricKey) {
+    public static CryptoProvider symmetricKeyProvider(SymmetricCryptor symmetricKey) {
         // the symmetricKey is thread-safe
         return new CryptoProvider() {
             @Override
@@ -212,9 +212,9 @@ public abstract class CryptoProvider {
      * @param pkcs8PublicKey  the string of pkcs8 public key format
      * @return
      */
-    public static CryptoProvider rsaPublicKeyProvider(final String pkcs8PublicKey) {
+    public static CryptoProvider rsaPublicKeyProvider(String pkcs8PublicKey) {
         return new CryptoProvider() {
-            final RSAPublicKey pubKey = RSAPublicKeys.fromPkcs8(pkcs8PublicKey); // thread-safe
+            RSAPublicKey pubKey = RSAPublicKeys.fromPkcs8(pkcs8PublicKey); // thread-safe
 
             @Override
             public byte[] encrypt(byte[] original) {
@@ -256,7 +256,7 @@ public abstract class CryptoProvider {
      * @param pubKey the pubKey
      * @return a CryptoProvider of RSA 
      */
-    public static CryptoProvider rsaProvider(final RSAPrivateKey priKey, final RSAPublicKey pubKey) {
+    public static CryptoProvider rsaProvider(RSAPrivateKey priKey, RSAPublicKey pubKey) {
         return new CryptoProvider() {
             @Override
             public byte[] encrypt(byte[] original) {
@@ -288,14 +288,14 @@ public abstract class CryptoProvider {
     }
 
     // -----------------------------------------------------------------------SM2
-    public static CryptoProvider sm2PublicKeyProvider(final byte[] publicKey) {
+    public static CryptoProvider sm2PublicKeyProvider(byte[] publicKey) {
         return sm2PublicKeyProvider(ECParameters.SM2_BEST, publicKey);
     }
 
-    public static CryptoProvider sm2PublicKeyProvider(final ECParameters ecParameter, 
-                                                      final byte[] publicKey) {
+    public static CryptoProvider sm2PublicKeyProvider(ECParameters ecParameter, 
+                                                      byte[] publicKey) {
         return new CryptoProvider() {
-            final byte[] publicKey0 = Arrays.copyOf(publicKey, publicKey.length);
+            byte[] publicKey0 = Arrays.copyOf(publicKey, publicKey.length);
 
             @Override
             public byte[] encrypt(byte[] original) {
@@ -314,17 +314,17 @@ public abstract class CryptoProvider {
         };
     }
 
-    public static CryptoProvider sm2PrivateKeyProvider(final byte[] publicKey, 
-                                                       final byte[] privateKey) {
+    public static CryptoProvider sm2PrivateKeyProvider(byte[] publicKey, 
+                                                       byte[] privateKey) {
         return sm2PrivateKeyProvider(ECParameters.SM2_BEST, publicKey, privateKey);
     }
 
-    public static CryptoProvider sm2PrivateKeyProvider(final ECParameters ecParameter,
-                                                       final byte[] publicKey, 
-                                                       final byte[] privateKey) {
+    public static CryptoProvider sm2PrivateKeyProvider(ECParameters ecParameter,
+                                                       byte[] publicKey, 
+                                                       byte[] privateKey) {
         return new CryptoProvider() {
-            final byte[] publicKey0  = Arrays.copyOf(publicKey, publicKey.length);
-            final byte[] privateKey0 = Arrays.copyOf(privateKey, privateKey.length);
+            byte[] publicKey0  = Arrays.copyOf(publicKey, publicKey.length);
+            byte[] privateKey0 = Arrays.copyOf(privateKey, privateKey.length);
 
             @Override
             public byte[] encrypt(byte[] original) {
@@ -351,7 +351,7 @@ public abstract class CryptoProvider {
     // -----------------------------------------------------------------------ECDSASinger
     public static CryptoProvider ecdsaPublicKeyProvider(byte[] publicKey) {
         return new CryptoProvider() {
-            final ECPublicKey publicKey0 = ECDSASigner.decodePublicKey(publicKey);
+            ECPublicKey publicKey0 = ECDSASigner.decodePublicKey(publicKey);
 
             @Override
             public byte[] encrypt(byte[] original) {
@@ -372,8 +372,8 @@ public abstract class CryptoProvider {
 
     public static CryptoProvider ecdsaPrivateKeyProvider(byte[] publicKey, byte[] privateKey) {
         return new CryptoProvider() {
-            final ECPublicKey publicKey0 = ECDSASigner.decodePublicKey(publicKey);
-            final ECPrivateKey privateKey0 = ECDSASigner.decodePrivateKey(privateKey);
+            ECPublicKey publicKey0 = ECDSASigner.decodePublicKey(publicKey);
+            ECPrivateKey privateKey0 = ECDSASigner.decodePrivateKey(privateKey);
 
             @Override
             public byte[] encrypt(byte[] original) {

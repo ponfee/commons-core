@@ -68,7 +68,7 @@ public class ClassUtilsTest {
             String[] argsName = METHOD_ARGSNAME.get(method);
             if (argsName == null) {
                 argsName = ClassUtils.getMethodParamNames(method);
-                METHOD_ARGSNAME.set(method, argsName);
+                METHOD_ARGSNAME.put(method, argsName);
                 System.out.println(Arrays.toString(argsName));
             }
         }

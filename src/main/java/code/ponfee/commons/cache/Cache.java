@@ -18,6 +18,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.google.common.base.Preconditions;
 
 import code.ponfee.commons.base.Releasable;
+import code.ponfee.commons.base.TimestampProvider;
 import code.ponfee.commons.cache.RemovalNotification.RemovalReason;
 import code.ponfee.commons.exception.Throwables;
 import code.ponfee.commons.jce.digest.DigestUtils;
@@ -120,11 +121,11 @@ public class Cache<K, V> {
     }
 
     // ---------------------------------------------------------------cache value
-    public void set(K key) {
-        set(key, null);
+    public void put(K key) {
+        put(key, null);
     }
 
-    public void set(K key, V value) {
+    public void put(K key, V value) {
         long expireTimeMillis;
         if (keepAliveInMillis > 0) {
             expireTimeMillis = now() + keepAliveInMillis;
@@ -132,20 +133,20 @@ public class Cache<K, V> {
             expireTimeMillis = KEEPALIVE_FOREVER;
         }
 
-        set(key, value, expireTimeMillis);
+        put(key, value, expireTimeMillis);
     }
 
-    public void setWithAliveInMillis(K key, V value, int aliveInMillis) {
+    public void putWithAliveInMillis(K key, V value, int aliveInMillis) {
         Preconditions.checkArgument(aliveInMillis > 0);
 
-        set(key, value, now() + aliveInMillis);
+        put(key, value, now() + aliveInMillis);
     }
 
-    public void setWithNull(K key, long expireTimeMillis) {
-        set(key, null, expireTimeMillis);
+    public void putWithNull(K key, long expireTimeMillis) {
+        put(key, null, expireTimeMillis);
     }
 
-    public void set(K key, V value, long expireTimeMillis) {
+    public void put(K key, V value, long expireTimeMillis) {
         Preconditions.checkState(!isDestroy);
 
         if (expireTimeMillis < KEEPALIVE_FOREVER) {

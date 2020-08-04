@@ -1,9 +1,21 @@
 package code.ponfee.commons.data;
 
-import static code.ponfee.commons.util.PropertiesUtils.getBoolean;
-import static code.ponfee.commons.util.PropertiesUtils.getInteger;
-import static code.ponfee.commons.util.PropertiesUtils.getLong;
-import static code.ponfee.commons.util.PropertiesUtils.getString;
+import code.ponfee.commons.model.TypedMapWrapper;
+import code.ponfee.commons.reflect.ClassUtils;
+import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.druid.wall.WallConfig;
+import com.alibaba.druid.wall.WallFilter;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.annotation.Nonnull;
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+import java.util.stream.Collectors;
+
 import static com.alibaba.druid.pool.DruidAbstractDataSource.DEFAULT_INITIAL_SIZE;
 import static com.alibaba.druid.pool.DruidAbstractDataSource.DEFAULT_MAX_ACTIVE_SIZE;
 import static com.alibaba.druid.pool.DruidAbstractDataSource.DEFAULT_MAX_WAIT;
@@ -14,27 +26,9 @@ import static com.alibaba.druid.pool.DruidAbstractDataSource.DEFAULT_TEST_ON_RET
 import static com.alibaba.druid.pool.DruidAbstractDataSource.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
 import static com.alibaba.druid.pool.DruidAbstractDataSource.DEFAULT_WHILE_IDLE;
 
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nonnull;
-import javax.sql.DataSource;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.alibaba.druid.pool.DruidDataSource;
-import com.alibaba.druid.wall.WallConfig;
-import com.alibaba.druid.wall.WallFilter;
-
-import code.ponfee.commons.reflect.ClassUtils;
-
 /**
  * The enum of DataSourceType
- * 
+ *
  * @author Ponfee
  */
 public enum DataSources {
@@ -43,37 +37,38 @@ public enum DataSources {
         @Override
         protected void configDataSource(DataSource dataSource, String dsName, Properties props, String prefix) {
             DruidDataSource ds = (DruidDataSource) dataSource;
+            TypedMapWrapper<Object, Object> p = new TypedMapWrapper<>(props);
 
             // ----------------------------------------------------database special config
             ds.setName(dsName);
-            ds.setDriverClassName(getString(props, prefix + dsName + ".driver-class-name"));
-            ds.setUrl(getString(props, prefix + dsName + ".url"));
-            ds.setUsername(getString(props, prefix + dsName + ".username"));
-            ds.setPassword(getString(props, prefix + dsName + ".password"));
+            ds.setDriverClassName(p.getString(prefix + dsName + ".driver-class-name"));
+            ds.setUrl(p.getString(prefix + dsName + ".url"));
+            ds.setUsername(p.getString(prefix + dsName + ".username"));
+            ds.setPassword(p.getString(prefix + dsName + ".password"));
 
             // ----------------------------------------------------druid pool commons config
-            ds.setMaxActive(getInteger(props, prefix + "maxActive", DEFAULT_MAX_ACTIVE_SIZE));
-            ds.setInitialSize(getInteger(props, prefix + "initialSize", DEFAULT_INITIAL_SIZE));
-            ds.setMinIdle(getInteger(props, prefix + "minIdle", DEFAULT_MIN_IDLE));
-            ds.setMaxWait(getInteger(props, prefix + "maxWait", DEFAULT_MAX_WAIT));
-            ds.setTimeBetweenEvictionRunsMillis(getLong(props, prefix + "timeBetweenEvictionRunsMillis", DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS));
-            ds.setMinEvictableIdleTimeMillis(getLong(props, prefix + "minEvictableIdleTimeMillis", DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS));
-            ds.setValidationQuery(getString(props, prefix + "validationQuery"));
+            ds.setMaxActive(p.getInteger(prefix + "maxActive", DEFAULT_MAX_ACTIVE_SIZE));
+            ds.setInitialSize(p.getInteger(prefix + "initialSize", DEFAULT_INITIAL_SIZE));
+            ds.setMinIdle(p.getInteger(prefix + "minIdle", DEFAULT_MIN_IDLE));
+            ds.setMaxWait(p.getInteger(prefix + "maxWait", DEFAULT_MAX_WAIT));
+            ds.setTimeBetweenEvictionRunsMillis(p.getLong(prefix + "timeBetweenEvictionRunsMillis", DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS));
+            ds.setMinEvictableIdleTimeMillis(p.getLong(prefix + "minEvictableIdleTimeMillis", DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS));
+            ds.setValidationQuery(p.getString(prefix + "validationQuery"));
 
-            ds.setTestWhileIdle(getBoolean(props, prefix + "testWhileIdle", DEFAULT_WHILE_IDLE));
-            ds.setTestOnBorrow(getBoolean(props, prefix + "testOnBorrow", DEFAULT_TEST_ON_BORROW));
-            ds.setTestOnReturn(getBoolean(props, prefix + "testOnReturn", DEFAULT_TEST_ON_RETURN));
-            ds.setPoolPreparedStatements(getBoolean(props, prefix + "poolPreparedStatements", false));
-            ds.setMaxOpenPreparedStatements(getInteger(props, prefix + "maxOpenPreparedStatements", 10));
-            ds.setBreakAfterAcquireFailure(getBoolean(props, prefix + "breakAfterAcquireFailure", false)); // 尝试连接失败后是否中断连接
+            ds.setTestWhileIdle(p.getBoolean(prefix + "testWhileIdle", DEFAULT_WHILE_IDLE));
+            ds.setTestOnBorrow(p.getBoolean(prefix + "testOnBorrow", DEFAULT_TEST_ON_BORROW));
+            ds.setTestOnReturn(p.getBoolean(prefix + "testOnReturn", DEFAULT_TEST_ON_RETURN));
+            ds.setPoolPreparedStatements(p.getBoolean(prefix + "poolPreparedStatements", false));
+            ds.setMaxOpenPreparedStatements(p.getInteger(prefix + "maxOpenPreparedStatements", 10));
+            ds.setBreakAfterAcquireFailure(p.getBoolean(prefix + "breakAfterAcquireFailure", false)); // 尝试连接失败后是否中断连接
 
-            ds.setRemoveAbandoned(getBoolean(props, prefix + "removeAbandoned", false));
-            ds.setRemoveAbandonedTimeoutMillis(getInteger(props, prefix + "removeAbandonedTimeoutMillis", 300000));
-            ds.setLogAbandoned(getBoolean(props, prefix + "logAbandoned", false));
+            ds.setRemoveAbandoned(p.getBoolean(prefix + "removeAbandoned", false));
+            ds.setRemoveAbandonedTimeoutMillis(p.getInteger(prefix + "removeAbandonedTimeoutMillis", 300000));
+            ds.setLogAbandoned(p.getBoolean(prefix + "logAbandoned", false));
 
             // filters and monitor
             try {
-                String filters = getString(props, prefix + "filters");
+                String filters = p.getString(prefix + "filters");
                 if (StringUtils.isNotBlank(filters)) {
                     filters = filters.trim();
                     boolean force = false;
@@ -97,7 +92,7 @@ public enum DataSources {
             } catch (SQLException e) {
                 throw new IllegalArgumentException(e);
             }
-            ds.setConnectionProperties(getString(props, prefix + "connectionProperties"));
+            ds.setConnectionProperties(p.getString(prefix + "connectionProperties"));
         }
     };
 
@@ -144,7 +139,7 @@ public enum DataSources {
         return createDataSource(datasourceClass, dsName, props, prefix);
     }
 
-    public static DataSource createDataSource(Class<? extends DataSource> typeClass, String dsName, 
+    public static DataSource createDataSource(Class<? extends DataSource> typeClass, String dsName,
                                               Properties props, @Nonnull String prefix) {
         DataSources dataSources = of(typeClass);
         if (dataSources == null) {

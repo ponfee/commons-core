@@ -170,7 +170,7 @@ public final class Networks {
      * Check the port is available
      *
      * @param port 待测试端口
-     * @return if @code true} is available, else unavailable
+     * @return if @{code true} is available, else unavailable
      */
     public static boolean isAvailablePort(int port) {
         try (ServerSocket ss = new ServerSocket(port)){

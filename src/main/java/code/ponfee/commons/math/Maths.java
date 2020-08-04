@@ -80,6 +80,7 @@ public class Maths {
     }
 
     public static int abs(int a) {
+        // Integer.MIN_VALUE & 0x7FFFFFFF = 0
         return (a == Integer.MIN_VALUE) ? Integer.MAX_VALUE : (a < 0) ? -a : a;
     }
 

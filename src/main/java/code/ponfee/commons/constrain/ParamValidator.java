@@ -52,10 +52,10 @@ public abstract class ParamValidator extends FieldValidator {
             MethodSignature mSign = (MethodSignature) joinPoint.getSignature();
             method = joinPoint.getTarget().getClass()
                               .getMethod(mSign.getName(), mSign.getParameterTypes());
-            argsName = METHOD_ARGSNAME.get(method);
+            argsName = METHOD_ARGSNAME.getIfPresent(method);
             if (argsName == null) {
                 argsName = ClassUtils.getMethodParamNames(method);
-                METHOD_ARGSNAME.set(method, argsName);
+                METHOD_ARGSNAME.put(method, argsName);
             }
 
             // 方法参数注解校验

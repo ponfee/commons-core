@@ -90,7 +90,7 @@ public final class PaginationHtmlBuilder {
     }
 
     public PaginationHtmlBuilder params(PageRequestParams pageParams) {
-        return this.params(pageParams.origin());
+        return this.params(pageParams.params());
     }
 
     public PaginationHtmlBuilder foot(String foot) {

@@ -9,7 +9,7 @@ import java.util.Map;
  * @param <K>
  * @param <V>
  */
-public interface TypedMap<K, V> extends Map<K, V>, TypedPair<K, V> {
+public interface TypedMap<K, V> extends Map<K, V>, TypedDictionary<K, V> {
 
     default V getValue(K key) {
         return this.get(key);

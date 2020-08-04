@@ -19,7 +19,7 @@ public final class SqlUtils {
         }
 
         //sql = sql.replaceAll("\\s{2,}", " ");
-        int start = 0, end, n = end = (sql.length() - 1);
+        int start = 0, end = (sql.length() - 1), n = end;
 
         while (start < n && isBlank(sql.charAt(start))) {
             start++;

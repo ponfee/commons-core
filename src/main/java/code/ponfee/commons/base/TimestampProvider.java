@@ -1,4 +1,4 @@
-package code.ponfee.commons.cache;
+package code.ponfee.commons.base;
 
 /**
  * 时间戳服务提供

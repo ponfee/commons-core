@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import code.ponfee.commons.util.WrappedFastDateFormat;
 
 /**
- * The TypeReference holder
+ * The Jackson Date Deserializer, based {@link WrappedFastDateFormat}
  *  
  * @author Ponfee
  */

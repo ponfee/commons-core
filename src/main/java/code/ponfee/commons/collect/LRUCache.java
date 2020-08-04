@@ -1,4 +1,4 @@
-package code.ponfee.commons.cache;
+package code.ponfee.commons.collect;
 
 import java.util.LinkedHashMap;
 import java.util.concurrent.locks.Lock;
@@ -18,20 +18,20 @@ public class LRUCache<K, V> extends LinkedHashMap<K, V> {
 
     private final Lock lock = new ReentrantLock();
 
-    private volatile int maxCapacity;
+    private volatile int maxSize;
 
     public LRUCache() {
-        this(1024); // default maximum capacity 1024
+        this(1024); // default maximum size 1024
     }
 
     public LRUCache(int maxCapacity) {
         super(16, 0.75f, true); // default initial capacity 16
-        this.maxCapacity = maxCapacity;
+        this.maxSize = maxCapacity;
     }
 
     @Override
     protected boolean removeEldestEntry(java.util.Map.Entry<K, V> eldest) {
-        return size() > maxCapacity;
+        return this.size() > maxSize;
     }
 
     @Override
@@ -94,12 +94,12 @@ public class LRUCache<K, V> extends LinkedHashMap<K, V> {
         }
     }
 
-    public int getMaxCapacity() {
-        return maxCapacity;
+    public int getMaxSize() {
+        return maxSize;
     }
 
-    public void setMaxCapacity(int maxCapacity) {
-        this.maxCapacity = maxCapacity;
+    public void setMaxSize(int maxSize) {
+        this.maxSize = maxSize;
     }
 
 }

@@ -83,7 +83,7 @@ public class Strings {
         return Arrays.stream(args)
                      .filter(s -> s != null && s.contains("="))
                      .map(s -> s.split("=", 2))
-                     .collect(Collectors.toMap(p -> p[0], p -> p[1]));
+                     .collect(Collectors.toMap(p -> p[0], p -> p[1], (v1, v2) -> v1));
     }
 
     public static String mask(String text, String regex, String replacement) {

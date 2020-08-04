@@ -7,14 +7,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nonnull;
-
 /**
- * Wrapped the {@link Map} for with gets typed value trait 
- * 
- * @author Ponfee
+ * Wrapped the {@link Map} for with gets typed value trait
+ *
  * @param <K>
  * @param <V>
+ * @author Ponfee
  */
 public class TypedMapWrapper<K, V> implements TypedMap<K, V>, Serializable, Cloneable {
 
@@ -22,8 +20,8 @@ public class TypedMapWrapper<K, V> implements TypedMap<K, V>, Serializable, Clon
 
     private final Map<K, V> target;
 
-    public TypedMapWrapper(@Nonnull Map<K, V> otherMap) {
-        this.target = otherMap;
+    public TypedMapWrapper(Map<K, V> otherMap) {
+        this.target = otherMap == null ? Collections.emptyMap() : otherMap;
     }
 
     @Override
@@ -113,7 +111,7 @@ public class TypedMapWrapper<K, V> implements TypedMap<K, V>, Serializable, Clon
     }
 
     public static <K, V> TypedMapWrapper<K, V> empty() {
-        return new TypedMapWrapper<>(Collections.emptyMap());
+        return new TypedMapWrapper<>(null);
     }
 
 }

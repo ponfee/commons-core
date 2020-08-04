@@ -1,13 +1,13 @@
 package code.ponfee.commons.model;
 
 /**
- * Get the value with typed for pair key-value
+ * Get the value with typed for dictionary key-value
  * 
  * @author Ponfee
  * @param <K>
  * @param <V>
  */
-public interface TypedPair<K, V> {
+public interface TypedDictionary<K, V> {
 
     V getValue(K key);
 
