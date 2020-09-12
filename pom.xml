@@ -10,16 +10,13 @@
   <packaging>jar</packaging>
 
   <!-- 
-    mvn package -Dmaven.test.skip=true：不执行测试用例，也不编译测试用例类；
-    mvn package -DskipTests：跳过单元测试，但是会继续编译；
-    mvn clean install -Dmaven.test.skip=true -Dhadoop.version=2.7.7 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true
-    mvn -N io.takari:maven:wrapper -Dmaven=3.6.3
-
-    https://www.jianshu.com/p/88da01804d3c
-    mvn versions:set -DnewVersion=1.17-SNAPSHOT
-
-    https://github.com/alibaba/p3c
-    sonar:https://www.jianshu.com/p/68a3ed571314
+    > 不编译也不执行单元测试类：mvn package -Dmaven.test.skip=true
+    > 编译但不会执行单元测试类：mvn package -DskipTests
+    > 指定参数：mvn clean install -Dmaven.test.skip=true -Dhadoop.version=2.7.7 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true
+    > 安装Maven Wrapper：mvn -N io.takari:maven:wrapper -Dmaven=3.6.3
+    > Alibaba P3C手册：https://github.com/alibaba/p3c
+    > sonar参考文章：https://www.jianshu.com/p/68a3ed571314
+    > 项目版本号批量修改插件文章：https://www.jianshu.com/p/88da01804d3c，mvn versions:set -DnewVersion=1.17-SNAPSHOT
 
     javac: 不加“-g”则默认为“-g:source,lines”
       -g                     生成所有调试信息
