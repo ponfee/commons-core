@@ -435,16 +435,6 @@ public final class WebUtils {
     }
 
     /**
-     * 获取请求头参数
-     * @param request
-     * @param name
-     * @return
-     */
-    public static String getHeader(HttpServletRequest request, String name) {
-        return request.getHeader(name);
-    }
-
-    /**
      * 设置cookie
      * @param response
      * @param name
@@ -487,23 +477,13 @@ public final class WebUtils {
     }
 
     /**
-     * 设置响应头
-     * @param response
-     * @param name
-     * @param value
-     */
-    public static void addHeader(HttpServletResponse response, String name, String value) {
-        response.addHeader(name, value);
-    }
-
-    /**
      * 会话跟踪
      */
     public static void setSessionTrace(HttpServletResponse response, String token) {
         int maxAge = (token == null) ? 0 : 86400;
         //result.setAuthToken(token); // to response body
         WebUtils.addCookie(response, AUTH_COOKIE, token, COOKIE_ROOT_PATH, maxAge); // to cookie
-        WebUtils.addHeader(response, AUTH_HEADER, token); // to header
+        response.addHeader(AUTH_HEADER, token); // to header
     }
 
     /**
@@ -520,7 +500,7 @@ public final class WebUtils {
             return authToken;
         }
 
-        return WebUtils.getHeader(request, AUTH_HEADER); // from header;
+        return request.getHeader(AUTH_HEADER); // from header;
     }
 
     public static String getContextPath(ServletContext context) {

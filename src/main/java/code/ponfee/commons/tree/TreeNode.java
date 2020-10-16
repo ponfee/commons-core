@@ -8,29 +8,20 @@
 
 package code.ponfee.commons.tree;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nonnull;
-
-import org.apache.commons.collections4.CollectionUtils;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-
 import code.ponfee.commons.collect.Collects;
 import code.ponfee.commons.collect.Comparators;
 import code.ponfee.commons.reflect.Fields;
 import code.ponfee.commons.util.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import org.apache.commons.collections4.CollectionUtils;
+
+import javax.annotation.Nonnull;
+import java.io.Serializable;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Tree node structure
@@ -390,7 +381,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
             throw new RuntimeException("Node circular dependencies: " + parentPath + " -> " + nid);
         }*/
 
-        ImmutableList.Builder<T> builder = ImmutableList.builder();
+        ImmutableList.Builder<T> builder = ImmutableList.builderWithExpectedSize(parentPath.size() + 1);
         // root node uncontains null parent
         if (parentPath != null) {
             builder.addAll(parentPath);

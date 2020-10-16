@@ -1,35 +1,23 @@
 package code.ponfee.commons.http;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nonnull;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import com.fasterxml.jackson.databind.JavaType;
-import com.google.common.base.Preconditions;
-
 import code.ponfee.commons.io.Closeables;
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.util.Enums;
+import com.fasterxml.jackson.databind.JavaType;
+import com.google.common.base.Preconditions;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.annotation.Nonnull;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <pre>
@@ -175,11 +163,11 @@ public final class Http {
     /**
      * 发送到服务器的查询字符串或json串：name1=value1&name2=value2
      * 
-     * @param params the http params
+     * @param data the http body payload data
      * @return a reference to this object
      */
-    public Http data(Map<String, ?> params) {
-        return data(params, Files.UTF_8);
+    public Http data(Map<String, ?> data) {
+        return data(data, Files.UTF_8);
     }
 
     /**
@@ -187,12 +175,12 @@ public final class Http {
      * 
      * application/x-www-form-urlencoded
      * 
-     * @param params the http params
+     * @param data the http body payload data
      * @param charset the charset
      * @return a reference to this object
      */
-    public Http data(Map<String, ?> params, String charset) {
-        return data(HttpParams.buildParams(params, charset));
+    public Http data(Map<String, ?> data, String charset) {
+        return data(HttpParams.buildParams(data, charset));
     }
 
     /**
@@ -202,7 +190,7 @@ public final class Http {
      * @return a reference to this object
      */
     public Http data(String data) {
-        Preconditions.checkState(this.data == null, "http data are already set.");
+        Preconditions.checkState(this.data == null, "data are already set.");
         Preconditions.checkArgument(data != null && data.length() != 0, "data cannot be empty.");
         this.data = data;
         return this;
