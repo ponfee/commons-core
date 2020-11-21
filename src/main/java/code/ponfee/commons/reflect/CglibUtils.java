@@ -35,8 +35,7 @@ public class CglibUtils {
         BeanCopier copier = COPIER_CACHE.get(beanKey);
         if (copier == null) {
             synchronized (COPIER_CACHE) {
-                copier = COPIER_CACHE.get(beanKey);
-                if (copier == null) {
+                if ((copier = COPIER_CACHE.get(beanKey)) == null) {
                     copier = BeanCopier.create(sclass, tclass, false);
                     COPIER_CACHE.put(beanKey, copier);
                 }

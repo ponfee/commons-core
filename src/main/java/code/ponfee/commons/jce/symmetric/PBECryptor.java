@@ -59,7 +59,8 @@ public class PBECryptor extends SymmetricCryptor {
         return ((PBEParameterSpec) parameter).getIterationCount();
     }
 
-    public @Override byte[] getParameterAsBytes() {
+    @Override
+    public byte[] getParameterAsBytes() {
         throw new UnsupportedOperationException();
     }
 }

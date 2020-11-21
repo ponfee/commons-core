@@ -223,17 +223,17 @@ public final class ThreadPoolExecutors {
             this.delegate = delegate;
         }
 
-        @Override
+        @Override @Deprecated
         public void shutdown() {
             throw new UnsupportedOperationException();
         }
 
-        @Override
+        @Override @Deprecated
         public List<Runnable> shutdownNow() {
             throw new UnsupportedOperationException();
         }
 
-        @Override
+        @Override @Deprecated
         public boolean awaitTermination(long timeout, TimeUnit unit) {
             throw new UnsupportedOperationException();
         }

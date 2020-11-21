@@ -88,7 +88,7 @@ public class BeforeReadInputStream extends InputStream {
         this.offset = this.limit;
     }
 
-    @Override
+    @Override @Deprecated
     public synchronized void mark(int readlimit) {
         throw new UnsupportedOperationException("mark/reset not supported");
     }

@@ -22,7 +22,8 @@ public final class RegexUtils {
     private static final LoadingCache<String, Pattern> PATTERNS =
     CacheBuilder.newBuilder().softValues().build(
         new CacheLoader<String, Pattern>() {
-            public @Override Pattern load(String pattern) {
+            @Override
+            public Pattern load(String pattern) {
                 return Pattern.compile(pattern/*, Pattern.CASE_INSENSITIVE*/);
             }
         }

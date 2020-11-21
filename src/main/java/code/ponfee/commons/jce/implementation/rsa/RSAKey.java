@@ -90,7 +90,8 @@ public class RSAKey implements Key {
         this.coeff = null;
     }
 
-    public @Override boolean isPublic() {
+    @Override
+    public boolean isPublic() {
         return !secret;
     }
 
@@ -101,13 +102,15 @@ public class RSAKey implements Key {
     /**
      * get the public key
      */
-    public @Override RSAKey getPublic() {
+    @Override
+    public RSAKey getPublic() {
         return new RSAKey(n, e);
     }
 
     // Secret: (secret, n, e, d, p, q, pe, qe, coeff)
     // Public: (secret, n, e)
-    public @Override void writeKey(OutputStream out) throws IOException {
+    @Override
+    public void writeKey(OutputStream out) throws IOException {
         DerOutputStream der = new DerOutputStream();
         der.putInteger(this.secret ? 0 : 1);
         der.putInteger(this.n);
@@ -127,7 +130,8 @@ public class RSAKey implements Key {
 
     // Secret: (secret, n, e, d, p, q, pe, qe, coeff)
     // Public: (secret, n, e)
-    public @Override RSAKey readKey(InputStream in) throws IOException {
+    @Override
+    public RSAKey readKey(InputStream in) throws IOException {
         DerValue der = new DerInputStream(IOUtils.toByteArray(in)).getDerValue();
         if (der.getTag() != 48) {
             throw new IOException("Not a SEQUENCE");

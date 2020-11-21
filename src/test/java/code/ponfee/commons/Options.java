@@ -1,4 +1,4 @@
-package test;
+package code.ponfee.commons;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -20,7 +20,6 @@ public class Options {
     public static final Type<Double> DOUBLE = new Type<>();
     public static final Type<Float> FLOAT = new Type<>();
     public static final Type<String> STRING = new Type<>();
-//    public static final Type<String> STRING_X = null;
 
     private final Map<String, Object> options = new HashMap<>();
 

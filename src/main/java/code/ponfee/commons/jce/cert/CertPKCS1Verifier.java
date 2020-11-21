@@ -30,7 +30,8 @@ public class CertPKCS1Verifier extends CertSignedVerifier {
         this.signedInfos.add(signed);
     }
 
-    public @Override void verifySigned() {
+    @Override
+    public void verifySigned() {
         String subjectCN = null;
         Signature sign = Providers.getSignature(this.subjects[0].getSigAlgName());
         try {

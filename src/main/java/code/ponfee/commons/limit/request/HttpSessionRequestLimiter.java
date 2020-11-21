@@ -31,16 +31,16 @@ public class HttpSessionRequestLimiter extends RequestLimiter {
      * 
      * @deprecated
      */
-    @Deprecated
-    @Override public HttpSessionRequestLimiter limitFrequency(String key, int period, String message)
+    @Override @Deprecated
+    public HttpSessionRequestLimiter limitFrequency(String key, int period, String message)
         throws RequestLimitException {
         checkLimit(CHECK_FREQ_KEY + key, period, 1, message);
         return this;
         //throw new UnsupportedOperationException();
     }
 
-    @Deprecated
-    @Override public HttpSessionRequestLimiter limitThreshold(String key, int period, 
+    @Override @Deprecated
+    public HttpSessionRequestLimiter limitThreshold(String key, int period, 
                                                               int limit, String message) 
         throws RequestLimitException {
         checkLimit(CHECK_THRE_KEY + key, period, limit, message);
@@ -49,12 +49,14 @@ public class HttpSessionRequestLimiter extends RequestLimiter {
     }
 
     // ---------------------------------------------------------------------cache sms code
-    @Override public void cacheCode(String key, String code, int ttl) {
+    @Override
+    public void cacheCode(String key, String code, int ttl) {
         add(CACHE_CODE_KEY + key, code, ttl);
         remove(CHECK_CODE_KEY + key);
     }
 
-    @Override public HttpSessionRequestLimiter checkCode(String key, String code, int limit)
+    @Override
+    public HttpSessionRequestLimiter checkCode(String key, String code, int limit)
         throws RequestLimitException {
         if (StringUtils.isEmpty(code)) {
             throw new RequestLimitException("验证码不能为空！");
@@ -88,11 +90,13 @@ public class HttpSessionRequestLimiter extends RequestLimiter {
     }
 
     // ---------------------------------------------------------------------cache captcha
-    @Override public void cacheCaptcha(String key, String captcha, int expire) {
+    @Override
+    public void cacheCaptcha(String key, String captcha, int expire) {
         add(CACHE_CAPTCHA_KEY + key, captcha, expire);
     }
 
-    @Override public boolean checkCaptcha(String key, String captcha, boolean caseSensitive) {
+    @Override
+    public boolean checkCaptcha(String key, String captcha, boolean caseSensitive) {
         CacheValue<String> value = getAndRemove(CACHE_CAPTCHA_KEY + key);
 
         if (value == null || value.get() == null) {
@@ -111,19 +115,19 @@ public class HttpSessionRequestLimiter extends RequestLimiter {
      * 
      * @deprecated
      */
-    @Deprecated
-    @Override public void recordAction(String key, int period) {
+    @Override @Deprecated
+    public void recordAction(String key, int period) {
         incrementAndGet(TRACE_ACTION_KEY + key, expire(period));
     }
 
-    @Deprecated
-    @Override public long countAction(String key) {
+    @Override @Deprecated
+    public long countAction(String key) {
         CacheValue<Void> cache = get(TRACE_ACTION_KEY + key);
         return cache == null ? 0 : cache.count();
     }
 
-    @Deprecated
-    @Override public void resetAction(String key) {
+    @Override @Deprecated
+    public void resetAction(String key) {
         remove(TRACE_ACTION_KEY + key);
     }
 

@@ -185,7 +185,8 @@ public class EllipticCurve {
         return this.psr2;
     }
 
-    public @Override String toString() {
+    @Override
+    public String toString() {
         if (name == null || name.length() == 0) {
             return "y^2 = x^3 + " + a + "x + " + b + " ( mod " + p + " )";
         } else {
@@ -193,7 +194,8 @@ public class EllipticCurve {
         }
     }
 
-    public @Override boolean equals(Object obj) {
+    @Override
+    public boolean equals(Object obj) {
         if (!(obj instanceof EllipticCurve)) {
             return false;
         }

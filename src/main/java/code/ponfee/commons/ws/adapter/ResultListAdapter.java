@@ -39,8 +39,8 @@ public abstract class ResultListAdapter<T> extends XmlAdapter<Result<ArrayItem<T
         return v.copy(list);
     }
 
-    @SuppressWarnings("unchecked")
-    public @Override Result<ArrayItem<T>> marshal(Result<List<T>> v) {
+    @Override @SuppressWarnings("unchecked")
+    public Result<ArrayItem<T>> marshal(Result<List<T>> v) {
         if (v.getData() == null) {
             return v.copy(null);
         }

@@ -41,7 +41,8 @@ public class ECKey implements Key {
         this.beta.fastCache();
     }
 
-    public @Override String toString() {
+    @Override
+    public String toString() {
         String str = "";
         if (secret) {
             str = "Private key: " + dk + ", ";
@@ -49,11 +50,13 @@ public class ECKey implements Key {
         return str + "Public key: " + beta + ", Curve: " + curve;
     }
 
-    public @Override boolean isPublic() {
+    @Override
+    public boolean isPublic() {
         return !secret;
     }
 
-    public @Override void writeKey(OutputStream out) throws IOException {
+    @Override
+    public void writeKey(OutputStream out) throws IOException {
         DataOutputStream output = new DataOutputStream(out);
         this.curve.writeCurve(output);
         output.writeBoolean(this.secret);
@@ -67,7 +70,8 @@ public class ECKey implements Key {
         output.write(beta0);
     }
 
-    public @Override Key readKey(InputStream in) throws IOException {
+    @Override
+    public Key readKey(InputStream in) throws IOException {
         DataInputStream input = new DataInputStream(in);
         ECKey key = new ECKey(new EllipticCurve(input));
         key.secret = input.readBoolean();
@@ -85,7 +89,8 @@ public class ECKey implements Key {
     /**
      * get the public key
      */
-    public @Override Key getPublic() {
+    @Override
+    public Key getPublic() {
         if (!this.secret) {
             return this;
         }
