@@ -27,7 +27,7 @@ public class TestPdfSign {
         Stamp stamp2 = new Stamp(2, 150, 250);
         Stamp stamp3 = new Stamp(3, 300, 250);
 
-        byte[] pdf = IOUtils.toByteArray(ResourceLoaderFacade.getResource("ElasticSearch.pdf").getStream());
+        byte[] pdf = IOUtils.toByteArray(ResourceLoaderFacade.getResource("SM3密码杂凑算法.pdf").getStream());
 
         byte[] result = PdfSignature.sign(pdf, new Stamp[] { stamp1, stamp2, stamp3 }, signer);
         Files.write(result, new File("d:/test/123.pdf"));

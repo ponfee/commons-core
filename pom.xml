@@ -64,7 +64,7 @@
     <slf4j.version>1.7.30</slf4j.version>
     <log4j2.version>2.13.3</log4j2.version><!-- Java 9 Modular: 2.13.0[2.8.2] -->
     <bouncycastle.version>1.65</bouncycastle.version><!-- Java 9 Modular: 1.64[1.60] -->
-    <jackson.version>2.11.0</jackson.version><!-- Java 9 Modular: 2.10.1[2.9.10] -->
+    <jackson.version>2.11.3</jackson.version><!-- Java 9 Modular: 2.11.3[2.9.10] -->
   </properties>
 
   <profiles>

@@ -3,11 +3,11 @@ package code.ponfee.commons.util;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Currency;
+import java.util.stream.LongStream;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
- * 多币种货币类，处理货币算术、币种和取整。与国内站点统一使用的<code>com.iwallet.biz.common.util.money.Money</code>类进行严格区分。
  *
  * <p>
  * 货币类中封装了货币金额和币种。目前金额在内部是long类型表示，
@@ -115,7 +115,7 @@ public class Money implements Serializable, Comparable<Money>, Cloneable {
         return new Money(currency, amount);
     }
 
-    // -------------------------------------------------------------------------------------get methods
+    // -------------------------------------------------------------------------------------getter/setter methods
     /**
      * 获取本货币对象代表的币种。
      *
@@ -130,6 +130,15 @@ public class Money implements Serializable, Comparable<Money>, Cloneable {
     }
 
     /**
+     * Set amount
+     *
+     * @param amount the amount
+     */
+    public void setAmount(long amount) {
+        this.amount = amount;
+    }
+
+    /**
      * 获取本货币币种的元/分换算比率。
      *
      * @return 本货币币种的元/分换算比率。
@@ -139,6 +148,15 @@ public class Money implements Serializable, Comparable<Money>, Cloneable {
         return MINOR_FACTORS[currency.getDefaultFractionDigits()];
     }
 
+    /**
+     * 取得本货币对象的币种代码。
+     * @return        币种代码
+     */
+    public String getCurrencyCode() {
+        return this.currency.getCurrencyCode();
+    }
+
+    // -------------------------------------------------------------------------------------to methods
     /**
      * 获取本货币对象代表的金额数。
      *
@@ -153,7 +171,7 @@ public class Money implements Serializable, Comparable<Money>, Cloneable {
      *
      * @return 金额值字符串，以元为单位（比如：USD$1.23将返回1.23）。
      */
-    public String toMajorAmountString() {
+    public String toMajorString() {
         return toMajorAmount().toString();
     }
 
@@ -194,6 +212,9 @@ public class Money implements Serializable, Comparable<Money>, Cloneable {
      * @return <code>true</code>表示相等，<code>false</code>表示不相等。
      */
     public boolean equals(Money other) {
+        if (other == null) {
+            return false;
+        }
         return currency.equals(other.currency) && (amount == other.amount);
     }
 
@@ -217,6 +238,15 @@ public class Money implements Serializable, Comparable<Money>, Cloneable {
     @Override
     public Money clone() {
         return new Money(this.currency, this.amount);
+    }
+
+    /**
+     * 转为字段串
+     *
+     * @return 转为字段串，如：$1.23
+     */
+    public String toString() {
+        return Currencys.of(this.currency).currencySymbol() + toMajorAmount().toString();
     }
 
     /**
@@ -531,33 +561,32 @@ public class Money implements Serializable, Comparable<Money>, Cloneable {
         return this;
     }
 
+    // -------------------------------------------------------------------------------------slice
     /**
      * 货币分配。
      *
      * <p>
-     * 将本货币对象尽可能平均分配成<code>targets</code>份。
+     * 将本货币对象尽可能平均分配成<code>segment</code>份。
      * 如果不能平均分配尽，则将零头放到开始的若干份中。分配
      * 运算能够确保不会丢失金额零头。
      *
-     * @param targets 待分配的份数
+     * @param segment 待分配的份数
      *
      * @return 货币对象数组，数组的长度与分配份数相同，数组元素
      *         从大到小排列，所有货币对象的金额最多只相差1分。
      */
-    public Money[] allocate(int targets) {
-        Money[] results = new Money[targets];
+    public Money[] slice(int segment) {
+        Money[] results = new Money[segment];
 
-        Money lowResult = copy(amount / targets);
-        Money highResult = copy(lowResult.amount + 1);
-
-        int remainder = (int) amount % targets;
+        long low = amount / segment, hight = low + 1;
+        int remainder = (int) amount % segment;
 
         for (int i = 0; i < remainder; i++) {
-            results[i] = highResult;
+            results[i] = copy(hight);
         }
 
-        for (int i = remainder; i < targets; i++) {
-            results[i] = lowResult;
+        for (int i = remainder; i < segment; i++) {
+            results[i] = copy(low);
         }
 
         return results;
@@ -575,17 +604,11 @@ public class Money implements Serializable, Comparable<Money>, Cloneable {
      *
      * @return 货币对象数组，数组的长度与分配比例数组的长度相同。
      */
-    public Money[] allocate(long[] ratios) {
+    public Money[] slice(long[] ratios) {
         Money[] results = new Money[ratios.length];
 
-        long total = 0;
-
-        for (int i = 0; i < ratios.length; i++) {
-            total += ratios[i];
-        }
-
+        long total = LongStream.of(ratios).sum();
         long remainder = amount;
-
         for (int i = 0; i < results.length; i++) {
             results[i] = copy((amount * ratios[i]) / total);
             remainder -= results[i].amount;
@@ -596,23 +619,6 @@ public class Money implements Serializable, Comparable<Money>, Cloneable {
         }
 
         return results;
-    }
-
-    /**
-     * Set amount
-     *
-     * @param amount the amount
-     */
-    public void setAmount(long amount) {
-        this.amount = amount;
-    }
-
-    /**
-     * 取得本货币对象的币种代码。
-     * @return        币种代码
-     */
-    public String getCurrencyCode() {
-        return this.currency.getCurrencyCode();
     }
 
     // -------------------------------------------------------------------------------------private methods
@@ -649,15 +655,7 @@ public class Money implements Serializable, Comparable<Money>, Cloneable {
      * 对BigDecimal型的值按指定取整方式取整。
      *
      * @param val 待取整的BigDecimal值
-     * @param roundingMode 取整方式有以下值：
-     *                          BigDecimal.ROUND_UP
-     *                          BigDecimal.ROUND_DOWN
-     *                          BigDecimal.ROUND_CEILING
-     *                          BigDecimal.ROUND_FLOOR
-     *                          BigDecimal.ROUND_HALF_UP
-     *                          BigDecimal.ROUND_HALF_DOWN
-     *                          BigDecimal.ROUND_HALF_EVEN （银行家舍入法）
-     *                          BigDecimal.ROUND_UNNECESSARY
+     * @param roundingMode 取整方式
      *
      * @return 取整后的long型值
      */
