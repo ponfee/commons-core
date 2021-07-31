@@ -1,13 +1,5 @@
 package code.ponfee.commons.mybatis;
 
-import static code.ponfee.commons.util.ObjectUtils.typeOf;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiFunction;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.ibatis.builder.StaticSqlSource;
 import org.apache.ibatis.exceptions.TooManyResultsException;
@@ -19,13 +11,26 @@ import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiFunction;
+
+import static code.ponfee.commons.util.ObjectUtils.typeOf;
+
 /**
+ * <pre>
  * MyBatis执行sql工具，在写SQL的时候建议使用参数形式的可以是${}或#{}
- *
  * 不建议将参数直接拼到字符串中，当大量这么使用的时候由于缓存MappedStatement而占用更多的内存
- *
  * https://gitee.com/free/Mybatis_Utils/tree/master/SqlMapper
- * 
+ *
+ * Mybatis-generator、通用Mapper、Mybatis-Plus对比：
+ *   https://www.jianshu.com/p/7be6da536f8f
+ *   https://blog.csdn.net/m0_37524586/article/details/88351833
+ *
+ * </pre>
+ *
  * @author liuzh
  * @since 2015-03-10
  */
@@ -53,7 +58,7 @@ public class SqlMapper {
      * @return
      */
     public Map<String, Object> selectOne(String sql) {
-        return getOne(selectList(sql));
+        return asSingleItem(selectList(sql));
     }
 
     /**
@@ -64,7 +69,7 @@ public class SqlMapper {
      * @return
      */
     public Map<String, Object> selectOne(String sql, Object param) {
-        return getOne(selectList(sql, param));
+        return asSingleItem(selectList(sql, param));
     }
 
     /**
@@ -75,7 +80,7 @@ public class SqlMapper {
      * @return
      */
     public <T> T selectOne(String sql, Class<T> resultType) {
-        return getOne(selectList(sql, resultType));
+        return asSingleItem(selectList(sql, resultType));
     }
 
     /**
@@ -87,7 +92,7 @@ public class SqlMapper {
      * @return
      */
     public <T> T selectOne(String sql, Object param, Class<T> resultType) {
-        return getOne(selectList(sql, param, resultType));
+        return asSingleItem(selectList(sql, param, resultType));
     }
 
     /**
@@ -247,7 +252,7 @@ public class SqlMapper {
      * @param <T>  泛型类型
      * @return
      */
-    private <T> T getOne(List<T> list) {
+    private <T> T asSingleItem(List<T> list) {
         int rowSize = list == null ? 0 : list.size();
         if (rowSize > 1) {
             throw new TooManyResultsException("Expected one row (or null) to be returned by selectOne(), but found: " + list.size());

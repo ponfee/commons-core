@@ -1,18 +1,20 @@
 package code.ponfee.commons.jce.implementation.digest;
 
-import static code.ponfee.commons.math.Numbers.BYTE_ZERO;
-
-import java.util.Arrays;
 import code.ponfee.commons.math.Maths;
 import code.ponfee.commons.util.Bytes;
 
+import java.util.Arrays;
+
+import static code.ponfee.commons.math.Numbers.BYTE_ZERO;
+
 /**
+ * <pre>
  * The SHA-1 digest implementation（maximum 2^64 bit length）
  * 
- * 异或⊕，同或⊙
- * 同或 = 异或  ^ 1
- * a与b的异或：a ^ b
- * a与b的同或：(a ^ b) ^ 1
+ * 异或⊕：(A ^ B)
+ * 同或⊙：(A ^ B ^ 1)  or  !(A ^ B)
+ * A ≡ A ⊕ K ⊕ K
+ *
  * https://www.cnblogs.com/scu-cjx/p/6878853.html
  * 
  * 安全性：SHA1所产生的摘要比MD5长32位。若两种散列函数在结构上没有任何问题的话，SHA1比MD5更安全。
@@ -95,7 +97,8 @@ import code.ponfee.commons.util.Bytes;
  *   sh->d′+=d; sh->e′+=e; 
  * 
  * 10、最后一个分组处理完成后，最终得到的a,b,c,d,e即为160位的消息摘要
- * 
+ * </pre>
+ *
  * @author Ponfee
  */
 public class SHA1Digest {

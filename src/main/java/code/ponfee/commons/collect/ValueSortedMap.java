@@ -21,9 +21,9 @@ import java.util.function.Function;
  * 
  * 
  * Also use like this {@code
- *    Map<String, Integer>     originMap = ImmutableMap.of("b", 2, "a", 1);
- *    TreeMap<String, Integer> sortedMap = new TreeMap<>(Comparator.comparing(originMap::get));
- *    sortedMap.putAll(originMap);
+ *    Map<String, Integer> originMap = ImmutableMap.of("b", 2, "a", 1);
+ *    TreeMap<String, Integer> sortedByValueMap = new TreeMap<>(Comparator.comparing(originMap::get));
+ *    sortedByValueMap.putAll(originMap);
  * }
  * 
  * @author Ponfee

@@ -1,23 +1,26 @@
 package test.concurrent;
 
+import code.ponfee.commons.concurrent.AsyncBatchTransmitter;
+import org.junit.Assert;
+
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.junit.Assert;
-
-import code.ponfee.commons.concurrent.AsyncBatchTransmitter;
 
 public class TestBatchTransmitter {
 
     public static void main(String[] args) throws InterruptedException {
         AtomicInteger summer = new AtomicInteger();
+        AtomicBoolean end = new AtomicBoolean(false);
         final AsyncBatchTransmitter<Integer> transmitter = new AsyncBatchTransmitter<>((list, isEnd) -> 
              new Runnable() {
                 @Override
                 public void run() {
                     summer.addAndGet(list.size());
                     System.out.println(list.size() + "==" + Thread.currentThread().getId() + "-" + Thread.currentThread().getName() + ", " + isEnd);
+                    if (isEnd) {
+                        end.set(true);
+                    }
                     //System.out.println(1 / 0); // submit方式不会打印异常
                 }
             }
@@ -25,14 +28,14 @@ public class TestBatchTransmitter {
 
         AtomicBoolean flag = new AtomicBoolean(true);
         AtomicInteger increment = new AtomicInteger(0);
-        int n = 100;
+        int n = 4;
         Thread[] threads = new Thread[n];
         for (int i = 0; i < n; i++) {
             Thread thread = new Thread(() -> {
                 while (flag.get()) {
                     transmitter.put(increment.incrementAndGet());
                     try {
-                        Thread.sleep(161 + ThreadLocalRandom.current().nextInt(1161));
+                        Thread.sleep(11 + ThreadLocalRandom.current().nextInt(19));
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -42,11 +45,14 @@ public class TestBatchTransmitter {
             thread.start();
             threads[i] = thread;
         }
-        Thread.sleep(30000);
+        Thread.sleep(10000);
         flag.set(false);
         transmitter.end();
         for (Thread thread : threads) {
             thread.join();
+        }
+        while (!end.get()) {
+            // noop-loop
         }
         System.out.println(increment.get());
         System.out.println(summer.get());

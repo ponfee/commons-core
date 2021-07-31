@@ -30,6 +30,13 @@ public final class CheckedThrowing {
         return ThrowingSupplier.checked(s);
     }
 
+    /**
+     * eg: new Thread(CheckedThrowing.runnable(printer::print))
+     *
+     * @param r    the ThrowingRunnable
+     * @param <T>  the type of Throwable
+     * @return Runnable instance
+     */
     public static <T extends Throwable> Runnable runnable(ThrowingRunnable<T> r) {
         return ThrowingRunnable.checked(r);
     }
@@ -83,7 +90,6 @@ public final class CheckedThrowing {
     /**
      * Lambda function checked exception
      * 
-     * @author Ponfee
      * @param <E> the type of the input to the function
      * @param <R> the type of the result of the function
      * @param <T> the type of the call apply method possible occur exception

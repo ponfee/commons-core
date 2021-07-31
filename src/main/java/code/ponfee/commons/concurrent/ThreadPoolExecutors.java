@@ -1,5 +1,7 @@
 package code.ponfee.commons.concurrent;
 
+import code.ponfee.commons.math.Numbers;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -20,8 +22,6 @@ import java.util.concurrent.ThreadPoolExecutor.DiscardOldestPolicy;
 import java.util.concurrent.ThreadPoolExecutor.DiscardPolicy;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import code.ponfee.commons.math.Numbers;
 
 /**
  * Thread pool executor utility
@@ -47,8 +47,8 @@ public final class ThreadPoolExecutors {
         if (!executor.isShutdown()) {
             try {
                 executor.getQueue().put(task);
-            } catch (InterruptedException ignored) {
-                ignored.printStackTrace();
+            } catch (InterruptedException e) {
+                throw new RuntimeException("Put a task to queue occur error: BLOCK_PRODUCER", e);
             }
         }
     };
@@ -107,12 +107,9 @@ public final class ThreadPoolExecutors {
                                             int queueCapacity, String threadName, 
                                             RejectedExecutionHandler rejectedHandler) {
         // work queue
-        BlockingQueue<Runnable> workQueue;
-        if (queueCapacity > 0) {
-            workQueue = new LinkedBlockingQueue<>(queueCapacity);
-        } else {
-            workQueue = new SynchronousQueue<>();
-        }
+        BlockingQueue<Runnable> workQueue = queueCapacity > 0
+            ? new LinkedBlockingQueue<>(queueCapacity)
+            : new SynchronousQueue<>();
 
         // thread factory, Executors.defaultThreadFactory()
         ThreadFactory threadFactory = new NamedThreadFactory(threadName);

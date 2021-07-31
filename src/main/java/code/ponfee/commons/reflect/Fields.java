@@ -1,8 +1,8 @@
 package code.ponfee.commons.reflect;
 
-import java.lang.reflect.Field;
-
 import sun.misc.Unsafe;
+
+import java.lang.reflect.Field;
 
 /**
  * 高效的反射工具类（基于sun.misc.Unsafe）
@@ -12,13 +12,18 @@ import sun.misc.Unsafe;
 @SuppressWarnings("restriction")
 public final class Fields {
 
-    private static final Unsafe UNSAFE/* = sun.misc.Unsafe.getUnsafe()*/;
+    // sun.misc.Unsafe.getUnsafe() will be throw "java.lang.SecurityException: Unsafe"
+    // caller code must use in BootstrapClassLoader to load (JAVA_HOME/jre/lib)
+    // but application code load by sun.misc.Launcher.AppClassLoader
+    private static final Unsafe UNSAFE;
     static {
         try {
             Field f = Unsafe.class.getDeclaredField("theUnsafe");
             f.setAccessible(true);
             UNSAFE = (Unsafe) f.get(null); // If the underlying field is a static field, 
                                            // the {@code obj} argument is ignored; it may be null.
+            // f.set(null, value); // set static field's value
+            f.setAccessible(false);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException("failed to get unsafe instance", e);
         }

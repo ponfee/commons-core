@@ -1,16 +1,15 @@
 package code.ponfee.commons.export;
 
+import code.ponfee.commons.concurrent.MultithreadExecutor;
+import code.ponfee.commons.util.Holder;
+import com.google.common.base.Preconditions;
+
 import java.io.IOException;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
-
-import com.google.common.base.Preconditions;
-
-import code.ponfee.commons.concurrent.MultithreadExecutor;
-import code.ponfee.commons.util.Holder;
 
 /**
  * Export multiple file
@@ -42,7 +41,6 @@ public abstract class AbstractSplitExporter extends AbstractDataExporter<Void> {
         rollingTbody(table, (data, i) -> {
             subTable.get().addRow(data);
             if (count.incrementAndGet() == batchSize) {
-                super.nonEmpty();
                 // sets a new table and return the last
                 Table<Object[]> last = subTable.getAndSet(table.copyOfWithoutTbody(Function.identity()));
                 String path = buildFilePath(split.incrementAndGet());
@@ -51,12 +49,14 @@ public abstract class AbstractSplitExporter extends AbstractDataExporter<Void> {
             }
         });
         if (!subTable.get().isEmptyTbody()) {
-            super.nonEmpty();
             String path = buildFilePath(split.incrementAndGet());
             service.submit(splitExporter(subTable.get(), path), Boolean.TRUE);
         }
 
-        MultithreadExecutor.joinDiscard(service, split.get());
+        if (split.get() > 0) {
+            super.nonEmpty();
+            MultithreadExecutor.joinDiscard(service, split.get());
+        }
     }
 
     protected abstract AsnycSplitExporter splitExporter(Table<Object[]> subTable, 

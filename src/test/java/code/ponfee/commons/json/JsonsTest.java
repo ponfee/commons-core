@@ -1,19 +1,16 @@
 package code.ponfee.commons.json;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Map;
-
-import org.junit.Test;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
-import com.fasterxml.jackson.core.type.TypeReference;
-
 import code.ponfee.commons.collect.Collects;
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.util.ObjectUtils;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.junit.Test;
+
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class JsonsTest {
@@ -46,25 +43,25 @@ public class JsonsTest {
     @Test
     public void test3() {
         Map<?, ?> map = Collects.toMap("a", "xx", "b", 1, "c", 1.2D, "d", null);
-        System.out.println(JSONObject.toJSONString(map));
-        System.out.println(JSONObject.toJSONString(map, FastjsonPropertyFilter.include("a", "b")));
-        System.out.println(JSONObject.toJSONString(map, FastjsonPropertyFilter.exclude("a", "b")));
+        System.out.println(JSON.toJSONString(map));
+        System.out.println(JSON.toJSONString(map, FastjsonPropertyFilter.include("a", "b")));
+        System.out.println(JSON.toJSONString(map, FastjsonPropertyFilter.exclude("a", "b")));
 
         Result<String> result = Result.success("xx");
-        System.out.println(JSONObject.toJSONString(result));
-        System.out.println(JSONObject.toJSONString(result, FastjsonPropertyFilter.include("msg")));
-        System.out.println(JSONObject.toJSONString(result, FastjsonPropertyFilter.exclude("msg")));
+        System.out.println(JSON.toJSONString(result));
+        System.out.println(JSON.toJSONString(result, FastjsonPropertyFilter.include("msg")));
+        System.out.println(JSON.toJSONString(result, FastjsonPropertyFilter.exclude("msg")));
     }
 
     @Test
     public void test4() {
         Map<?, ?> map = Collects.toMap("a", "xx", "b", 1, "c", 1.2D, "d", null);
-        System.out.println(JSONObject.toJSONString(map));
-        System.out.println(JSONObject.toJSONString(map, new SimplePropertyPreFilter("a", "b")));
+        System.out.println(JSON.toJSONString(map));
+        System.out.println(JSON.toJSONString(map, new SimplePropertyPreFilter("a", "b")));
 
         Result<String> result = Result.success("xx");
-        System.out.println(JSONObject.toJSONString(result));
-        System.out.println(JSONObject.toJSONString(result, new SimplePropertyPreFilter("msg")));
+        System.out.println(JSON.toJSONString(result));
+        System.out.println(JSON.toJSONString(result, new SimplePropertyPreFilter("msg")));
     }
     
     @Test

@@ -19,7 +19,7 @@ public class ParamsTest {
 
     @Test
     public void test1() {
-        PageRequestParams params = new PageRequestParams();
+        PageParameter params = new PageParameter();
         params.setSort("name,   test   asc");
         params.validateSort("name", "test");
     }

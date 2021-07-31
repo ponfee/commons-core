@@ -1,15 +1,14 @@
 package test.utils;
 
-import java.util.Map;
-
-import org.junit.Test;
-import org.springframework.cglib.beans.BeanCopier;
-
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.reflect.BeanMaps;
 import code.ponfee.commons.reflect.CglibUtils;
 import code.ponfee.commons.reflect.Fields;
+import org.junit.Test;
+import org.springframework.cglib.beans.BeanCopier;
+
+import java.util.Map;
 
 public class TestBeanCopy {
 
@@ -71,7 +70,7 @@ public class TestBeanCopy {
     @Test
     public void test5() {
         Result<Void> result1 = Result.failure(-1, "error");
-        System.out.println(BeanMaps.CGLIB.toMap(result1));
+        System.out.println(Jsons.toJson(BeanMaps.CGLIB.toMap(result1)));
         for (int i = 0; i < round; i++) {
             BeanMaps.CGLIB.toMap(result1);
         }
@@ -103,8 +102,6 @@ public class TestBeanCopy {
     public void test8() {
         TestBean bean = new TestBean();
         Map<String, Object> map = BeanMaps.CGLIB.toMap(bean);
-        map.remove("failure");
-        map.remove("success");
         System.out.println(map);
         System.out.println(Jsons.toJson(BeanMaps.CGLIB.toBean(map, TestBean.class)));
         for (int i = 0; i < round; i++) {

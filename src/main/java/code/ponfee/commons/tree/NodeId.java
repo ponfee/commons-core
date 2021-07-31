@@ -8,11 +8,11 @@
 
 package code.ponfee.commons.tree;
 
-import java.io.Serializable;
-
+import code.ponfee.commons.json.Jsons;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import code.ponfee.commons.json.Jsons;
+import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Base node id
@@ -36,9 +36,8 @@ public abstract class NodeId<T extends NodeId<T>> implements Comparable<T>, Seri
             return false;
         }
 
-        T another = (T) obj;
-        return equalsParent(this.parent, another.parent) 
-            && this.equalsNode(another);
+        T o = (T) obj;
+        return Objects.equals(this.parent, o.parent) && this.equalsNode(o);
     }
 
     @Override
@@ -78,10 +77,6 @@ public abstract class NodeId<T extends NodeId<T>> implements Comparable<T>, Seri
 
     public final T getParent() {
         return parent;
-    }
-
-    private boolean equalsParent(T a, T b) {
-        return (a == null) ? (b == null) : a.equals(b);
     }
 
 }

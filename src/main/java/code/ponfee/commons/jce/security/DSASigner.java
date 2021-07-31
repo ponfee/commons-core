@@ -1,5 +1,10 @@
 package code.ponfee.commons.jce.security;
 
+import code.ponfee.commons.jce.Providers;
+import code.ponfee.commons.util.ObjectUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -13,13 +18,9 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-
-import code.ponfee.commons.jce.Providers;
-import code.ponfee.commons.util.ObjectUtils;
-
 /**
+ * 基于整数有限域离散对数难题
+ *
  * DSA签名/验签（只用于数字签名）
  * 
  * @author Ponfee

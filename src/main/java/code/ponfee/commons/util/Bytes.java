@@ -1,5 +1,8 @@
 package code.ponfee.commons.util;
 
+import code.ponfee.commons.math.Numbers;
+import org.apache.commons.lang3.StringUtils;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -11,19 +14,17 @@ import java.util.Formatter;
 import java.util.Objects;
 import java.util.zip.CRC32;
 
-import org.apache.commons.lang3.StringUtils;
-
-import code.ponfee.commons.math.Numbers;
-
 /**
  * byte[]
+ * <pre>
  * 转hex：new BigInteger(1, bytes).toString(16);
- * 求与4的余数：(4 - (b64.length() 0x03))  0x03
+ * Padding4位：(4 - (length & 0x03)) & 0x03
  * 
  * 左移<<:      该数对应的二进制码整体左移，左边超出的部分舍弃，右边补0
  * 右移>>:      该数对应的二进制码整体右移，左边部分以原有标志位填充，右边超出的部分舍弃
  * 无符号右移>>>: 该数对应的二进制码整体右移，左边部分以0填充，右边超出的部分舍弃
- * 
+ * </pre>
+ *
  * @author Ponfee
  */
 public final class Bytes {

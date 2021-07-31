@@ -1,5 +1,10 @@
 package code.ponfee.commons.export;
 
+import code.ponfee.commons.tree.BaseNode;
+import code.ponfee.commons.tree.FlatNode;
+import code.ponfee.commons.tree.TreeNodeBuilder;
+import org.springframework.util.CollectionUtils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,12 +12,6 @@ import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-
-import org.springframework.util.CollectionUtils;
-
-import code.ponfee.commons.tree.BaseNode;
-import code.ponfee.commons.tree.FlatNode;
-import code.ponfee.commons.tree.TreeNodeBuilder;
 
 /**
  * 表格
@@ -53,7 +52,7 @@ public class Table<E> implements Serializable {
 
     public Table(List<BaseNode<Integer, Thead>> list, 
                  Function<E, Object[]> converter) {
-        this.thead = TreeNodeBuilder.<Integer, Thead> newBuilder(ROOT_PID).build().mount(list).bfsFlat();
+        this.thead = TreeNodeBuilder.<Integer, Thead> newBuilder(ROOT_PID).build().mount(list).flatCFS();
         this.converter = converter;
     }
 
@@ -66,7 +65,7 @@ public class Table<E> implements Serializable {
         for (int i = 0; i < names.length; i++) {
             list.add(new BaseNode<>(i + 1, ROOT_PID, new Thead(names[i])));
         }
-        this.thead = TreeNodeBuilder.<Integer, Thead> newBuilder(ROOT_PID).build().mount(list).bfsFlat();
+        this.thead = TreeNodeBuilder.<Integer, Thead> newBuilder(ROOT_PID).build().mount(list).flatCFS();
         this.converter = converter;
     }
 
@@ -128,10 +127,12 @@ public class Table<E> implements Serializable {
         if (CollectionUtils.isEmpty(rows)) {
             return;
         }
-        for (E row : rows) {
-            if (!tbody.offer(row)) {
-                throw new RuntimeException("Offer a element to queue failed.");
+        try {
+            for (E row : rows) {
+                tbody.put(row);
             }
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Put an element to queue failed.", e);
         }
         empty = false;
     }
@@ -145,8 +146,10 @@ public class Table<E> implements Serializable {
         if (row == null) {
             return;
         }
-        if (!tbody.offer(row)) {
-            throw new RuntimeException("Offer a element to queue failed.");
+        try {
+            tbody.put(row);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Put an element to queue failed.", e);
         }
         empty = false;
     }

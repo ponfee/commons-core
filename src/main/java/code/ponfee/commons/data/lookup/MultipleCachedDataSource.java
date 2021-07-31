@@ -1,43 +1,43 @@
 package code.ponfee.commons.data.lookup;
 
+import code.ponfee.commons.base.Initializable;
+import code.ponfee.commons.base.Releasable;
+import code.ponfee.commons.data.NamedDataSource;
+import code.ponfee.commons.exception.Throwables;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.jdbc.datasource.AbstractDataSource;
+
+import javax.annotation.Nonnull;
+import javax.sql.DataSource;
+import java.io.Closeable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-import javax.sql.DataSource;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.jdbc.datasource.AbstractDataSource;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.ImmutableMap;
-
-import code.ponfee.commons.base.Releasable;
-import code.ponfee.commons.data.NamedDataSource;
-import code.ponfee.commons.exception.Throwables;
-
 /**
- * 可动态增加/移除数据源/数据源自动超时失效
+ * 可扩展的多数据源类型：可动态增加/移除数据源/数据源自动超时失效
  * 
  * @author Ponfee
  * @see org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource
  */
-public class MultipletCachedDataSource extends AbstractDataSource implements DataSourceLookup {
+public class MultipleCachedDataSource extends AbstractDataSource
+    implements DataSourceLookup, Initializable, Closeable {
 
-    private final Map<String, DataSource> localDataSources;
+    private final Map<String, DataSource> naturalDataSources; // original/native
     private final DataSource defaultDataSource;
 
-    private final Cache<String, DataSource> strangerDataSources;
+    private final Cache<String, DataSource> adoptedDataSources; // foreign/stranger
 
-    public MultipletCachedDataSource(int expireSeconds, NamedDataSource dataSource) {
+    public MultipleCachedDataSource(int expireSeconds, NamedDataSource dataSource) {
         this(expireSeconds, dataSource.getName(), dataSource.getDataSource());
     }
 
-    public MultipletCachedDataSource(int expireSeconds, NamedDataSource... dataSources) {
+    public MultipleCachedDataSource(int expireSeconds, NamedDataSource... dataSources) {
         this(
             expireSeconds,
             dataSources[0].getName(), 
@@ -46,17 +46,17 @@ public class MultipletCachedDataSource extends AbstractDataSource implements Dat
         );
     }
 
-    public MultipletCachedDataSource(int expireSeconds, String defaultName, 
-                                     DataSource defaultDataSource, 
-                                     NamedDataSource... othersDataSource) {
+    public MultipleCachedDataSource(int expireSeconds, String defaultName,
+                                    DataSource defaultDataSource,
+                                    NamedDataSource... othersDataSource) {
         // set the default data source
         this.defaultDataSource = defaultDataSource;
 
-        this.localDataSources = ImmutableMap.copyOf(
+        this.naturalDataSources = ImmutableMap.copyOf(
             MultipleDataSourceContext.process(defaultName, defaultDataSource, othersDataSource)
         );
 
-        this.strangerDataSources = CacheBuilder.newBuilder()
+        this.adoptedDataSources = CacheBuilder.newBuilder()
             .expireAfterAccess(Duration.ofSeconds(expireSeconds))
             .maximumSize(8192)
             .removalListener(notification -> {
@@ -99,16 +99,16 @@ public class MultipletCachedDataSource extends AbstractDataSource implements Dat
             throw new IllegalArgumentException("Duplicated datasource name: " + dataSourceName);
         }
 
-        this.strangerDataSources.put(dataSourceName, datasource);
+        this.adoptedDataSources.put(dataSourceName, datasource);
         MultipleDataSourceContext.add(dataSourceName);
     }
 
     public synchronized void remove(String dataSourceName) {
-        if (this.localDataSources.containsKey(dataSourceName)) {
+        if (this.naturalDataSources.containsKey(dataSourceName)) {
             throw new UnsupportedOperationException("Local datasource cannot remove: " + dataSourceName);
         }
 
-        this.strangerDataSources.invalidate(dataSourceName);
+        this.adoptedDataSources.invalidate(dataSourceName);
         MultipleDataSourceContext.remove(dataSourceName);
     }
 
@@ -139,10 +139,33 @@ public class MultipletCachedDataSource extends AbstractDataSource implements Dat
 
     @Override
     public DataSource lookupDataSource(String name) {
-        DataSource dataSource = this.localDataSources.get(name);
+        DataSource dataSource = this.naturalDataSources.get(name);
         return dataSource != null 
              ? dataSource 
-             : this.strangerDataSources.getIfPresent(name);
+             : this.adoptedDataSources.getIfPresent(name);
+    }
+
+    @Override
+    public void init() {
+        naturalDataSources.forEach((name, ds) -> Initializable.init(ds));
+    }
+
+    @Override
+    public void close() {
+        naturalDataSources.forEach((name, ds) -> {
+            try {
+                Releasable.release(ds);
+            } catch (Exception e) {
+                Throwables.console(e);
+            }
+        });
+        adoptedDataSources.asMap().forEach((name, ds) -> {
+            try {
+                Releasable.release(ds);
+            } catch (Exception e) {
+                Throwables.console(e);
+            }
+        });
     }
 
     // -----------------------------------------------------------------private methods
@@ -161,8 +184,8 @@ public class MultipletCachedDataSource extends AbstractDataSource implements Dat
     }
 
     private boolean existsDatasourceName(String name) {
-        return this.localDataSources.containsKey(name) 
-            || this.strangerDataSources.getIfPresent(name) != null;
+        return this.naturalDataSources.containsKey(name)
+            || this.adoptedDataSources.getIfPresent(name) != null;
     }
 
 }

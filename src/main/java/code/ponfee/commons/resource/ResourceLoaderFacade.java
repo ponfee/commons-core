@@ -1,18 +1,16 @@
 package code.ponfee.commons.resource;
 
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.annotation.Nonnull;
-import javax.servlet.ServletContext;
-
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.reflect.ClassUtils;
 import code.ponfee.commons.util.Strings;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.annotation.Nonnull;
+import javax.servlet.ServletContext;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 
@@ -21,10 +19,7 @@ import code.ponfee.commons.util.Strings;
  * ServletContext.getResourceAsStream(path)：从WebAPP根目录下取资源，'/'开头和不以'/'开头情况一样
  * 
  * <ul>
- *   <li>
- *    <span>classpath:</span>
- *      当以“/”开头时contextClass只起到jar包定位的作用（且会去掉“/”）<p>
- *      不以“/”开头时contextClass还起到package相对路径的作用<p>
+ *   <li>classpath:<p>当以“/”开头时contextClass只起到jar包定位的作用（且会去掉“/”），不以“/”开头时contextClass还起到package相对路径的作用
  *   </li>
  *   <li>webapp:</li>
  *   <li>file:</li>
@@ -34,7 +29,7 @@ import code.ponfee.commons.util.Strings;
  * <p>
  * ResourceLoaderFacade.getResource("StringUtils.class", StringUtils.class);
  * ResourceLoaderFacade.getResource("Log4j-config.xsd", ResourceLoaderFacade.class); // null
- * ResourceLoaderFacade.getResource("/Log4j-config.xsd", LogEventListener.class);
+ * ResourceLgit pulloaderFacade.getResource("/Log4j-config.xsd", LogEventListener.class);
  * ResourceLoaderFacade.getResource("/log4j2.xml");
  * ResourceLoaderFacade.getResource("log4j2.xml");
  * ResourceLoaderFacade.getResource("file:d:/import.txt")

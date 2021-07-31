@@ -9,7 +9,6 @@
 package code.ponfee.commons.tree;
 
 import code.ponfee.commons.collect.Collects;
-import code.ponfee.commons.collect.Comparators;
 import code.ponfee.commons.reflect.Fields;
 import code.ponfee.commons.util.Strings;
 import com.google.common.collect.ImmutableList;
@@ -18,14 +17,41 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import javax.annotation.Nonnull;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Queue;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
+ * <pre>
  * Tree node structure
- * 
+ *
+ * '---------------------------'
+ * '              0            '
+ * '        ┌─────┴─────┐      '
+ * '        1           2      '
+ * '    ┌───┴───┐   ┌───┴───┐  '
+ * '    3       4   5       6  '
+ * '  ┌─┴─┐   ┌─┘              '
+ * '  7   8   9                '
+ * '---------------------------'
+ *
+ * 上面这棵二叉树中的遍历方式：
+ *   DFS前序遍历：0137849256
+ *   DFS中序遍历：7381940526
+ *   DFS后序遍历：7839415620
+ *   BFS：0123456789
+ *   CFS：0123478956
+ * </pre>
+ *
  * @author Ponfee
  * @param <T> the node id type
  * @param <A> the attachment biz object type
@@ -40,7 +66,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     private final Comparator<? super TreeNode<T, A>> siblingNodeSort;
 
     // 子节点列表（空列表则表示为叶子节点）
-    private final List<TreeNode<T, A>> children = new LinkedList<>();
+    private final LinkedList<TreeNode<T, A>> children = new LinkedList<>();
 
     // 是否构建path
     private final boolean buildPath;
@@ -63,7 +89,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
              boolean buildPath, boolean doMount) {
         super(nid, pid, enabled, available, attach);
 
-        this.siblingNodeSort = Objects.requireNonNull(siblingNodeSort); // comparator.thenComparing(TreeNode::getNid);
+        this.siblingNodeSort = Objects.requireNonNull(siblingNodeSort);
 
         this.buildPath = buildPath;
 
@@ -144,33 +170,127 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         return this;
     }
 
+    // -------------------------------------------------------------DFS
     /**
      * 按继承方式展开节点：父子节点相邻 ，Inherit
-     * 深度优先搜索DFS：（Depth-First Search）
+     * 深度优先搜索DFS（使用前序遍历）：（Depth-First Search）
      * 
      * Should be invoking after {@link #mount(List)}
      * 
-     * @return a list nodes for dfs tree node
+     * @return a list nodes for DFS tree node
      */
-    public List<FlatNode<T, A>> dfsFlat() {
+    public List<FlatNode<T, A>> flatDFS() {
+        List<FlatNode<T, A>> collect = Lists.newLinkedList();
+        Deque<TreeNode<T, A>> stack = newLinkedList(this);
+        while (!stack.isEmpty()) {
+            TreeNode<T, A> node = stack.pop();
+            collect.add(new FlatNode<>(node));
+            if (CollectionUtils.isNotEmpty(node.children)) {
+                // 反向遍历子节点
+                for (Iterator<TreeNode<T, A>> iter = node.children.descendingIterator(); iter.hasNext(); ) {
+                    stack.push(iter.next());
+                }
+            }
+        }
+        return collect;
+    }
+
+    // 递归方式dfs
+    /*public List<FlatNode<T, A>> flatDFS() {
         List<FlatNode<T, A>> collect = Lists.newLinkedList();
         dfs(collect);
         return collect;
     }
+    private void dfs(List<FlatNode<T, A>> collect) {
+        collect.add(new FlatNode<>(this));
+        if (CollectionUtils.isNotEmpty(this.children)) {
+            for (TreeNode<T, A> nt : this.children) {
+                nt.dfs(collect);
+            }
+        }
+    }*/
 
+    // -------------------------------------------------------------CFS
     /**
      * 按层级方式展开节点：兄弟节点相邻，Hierarchy
-     * 广度优先搜索BFS：（Breadth-First Search）
-     * 
+     * 子节点优先搜索CFS：（Children-First Search）
      * Should be invoking after {@link #mount(List)}
-     * 
-     * @return a list nodes for bfs tree node
+     *
+     * Note：为了构建复杂表头，保证左侧的叶子节点必须排在右侧叶子节点前面，此处不能用广度优先搜索策略
+     *
+     * @return a list nodes for CFS tree node
      */
-    public List<FlatNode<T, A>> bfsFlat() {
+    public List<FlatNode<T, A>> flatCFS() {
         List<FlatNode<T, A>> collect = newLinkedList(new FlatNode<>(this));
-        bfs(collect);
+        Deque<TreeNode<T, A>> stack = newLinkedList(this);
+        while (!stack.isEmpty()) {
+            TreeNode<T, A> node = stack.pop();
+            if (CollectionUtils.isNotEmpty(node.children)) {
+                node.children.forEach(c -> collect.add(new FlatNode<>(c)));
+
+                // 反向遍历子节点
+                for (Iterator<TreeNode<T, A>> iter = node.children.descendingIterator(); iter.hasNext(); ) {
+                    stack.push(iter.next());
+                }
+            }
+        }
         return collect;
     }
+
+    // 递归方式cfs
+    /*public List<FlatNode<T, A>> flatCFS() {
+        List<FlatNode<T, A>> collect = newLinkedList(new FlatNode<>(this));
+        cfs(collect);
+        return collect;
+    }
+    private void cfs(List<FlatNode<T, A>> collect) {
+        if (CollectionUtils.isNotEmpty(this.children)) {
+            for (TreeNode<T, A> nt : this.children) {
+                collect.add(new FlatNode<>(nt));
+            }
+            for (TreeNode<T, A> nt : this.children) {
+                nt.cfs(collect);
+            }
+        }
+    }*/
+
+    // -------------------------------------------------------------BFS
+    public List<FlatNode<T, A>> flatBFS() {
+        List<FlatNode<T, A>> collect = new LinkedList<>();
+        Queue<TreeNode<T, A>> queue = newLinkedList(this);
+        while (!queue.isEmpty()) {
+            for (int i = queue.size(); i > 0; i--) {
+                TreeNode<T, A> node = queue.poll();
+                collect.add(new FlatNode<>(node));
+                if (CollectionUtils.isNotEmpty(node.children)) {
+                    node.children.stream().forEach(c -> queue.offer(c));
+                }
+            }
+        }
+        return collect;
+    }
+
+    // 递归方式bfs
+    /*public List<FlatNode<T, A>> flatBFS2() {
+        List<FlatNode<T, A>> collect = new LinkedList<>();
+        Queue<TreeNode<T, A>> queue = newLinkedList(this);
+        bfs(queue, collect);
+        return collect;
+    }
+    private void bfs(Queue<TreeNode<T, A>> queue, List<FlatNode<T, A>> collect) {
+        int size = queue.size();
+        if (size == 0) {
+            return;
+        }
+        while (size-- > 0) {
+            TreeNode<T, A> node = queue.poll();
+            collect.add(new FlatNode<>(node));
+            if (CollectionUtils.isNotEmpty(node.children)) {
+                node.children.stream().forEach(c -> queue.offer(c));
+            }
+        }
+        bfs(queue, collect);
+    }*/
 
     // -----------------------------------------------------------for each
     public void forEach(Consumer<TreeNode<T, A>> accept) {
@@ -202,39 +322,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         return this.children;
     }
 
-    // -----------------------------------------------------------comparing by Attach
-    public static <T extends Serializable & Comparable<? super T>, A extends Serializable, O extends Serializable & Comparable<? super O>> 
-        Comparator<? super TreeNode<T, A>> comparing(Function<? super A, ? extends O> keyExtractor) {
-        return comparing(keyExtractor, true);
-    }
 
-    public static <T extends Serializable & Comparable<? super T>, A extends Serializable, O extends Serializable & Comparable<? super O>> 
-        Comparator<? super TreeNode<T, A>> comparing(Function<? super A, ? extends O> keyExtractor, boolean asc) {
-        /*Comparator.nullsLast( // First nullsLast will handle the cases when the "node" objects are null.
-            Comparator.<TreeNode<T, A>, O> comparing(
-                // Second nullsLast will handle the cases when the return value of "keyExtractor.apply(node.attach)" is null.
-                node -> keyExtractor.apply(node.attach), Comparator.nullsLast(Comparators.order(asc)) 
-            )
-        );*/
-
-        // node be null cannot happened
-        return Comparator.comparing(node -> keyExtractor.apply(node.attach), Comparator.nullsLast(Comparators.order(asc)));
-    }
-
-    // -----------------------------------------------------------comparing by Attach then after with TreeNode.nid
-    public static <T extends Serializable & Comparable<? super T>, A extends Serializable, O extends Serializable & Comparable<? super O>> 
-        Comparator<? super TreeNode<T, A>> comparingThenComparingNid(Function<? super A, ? extends O> keyExtractor) {
-        return comparingThenComparingNid(keyExtractor, true);
-    }
-
-    public static <T extends Serializable & Comparable<? super T>, A extends Serializable, O extends Serializable & Comparable<? super O>> 
-        Comparator<? super TreeNode<T, A>> comparingThenComparingNid(Function<? super A, ? extends O> keyExtractor, boolean asc) {
-        return Comparator.<TreeNode<T, A>, O> comparing(
-            n -> keyExtractor.apply(n.attach), Comparator.nullsLast(Comparators.order(asc))
-        ).thenComparing(
-            TreeNode::getNid
-        );
-    }
 
     // -----------------------------------------------------------private methods
     private <E extends BaseNode<T, A>> List<BaseNode<T, A>> prepare(List<E> nodes) {
@@ -280,7 +368,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
                 TreeNode<T, A> child = new TreeNode<>(
                     node.nid, node.pid, node.enabled, 
                     super.available && node.enabled, // recompute the child node is available
-                    node.attach, this.siblingNodeSort, 
+                    node.attach, this.siblingNodeSort,
                     this.buildPath, false
                 );
 
@@ -301,26 +389,6 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
             }
         }
         super.degree = (this.children == null) ? 0 : this.children.size();
-    }
-
-    private void dfs(List<FlatNode<T, A>> collect) {
-        collect.add(new FlatNode<>(this));
-        if (CollectionUtils.isNotEmpty(this.children)) {
-            for (TreeNode<T, A> nt : this.children) {
-                nt.dfs(collect);
-            }
-        }
-    }
-
-    private void bfs(List<FlatNode<T, A>> collect) {
-        if (CollectionUtils.isNotEmpty(this.children)) {
-            for (TreeNode<T, A> nt : this.children) {
-                collect.add(new FlatNode<>(nt));
-            }
-            for (TreeNode<T, A> nt : this.children) {
-                nt.bfs(collect);
-            }
-        }
     }
 
     private void count() {
@@ -381,7 +449,8 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
             throw new RuntimeException("Node circular dependencies: " + parentPath + " -> " + nid);
         }*/
 
-        ImmutableList.Builder<T> builder = ImmutableList.builderWithExpectedSize(parentPath.size() + 1);
+        int size = parentPath == null ? 1 : parentPath.size() + 1;
+        ImmutableList.Builder<T> builder = ImmutableList.builderWithExpectedSize(size);
         // root node uncontains null parent
         if (parentPath != null) {
             builder.addAll(parentPath);

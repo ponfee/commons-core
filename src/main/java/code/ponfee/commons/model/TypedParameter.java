@@ -3,17 +3,17 @@ package code.ponfee.commons.model;
 import java.util.Map;
 
 /**
- * 通用Map请求参数类（不能继承Map，否则会被内置Map解析器优先处理）
+ * 通用Map请求参数类（不继承Map是为了阻断被内置的Map解析器先一步处理）
  * 
  * @author Ponfee
  */
-public class TypedMapRequestParams implements TypedDictionary<String, Object>, java.io.Serializable {
+public class TypedParameter implements TypedDictionary<String, Object>, java.io.Serializable {
 
     private static final long serialVersionUID = 1898625104491344717L;
 
     private final Map<String, Object> params;
 
-    public TypedMapRequestParams(Map<String, Object> params) {
+    public TypedParameter(Map<String, Object> params) {
         this.params = params;
     }
 

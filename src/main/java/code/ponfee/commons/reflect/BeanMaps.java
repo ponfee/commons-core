@@ -1,7 +1,10 @@
 package code.ponfee.commons.reflect;
 
-import static com.google.common.base.CaseFormat.LOWER_CAMEL;
-import static com.google.common.base.CaseFormat.LOWER_UNDERSCORE;
+import code.ponfee.commons.util.ObjectUtils;
+import code.ponfee.commons.util.Strings;
+import com.google.common.collect.ImmutableList;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.cglib.beans.BeanMap;
 
 import java.beans.BeanInfo;
 import java.beans.Introspector;
@@ -11,15 +14,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.cglib.beans.BeanMap;
-
-import com.google.common.collect.ImmutableList;
-
-import code.ponfee.commons.util.ObjectUtils;
-import code.ponfee.commons.util.Strings;
+import static com.google.common.base.CaseFormat.LOWER_CAMEL;
+import static com.google.common.base.CaseFormat.LOWER_UNDERSCORE;
+import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
 
 /**
  * Utility of Java Bean and Map mutual conversion
@@ -29,17 +27,12 @@ import code.ponfee.commons.util.Strings;
 public enum BeanMaps {
 
     CGLIB() {
-        @Override
+        @Override @SuppressWarnings("unchecked")
         public Map<String, Object> toMap(Object bean) {
             if (bean == null) {
                 return null;
             }
-            BeanMap beanMap = BeanMap.create(bean);
-            Map<String, Object> map = new HashMap<>(beanMap.size());
-            for (Object key : beanMap.keySet()) {
-                map.put(Objects.toString(key, null), beanMap.get(key));
-            }
-            return map;
+            return BeanMap.create(bean);
         }
 
         @Override
@@ -65,15 +58,13 @@ public enum BeanMaps {
         @Override
         public void copyFromMap(Map<String, Object> sourceMap, Object targetBean) {
             Class<?> clazz = targetBean.getClass();
-            List<Field> fields = getFields(clazz);
-            sourceMap.forEach((k, v) -> {
-                for (Field field : fields) {
-                    if (field.getName().equals(k)) {
-                        Class<?> type = GenericUtils.getFieldActualType(clazz, field);
-                        Fields.put(targetBean, field, ObjectUtils.convert(v, type));
-                    }
+            for (Field field : getFields(clazz)) {
+                String name = field.getName();
+                if (sourceMap.containsKey(name)) {
+                    Class<?> type = GenericUtils.getFieldActualType(clazz, field);
+                    Fields.put(targetBean, field, ObjectUtils.convert(sourceMap.get(name), type));
                 }
-            });
+            }
         }
 
         private List<Field> getFields(Class<?> beanType) {
@@ -123,8 +114,8 @@ public enum BeanMaps {
 
                     String name0 = name;
                     if (   !sourceMap.containsKey(name)
-                        && !sourceMap.containsKey(name = LOWER_UNDERSCORE.to(LOWER_CAMEL, name0))
                         && !sourceMap.containsKey(name = LOWER_CAMEL.to(LOWER_UNDERSCORE, name0))
+                        && !sourceMap.containsKey(name = LOWER_CAMEL.to(LOWER_HYPHEN, name0))
                     ) {
                         continue;
                     }

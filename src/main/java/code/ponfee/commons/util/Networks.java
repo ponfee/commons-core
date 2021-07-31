@@ -163,7 +163,7 @@ public final class Networks {
         return ip != null
             && !EMPTY_IP.equals(ip)
             && !LOCALHOST_IP.equals(ip)
-            && RegexUtils.isIp(ip);
+            && RegexUtils.isIpv4(ip);
     }
 
     /**
@@ -209,13 +209,13 @@ public final class Networks {
     }
 
     /**
-     * Convert ip to long，max value is 4294967295
+     * Convert ipv4 to long，max value is 4294967295
      *
-     * @param ip
+     * @param ipv4
      * @return
      */
     public static long toLong(String ip) {
-        if (!RegexUtils.isIp(ip)) {
+        if (!RegexUtils.isIpv4(ip)) {
             throw new IllegalArgumentException("invalid ip address[" + ip + "]");
         }
         String[] ipNums = ip.split("\\.", 4);
@@ -226,7 +226,7 @@ public final class Networks {
     }
 
     /**
-     * Convert long value to ip address string
+     * Convert long value to ipv4 address string
      *
      * @param ip
      * @return

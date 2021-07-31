@@ -1,14 +1,5 @@
 package code.ponfee.commons.extract.streaming.xls;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.eventusermodel.FormatTrackingHSSFListener;
@@ -41,12 +32,18 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.SheetVisibility;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+
 /**
- * The version for 2003 or early XSL excel file 
- * streaming reader
- * 
- * excel workbook
- * 
+ * The version for 2003 or early XSL excel file streaming reader excel workbook
+ *
  * @author Ponfee
  */
 public class HSSFStreamingWorkbook implements Workbook, Closeable {
@@ -56,8 +53,8 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
     private volatile boolean allSheetReadied = false;
     private final List<Sheet> sheets = new ArrayList<>();
 
-    public HSSFStreamingWorkbook(InputStream input, int rowCacheSize, 
-                                 int[] sheetIndexs, String[] sheetNames, 
+    public HSSFStreamingWorkbook(InputStream input, int rowCacheSize,
+                                 int[] sheetIndexs, String[] sheetNames,
                                  ExecutorService executor) {
         executor.submit(new AsyncHSSFReader(
             rowCacheSize, sheetIndexs, sheetNames, input
@@ -129,7 +126,7 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
 
     @Override
     public void close() {
-        // nothing todo
+        // do nothing
     }
 
     private void awaitReadAllSheet() {
@@ -162,7 +159,7 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
         private SSTRecord sstrec;
         private FormatTrackingHSSFListener formatListener;
 
-        private AsyncHSSFReader(int rowCacheSize, int[] sheetIndexs, 
+        private AsyncHSSFReader(int rowCacheSize, int[] sheetIndexs,
                                 String[] sheetNames, InputStream input) {
             this.rowCacheSize = rowCacheSize;
             this.sheetIndexs = sheetIndexs;
@@ -172,8 +169,8 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
 
         @Override
         public void run() {
-            try (InputStream steam = input; 
-                 POIFSFileSystem poi = new POIFSFileSystem(steam); 
+            try (InputStream steam = input;
+                 POIFSFileSystem poi = new POIFSFileSystem(steam);
                  DocumentInputStream doc = poi.createDocumentInputStream("Workbook")
             ) {
                 HSSFRequest request = new HSSFRequest();
@@ -191,7 +188,7 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
 
         /**
          * This method listens for incoming records and handles them as required.
-         * 
+         *
          * @param record the record that was found while reading.
          */
         @Override
@@ -203,7 +200,9 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
                         putRow(currentRow);
                         currentSheet.toEnd();
                     }
-                    currentRow = null; currentRowNumber = -1; currentRowOrder = -1; // reset current row
+                    currentRow = null;
+                    currentRowNumber = -1;
+                    currentRowOrder = -1; // reset current row
                     currentSheet = (HSSFStreamingSheet) sheets.get(++currentSheetIndex);
                 } else {
                     // BOFRecord.TYPE_WORKBOOK: beginning the workbook
@@ -213,7 +212,7 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
                 BoundSheetRecord bsr = (BoundSheetRecord) record;
                 int sstIdx = sheets.size();
                 sheets.add(new HSSFStreamingSheet(
-                    sstIdx, bsr.getSheetname(), isDiscard(sstIdx,  bsr.getSheetname()), rowCacheSize
+                        sstIdx, bsr.getSheetname(), isDiscard(sstIdx, bsr.getSheetname()), rowCacheSize
                 ));
             } else if (record instanceof SSTRecord) { // store a array of unique strings used in Excel.
                 sstrec = (SSTRecord) record;
@@ -242,7 +241,7 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
         }
 
         private void putRow(HSSFStreamingRow row) {
-            if (   this.currentSheet.isDiscard() 
+            if (   this.currentSheet.isDiscard()
                 || row == null || row.isEmpty()
             ) {
                 return;
@@ -256,7 +255,8 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
 
         private boolean isDiscard(int sstIdx, String sstName) {
             if (   ArrayUtils.isEmpty(sheetIndexs)
-                && ArrayUtils.isEmpty(sheetNames)) {
+                && ArrayUtils.isEmpty(sheetNames))
+            {
                 return false;
             }
             return !ArrayUtils.contains(sheetIndexs, sstIdx)
@@ -265,9 +265,9 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
 
         private String getString(CellRecord record) {
             switch (record.getSid()) {
-                case BlankRecord.sid: 
+                case BlankRecord.sid:
                     return null;
-                case BoolErrRecord.sid: 
+                case BoolErrRecord.sid:
                     return Boolean.toString(((BoolErrRecord) record).getBooleanValue());
                 case FormulaRecord.sid:
                     FormulaRecord frec = (FormulaRecord) record;
@@ -277,7 +277,7 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
                         return formatListener.formatNumberDateCell(frec);
                     }
                     // return '"' + HSSFFormulaParser.toFormulaString(stubWorkbook, frec.getParsedExpression()) + '"';
-                case LabelSSTRecord.sid: 
+                case LabelSSTRecord.sid:
                     return sstrec == null ? null : sstrec.getString(((LabelSSTRecord) record).getSSTIndex()).getString();
                 case NumberRecord.sid:
                     NumberRecord number = (NumberRecord) record;
@@ -293,276 +293,275 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
     }
 
     // ------------------------------------------------------unsupported operation
-    @Override
+    @Override @Deprecated
     public boolean isSheetHidden(int sheetIx) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public boolean isSheetVeryHidden(int sheetIx) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public int getActiveSheetIndex() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public void setActiveSheet(int sheetIndex) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public int getFirstVisibleTab() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public void setFirstVisibleTab(int sheetIndex) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public void setSheetOrder(String sheetname, int pos) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public void setSelectedTab(int index) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public void setSheetName(int sheet, String name) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public Sheet createSheet() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public Sheet createSheet(String sheetname) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public Sheet cloneSheet(int sheetNum) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public void removeSheetAt(int index) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public Font createFont() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Font findFont(boolean bold, short color, short fontHeight, String name,
-        boolean italic, boolean strikeout, short typeOffset, byte underline) {
+    @Override @Deprecated
+    public Font findFont(boolean bold, short color, short fontHeight, String name, boolean italic, boolean strikeout, short typeOffset, byte underline) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public short getNumberOfFonts() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public int getNumberOfFontsAsInt() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public Font getFontAt(short idx) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public Font getFontAt(int idx) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public CellStyle createCellStyle() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public int getNumCellStyles() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public CellStyle getCellStyleAt(int idx) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public void write(OutputStream stream) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public int getNumberOfNames() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public Name getName(String name) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public List<? extends Name> getNames(String name) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public List<? extends Name> getAllNames() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public Name getNameAt(int nameIndex) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public Name createName() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public int getNameIndex(String name) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public void removeName(int index) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public void removeName(String name) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public void removeName(Name name) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public int linkExternalWorkbook(String name, Workbook workbook) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public void setPrintArea(int sheetIndex, String reference) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void setPrintArea(int sheetIndex, int startColumn,
-        int endColumn, int startRow, int endRow) {
+    @Override @Deprecated
+    public void setPrintArea(int sheetIndex, int startColumn, int endColumn, int startRow, int endRow) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public String getPrintArea(int sheetIndex) {
         throw new UnsupportedOperationException();
     }
 
     @Override
+    @Deprecated
     public void removePrintArea(int sheetIndex) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public MissingCellPolicy getMissingCellPolicy() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public void setMissingCellPolicy(MissingCellPolicy missingCellPolicy) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public DataFormat createDataFormat() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public int addPicture(byte[] pictureData, int format) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public List<? extends PictureData> getAllPictures() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public CreationHelper getCreationHelper() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public boolean isHidden() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public void setHidden(boolean hiddenFlag) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public void setSheetHidden(int sheetIx, boolean hidden) {
         throw new UnsupportedOperationException();
     }
 
     @Override
+    @Deprecated
     public SheetVisibility getSheetVisibility(int sheetIx) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public void setSheetVisibility(int sheetIx, SheetVisibility visibility) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public void addToolPack(UDFFinder toopack) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public void setForceFormulaRecalculation(boolean value) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public boolean getForceFormulaRecalculation() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public SpreadsheetVersion getSpreadsheetVersion() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public int addOlePackage(byte[] oleData, String label, 
-                             String fileName, String command) {
+    @Override @Deprecated
+    public int addOlePackage(byte[] oleData, String label, String fileName, String command) {
         throw new UnsupportedOperationException();
     }
 

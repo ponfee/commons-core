@@ -141,7 +141,7 @@ public class SqlHelper {
         for (int i = 0; i < argTypes.length; i++) {
             if (   !RowBounds.class.isAssignableFrom(argTypes[i]) 
                 && !ResultHandler.class.isAssignableFrom(argTypes[i])) {
-                String paramName = "param" + String.valueOf(params.size() + 1);
+                String paramName = "param" + (params.size() + 1);
                 paramName = getParamNameFromAnnotation(method, i, paramName);
                 params.put(paramName, i >= args.length ? null : args[i]);
             }

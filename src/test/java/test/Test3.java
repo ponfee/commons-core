@@ -1,13 +1,9 @@
 package test;
 
-import java.math.BigInteger;
-
-import org.checkerframework.checker.units.qual.C;
-import org.eclipse.jetty.webapp.WebAppContext;
-
 import code.ponfee.commons.exception.UnimplementedException;
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.reflect.Fields;
+import org.openjdk.jol.info.ClassLayout;
 
 public class Test3 {
 
@@ -72,6 +68,9 @@ public class Test3 {
     }
 
     public static void main(String[] args) throws Exception {
+        System.out.println(0>>1);
+        System.out.println(1>>1);
+        System.out.println(4>>1);
         System.out.println(System.getProperty("user.home"));
         B.fromByteArray(new byte[] {});
         Class<? extends A> clazz1 = B.class;
@@ -86,6 +85,9 @@ public class Test3 {
         Fields.put(dog, "ext1", "extyyy");
         System.out.println(Jsons.toJson(dog));
         Jsons.toJson(dog);
+
+        System.out.println("---------------------------------------------");
+        System.out.println(ClassLayout.parseClass(B.class).toPrintable());
     }
 
 }

@@ -1,18 +1,17 @@
 package code.ponfee.commons.model;
 
-import static code.ponfee.commons.reflect.GenericUtils.getActualTypeArgument;
-import static code.ponfee.commons.util.ObjectUtils.isBeanType;
-import static code.ponfee.commons.util.ObjectUtils.newInstance;
+import code.ponfee.commons.reflect.BeanMaps;
+import code.ponfee.commons.reflect.CglibUtils;
+import org.springframework.cglib.beans.BeanCopier;
 
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.springframework.cglib.beans.BeanCopier;
-
-import code.ponfee.commons.reflect.BeanMaps;
-import code.ponfee.commons.reflect.CglibUtils;
+import static code.ponfee.commons.reflect.GenericUtils.getActualTypeArgument;
+import static code.ponfee.commons.util.ObjectUtils.isNotBeanType;
+import static code.ponfee.commons.util.ObjectUtils.newInstance;
 
 /**
  * Converts model object to the data transfer object
@@ -198,7 +197,7 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
 
     // -----------------------------------------------------------------------------------private methods
     private static BeanCopier createBeanCopier(Class<?> sourceType, Class<?> targetType) {
-        if (!isBeanType(sourceType) || !isBeanType(targetType)) {
+        if (isNotBeanType(sourceType) || isNotBeanType(targetType)) {
             return null;
         }
 

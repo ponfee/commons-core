@@ -1,8 +1,12 @@
 package code.ponfee.commons.model;
 
+import code.ponfee.commons.math.Numbers;
+
+import java.util.Objects;
+
 /**
  * Get the value with typed for dictionary key-value
- * 
+ *
  * @author Ponfee
  * @param <K>
  * @param <V>
@@ -14,11 +18,9 @@ public interface TypedDictionary<K, V> {
     V removeKey(K key);
 
     // --------------------------------------------------------string
-    default String getRequireString(K key) {
+    default String getRequiredString(K key) {
         V value = getValue(key);
-        if (value == null) {
-            throw new IllegalArgumentException("Not presented value of '" + key + "'");
-        }
+        assertPresented(key, value);
         return value.toString();
     }
 
@@ -27,8 +29,7 @@ public interface TypedDictionary<K, V> {
     }
 
     default String getString(K key, String defaultVal) {
-        V value = getValue(key);
-        return value == null ? defaultVal : value.toString();
+        return Objects.toString(getValue(key), defaultVal);
     }
 
     default String removeString(K key) {
@@ -36,18 +37,17 @@ public interface TypedDictionary<K, V> {
     }
 
     default String removeString(K key, String defaultVal) {
-        V value = removeKey(key);
-        return value == null ? defaultVal : value.toString();
+        return Objects.toString(removeKey(key), defaultVal);
     }
 
     // --------------------------------------------------------boolean
-    default boolean getRequireBoolean(K key) {
-        String value = getRequireString(key);
-        if (value == null) {
-            throw new IllegalArgumentException("Boolean value cannot be null.");
+    default boolean getRequiredBoolean(K key) {
+        Object value = getValue(key);
+        if (value instanceof Boolean) {
+            return (boolean) value;
         }
-
-        switch (value) {
+        assertPresented(key, value);
+        switch (value.toString()) {
             case "TRUE" : case "True" : case "true" : return true;
             case "FALSE": case "False": case "false": return false;
             default: throw new IllegalArgumentException("Invalid boolean value: " + value);
@@ -55,123 +55,118 @@ public interface TypedDictionary<K, V> {
     }
 
     default boolean getBoolean(K key, boolean defaultValue) {
-        Boolean value = getBoolean(key);
-        return value == null ? defaultValue : value;
+        return Numbers.toBoolean(getValue(key), defaultValue);
     }
 
     default Boolean getBoolean(K key) {
-        String value = getString(key);
-        return value == null ? null : "true".equalsIgnoreCase(value);
+        return Numbers.toWrapBoolean(getValue(key));
     }
 
     default boolean removeBoolean(K key, boolean defaultValue) {
-        Boolean value = removeBoolean(key);
-        return value == null ? defaultValue : value;
+        return Numbers.toBoolean(removeKey(key), defaultValue);
     }
 
     default Boolean removeBoolean(K key) {
-        String value = removeString(key);
-        return value == null ? null : "true".equalsIgnoreCase(value);
+        return Numbers.toWrapBoolean(removeKey(key));
     }
 
     // --------------------------------------------------------------int
-    default int getRequireInteger(K key) {
-        return Integer.parseInt(getRequireString(key));
+    default int getRequiredInt(K key) {
+        Integer value = Numbers.toWrapInt(getValue(key));
+        assertPresented(key, value);
+        return value;
     }
 
-    default int getInteger(K key, int defaultValue) {
-        Integer value = getInteger(key);
-        return value == null ? defaultValue : value;
+    default int getInt(K key, int defaultValue) {
+        return Numbers.toInt(getValue(key), defaultValue);
     }
 
-    default Integer getInteger(K key) {
-        String value = getString(key);
-        return value == null ? null : Integer.parseInt(value);
+    default Integer getInt(K key) {
+        return Numbers.toWrapInt(getValue(key));
     }
 
-    default int removeInteger(K key, int defaultValue) {
-        Integer value = removeInteger(key);
-        return value == null ? defaultValue : value;
+    default int removeInt(K key, int defaultValue) {
+        return Numbers.toInt(removeKey(key), defaultValue);
     }
 
-    default Integer removeInteger(K key) {
-        String value = removeString(key);
-        return value == null ? null : Integer.parseInt(value);
+    default Integer removeInt(K key) {
+        return Numbers.toWrapInt(removeKey(key));
     }
 
     // --------------------------------------------------------------long
-    default long getRequireLong(K key) {
-        return Long.parseLong(getRequireString(key));
+    default long getRequiredLong(K key) {
+        Long value = Numbers.toWrapLong(getValue(key));
+        assertPresented(key, value);
+        return value;
     }
 
     default long getLong(K key, long defaultValue) {
-        Long value = getLong(key);
-        return value == null ? defaultValue : value;
+        return Numbers.toLong(getValue(key), defaultValue);
     }
 
     default Long getLong(K key) {
-        String value = getString(key);
-        return value == null ? null : Long.parseLong(value);
+        return Numbers.toWrapLong(getValue(key));
     }
 
     default long removeLong(K key, long defaultValue) {
-        Long value = removeLong(key);
-        return value == null ? defaultValue : value;
+        return Numbers.toLong(removeKey(key), defaultValue);
     }
 
     default Long removeLong(K key) {
-        String value = removeString(key);
-        return value == null ? null : Long.parseLong(value);
+        return Numbers.toWrapLong(removeKey(key));
     }
 
     // --------------------------------------------------------------float
-    default float getRequireFloat(K key) {
-        return Float.parseFloat(getRequireString(key));
+    default float getRequiredFloat(K key) {
+        Float value = Numbers.toWrapFloat(getValue(key));
+        assertPresented(key, value);
+        return value;
     }
 
     default float getFloat(K key, float defaultValue) {
-        Float value = getFloat(key);
-        return value == null ? defaultValue : value;
+        return Numbers.toFloat(getValue(key), defaultValue);
     }
 
     default Float getFloat(K key) {
-        String value = getString(key);
-        return value == null ? null : Float.parseFloat(value);
+        return Numbers.toWrapFloat(getValue(key));
     }
 
     default float removeFloat(K key, float defaultValue) {
-        Float value = removeFloat(key);
-        return value == null ? defaultValue : value;
+        return Numbers.toFloat(removeKey(key), defaultValue);
     }
 
     default Float removeFloat(K key) {
-        String value = removeString(key);
-        return value == null ? null : Float.parseFloat(value);
+        return Numbers.toWrapFloat(removeKey(key));
     }
 
     // --------------------------------------------------------------double
-    default double getRequireDouble(K key) {
-        return Double.parseDouble(getRequireString(key));
+    default double getRequiredDouble(K key) {
+        Double value = Numbers.toWrapDouble(getValue(key));
+        assertPresented(key, value);
+        return value;
     }
 
     default double getDouble(K key, double defaultValue) {
-        Double value = getDouble(key);
-        return value == null ? defaultValue : value;
+        return Numbers.toDouble(getValue(key), defaultValue);
+
     }
 
     default Double getDouble(K key) {
-        String value = getString(key);
-        return value == null ? null : Double.parseDouble(value);
+        return Numbers.toWrapDouble(getValue(key));
     }
 
     default double removeDouble(K key, double defaultValue) {
-        Double value = removeDouble(key);
-        return value == null ? defaultValue : value;
+        return Numbers.toDouble(removeKey(key), defaultValue);
     }
 
     default Double removeDouble(K key) {
-        String value = removeString(key);
-        return value == null ? null : Double.parseDouble(value);
+        return Numbers.toWrapDouble(removeKey(key));
     }
 
+    // ---------------------------------------------------- static methods
+    static void assertPresented(Object key, Object value) {
+        if (value == null) {
+            throw new IllegalArgumentException("Not presented value of '" + key + "'");
+        }
+    }
 }

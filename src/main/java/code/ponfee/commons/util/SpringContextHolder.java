@@ -1,18 +1,11 @@
 package code.ponfee.commons.util;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
+import code.ponfee.commons.reflect.ClassUtils;
+import code.ponfee.commons.reflect.Fields;
+import code.ponfee.commons.reflect.GenericUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -20,9 +13,14 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
 
-import code.ponfee.commons.reflect.ClassUtils;
-import code.ponfee.commons.reflect.Fields;
-import code.ponfee.commons.reflect.GenericUtils;
+import javax.annotation.Resource;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * <pre>
@@ -66,19 +64,7 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
      * @return
      */
     public static Object getBean(String name) {
-        //assertContextInjected();
-        BeansException ex = null;
-        Object bean;
-        for (ApplicationContext c : HOLDER) {
-            try {
-                if ((bean = c.getBean(name)) != null) {
-                    return bean;
-                }
-            } catch (BeansException e) {
-                ex = e;
-            }
-        }
-        return throwOrReturn(ex, null);
+        return get(c -> c.getBean(name));
     }
 
     /**
@@ -88,19 +74,7 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
      * @return
      */
     public static <T> T getBean(Class<T> clazz) {
-        //assertContextInjected();
-        BeansException ex = null;
-        T bean;
-        for (ApplicationContext c : HOLDER) {
-            try {
-                if ((bean = c.getBean(clazz)) != null) {
-                    return bean;
-                }
-            } catch (BeansException e) {
-                ex = e;
-            }
-        }
-        return throwOrReturn(ex, null);
+        return get(c -> c.getBean(clazz));
     }
 
     /**
@@ -109,19 +83,7 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
      * @return
      */
     public static <T> T getBean(String name, Class<T> clazz) {
-        //assertContextInjected();
-        BeansException ex = null;
-        T bean;
-        for (ApplicationContext c : HOLDER) {
-            try {
-                if ((bean = c.getBean(name, clazz)) != null) {
-                    return bean;
-                }
-            } catch (BeansException e) {
-                ex = e;
-            }
-        }
-        return throwOrReturn(ex, null);
+        return get(c -> c.getBean(name, clazz));
     }
 
     /**
@@ -131,7 +93,6 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
      * @return
      */
     public static boolean containsBean(String name) {
-        //assertContextInjected();
         for (ApplicationContext c : HOLDER) {
             if (c.containsBean(name)) {
                 return true;
@@ -147,18 +108,23 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
      * @return
      */
     public static boolean isSingleton(String name) {
-        //assertContextInjected();
-        NoSuchBeanDefinitionException ex = null;
+        BeansException ex = null;
         for (ApplicationContext c : HOLDER) {
             try {
                 if (c.isSingleton(name)) {
                     return true;
                 }
-            } catch (NoSuchBeanDefinitionException e) {
-                ex = e;
+            } catch (BeansException e) {
+                if (ex == null) {
+                    ex = e;
+                }
             }
         }
-        return throwOrReturn(ex, false);
+        if (ex == null) {
+            return false;
+        } else {
+            throw ex;
+        }
     }
 
     /**
@@ -168,19 +134,7 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
      * @return
      */
     public static Class<?> getType(String name) {
-        //assertContextInjected();
-        NoSuchBeanDefinitionException ex = null;
-        Class<?> type;
-        for (ApplicationContext c : HOLDER) {
-            try {
-                if ((type = c.getType(name)) != null) {
-                    return type;
-                }
-            } catch (NoSuchBeanDefinitionException e) {
-                ex = e;
-            }
-        }
-        return throwOrReturn(ex, null);
+        return get(c -> c.getType(name));
     }
 
     /**
@@ -190,15 +144,7 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
      * @return
      */
     public static String[] getAliases(String name) {
-        //assertContextInjected();
-        String[] aliases;
-        for (ApplicationContext c : HOLDER) {
-            if ((aliases = c.getAliases(name)) != null) {
-                return aliases;
-            }
-        }
-
-        return null;
+        return get(c -> c.getAliases(name)); // 不抛异常
     }
 
     /**
@@ -207,21 +153,8 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
      * @param annotationType the Annotation type
      * @return a map
      */
-    public static Map<String, Object> getBeansWithAnnotation(
-        Class<? extends Annotation> annotationType) {
-        //assertContextInjected();
-        BeansException ex = null;
-        Map<String, Object> map;
-        for (ApplicationContext c : HOLDER) {
-            try {
-                if ((map = c.getBeansWithAnnotation(annotationType)) != null) {
-                    return map;
-                }
-            } catch (BeansException e) {
-                ex = e;
-            }
-        }
-        return throwOrReturn(ex, null);
+    public static Map<String, Object> getBeansWithAnnotation(Class<? extends Annotation> annotationType) {
+        return get(c -> c.getBeansWithAnnotation(annotationType));
     }
 
     // -----------------------------------------------------------------------
@@ -287,15 +220,27 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
         }
     }
 
-    private static <T> T throwOrReturn(BeansException ex, T t) {
+    private static <T> T get(Function<ApplicationContext, T> finder) throws BeansException {
+        //Assert.state(HOLDER.size() > 0, "must be defined SpringContextHolder within spring config file.");
+        BeansException ex = null;
+        T result;
+        for (ApplicationContext c : HOLDER) {
+            try {
+                if ((result = finder.apply(c)) != null) {
+                    return result;
+                }
+            } catch (BeansException e) {
+                if (ex == null) {
+                    ex = e;
+                }
+            }
+        }
+
         if (ex == null) {
-            return t;
+            return null;
         } else {
             throw ex;
         }
     }
 
-    //private static void assertContextInjected() {
-    //    Assert.state(HOLDER.size() > 0, "must be defined SpringContextHolder within spring config file.");
-    //}
 }

@@ -1,5 +1,11 @@
 package code.ponfee.commons.data.lookup;
 
+import code.ponfee.commons.collect.Collects;
+import code.ponfee.commons.data.NamedDataSource;
+import org.apache.commons.collections4.CollectionUtils;
+
+import javax.annotation.Nonnull;
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -8,14 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.annotation.Nonnull;
-import javax.sql.DataSource;
-
-import org.apache.commons.collections4.CollectionUtils;
-
-import code.ponfee.commons.collect.Collects;
-import code.ponfee.commons.data.NamedDataSource;
 
 /**
  * Multiple DataSource Context
@@ -88,7 +86,7 @@ public final class MultipleDataSourceContext {
 
         addAll(names); // add data source keys 
 
-        Map<String, DataSource> dataSources = new LinkedHashMap<>();
+        Map<String, DataSource> dataSources = new LinkedHashMap<>(othersDataSource.length + 1, 1);
         dataSources.put(defaultName, defaultDataSource);
         Arrays.stream(othersDataSource).forEach(
             ns -> dataSources.put(ns.getName(), ns.getDataSource())

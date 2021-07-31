@@ -1,5 +1,15 @@
 package code.ponfee.commons.data.lookup;
 
+import code.ponfee.commons.base.Initializable;
+import code.ponfee.commons.base.Releasable;
+import code.ponfee.commons.data.NamedDataSource;
+import code.ponfee.commons.exception.Throwables;
+import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.jdbc.datasource.AbstractDataSource;
+
+import javax.annotation.Nonnull;
+import javax.sql.DataSource;
+import java.io.Closeable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -8,30 +18,23 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
-import javax.annotation.Nonnull;
-import javax.sql.DataSource;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.jdbc.datasource.AbstractDataSource;
-
-import code.ponfee.commons.data.NamedDataSource;
-
 /**
- * 可动态增加/移除数据源
+ * 可扩展的多数据源类型：可动态增加/移除数据源
  * 
  * @author Ponfee
  * @see org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource
  */
-public class MultipletScalableDataSource extends AbstractDataSource implements DataSourceLookup {
+public class MultipleScalableDataSource extends AbstractDataSource
+    implements DataSourceLookup, Initializable, Closeable {
 
     private final Map<String, DataSource> dataSources = new HashMap<>();
     private final DataSource defaultDataSource;
 
-    public MultipletScalableDataSource(NamedDataSource dataSource) {
+    public MultipleScalableDataSource(NamedDataSource dataSource) {
         this(dataSource.getName(), dataSource.getDataSource());
     }
 
-    public MultipletScalableDataSource(NamedDataSource... dataSources) {
+    public MultipleScalableDataSource(NamedDataSource... dataSources) {
         this(
             dataSources[0].getName(), 
             dataSources[0].getDataSource(), 
@@ -39,8 +42,8 @@ public class MultipletScalableDataSource extends AbstractDataSource implements D
         );
     }
 
-    public MultipletScalableDataSource(String defaultName, DataSource defaultDataSource, 
-                                       NamedDataSource... othersDataSource) {
+    public MultipleScalableDataSource(String defaultName, DataSource defaultDataSource,
+                                      NamedDataSource... othersDataSource) {
         Map<String, DataSource> dataSources = MultipleDataSourceContext.process(
             defaultName, defaultDataSource, othersDataSource
         );
@@ -108,6 +111,22 @@ public class MultipletScalableDataSource extends AbstractDataSource implements D
     @Override
     public DataSource lookupDataSource(String name) {
         return this.dataSources.get(name);
+    }
+
+    @Override
+    public void init() {
+        dataSources.forEach((name, ds) -> Initializable.init(ds));
+    }
+
+    @Override
+    public void close() {
+        dataSources.forEach((name, ds) -> {
+            try {
+                Releasable.release(ds);
+            } catch (Exception e) {
+                Throwables.console(e);
+            }
+        });
     }
 
     /**

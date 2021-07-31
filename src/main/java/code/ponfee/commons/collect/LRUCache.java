@@ -1,8 +1,8 @@
 package code.ponfee.commons.collect;
 
 import java.util.LinkedHashMap;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * LRU cache based LinkedHashMap
@@ -16,7 +16,7 @@ public class LRUCache<K, V> extends LinkedHashMap<K, V> {
 
     private static final long serialVersionUID = 3943991140850259837L;
 
-    private final Lock lock = new ReentrantLock();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     private volatile int maxSize;
 
@@ -36,61 +36,61 @@ public class LRUCache<K, V> extends LinkedHashMap<K, V> {
 
     @Override
     public boolean containsKey(Object key) {
-        lock.lock();
+        lock.readLock().lock();
         try {
             return super.containsKey(key);
         } finally {
-            lock.unlock();
+            lock.readLock().unlock();
         }
     }
 
     @Override
     public V get(Object key) {
-        lock.lock();
+        lock.readLock().lock();
         try {
             return super.get(key);
         } finally {
-            lock.unlock();
+            lock.readLock().unlock();
         }
     }
 
     @Override
     public V put(K key, V value) {
-        lock.lock();
+        lock.writeLock().lock();
         try {
             return super.put(key, value);
         } finally {
-            lock.unlock();
+            lock.writeLock().unlock();
         }
     }
 
     @Override
     public V remove(Object key) {
-        lock.lock();
+        lock.writeLock().lock();
         try {
             return super.remove(key);
         } finally {
-            lock.unlock();
+            lock.writeLock().unlock();
         }
     }
 
     @Override
     public int size() {
-        lock.lock();
+        lock.readLock().lock();
         try {
             return super.size();
         } finally {
-            lock.unlock();
+            lock.readLock().unlock();
         }
     }
 
     @Override
     public void clear() {
-        lock.lock();
+        lock.writeLock().lock();
         try {
             super.clear();
         } finally {
-            lock.unlock();
+            lock.writeLock().unlock();
         }
     }
 

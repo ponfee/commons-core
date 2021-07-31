@@ -7,14 +7,14 @@ import java.util.Date;
  * 
  * @author Ponfee
  * @param <I> id field type     (table primary key)
- * @param <U> creator field type(user id or user name)
+ * @param <U> creator field type(userid or username)
  */
 public abstract class BaseEntity<I, U> implements java.io.Serializable {
 
     private static final long serialVersionUID = -3387171222355207376L;
 
     private I    id;          // database table primary key id
-    private int  version = 1; // operate version
+    private int  version = 1; // data version
     private U    creator;     // create user
     private Date createTm;    // create time
     private Date modifyTm;    // last modify time

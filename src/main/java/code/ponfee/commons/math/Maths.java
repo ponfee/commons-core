@@ -103,8 +103,15 @@ public class Maths {
             return value;
         }
 
-        double start = 0.0D, end = Math.max(value, 1.0D), square, r;
-        while (!isBorderline(r = (start + end) / 2, start, end) && (square = r * r) != value) {
+        double start, end, square, r;
+        if (value > 1.0D) {
+            start = 1.0D;
+            end = value;
+        } else {
+            start = value;
+            end = 1.0D;
+        }
+        while (!isBorderline(r = start + (end - start) / 2, start, end) && (square = r * r) != value) {
             if (square > value) end = r; // lower
             else              start = r; // upper
         }

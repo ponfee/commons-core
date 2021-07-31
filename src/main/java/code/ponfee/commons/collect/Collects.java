@@ -1,10 +1,19 @@
 package code.ponfee.commons.collect;
 
+import code.ponfee.commons.model.Page;
+import code.ponfee.commons.model.PageHandler;
+import code.ponfee.commons.model.Result;
+import code.ponfee.commons.util.ObjectUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,18 +27,8 @@ import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ArrayUtils;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
-import code.ponfee.commons.model.Page;
-import code.ponfee.commons.model.PageHandler;
-import code.ponfee.commons.model.Result;
-import code.ponfee.commons.util.ObjectUtils;
 
 /**
  * 集合工具类
@@ -184,44 +183,52 @@ public final class Collects {
 
     // -----------------------------the collection of intersect, union and different operations
     /**
-     * 求两集合的交集
+     * two Collection intersect
      * intersect([1,2,3], [2,3,4]) = [2,3]
      * 
      * @param coll1 the collection 1
      * @param coll2 the collection 2
-     * @return a list of the two collection intersect 
+     * @return a list of the two collection intersect result
      */
     public static <T> List<T> intersect(Collection<T> coll1, Collection<T> coll2) {
         return coll1.stream().filter(coll2::contains).collect(Collectors.toList());
     }
 
     /**
-     * 数组与list交集
+     * two array intersect
+     *
      * @param array1
      * @param array2
      * @return
      */
     @SuppressWarnings({ "unchecked" })
     public static <T> T[] intersect(T[] array1, T[] array2) {
-        List<T> list = Stream.of(array1).filter(
-            t -> ArrayUtils.contains(array2, t)
-        ).collect(Collectors.toList());
+        List<T> list = Stream.of(array1)
+                             .filter(t -> ArrayUtils.contains(array2, t))
+                             .collect(Collectors.toList());
 
         Class<?> type = array1.getClass().getComponentType();
         return list.toArray((T[]) Array.newInstance(type, list.size()));
     }
 
     /**
-     * two list union result
+     * two Collection union result
      * 
-     * @param list1
-     * @param list2
+     * @param coll1
+     * @param coll2
      * @return
      */
-    public static <T> List<T> union(Collection<T> list1, Collection<T> list2) {
-        Set<T> sets = Sets.newHashSet(list1);
-        sets.addAll(list2);
-        return Lists.newArrayList(sets);
+    public static <T> List<T> union(Collection<T> coll1, Collection<T> coll2) {
+        int max = coll1.size(), min = coll2.size();
+        if (max < min) {
+            int tmp = max;
+            max = min;
+            min = tmp;
+        }
+        List<T> res = new ArrayList<>(max + (min >> 1));
+        res.addAll(coll1);
+        coll2.stream().filter(ObjectUtils.not(coll1::contains)).forEach(res::add);
+        return res;
     }
 
     /**
@@ -232,14 +239,11 @@ public final class Collects {
      * @param list2
      * @return
      */
-    public static <T> List<T> different(Collection<T> list1, Collection<T> list2) {
-        List<T> list = list1.stream().filter(ObjectUtils.not(list2::contains))
-                                     .collect(Collectors.toList());
-
-        list.addAll(list2.stream().filter(ObjectUtils.not(list1::contains))
-                                  .collect(Collectors.toList()));
-
-        return list;
+    public static <T> List<T> different(List<T> list1, List<T> list2) {
+        List<T> res = new ArrayList<>();
+        list1.stream().filter(ObjectUtils.not(list2::contains)).forEach(res::add);
+        list2.stream().filter(ObjectUtils.not(list1::contains)).forEach(res::add);
+        return res;
     }
 
     /**
@@ -250,9 +254,10 @@ public final class Collects {
      * @return
      */
     public static <T> Set<T> different(Set<T> set1, Set<T> set2) {
-        Set<T> diffSet = Sets.newHashSet(Sets.difference(set1, set2));
-        diffSet.addAll(Sets.difference(set2, set1));
-        return diffSet;
+        Set<T> res = new HashSet<>();
+        set1.stream().filter(ObjectUtils.not(set2::contains)).forEach(res::add);
+        set2.stream().filter(ObjectUtils.not(set1::contains)).forEach(res::add);
+        return res;
     }
 
     /**
@@ -263,14 +268,13 @@ public final class Collects {
      * @return
      */
     public static <K, V> Map<K, V> different(Map<K, V> map1, Map<K, V> map2) {
-        Set<K> set1 = map1.keySet();
-        Set<K> set2 = map2.keySet();
-        Set<K> diffSet = Sets.newHashSet(Sets.difference(set1, set2));
-        diffSet.addAll(Sets.difference(set2, set1));
-        return diffSet.stream().collect(Collectors.toMap(
-            Function.identity(), 
-            key -> map1.containsKey(key) ? map1.get(key) : map2.get(key)
-        ));
+        Map<K, V> res = new HashMap<>();
+        map1.entrySet().stream().filter(e -> !map2.containsKey(e.getKey()))
+                                .forEach(e -> res.put(e.getKey(), e.getValue()));
+
+        map2.entrySet().stream().filter(e -> !map1.containsKey(e.getKey()))
+                                .forEach(e -> res.put(e.getKey(), e.getValue()));
+        return res;
     }
 
     /**
@@ -470,4 +474,55 @@ public final class Collects {
         return result;
     }
 
+    public static void swap(int[] array, int i, int j) {
+        int temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+
+    public static int[] sortAndGetIndexSwapMapping(int[] array) {
+        int[] indexSwapMapping = IntStream.range(0, array.length).toArray();
+        for (int n = array.length - 1, i = 0; i < n; i++) {
+            int minimumIndex = i;
+            for (int j = i + 1; j <= n; j++) {
+                if (array[minimumIndex] > array[j]) {
+                    minimumIndex = j;
+                }
+            }
+            if (minimumIndex != i) {
+                swap(array, i, minimumIndex);
+                swap(indexSwapMapping, i, minimumIndex);
+            }
+        }
+        return indexSwapMapping;
+    }
+
+    /**
+     * Checks that the specified array reference is not null and not empty,
+     * throws a customized {@link IllegalStateException} if it is.
+     * @param array the array
+     * @param <T> the type of the array element
+     * @return {@code array} if not null and not empty
+     */
+    public static <T> T[] requireNonEmpty(T[] array) {
+        if (ArrayUtils.isEmpty(array)) {
+            throw new IllegalStateException("The array cannot be empty.");
+        }
+        return array;
+    }
+
+    /**
+     * Checks that the specified list reference is not null and not empty,
+     * throws a customized {@link IllegalStateException} if it is.
+     *
+     * @param list the list
+     * @param <T> the type of the list element
+     * @return {@code list} if not null and not empty
+     */
+    public static <T> List<T> requireNonEmpty(List<T> list) {
+        if (CollectionUtils.isEmpty(list)) {
+            throw new IllegalStateException("The list cannot be empty.");
+        }
+        return list;
+    }
 }

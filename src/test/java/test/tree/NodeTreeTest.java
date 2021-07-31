@@ -8,20 +8,18 @@
 
 package test.tree;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Function;
-
-import org.junit.Test;
-
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.tree.BaseNode;
 import code.ponfee.commons.tree.MapTreeTrait;
 import code.ponfee.commons.tree.TreeNode;
 import code.ponfee.commons.tree.TreeNodeBuilder;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * 
@@ -47,7 +45,9 @@ public class NodeTreeTest {
         list.add(new BaseNode<>("400000", null, true, "nid400000"));
 
         // do mount first
-        TreeNode<String, String> subtree = TreeNodeBuilder.<String, String> newBuilder("400010", Comparator.comparing(node -> ThreadLocalRandom.current().nextInt(10))).pid("400000").enabled(true).build();
+        TreeNode<String, String> subtree = TreeNodeBuilder.<String, String> newBuilder(
+            "400010", Comparator.comparing(node -> ThreadLocalRandom.current().nextInt(10))
+        ).pid("400000").enabled(true).build();
 
         // do mount second
         subtree.mount(Arrays.asList(
@@ -67,8 +67,8 @@ public class NodeTreeTest {
         // do mount fouth
         root.mount(list); // mount
         System.out.println(Jsons.toJson(root));
-        System.out.println(Jsons.toJson(root.dfsFlat()));
-        System.out.println(Jsons.toJson(root.bfsFlat()));
+        System.out.println(Jsons.toJson(root.flatDFS()));
+        System.out.println(Jsons.toJson(root.flatCFS()));
         System.out.println("convert-true: "  + Jsons.toJson(root.convert(this::convert, true)));
         System.out.println("convert-false: " + Jsons.toJson(root.convert(this::convert, false)));
     }
@@ -146,15 +146,16 @@ public class NodeTreeTest {
         list.add(new BaseNode<>("500011", "500010", true, random()));
 
         // do mount third
-        Comparator< ? super TreeNode<String, String>> c = TreeNode.comparingThenComparingNid(Function.identity());
-        TreeNode<String, String> root = TreeNodeBuilder.newBuilder(TreeNode.DEFAULT_ROOT_ID, c).build();
+        //Comparator< ? super TreeNode<String, String>> c = SiblingNodeComparator.compareAttachThenNid(Function.identity());
+        //TreeNode<String, String> root = TreeNodeBuilder.newBuilder(TreeNode.DEFAULT_ROOT_ID, c).build();
+        TreeNode<String, String> root = TreeNodeBuilder.<String, String>newBuilder(TreeNode.DEFAULT_ROOT_ID).build();
         System.out.println(Jsons.toJson(root));
 
         // do mount fouth
         root.mount(list); // mount
         System.out.println(Jsons.toJson(root));
-        System.out.println(Jsons.toJson(root.dfsFlat()));
-        System.out.println(Jsons.toJson(root.bfsFlat()));
+        System.out.println(Jsons.toJson(root.flatDFS()));
+        System.out.println(Jsons.toJson(root.flatCFS()));
     }
     
     private String random() {

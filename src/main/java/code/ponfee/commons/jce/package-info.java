@@ -1,6 +1,7 @@
 /**
+ * <pre>
  * Java Cryptography Extension提供用于加密、密钥生成和协商
- * 以及 Message Authentication Code（MAC）算法的实现<p>
+ * 以及 Message Authentication Code（MAC）算法的实现
  * 
  * http://www.freebuf.com/articles/others-articles/136742.html
  * https://www.jianshu.com/p/b10a892879a0
@@ -24,12 +25,14 @@
  *   缺点：效率低
  *   算法：
  *      DH：基于离散对数的实现，主要用于密钥交换
- *      RSA：基于大整数分解的实现，Ron [R]ivest, Adi [S]hamir, Leonard [A]dleman（三人）
+ *      RSA：基于大整数因式分解的实现，Ron [R]ivest, Adi [S]hamir, Leonard [A]dleman（三人）
  *          https://www.kancloud.cn/kancloud/rsa_algorithm/48488
  *      DSA：基于整数有限域离散对数难题（特点是两个素数公开），Digital Signature Algorithm，顾名思义只用于数字签名
  *      ECC：基于椭圆曲线算法，指在取代RSA
  *   填充：RSA_PKCS1_PADDING（blocklen=keysize/8–11）、RSA_PKCS1_OAEP_PADDING(keysize-41)、RSA_NO_PADDING
  *   签名/验签：PKCS1及填充、PKCS7格式（附原文|不附原文）
+ *   PKCS: Public-Key Cryptography Standards
+ *   PKI: Public-Key Infrastructure
  * 
  * 4、对称与非对称结合：数字信封envelop，结构体，（带签名|不带签名）
  * 
@@ -122,7 +125,8 @@
  * 13、TOP：基于时间的一次性密码（Time-based One-time Password），如动态口令
  *    TC = floor((unixtime(now) − unixtime(T0)) / TS) // unixtime(now)：当前unix时间戳，unixtime(T0)：约定的起始时间点的时间戳，TS：哈希有效期的时间长度
  *    TOTP = HASH(SecretKey, TC)
- * 
+ * </pre>
+ *
  * @author Ponfee
  */
 package code.ponfee.commons.jce;

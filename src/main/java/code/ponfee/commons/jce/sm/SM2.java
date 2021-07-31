@@ -1,24 +1,24 @@
 package code.ponfee.commons.jce.sm;
 
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
-
+import code.ponfee.commons.jce.ECParameters;
+import code.ponfee.commons.util.Base64UrlSafe;
+import code.ponfee.commons.util.Bytes;
+import code.ponfee.commons.util.SecureRandoms;
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.ArrayUtils;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.math.ec.ECPoint;
 
-import com.google.common.collect.ImmutableMap;
-
-import code.ponfee.commons.jce.ECParameters;
-import code.ponfee.commons.util.Base64UrlSafe;
-import code.ponfee.commons.util.Bytes;
-import code.ponfee.commons.util.SecureRandoms;
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Objects;
 
 /**
+ * 基于椭圆曲线
+ *
  * new BigInteger("0") // 0为十进制数字符串表示
  * SM2 asymmetric cipher implementation
  * support encrypt/decrypt

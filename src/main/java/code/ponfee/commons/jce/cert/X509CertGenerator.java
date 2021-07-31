@@ -1,22 +1,10 @@
 package code.ponfee.commons.jce.cert;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.Signature;
-import java.security.cert.X509Certificate;
-import java.util.Date;
-import java.util.Vector;
-
-import javax.annotation.Nullable;
-
-import org.bouncycastle.operator.jcajce.JcaContentVerifierProviderBuilder;
-import org.bouncycastle.pkcs.PKCS10CertificationRequest;
-
 import code.ponfee.commons.jce.Providers;
 import code.ponfee.commons.jce.RSASignAlgorithms;
 import code.ponfee.commons.util.ObjectUtils;
+import org.bouncycastle.operator.jcajce.JcaContentVerifierProviderBuilder;
+import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import sun.security.pkcs10.PKCS10;
 import sun.security.util.ObjectIdentifier;
 import sun.security.x509.AlgorithmId;
@@ -33,6 +21,16 @@ import sun.security.x509.X500Name;
 import sun.security.x509.X509CertImpl;
 import sun.security.x509.X509CertInfo;
 
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.security.cert.X509Certificate;
+import java.util.Date;
+import java.util.Vector;
+
 /**
  * 证书生成工具类
  * 
@@ -43,7 +41,7 @@ public class X509CertGenerator {
 
     // ------------------------create root ca cert of self sign -----------------------------
     public static X509Certificate createRootCert(String issuer, RSASignAlgorithms sigAlg, PrivateKey privateKey, 
-                                                 PublicKey publicKey,  Date notBefore, Date notAfter) {
+                                                 PublicKey publicKey, Date notBefore, Date notAfter) {
         return createRootCert(null, issuer, sigAlg, privateKey, publicKey, notBefore, notAfter);
     }
 

@@ -15,7 +15,7 @@ public final class PropertiesUtils {
         props.forEach((k, v) -> {
             String key = k.toString();
             if (key.startsWith(prefixKey)) {
-                properties.put(key.substring(prefixLen, key.length()), v);
+                properties.put(key.substring(prefixLen), v);
             }
         });
         return properties;

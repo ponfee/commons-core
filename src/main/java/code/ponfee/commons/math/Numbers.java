@@ -1,6 +1,8 @@
 package code.ponfee.commons.math;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import com.google.common.primitives.Chars;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -8,10 +10,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Arrays;
 
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.StringUtils;
-
-import com.google.common.primitives.Chars;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 /**
  * Number utility
@@ -27,8 +26,8 @@ import com.google.common.primitives.Chars;
 public final class Numbers {
     private Numbers() {}
 
-    public static final Integer INTEGER_ZERO = 0;
     public static final int     INT_ZERO     = 0;
+    public static final Integer INTEGER_ZERO = INT_ZERO;
     public static final byte    BYTE_ZERO    = 0x00;
     public static final char    CHAR_ZERO    = '\u0000'; // equals '\0'
 
@@ -87,12 +86,21 @@ public final class Numbers {
     }
 
     public static byte toByte(Object obj, byte defaultVal) {
-        Long value = toWrapLong(obj);
+        if (obj instanceof Number) {
+            return ((Number) obj).byteValue();
+        }
+        Long value = parseLong(obj);
         return value == null ? defaultVal : value.byteValue();
     }
 
     public static Byte toWrapByte(Object obj) {
-        Long value = toWrapLong(obj);
+        if (obj instanceof Byte) {
+            return (Byte) obj;
+        }
+        if (obj instanceof Number) {
+            return ((Number) obj).byteValue();
+        }
+        Long value = parseLong(obj);
         return value == null ? null : value.byteValue();
     }
 
@@ -102,12 +110,21 @@ public final class Numbers {
     }
 
     public static short toShort(Object obj, short defaultVal) {
-        Long value = toWrapLong(obj);
+        if (obj instanceof Number) {
+            return ((Number) obj).shortValue();
+        }
+        Long value = parseLong(obj);
         return value == null ? defaultVal : value.shortValue();
     }
 
     public static Short toWrapShort(Object obj) {
-        Long value = toWrapLong(obj);
+        if (obj instanceof Short) {
+            return (Short) obj;
+        }
+        if (obj instanceof Number) {
+            return ((Number) obj).shortValue();
+        }
+        Long value = parseLong(obj);
         return value == null ? null : value.shortValue();
     }
 
@@ -117,12 +134,21 @@ public final class Numbers {
     }
 
     public static int toInt(Object obj, int defaultVal) {
-        Long value = toWrapLong(obj);
+        if (obj instanceof Number) {
+            return ((Number) obj).intValue();
+        }
+        Long value = parseLong(obj);
         return value == null ? defaultVal : value.intValue();
     }
 
     public static Integer toWrapInt(Object obj) {
-        Long value = toWrapLong(obj);
+        if (obj instanceof Integer) {
+            return (Integer) obj;
+        }
+        if (obj instanceof Number) {
+            return ((Number) obj).intValue();
+        }
+        Long value = parseLong(obj);
         return value == null ? null : value.intValue();
     }
 
@@ -132,25 +158,21 @@ public final class Numbers {
     }
 
     public static long toLong(Object obj, long defaultVal) {
-        Long value = toWrapLong(obj);
+        if (obj instanceof Number) {
+            return ((Number) obj).longValue();
+        }
+        Long value = parseLong(obj);
         return value == null ? defaultVal : value;
     }
 
     public static Long toWrapLong(Object obj) {
-        if (obj == null) {
-            return null;
+        if (obj instanceof Long) {
+            return (Long) obj;
         }
         if (obj instanceof Number) {
             return ((Number) obj).longValue();
         }
-        try {
-            String val = obj.toString();
-            return val.indexOf('.') == -1 
-                 ? Long.parseLong(val) 
-                 : (long) Double.parseDouble(val);
-        } catch (NumberFormatException ignored) {
-            return null;
-        }
+        return parseLong(obj);
     }
 
     // -----------------------------------------------------------------float convert
@@ -159,12 +181,21 @@ public final class Numbers {
     }
 
     public static float toFloat(Object obj, float defaultVal) {
-        Double value = toWrapDouble(obj);
+        if (obj instanceof Number) {
+            return ((Number) obj).floatValue();
+        }
+        Double value = parseDouble(obj);
         return value == null ? defaultVal : value.floatValue();
     }
 
     public static Float toWrapFloat(Object obj) {
-        Double value = toWrapDouble(obj);
+        if (obj instanceof Float) {
+            return (Float) obj;
+        }
+        if (obj instanceof Number) {
+            return ((Number) obj).floatValue();
+        }
+        Double value = parseDouble(obj);
         return value == null ? null : value.floatValue();
     }
 
@@ -174,22 +205,21 @@ public final class Numbers {
     }
 
     public static double toDouble(Object obj, double defaultVal) {
-        Double value = toWrapDouble(obj);
+        if (obj instanceof Number) {
+            return ((Number) obj).doubleValue();
+        }
+        Double value = parseDouble(obj);
         return value == null ? defaultVal : value;
     }
 
     public static Double toWrapDouble(Object obj) {
-        if (obj == null) {
-            return null;
+        if (obj instanceof Double) {
+            return (Double) obj;
         }
         if (obj instanceof Number) {
             return ((Number) obj).doubleValue();
         }
-        try {
-            return Double.parseDouble(obj.toString());
-        } catch (NumberFormatException ignored) {
-            return null;
-        }
+        return parseDouble(obj);
     }
 
     // ---------------------------------------------------------------------number format
@@ -510,4 +540,29 @@ public final class Numbers {
         return builder.toString();
     }
 
+    // -------------------------------------------------------private methods
+    private static Long parseLong(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        try {
+            String val = obj.toString();
+            return val.indexOf('.') == -1
+                    ? Long.parseLong(val)
+                    : (long) Double.parseDouble(val);
+        } catch (NumberFormatException ignored) {
+            return null;
+        }
+    }
+
+    private static Double parseDouble(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        try {
+            return Double.parseDouble(obj.toString());
+        } catch (NumberFormatException ignored) {
+            return null;
+        }
+    }
 }

@@ -1,10 +1,8 @@
 package code.ponfee.commons.jce;
 
-import java.lang.reflect.Field;
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.Hashtable;
-
+import code.ponfee.commons.math.Numbers;
+import code.ponfee.commons.util.SecureRandoms;
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -17,10 +15,11 @@ import org.bouncycastle.crypto.params.ECKeyGenerationParameters;
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
 
-import com.google.common.collect.ImmutableMap;
-
-import code.ponfee.commons.math.Numbers;
-import code.ponfee.commons.util.SecureRandoms;
+import java.lang.reflect.Field;
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.Hashtable;
+import java.util.Map;
 
 /** 
  * Specifications completely defining an elliptic curve. 
@@ -126,13 +125,14 @@ public class ECParameters implements java.io.Serializable {
         try {
             Field field = SECNamedCurves.class.getDeclaredField("objIds");
             field.setAccessible(true);
-            Hashtable<String, ASN1ObjectIdentifier> table =
-                (Hashtable<String, ASN1ObjectIdentifier>) field.get(null); // static field
-            for (String name : table.keySet()) {
+            Hashtable<String, ASN1ObjectIdentifier> table = (Hashtable<String, ASN1ObjectIdentifier>) field.get(null); // static field
+            field.setAccessible(false);
+            for (Map.Entry<String, ASN1ObjectIdentifier> entry : table.entrySet()) {
+                String name = entry.getKey();
                 X9ECParameters params = SECNamedCurves.getByName(name);
-                nameOids.put(name, table.get(name));
+                nameOids.put(name, entry.getValue());
                 nameParams.put(name, new ECParameters(
-                    name, 
+                    name,
                     Numbers.toHex(params.getCurve().getField().getCharacteristic()), 
                     Numbers.toHex(params.getCurve().getA().toBigInteger()), 
                     Numbers.toHex(params.getCurve().getB().toBigInteger()), 

@@ -10,7 +10,9 @@ package code.ponfee.commons.jce.symmetric;
  *     RC2                  key size must be between 40 and 1024 bits(block cipher, 曾经被考虑作为DES算法的替代品, 比DES快)
  *     RC4(ARCFOUR)         key size must be between 40 and 1024 bits(stream cipher)
  * </pre>
- * 
+ *
+ * AES进入最后一轮候选算法有：Rijndael/Serpent/Twofish/RC6/MARS，最终Rijndael算法获胜
+ *
  * 速度排名：IDEA < DES < GASTI28 < GOST < AES < RC4 < TEA < Blowfish
  * 
  * 1、DES（Data Encryption Standard）：对称算法，数据加密标准，速度较快，适用于加密大量数据的场合； 

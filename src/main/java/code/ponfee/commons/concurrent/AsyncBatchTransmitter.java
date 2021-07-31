@@ -1,14 +1,13 @@
 package code.ponfee.commons.concurrent;
 
+import code.ponfee.commons.exception.CheckedException;
+import com.google.common.base.Preconditions;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.BiFunction;
-
-import com.google.common.base.Preconditions;
-
-import code.ponfee.commons.exception.CheckedException;
 
 /**
  * 异步批量数据中转站
@@ -16,6 +15,9 @@ import code.ponfee.commons.exception.CheckedException;
  * https://www.jianshu.com/p/d9b54670fa20
  *  {@link Thread#setUncaughtExceptionHandler(java.lang.Thread.UncaughtExceptionHandler)}
  *  {@link java.util.concurrent.Executors#newCachedThreadPool(java.util.concurrent.ThreadFactory)}
+ *
+ * https://github.com/JCTools/JCTools
+ * https://github.com/LMAX-Exchange/disruptor
  * 
  * @author Ponfee
  * @param <T>

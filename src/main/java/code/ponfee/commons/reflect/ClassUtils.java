@@ -1,5 +1,19 @@
 package code.ponfee.commons.reflect;
 
+import code.ponfee.commons.collect.ObjectArrayWrapper;
+import code.ponfee.commons.io.Files;
+import code.ponfee.commons.model.Null;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.asm.ClassReader;
+import org.springframework.asm.ClassVisitor;
+import org.springframework.asm.ClassWriter;
+import org.springframework.asm.Label;
+import org.springframework.asm.MethodVisitor;
+import org.springframework.asm.Opcodes;
+import org.springframework.asm.Type;
+import org.springframework.objenesis.ObjenesisHelper;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -14,21 +28,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.asm.ClassReader;
-import org.springframework.asm.ClassVisitor;
-import org.springframework.asm.ClassWriter;
-import org.springframework.asm.Label;
-import org.springframework.asm.MethodVisitor;
-import org.springframework.asm.Opcodes;
-import org.springframework.asm.Type;
-import org.springframework.objenesis.ObjenesisHelper;
-
-import code.ponfee.commons.collect.ObjectArrayWrapper;
-import code.ponfee.commons.io.Files;
-import code.ponfee.commons.model.Null;
 
 /**
  * 基于asm的字节码工具类
@@ -132,12 +131,14 @@ public final class ClassUtils {
             return null;
         }
 
-        Exception ex;
+        Exception ex = null;
         do {
             try {
                 return clazz.getDeclaredField(field);
             } catch (NoSuchFieldException | SecurityException e) {
-                ex = e;
+                if (ex == null) {
+                    ex = e;
+                }
                 clazz = clazz.getSuperclass();
             }
         } while (clazz != null && clazz != Object.class);

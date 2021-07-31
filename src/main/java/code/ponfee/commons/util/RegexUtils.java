@@ -4,7 +4,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
 
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
@@ -70,7 +69,7 @@ public final class RegexUtils {
     public static final Pattern PATTERN_MOBILE = Pattern.compile(REGEXP_MOBILE);
 
     /**
-     * check is mobile phone
+     * check is china mobile phone
      * @param text
      * @return {@code true} is mobile phone
      */
@@ -79,8 +78,7 @@ public final class RegexUtils {
     }
 
     // ----------------------------------------------------------email regexp
-    public static final String REGEXP_EMAIL = "^\\w+((-\\w+)|(\\.\\w+))*\\@[A-Za-z0-9]+((\\.|-)"
-                                            + "[A-Za-z0-9]+)*\\.[A-Za-z0-9]+$";
+    public static final String REGEXP_EMAIL = "^\\w+((-\\w+)|(\\.\\w+))*\\@[A-Za-z0-9]+((\\.|-)[A-Za-z0-9]+)*\\.[A-Za-z0-9]+$";
     public static final Pattern PATTERN_EMAIL = Pattern.compile(REGEXP_EMAIL);
 
     /**
@@ -92,18 +90,33 @@ public final class RegexUtils {
         return text != null && PATTERN_EMAIL.matcher(text).matches();
     }
 
-    // ----------------------------------------------------------ip regexp
-    public static final String REGEXP_IP = "((?:(?:25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))\\.){3}"
-                                         + "(?:25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d))))";
-    private static final Pattern PATTERN_IP = Pattern.compile(REGEXP_IP);
+    // ----------------------------------------------------------ipv4 regexp
+    //public static final String REGEXP_IPV4 = "((?:(?:25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))\\.){3}(?:25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d))))";
+    public static final String REGEXP_IPV4 = "(?:(?:2[0-4][0-9]\\.)|(?:25[0-5]\\.)|(?:1[0-9][0-9]\\.)|(?:[1-9][0-9]\\.)|(?:[0-9]\\.)){3}(?:(?:2[0-4][0-9])|(?:25[0-5])|(?:1[0-9][0-9])|(?:[1-9][0-9])|(?:[0-9]))";
+    private static final Pattern PATTERN_IPV4 = Pattern.compile(REGEXP_IPV4);
 
     /**
-     * 校验是否ip地址
+     * 校验是否ipv4地址
+     *
      * @param text
-     * @return {@code true} is ip address
+     * @return {@code true} is ipv4 address
      */
-    public static boolean isIp(String text) {
-        return text != null && PATTERN_IP.matcher(text).matches();
+    public static boolean isIpv4(String text) {
+        return text != null && PATTERN_IPV4.matcher(text).matches();
+    }
+
+    // ----------------------------------------------------------ipv6 regexp
+    public static final String REGEXP_IPV6 = "^([0-9a-fA-F]{1,4}:){7,7}([0-9a-fA-F]{1,4}|:)|([0-9a-fA-F]{1,4}:){1,6}(:[0-9a-fA-F]{1,4}|:)|([0-9a-fA-F]{1,4}:){1,5}((:[0-9a-fA-F]{1,4}){1,2}|:)|([0-9a-fA-F]{1,4}:){1,4}((:[0-9a-fA-F]{1,4}){1,3}|:)|([0-9a-fA-F]{1,4}:){1,3}((:[0-9a-fA-F]{1,4}){1,4}|:)|([0-9a-fA-F]{1,4}:){1,2}((:[0-9a-fA-F]{1,4}){1,5}|:)|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6}|:)|:((:[0-9a-fA-F]{1,4}){1,7}|:)";
+    private static final Pattern PATTERN_IPV6 = Pattern.compile(REGEXP_IPV6);
+
+    /**
+     * 校验是否ipv6地址
+     *
+     * @param text
+     * @return {@code true} is ipv6 address
+     */
+    public static boolean isIpv6(String text) {
+        return text != null && PATTERN_IPV6.matcher(text).matches();
     }
 
     // ----------------------------------------------------------username regexp
@@ -122,8 +135,7 @@ public final class RegexUtils {
 
     // ----------------------------------------------------------password regexp
     private static final String SYMBOL = "@#!%&_\\.\\?\\-\\$\\^\\*";
-    public static final String REGEXP_PASSWORD = "^((?=.*\\d)(?=.*[A-Za-z])|(?=.*\\d)(?=.*[" + SYMBOL 
-                         + "])|(?=.*[A-Za-z])(?=.*[" + SYMBOL + "]))[\\dA-Za-z" + SYMBOL + "]{8,20}$";
+    public static final String REGEXP_PASSWORD = "^((?=.*\\d)(?=.*[A-Za-z])|(?=.*\\d)(?=.*[" + SYMBOL + "])|(?=.*[A-Za-z])(?=.*[" + SYMBOL + "]))[\\dA-Za-z" + SYMBOL + "]{8,20}$";
     public static final Pattern PATTERN_PASSWORD = Pattern.compile(REGEXP_PASSWORD);
 
     /**
@@ -147,9 +159,7 @@ public final class RegexUtils {
     }
 
     // ----------------------------------------------------------yyyyMMdd(HHmmss(SSS))
-    public static final String REGEXP_DATE = 
-        "^([1-9]\\d{3}((0[1-9]|1[012])(0[1-9]|1\\d|2[0-8])|(0[13456789]|1[012])(29|30)|(0[13578]|1[02])31)|(([2-9]\\d)(0[48]|[2468][048]|[13579][26])|(([2468][048]|[3579][26])00))0229)"
-      + "(([0-1][0-9]|2[0-3])([0-5][0-9])([0-5][0-9])(\\d{3})?)?$";
+    public static final String REGEXP_DATE = "^([1-9]\\d{3}((0[1-9]|1[012])(0[1-9]|1\\d|2[0-8])|(0[13456789]|1[012])(29|30)|(0[13578]|1[02])31)|(([2-9]\\d)(0[48]|[2468][048]|[13579][26])|(([2468][048]|[3579][26])00))0229)(([0-1][0-9]|2[0-3])([0-5][0-9])([0-5][0-9])(\\d{3})?)?$";
     public static final Pattern PATTERN_DATE = Pattern.compile(REGEXP_DATE);
     /**
      * Validates the text whether date pattern
@@ -198,16 +208,4 @@ public final class RegexUtils {
         }
     }
 
-    // -------------------------------------------------------------------
-    private static final String[] DATE_PATTERN = {
-        "yyyyMMdd", "yyyyMMddHHmmss", "yyyyMMddHHmmssSSS"
-    };
-    public static boolean isValidDate(String text) {
-        try {
-            DateUtils.parseDateStrictly(text, DATE_PATTERN);
-            return true;
-        } catch (Exception ignored) {
-            return false;
-        }
-    }
 }

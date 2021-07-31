@@ -1,8 +1,11 @@
 package code.ponfee.commons.jce.security;
 
-import static code.ponfee.commons.jce.RSACipherPaddings.ECB_PKCS1PADDING;
-import static code.ponfee.commons.jce.RSACipherPaddings.NONE_NOPADDING;
+import code.ponfee.commons.io.Closeables;
+import code.ponfee.commons.io.Files;
+import code.ponfee.commons.jce.Providers;
+import code.ponfee.commons.jce.RSASignAlgorithms;
 
+import javax.crypto.Cipher;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,14 +20,14 @@ import java.security.interfaces.RSAKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
-import javax.crypto.Cipher;
-
-import code.ponfee.commons.io.Closeables;
-import code.ponfee.commons.io.Files;
-import code.ponfee.commons.jce.Providers;
-import code.ponfee.commons.jce.RSASignAlgorithms;
+import static code.ponfee.commons.jce.RSACipherPaddings.ECB_PKCS1PADDING;
+import static code.ponfee.commons.jce.RSACipherPaddings.NONE_NOPADDING;
 
 /**
+ * 基于大整数因式分解的数学难题（费马小定理）
+ * </p>
+ * n=p*q, p,q互质
+ *
  * RSA Cryptor
  * 加/解密
  * 签名/验签

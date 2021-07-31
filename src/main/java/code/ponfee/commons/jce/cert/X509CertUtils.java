@@ -1,5 +1,25 @@
 package code.ponfee.commons.jce.cert;
 
+import code.ponfee.commons.io.Closeables;
+import code.ponfee.commons.io.Files;
+import code.ponfee.commons.jce.Providers;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.x509.Certificate;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.cms.SignerInformationStore;
+import org.bouncycastle.jce.provider.X509CRLObject;
+import org.bouncycastle.jce.provider.X509CRLParser;
+import org.bouncycastle.jce.provider.X509CertificateObject;
+import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
+import org.bouncycastle.util.Store;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -19,28 +39,6 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.time.FastDateFormat;
-import org.bouncycastle.asn1.ASN1InputStream;
-import org.bouncycastle.asn1.ASN1Sequence;
-import org.bouncycastle.asn1.x509.Certificate;
-//import org.bouncycastle.asn1.x509.X509CertificateStructure;
-import org.bouncycastle.cert.X509CertificateHolder;
-import org.bouncycastle.cms.CMSSignedData;
-import org.bouncycastle.cms.SignerInformation;
-import org.bouncycastle.cms.SignerInformationStore;
-import org.bouncycastle.jce.provider.X509CRLObject;
-import org.bouncycastle.jce.provider.X509CRLParser;
-import org.bouncycastle.jce.provider.X509CertificateObject;
-import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
-import org.bouncycastle.util.Store;
-
-import code.ponfee.commons.io.Closeables;
-import code.ponfee.commons.io.Files;
-import code.ponfee.commons.jce.Providers;
 
 /**
  * 证书工具类
@@ -84,7 +82,7 @@ public class X509CertUtils {
                 }
                 input = new ASN1InputStream(new ByteArrayInputStream(bytes));
                 ASN1Sequence seq = (ASN1Sequence) input.readObject();
-                //X509CertificateStructure struct = new X509CertificateStructure(seq); // bcmail-jdk16
+                //X509CertificateStructure struct = new org.bouncycastle.asn1.x509.X509CertificateStructure(seq); // bcmail-jdk16
                 Certificate struct = Certificate.getInstance(seq); // bcmail-jdk15on
 
                 // JDK1.5可以运行，并且可以获取SM2 publicKey

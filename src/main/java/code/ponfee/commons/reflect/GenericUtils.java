@@ -1,5 +1,8 @@
 package code.ponfee.commons.reflect;
 
+import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
@@ -15,10 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-
-import org.apache.commons.lang3.ArrayUtils;
-
-import com.google.common.base.Preconditions;
+import java.util.Properties;
 
 /**
  * 泛型工具类
@@ -48,6 +48,10 @@ public final class GenericUtils {
         return target;
     }
 
+    public static Map<String, String> covariant(Properties properties) {
+        return (Map) properties;
+    }
+    
     // ----------------------------------------------------------------------------class actual type argument
     /**
      * 获取泛型的实际类型参数

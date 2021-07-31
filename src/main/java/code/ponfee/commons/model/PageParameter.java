@@ -1,18 +1,17 @@
 package code.ponfee.commons.model;
 
-import static code.ponfee.commons.model.PageHandler.DEFAULT_LIMIT;
-import static code.ponfee.commons.model.PageHandler.DEFAULT_OFFSET;
-import static code.ponfee.commons.model.PageHandler.DEFAULT_PAGE_NUM;
-import static code.ponfee.commons.model.PageHandler.DEFAULT_PAGE_SIZE;
+import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import com.google.common.collect.ImmutableList;
+import static code.ponfee.commons.model.PageHandler.DEFAULT_LIMIT;
+import static code.ponfee.commons.model.PageHandler.DEFAULT_OFFSET;
+import static code.ponfee.commons.model.PageHandler.DEFAULT_PAGE_NUM;
+import static code.ponfee.commons.model.PageHandler.DEFAULT_PAGE_SIZE;
 
 /**
  * 分页请求参数封装类（不能继承Map，否则会被内置Map解析器优先处理）
@@ -22,7 +21,7 @@ import com.google.common.collect.ImmutableList;
  * 
  * @author Ponfee
  */
-public class PageRequestParams extends TypedMapRequestParams {
+public class PageParameter extends TypedParameter {
 
     private static final long serialVersionUID = 6176654946390797217L;
 
@@ -43,20 +42,24 @@ public class PageRequestParams extends TypedMapRequestParams {
     private String sort  = null;
 
     // -----------------------------------------------------constructors
-    public PageRequestParams() {
+    public PageParameter() {
         this(new LinkedHashMap<>());
     }
 
-    public PageRequestParams(int initialCapacity) {
+    public PageParameter(int initialCapacity) {
         this(new LinkedHashMap<>(initialCapacity));
     }
 
-    public PageRequestParams(Map<String, Object> params) {
+    public PageParameter(int initialCapacity, int loadFactor) {
+        this(new LinkedHashMap<>(initialCapacity, loadFactor));
+    }
+
+    public PageParameter(Map<String, Object> params) {
         super(params);
     }
 
     // ----------------------------------------------------- methods
-    public PageRequestParams searchAll() {
+    public PageParameter searchAll() {
         this.setPageNum(1);
         this.setPageSize(0);
         this.setLimit(0);

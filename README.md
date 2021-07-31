@@ -1,7 +1,12 @@
-## A commons package of java utility classes.
+# A commons lib of java utility classes
 
-### mvn package -Dmaven.test.skip=true
+### 1.Configurate OS platform option
+>Modify the pom.xml **`<separator>`** element content
+* Windows: "**`;`**"
+* Linux/MacOS: "**`:`**"
 
-** Need modify the pom.xml "&lt;separator&gt;" element content: **
-* Windows: ";"
-* Linux/MacOS: ":"
+### 2.Install cpdetector jar to maven local repository
+To see [**`lib/README.md`**](https://github.com/ponfee/commons-core/blob/master/lib/README.md)
+
+### 3.Compile project
+`mvn package -Dmaven.test.skip=true`

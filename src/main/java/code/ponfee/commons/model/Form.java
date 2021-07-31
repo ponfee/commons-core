@@ -71,8 +71,8 @@ public class Form implements java.io.Serializable {
         }
     }
 
-    public static enum Type {
-        INPUT, PASSWORD, TEXTAREA, RADIO,  // 
+    public enum Type {
+        INPUT, PASSWORD, TEXTAREA, RADIO,  //
         CHECKBOX, SELECT, COMBOX, DATEBOX, // 
         ;
     }

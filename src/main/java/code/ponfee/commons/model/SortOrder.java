@@ -13,7 +13,7 @@ public enum SortOrder {
         return "ASC".equalsIgnoreCase(name) ? ASC : DESC;
     }
 
-    public static enum NullHandling {
+    public enum NullHandling {
         NATIVE, NULLS_FIRST, NULLS_LAST
     }
 

@@ -1,6 +1,12 @@
 package code.ponfee.commons.util;
 
-import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
+import code.ponfee.commons.math.Numbers;
+import code.ponfee.commons.reflect.ClassUtils;
+import code.ponfee.commons.reflect.Fields;
+import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.lang.reflect.Array;
 import java.text.ParseException;
@@ -18,15 +24,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
-import com.google.common.base.Preconditions;
-
-import code.ponfee.commons.math.Numbers;
-import code.ponfee.commons.reflect.ClassUtils;
-import code.ponfee.commons.reflect.Fields;
+import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 
 /**
  * 公用对象工具类
@@ -112,6 +110,8 @@ public final class ObjectUtils {
      * @param value source object
      * @param type  target object type
      * @return a this type object
+     *
+     * @see com.alibaba.fastjson.util.TypeUtils
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> T convert(Object value, Class<T> type) {
@@ -119,7 +119,7 @@ public final class ObjectUtils {
             return (T) value;
         }
 
-        Convertors convertor = Convertors.of(type);
+        PrimitiveOrWrapperConvertors convertor = PrimitiveOrWrapperConvertors.of(type);
         if (convertor != null) {
             return convertor.to(value);
         }
@@ -178,7 +178,9 @@ public final class ObjectUtils {
      * @return
      */
     public static String uuid32() {
-        return Bytes.hexEncode(uuid());
+        //return Bytes.hexEncode(uuid());
+        UUID uuid = UUID.randomUUID();
+        return Long.toHexString(uuid.getMostSignificantBits()) + Long.toHexString(uuid.getLeastSignificantBits());
     }
 
     /**
@@ -293,21 +295,148 @@ public final class ObjectUtils {
     }
 
     /**
-     * Returns the type is a bean type
+     * Returns the type is not a bean type
      * 
      * @param type the type class
-     * @return a boolean
+     * @return {@code true} assert is not a bean type
      */
-    public static boolean isBeanType(Class<?> type) {
-        if (type == null) {
-            return false;
-        }
-        return Object.class != type
-            && !org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper(type)
-            && !CharSequence.class.isAssignableFrom(type) 
-            && !Map.class.isAssignableFrom(type) 
-            && !Dictionary.class.isAssignableFrom(type) 
-            && !Collection.class.isAssignableFrom(type);
+    public static boolean isNotBeanType(Class<?> type) {
+        return null == type
+            || Object.class == type
+            || org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper(type)
+            || CharSequence.class.isAssignableFrom(type)
+            || Map.class.isAssignableFrom(type)
+            || Dictionary.class.isAssignableFrom(type)
+            || Collection.class.isAssignableFrom(type);
     }
 
+    // -------------------------------------------------------------------------- private class
+    private enum PrimitiveOrWrapperConvertors {
+
+        BOOLEAN(boolean.class) {
+            @Override
+            public Boolean to(Object value) {
+                return Numbers.toBoolean(value);
+            }
+        },
+
+        WRAP_BOOLEAN(Boolean.class) {
+            @Override
+            public Boolean to(Object value) {
+                return Numbers.toWrapBoolean(value);
+            }
+        },
+
+        BYTE(byte.class) {
+            @Override
+            public Byte to(Object value) {
+                return Numbers.toByte(value);
+            }
+        },
+
+        WRAP_BYTE(Byte.class) {
+            @Override
+            public Byte to(Object value) {
+                return Numbers.toWrapByte(value);
+            }
+        },
+
+        SHORT(short.class) {
+            @Override
+            public Short to(Object value) {
+                return Numbers.toShort(value);
+            }
+        },
+
+        WRAP_SHORT(Short.class) {
+            @Override
+            public Short to(Object value) {
+                return Numbers.toWrapShort(value);
+            }
+        },
+
+        CHAR(char.class) {
+            @Override
+            public Character to(Object value) {
+                return Numbers.toChar(value);
+            }
+        },
+
+        WRAP_CHAR(Character.class) {
+            @Override
+            public Character to(Object value) {
+                return Numbers.toWrapChar(value);
+            }
+        },
+
+        INT(int.class) {
+            @Override
+            public Integer to(Object value) {
+                return Numbers.toInt(value);
+            }
+        },
+
+        WRAP_INT(Integer.class) {
+            @Override
+            public Integer to(Object value) {
+                return Numbers.toWrapInt(value);
+            }
+        },
+
+        LONG(long.class) {
+            @Override
+            public Long to(Object value) {
+                return Numbers.toLong(value);
+            }
+        },
+
+        WRAP_LONG(Long.class) {
+            @Override
+            public Long to(Object value) {
+                return Numbers.toWrapLong(value);
+            }
+        },
+
+        FLOAT(float.class) {
+            @Override
+            public Float to(Object value) {
+                return Numbers.toFloat(value);
+            }
+        },
+
+        WRAP_FLOAT(Float.class) {
+            @Override
+            public Float to(Object value) {
+                return Numbers.toWrapFloat(value);
+            }
+        },
+
+        DOUBLE(double.class) {
+            @Override
+            public Double to(Object value) {
+                return Numbers.toDouble(value);
+            }
+        },
+
+        WRAP_DOUBLE(Double.class) {
+            @Override
+            public Double to(Object value) {
+                return Numbers.toWrapDouble(value);
+            }
+        };
+
+        PrimitiveOrWrapperConvertors(Class<?> targetType) {
+            Hide.MAPPING.put(targetType, this);
+        }
+
+        abstract <T> T to(Object value);
+
+        static PrimitiveOrWrapperConvertors of(Class<?> targetType) {
+            return Hide.MAPPING.get(targetType);
+        }
+    }
+
+    private static class Hide {
+        private static final Map<Class<?>, PrimitiveOrWrapperConvertors> MAPPING = new HashMap<>();
+    }
 }

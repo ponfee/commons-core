@@ -89,7 +89,7 @@ public final class PaginationHtmlBuilder {
         return this.params(HttpParams.buildParams(params));
     }
 
-    public PaginationHtmlBuilder params(PageRequestParams pageParams) {
+    public PaginationHtmlBuilder params(PageParameter pageParams) {
         return this.params(pageParams.params());
     }
 
