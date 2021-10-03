@@ -34,7 +34,7 @@ import code.ponfee.commons.util.ObjectUtils;
 public abstract class LogRecorder {
 
     private static final int DEFAULT_ALARM_THRESHOLD_MILLIS = 2000;
-    private static Logger logger = LoggerFactory.getLogger(LogRecorder.class);
+    private static final Logger logger = LoggerFactory.getLogger(LogRecorder.class);
 
     private final int alarmThresholdMillis; // 告警阀值
     private final CurrentLimiter limiter; // 访问频率限制

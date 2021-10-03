@@ -1,11 +1,13 @@
 package code.ponfee.commons.base.tuple;
 
+import java.util.Objects;
+
 /**
  * Tuple3 consisting of three elements.
  *
- * @param <A>
- * @param <B>
- * @param <C>
+ * @param <A> the type A
+ * @param <B> the type B
+ * @param <C> the type C
  * @author Ponfee
  */
 public class Tuple3<A, B, C> extends Tuple2<A, B> {
@@ -23,8 +25,32 @@ public class Tuple3<A, B, C> extends Tuple2<A, B> {
     }
 
     @Override
+    public Object get(int index) {
+        switch (index) {
+            case  0: return a;
+            case  1: return b;
+            case  2: return c;
+            default: throw new IndexOutOfBoundsException("Index: " + index);
+        }
+    }
+
+    @Override
+    public Object[] toArray() {
+        return new Object[]{a, b, c};
+    }
+
+    @Override
     public String toString() {
         return "(" + a + ", " + b + ", " + c + ")";
     }
-    
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o) && Objects.equals(c, ((Tuple3<?, ?, ?>) o).c);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(a, b, c);
+    }
 }

@@ -7,7 +7,7 @@ import code.ponfee.commons.model.ResultCode;
  * 
  * @author Ponfee
  */
-public class UnauthorizedException extends BasicException {
+public class UnauthorizedException extends BaseException {
 
     private static final long serialVersionUID = -5678901285130119481L;
     private static final int CODE = ResultCode.UNAUTHORIZED.getCode();

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 
 import org.apache.commons.csv.CSVFormat;
@@ -14,6 +13,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import code.ponfee.commons.io.BeforeReadInputStream;
 import code.ponfee.commons.io.ByteOrderMarks;
 import code.ponfee.commons.io.CharacterEncodingDetector;
+import org.apache.commons.lang3.ObjectUtils;
 
 /**
  * Csv file data extractor
@@ -31,12 +31,13 @@ public class CsvExtractor extends DataExtractor {
                            CSVFormat csvFormat, int startRow, Charset charset) {
         super(dataSource, headers);
         this.withHeader = ArrayUtils.isNotEmpty(headers);
-        this.csvFormat = Optional.ofNullable(csvFormat).orElse(CSVFormat.DEFAULT);
         this.startRow = startRow;
         this.charset = charset;
+        CSVFormat.Builder builder = CSVFormat.Builder.create(ObjectUtils.defaultIfNull(csvFormat, CSVFormat.DEFAULT));
         if (this.withHeader) {
-            this.csvFormat.withHeader(headers);
+            builder.setHeader(headers);
         }
+        this.csvFormat = builder.build();
     }
 
     @Override

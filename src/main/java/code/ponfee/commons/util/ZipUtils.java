@@ -220,7 +220,7 @@ public class ZipUtils {
                 fileEntries.add(new File(dest, fileHeader.getFileName()));
             }
         }
-        return fileEntries.toArray(new File[fileEntries.size()]);
+        return fileEntries.toArray(new File[0]);
     }
 
     private static char[] toCharArray(String str) {

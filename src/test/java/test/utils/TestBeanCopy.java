@@ -3,7 +3,7 @@ package test.utils;
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.reflect.BeanMaps;
-import code.ponfee.commons.reflect.CglibUtils;
+import code.ponfee.commons.reflect.BeanCopiers;
 import code.ponfee.commons.reflect.Fields;
 import org.junit.Test;
 import org.springframework.cglib.beans.BeanCopier;
@@ -34,7 +34,7 @@ public class TestBeanCopy {
         Result<Void> result1 = Result.failure(-1, "error");
         Result<Void> result2 = new Result<>();
         for (int i = 0; i < round; i++) {
-            CglibUtils.copyProperties(result1, result2);
+            BeanCopiers.copyProperties(result1, result2);
         }
     }
 

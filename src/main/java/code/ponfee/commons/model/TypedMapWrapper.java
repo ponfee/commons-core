@@ -92,7 +92,7 @@ public class TypedMapWrapper<K, V> implements TypedMap<K, V>, Serializable, Clon
 
     @Override
     public TypedMapWrapper<K, V> clone() {
-        return new TypedMapWrapper<K, V>(this.target);
+        return new TypedMapWrapper<>(this.target);
     }
 
     @Override

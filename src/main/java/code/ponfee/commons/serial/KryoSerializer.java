@@ -29,7 +29,7 @@ import code.ponfee.commons.io.Files;
  */
 public class KryoSerializer extends Serializer {
 
-    private static Logger logger = LoggerFactory.getLogger(KryoSerializer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(KryoSerializer.class);
     public static final KryoSerializer INSTANCE = new KryoSerializer();
 
     private final KryoPool kryoPool = new KryoPool.Builder(Kryo::new).softReferences().build();
@@ -95,7 +95,7 @@ public class KryoSerializer extends Serializer {
             try {
                 this.kryoPool.release(kryo);
             } catch (Throwable t) {
-                logger.error("release kryo occur error", t);
+                LOG.error("release kryo occur error", t);
             }
         }
     }

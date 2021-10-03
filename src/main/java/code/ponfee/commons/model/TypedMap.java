@@ -11,10 +11,12 @@ import java.util.Map;
  */
 public interface TypedMap<K, V> extends Map<K, V>, TypedDictionary<K, V> {
 
+    @Override
     default V getValue(K key) {
         return this.get(key);
     }
 
+    @Override
     default V removeKey(K key) {
         return this.remove(key);
     }

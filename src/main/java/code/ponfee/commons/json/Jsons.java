@@ -58,12 +58,12 @@ public final class Jsons {
         /*mapper.enable(com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES);
         mapper.enable(com.fasterxml.jackson.core.JsonGenerator.Feature.QUOTE_FIELD_NAMES);
         //mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
-        mapper.setPropertyNamingStrategy(new PropertyNamingStrategy(){
+        mapper.setPropertyNamingStrategy(new PropertyNamingStrategy() {
             private static final long serialVersionUID = -3401320843245849044L;
             // do-something
         });
         mapper.setTimeZone(TimeZone.getTimeZone("GMT+8"));
-        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));*/
+        mapper.setDateFormat(WrappedFastDateFormat.DEFAULT);*/
     }
 
     /**

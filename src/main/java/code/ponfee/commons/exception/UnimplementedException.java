@@ -7,7 +7,7 @@ import code.ponfee.commons.model.ResultCode;
  * 
  * @author Ponfee
  */
-public class UnimplementedException extends BasicException {
+public class UnimplementedException extends BaseException {
 
     private static final long serialVersionUID = -5983398403463732650L;
     private static final int CODE = ResultCode.SERVER_UNSUPPORT.getCode();

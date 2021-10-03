@@ -355,7 +355,7 @@ public final class BCrypt {
         if (logrounds < 10) {
             builder.append('0');
         }
-        builder.append(Integer.toString(logrounds)).append(SEPARATOR);
+        builder.append(logrounds).append(SEPARATOR);
 
         byte[] salt = SecureRandoms.nextBytes(16);
         builder.append(Base64UrlSafe.encode(salt)).append(SEPARATOR);

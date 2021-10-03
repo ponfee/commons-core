@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 /**
- * 可扩展的多数据源类型：可动态增加/移除数据源/数据源自动超时失效
+ * 可缓存的多数据源类型：可动态增加数据源、可动态移除数据源、数据源自动超时失效
  * 
  * @author Ponfee
  * @see org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource

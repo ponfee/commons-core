@@ -37,7 +37,6 @@ public class PBECryptor extends SymmetricCryptor {
         PBEWithSHA1AndDESede, // best
         PBEWithSHA1AndRC2_40, //
         PBEWithMD5AndTripleDES, //
-        ;
     }
 
     public PBECryptor(SecretKey secretKey, Mode mode, Padding padding, 

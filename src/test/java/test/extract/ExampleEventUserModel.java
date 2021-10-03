@@ -13,16 +13,12 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.poi.ooxml.util.SAXHelper;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.openxml4j.opc.PackageAccess;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
 import org.apache.poi.xssf.model.SharedStringsTable;
-import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -143,7 +139,7 @@ public class ExampleEventUserModel {
                 lastContents = lruCache.get(idx);
                 //如果内容为空 或者Cache中存在相同key 不保存到Cache中
                 if (lastContents == null && !lruCache.containsKey(idx)) {
-                    lastContents = new XSSFRichTextString(sst.getEntryAt(idx)).toString();
+                    lastContents = sst.getItemAt(idx).getString();
                     lruCache.put(idx, lastContents);
                 }
                 nextIsString = false;

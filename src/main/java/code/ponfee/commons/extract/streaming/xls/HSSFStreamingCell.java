@@ -66,17 +66,7 @@ public class HSSFStreamingCell implements Cell {
     }
 
     @Override @Deprecated
-    public CellType getCellTypeEnum() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override @Deprecated
     public CellType getCachedFormulaResultType() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override @Deprecated
-    public CellType getCachedFormulaResultTypeEnum() {
         throw new UnsupportedOperationException();
     }
 

@@ -581,7 +581,7 @@ public class HttpRequest {
         String host = u.getHost();
         int port = u.getPort();
         if (port != -1) {
-            host = host + ':' + Integer.toString(port);
+            host = host + ':' + port;
         }
 
         try {
@@ -1850,7 +1850,7 @@ public class HttpRequest {
 
         List<String> values = headers.get(name);
         if (values != null && !values.isEmpty()) {
-            return values.toArray(new String[values.size()]);
+            return values.toArray(new String[0]);
         } else {
             return EMPTY_STRINGS;
         }

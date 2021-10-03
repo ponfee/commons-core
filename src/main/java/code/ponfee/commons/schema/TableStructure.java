@@ -33,6 +33,7 @@ public final class TableStructure implements DataStructure {
         this.dataset = dataset;
     }
 
+    @Override
     public NormalStructure toNormal() {
         NormalStructure list = new NormalStructure();
         for (Object[] row : dataset) {

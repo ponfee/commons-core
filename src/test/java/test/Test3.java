@@ -1,5 +1,6 @@
 package test;
 
+import code.ponfee.commons.collect.FilteredIterable;
 import code.ponfee.commons.exception.UnimplementedException;
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.reflect.Fields;
@@ -68,6 +69,13 @@ public class Test3 {
     }
 
     public static void main(String[] args) throws Exception {
+        System.out.println(null==null);
+        System.out.println(Double.doubleToLongBits(0.1D));
+        System.out.println(Double.doubleToLongBits(0.0D));
+
+        for (Integer s : new FilteredIterable<>(1, null, 3,4,5)) {
+            System.out.println("|"+s+"|");
+        }
         System.out.println(0>>1);
         System.out.println(1>>1);
         System.out.println(4>>1);

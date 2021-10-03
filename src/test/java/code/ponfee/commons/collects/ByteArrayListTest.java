@@ -20,7 +20,7 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableMap;
 
 import code.ponfee.commons.collect.ByteArrayList;
-import code.ponfee.commons.collect.ObjectArrayWrapper;
+import code.ponfee.commons.collect.HashKey;
 import code.ponfee.commons.model.Result;
 
 /**
@@ -84,7 +84,7 @@ public class ByteArrayListTest {
         Method method1 = Result.class.getDeclaredMethod("copy", Object.class);
         Field field1 = Result.class.getDeclaredField("code");
 
-        Map<ObjectArrayWrapper<Object>, Boolean> map = ImmutableMap.of(ObjectArrayWrapper.of(method1, field1), true);
+        Map<HashKey, Boolean> map = ImmutableMap.of(HashKey.of(method1, field1), true);
 
         Method method2 = Result.class.getDeclaredMethod("copy", Object.class);
         Field field2 = Result.class.getDeclaredField("code");
@@ -92,6 +92,6 @@ public class ByteArrayListTest {
         System.out.println(method1 == method2);
         System.out.println(field1 == field2);
         
-        System.out.println(map.get(ObjectArrayWrapper.of(method2, field2)));
+        System.out.println(map.get(HashKey.of(method2, field2)));
     }
 }

@@ -8,6 +8,24 @@
 
 package test;
 
+import code.ponfee.commons.collect.ValueSortedMap;
+import code.ponfee.commons.io.HumanReadables;
+import code.ponfee.commons.json.Jsons;
+import code.ponfee.commons.math.Maths;
+import code.ponfee.commons.math.Numbers;
+import code.ponfee.commons.model.Page;
+import code.ponfee.commons.reflect.BeanCopiers;
+import code.ponfee.commons.util.Bytes;
+import code.ponfee.commons.util.Dates;
+import code.ponfee.commons.util.IdWorker;
+import com.google.common.base.Stopwatch;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.springframework.objenesis.ObjenesisHelper;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,26 +37,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ThreadLocalRandom;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.springframework.objenesis.ObjenesisHelper;
-
-import com.google.common.base.Stopwatch;
-
-import code.ponfee.commons.collect.ValueSortedMap;
-import code.ponfee.commons.io.HumanReadables;
-import code.ponfee.commons.json.Jsons;
-import code.ponfee.commons.math.Maths;
-import code.ponfee.commons.math.Numbers;
-import code.ponfee.commons.model.Page;
-import code.ponfee.commons.reflect.CglibUtils;
-import code.ponfee.commons.util.Bytes;
-import code.ponfee.commons.util.Dates;
-import code.ponfee.commons.util.IdWorker;
 
 /**
  * 
@@ -78,7 +76,7 @@ public class Test2 {
     public void test2() {
         Page<Map<String, Object>> source = new Page<>();
         Page<Map> target = new Page<>();
-        CglibUtils.copyProperties(source, target);
+        BeanCopiers.copyProperties(source, target);
         System.out.println(source.copy());
     }
 
@@ -308,6 +306,8 @@ public class Test2 {
 
     @Test
     public void test26() throws IOException {
+        System.out.println(Bytes.toBinary(Bytes.toBytes(new IdWorker(10).nextId())));
+
         String format = "yyyy-MM-dd HH:mm:ss.SSS";
         System.out.println(Long.toBinaryString(Long.MAX_VALUE));
         System.out.println(Long.toBinaryString(System.currentTimeMillis()));
@@ -318,7 +318,6 @@ public class Test2 {
         System.out.println(Maths.bitsMask(12));
 
         System.out.println(Dates.format(new Date(17592186044415L), format));
-        new IdWorker(10);
 
         int bits = 41;
         System.out.println((1L << bits) - 1);
@@ -353,5 +352,20 @@ public class Test2 {
     public void test29() throws IOException {
         System.out.println("321.0".indexOf('.'));
         System.out.println(Numbers.toInt("321.0"));
+    }
+
+    @Test()
+    public void test30() {
+        String str = null;
+        Long num = null;
+        System.out.println(str == null ? num : (Long) Long.parseLong(str));
+        System.out.println(str == null ? null : Long.parseLong(str));
+        NullPointerException ex = null;
+        try {
+            System.out.println(str == null ? num : Long.parseLong(str));
+        } catch (NullPointerException e) {
+            ex = e;
+        }
+        Assert.assertNotNull(ex);
     }
 }

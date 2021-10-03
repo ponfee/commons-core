@@ -65,11 +65,6 @@ public final class XmlMap extends LinkedHashMap<String, String> {
         return writers.build(this.root);
     }
 
-    @Override
-    public String toString() {
-        return super.toString();
-    }
-
     /**
      * XML为Map(仅支持2级)
      * @param reader xmlReader

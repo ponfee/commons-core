@@ -28,7 +28,7 @@ public enum DataType {
         @Override
         protected <T> T parseObject0(Object value) {
             if (value instanceof Boolean) {
-                return (T) (Boolean) value;
+                return (T) value;
             }
             return (T) BOOLEAN_MAPPING.get(value.toString());
         }
@@ -80,11 +80,10 @@ public enum DataType {
         }
     },
     DATE_TIME("日期时间") {
-        private final WrappedFastDateFormat format = new WrappedFastDateFormat("yyyy-MM-dd HH:mm:ss");
 
         @Override
         protected <T> T parseObject0(Object value) {
-            return (T) parseToDate(this.format, value);
+            return (T) parseToDate(WrappedFastDateFormat.DEFAULT, value);
         }
 
         @Override
@@ -94,10 +93,10 @@ public enum DataType {
 
         @Override
         protected String toString0(Object value) {
-            return dateToString(this.format, value);
+            return dateToString(WrappedFastDateFormat.DEFAULT, value);
         }
     },
-    /*TIMESTAMP("时间戳（毫秒）") {
+    TIMESTAMP("时间戳（毫秒）") {
         @Override
         protected <T> T parseObject0(Object value) {
             if (value instanceof Date) {
@@ -105,7 +104,7 @@ public enum DataType {
             }
             return (T) Numbers.toWrapLong(value);
         }
-    },*/
+    },
 
     ;
 
@@ -223,17 +222,11 @@ public enum DataType {
 
     public static DataType ofDatabaseType(int type) {
         switch (type) {
-            case Types.VARCHAR:
-            case Types.CHAR:
-            case Types.NVARCHAR:
-            case Types.NCHAR:
-            case Types.LONGVARCHAR:
-            case Types.LONGNVARCHAR:
-                return STRING;
 
             case Types.DATE:
-            case Types.TIMESTAMP:
                 return DATE_TIME;
+            case Types.TIMESTAMP:
+                return TIMESTAMP;
 
             case Types.BIT:
             case Types.BOOLEAN:
@@ -252,6 +245,7 @@ public enum DataType {
                 return DECIMAL;
 
             default:
+                // VARCHAR, CHAR, NVARCHAR, NCHAR, LONGVARCHAR, LONGNVARCHAR
                 return STRING;
         }
     }

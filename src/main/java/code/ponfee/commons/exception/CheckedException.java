@@ -7,7 +7,7 @@ import code.ponfee.commons.model.ResultCode;
  * 
  * @author Ponfee
  */
-public class CheckedException extends BasicException {
+public class CheckedException extends BaseException {
 
     private static final long serialVersionUID = -7059975701644684690L;
     private static final int CODE = ResultCode.SERVER_ERROR.getCode();

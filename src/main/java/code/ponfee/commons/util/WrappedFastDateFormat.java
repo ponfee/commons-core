@@ -54,9 +54,16 @@ public class WrappedFastDateFormat extends DateFormat {
     public static final FastDateFormat PATTERN25 = FastDateFormat.getInstance("yyyy/MM/dd'T'HH:mm:ss.SSSZ");
 
     // thread-safe
-    public static final WrappedFastDateFormat DEFAULT = new WrappedFastDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static final WrappedFastDateFormat DEFAULT = new WrappedFastDateFormat(Dates.DEFAULT_DATE_FORMAT);
 
+    /**
+     * 格式化器
+     */
     private final FastDateFormat format;
+
+    /**
+     * 时间格式是否严格
+     */
     private final boolean strict;
 
     private final Calendar calendar;
@@ -81,11 +88,11 @@ public class WrappedFastDateFormat extends DateFormat {
 
     public WrappedFastDateFormat(FastDateFormat format, boolean strict) {
         this.format = format;
-        this.calendar = Calendar.getInstance(format.getTimeZone(), format.getLocale());
+        this.strict = strict;
 
+        this.calendar = Calendar.getInstance(format.getTimeZone(), format.getLocale());
         this.numberFormat = NumberFormat.getIntegerInstance(format.getLocale());
         this.numberFormat.setGroupingUsed(false);
-        this.strict = strict;
     }
 
     @Override

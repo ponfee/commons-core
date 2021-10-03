@@ -299,7 +299,7 @@ public class HtmlExporter extends AbstractDataExporter<String> {
         processOptions(style, tbodyRowIdx, tbodyColIdx, options);
 
         if (style.length() > 0) {
-            html.append(" style=\"").append(style.toString()).append("\"");
+            html.append(" style=\"").append(style).append("\"");
         }
         if (clazz.length() > 0) {
             clazz.setLength(clazz.length() - 1);

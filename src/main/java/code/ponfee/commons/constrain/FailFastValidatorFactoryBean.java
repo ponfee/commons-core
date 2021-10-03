@@ -1,8 +1,7 @@
 package code.ponfee.commons.constrain;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
-
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.hibernate.validator.HibernateValidator;
 import org.springframework.beans.factory.FactoryBean;
 

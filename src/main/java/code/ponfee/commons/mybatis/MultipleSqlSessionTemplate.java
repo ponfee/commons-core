@@ -101,10 +101,12 @@ public class MultipleSqlSessionTemplate extends SqlSessionTemplate {
         );
     }
 
+    @Override
     public ExecutorType getExecutorType() {
         return this.defaultTargetExecutorType;
     }
 
+    @Override
     public PersistenceExceptionTranslator getPersistenceExceptionTranslator() {
         return this.defaultTargetExceptionTranslator;
     }

@@ -16,7 +16,7 @@ import code.ponfee.commons.json.Jsons;
  * @param <T>
  * @author Ponfee
  */
-public class Result<T/* extends Serializable*/> implements Serializable {
+public class Result<T/* extends Serializable*/> implements CodeMsg {
 
     private static final long serialVersionUID = -2804195259517755050L;
     public static final Result<Void> SUCCESS = new SuccessResult();
@@ -24,7 +24,7 @@ public class Result<T/* extends Serializable*/> implements Serializable {
     private Integer    code; // 状态码
     private String      msg; // 返回信息
     private T          data; // 结果数据
-    private boolean success; // 结果数据
+    private boolean success; // 是否成功
 
     // -------------------------------------------constructor methods
     public Result() {} // code is null
@@ -137,10 +137,12 @@ public class Result<T/* extends Serializable*/> implements Serializable {
     }
 
     // -------------------------------------------------getter/setter
+    @Override
     public int getCode() {
         return code;
     }
 
+    @Override
     public String getMsg() {
         return msg;
     }

@@ -165,7 +165,7 @@ public class ImageUtils {
             for (Iterator<ImageReader> i = ImageIO.getImageReaders(m); i.hasNext(); ) {
                 types.add(i.next().getFormatName());
             }
-            return types.isEmpty() ? null : types.toArray(new String[types.size()]);
+            return types.isEmpty() ? null : types.toArray(new String[0]);
         }
     }
 

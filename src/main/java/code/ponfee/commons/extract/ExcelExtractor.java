@@ -123,7 +123,7 @@ public class ExcelExtractor extends DataExtractor {
                 return Boolean.toString(cell.getBooleanCellValue());
 
             case ERROR: // 错误
-                return "Error: " + Byte.toString(cell.getErrorCellValue());
+                return "Error: " + cell.getErrorCellValue();
 
             default:
                 return cell.getRichStringCellValue().getString();

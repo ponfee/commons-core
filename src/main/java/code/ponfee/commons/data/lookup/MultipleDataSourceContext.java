@@ -80,7 +80,7 @@ public final class MultipleDataSourceContext {
         Set<String> duplicates = Collects.duplicate(names);
         if (CollectionUtils.isNotEmpty(duplicates)) {
             throw new IllegalArgumentException(
-                "Duplicated data source name: " + duplicates.toString()
+                "Duplicated data source name: " + duplicates
             );
         }
 

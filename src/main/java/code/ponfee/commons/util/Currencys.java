@@ -494,6 +494,9 @@ public enum Currencys {
 
     ;
 
+    private static final Map<String, Currencys> CODES   = Enums.toMap(Currencys.class, Currencys::code);
+    private static final Map<String, Currencys> NUMERIC = Enums.toMap(Currencys.class, Currencys::numeric);
+
     /** 币种代码 */
     private final String code;
 
@@ -509,9 +512,9 @@ public enum Currencys {
     /**
      * 构造函数
      *
-     * this.currency.getDisplayName(Locale.CHINA); -> 人民币
-     * this.currency.getDisplayName(Locale.US)     -> Chinese Yuan
-     * this.currency.getSymbol(Locale.CHINA)       -> ￥
+     * <p>this.currency.getDisplayName(Locale.CHINA); -> 人民币</p>
+     * <p>this.currency.getDisplayName(Locale.US)     -> Chinese Yuan</p>
+     * <p>this.currency.getSymbol(Locale.CHINA)       -> ￥</p>
      *
      * @param symbol 币种符号
      */
@@ -520,9 +523,6 @@ public enum Currencys {
         this.symbol = symbol;
         this.currency = Currency.getInstance(this.code);
         this.numeric = String.format("%03d",this.currency.getNumericCode());
-
-        Hide.CODES.put(this.code, this);
-        Hide.NUMERIC.put(this.numeric, this);
     }
 
     /**
@@ -561,7 +561,7 @@ public enum Currencys {
      * @return Currencys
      */
     public static Currencys ofCode(String code) {
-        return Hide.CODES.get(code);
+        return CODES.get(code);
     }
 
     /**
@@ -571,7 +571,7 @@ public enum Currencys {
      * @return Currencys
      */
     public static Currencys ofNumeric(String numeric) {
-        return Hide.NUMERIC.get(numeric);
+        return NUMERIC.get(numeric);
     }
 
     /**
@@ -581,12 +581,7 @@ public enum Currencys {
      * @return Currencys
      */
     public static Currencys of(Currency currency) {
-        return Hide.CODES.get(currency.getCurrencyCode());
-    }
-
-    private static class Hide {
-        private static final Map<String, Currencys> CODES   = new HashMap<>();
-        private static final Map<String, Currencys> NUMERIC = new HashMap<>();
+        return CODES.get(currency.getCurrencyCode());
     }
 
 }

@@ -49,7 +49,7 @@ public final class CheckedThrowing {
      * @param <T> the type of the call "call" method possible occur exception
      */
     @FunctionalInterface
-    public static interface ThrowingCallable<R, T extends Throwable> {
+    public interface ThrowingCallable<R, T extends Throwable> {
         R call() throws T;
 
         static <R, T extends Throwable> Callable<R> checked(ThrowingCallable<R, T> c) {
@@ -71,7 +71,7 @@ public final class CheckedThrowing {
      * @param <E> the type of the input to the operation
      * @param <T> the type of the call accept method possible occur exception
      */
-    public static interface ThrowingConsumer<E, T extends Throwable> {
+    public interface ThrowingConsumer<E, T extends Throwable> {
         void accept(E e) throws T;
 
         static <E, T extends Throwable> Consumer<E> checked(ThrowingConsumer<E, T> c) {
@@ -95,7 +95,7 @@ public final class CheckedThrowing {
      * @param <T> the type of the call apply method possible occur exception
      */
     @FunctionalInterface
-    public static interface ThrowingFunction<E, R, T extends Throwable> {
+    public interface ThrowingFunction<E, R, T extends Throwable> {
         R apply(E e) throws T;
 
         static <E, R, T extends Throwable> Function<E, R> checked(ThrowingFunction<E, R, T> f) {
@@ -118,7 +118,7 @@ public final class CheckedThrowing {
      * @param <T> the type of the call get method possible occur exception
      */
     @FunctionalInterface
-    public static interface ThrowingSupplier<R, T extends Throwable> {
+    public interface ThrowingSupplier<R, T extends Throwable> {
         R get() throws T;
 
         static <R, T extends Throwable> Supplier<R> checked(ThrowingSupplier<R, T> s) {
@@ -135,7 +135,7 @@ public final class CheckedThrowing {
     }
 
     @FunctionalInterface
-    public static interface ThrowingRunnable<T extends Throwable> {
+    public interface ThrowingRunnable<T extends Throwable> {
         void run() throws T;
 
         static <T extends Throwable> Runnable checked(ThrowingRunnable<T> r) {
@@ -152,7 +152,7 @@ public final class CheckedThrowing {
     }
 
     @FunctionalInterface
-    public static interface ThrowingComparator<E, T extends Throwable> {
+    public interface ThrowingComparator<E, T extends Throwable> {
         int compare(E e1, E e2) throws T;
 
         static <E, T extends Throwable> Comparator<? super E> checked(ThrowingComparator<E, T> c) {

@@ -219,7 +219,7 @@ public class X509CertUtils {
             //String result = new String(bytes); 
             //if (result.charAt(0) == 12) result = result.substring(2);
             String value = new String(bytes);
-            reuslt = value.substring(4, value.length());
+            reuslt = value.substring(4);
         }
         return reuslt;
     }
@@ -332,7 +332,7 @@ public class X509CertUtils {
     private static boolean isBase64(InputStream inputstream) throws IOException {
         try {
             if (!inputstream.markSupported()) {
-                byte abyte0[] = getTotalBytes(new BufferedInputStream(inputstream));
+                byte[] abyte0 = getTotalBytes(new BufferedInputStream(inputstream));
                 inputstream = new ByteArrayInputStream(abyte0);
             }
 
@@ -364,7 +364,7 @@ public class X509CertUtils {
 
     private static byte[] getTotalBytes(InputStream input)
         throws IOException {
-        byte abyte0[] = new byte[8192];
+        byte[] abyte0 = new byte[8192];
         ByteArrayOutputStream baos = new ByteArrayOutputStream(2048);
         baos.reset();
         for (int len; (len = input.read(abyte0, 0, abyte0.length)) != Files.EOF;) {

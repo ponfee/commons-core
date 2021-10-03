@@ -498,9 +498,7 @@ public final class JSONExtractUtils {
         }
 
         if (dataset.isEmpty()) {
-            for (List<Object> array : subset) {
-                dataset.add(array);
-            }
+            dataset.addAll(subset);
             return;
         }
 
@@ -511,7 +509,6 @@ public final class JSONExtractUtils {
         for (int i = 0; i < maxRow; i++) {
             dataset.get(i).addAll(subset.get(i));
         }
-        return;
     }
 
     private static void completeRow(List<List<Object>> listArray, int maxRow) {

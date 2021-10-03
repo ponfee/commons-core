@@ -4,6 +4,8 @@ import code.ponfee.commons.math.Maths;
 
 /**
  * <pre>
+ * 基于snowflake算法的ID生成器
+ *
  * BINARY(Long.MAX_VALUE         )=0111111111111111111111111111111111111111111111111111111111111111
  * BINARY(2039-09-07 23:47:35.551)=0000000000000000000000011111111111111111111111111111111111111111
  * 
@@ -18,14 +20,12 @@ import code.ponfee.commons.math.Maths;
  *
  * 毫秒内序列 （由datacenter和机器ID作区分），并且效率较高。经测试，
  * snowflake每秒能够产生26万ID左右，完全满足需要。
- * </pre>
  *
  * 计算掩码的三种方式：
  *   a：(1 << bits) - 1
  *   b：-1L ^ (-1L << bits)
  *   c：Long.MAX_VALUE >>> (63 - bits)
- *   
- * 基于snowflake算法的ID生成器
+ * </pre>
  *
  * @author Ponfee
  */
@@ -138,7 +138,7 @@ public final class IdWorker {
      * @param lastTimestamp the lastTimestamp
      * @return
      */
-    protected long tilNextMillis(long lastTimestamp) {
+    private long tilNextMillis(long lastTimestamp) {
         long timestamp;
         do {
             timestamp = timeGen();
@@ -146,7 +146,7 @@ public final class IdWorker {
         return timestamp;
     }
 
-    protected long timeGen() {
+    private long timeGen() {
         return System.currentTimeMillis();
     }
 

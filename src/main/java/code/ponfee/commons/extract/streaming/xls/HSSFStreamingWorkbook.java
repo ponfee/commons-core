@@ -20,6 +20,7 @@ import org.apache.poi.hssf.record.SSTRecord;
 import org.apache.poi.poifs.filesystem.DocumentInputStream;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.SpreadsheetVersion;
+import org.apache.poi.ss.formula.EvaluationWorkbook;
 import org.apache.poi.ss.formula.udf.UDFFinder;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
@@ -369,17 +370,12 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
     }
 
     @Override @Deprecated
-    public short getNumberOfFonts() {
+    public int getNumberOfFonts() {
         throw new UnsupportedOperationException();
     }
 
     @Override @Deprecated
     public int getNumberOfFontsAsInt() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override @Deprecated
-    public Font getFontAt(short idx) {
         throw new UnsupportedOperationException();
     }
 
@@ -429,27 +425,7 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
     }
 
     @Override @Deprecated
-    public Name getNameAt(int nameIndex) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override @Deprecated
     public Name createName() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override @Deprecated
-    public int getNameIndex(String name) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override @Deprecated
-    public void removeName(int index) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override @Deprecated
-    public void removeName(String name) {
         throw new UnsupportedOperationException();
     }
 
@@ -478,8 +454,7 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    @Deprecated
+    @Override @Deprecated
     public void removePrintArea(int sheetIndex) {
         throw new UnsupportedOperationException();
     }
@@ -529,8 +504,7 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    @Deprecated
+    @Override @Deprecated
     public SheetVisibility getSheetVisibility(int sheetIx) {
         throw new UnsupportedOperationException();
     }
@@ -562,6 +536,11 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
 
     @Override @Deprecated
     public int addOlePackage(byte[] oleData, String label, String fileName, String command) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override @Deprecated
+    public EvaluationWorkbook createEvaluationWorkbook() {
         throw new UnsupportedOperationException();
     }
 

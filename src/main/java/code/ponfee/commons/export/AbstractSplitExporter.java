@@ -59,8 +59,8 @@ public abstract class AbstractSplitExporter extends AbstractDataExporter<Void> {
         }
     }
 
-    protected abstract AsnycSplitExporter splitExporter(Table<Object[]> subTable, 
-                                                        String savingFilePath);
+    protected abstract AbstractAsnycSplitExporter splitExporter(Table<Object[]> subTable,
+                                                                String savingFilePath);
 
     @Override
     public final Void export() {
@@ -74,11 +74,11 @@ public abstract class AbstractSplitExporter extends AbstractDataExporter<Void> {
         return savingFilePathPrefix + String.format("%04d", fileNo) + fileSuffix;
     }
 
-    public static abstract class AsnycSplitExporter implements Runnable {
+    public static abstract class AbstractAsnycSplitExporter implements Runnable {
         private final Table<Object[]> subTable;
         protected final String savingFilePath;
 
-        public AsnycSplitExporter(Table<Object[]> subTable, String savingFilePath) {
+        public AbstractAsnycSplitExporter(Table<Object[]> subTable, String savingFilePath) {
             this.subTable = subTable;
             this.savingFilePath = savingFilePath;
         }

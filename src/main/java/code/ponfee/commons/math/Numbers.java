@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Arrays;
@@ -231,14 +232,14 @@ public final class Numbers {
      * @return
      */
     public static double scale(Object value, int scale) {
-        Double val = toDouble(value);
+        double val = toDouble(value);
 
         if (scale < 0) {
             return val;
         }
 
         return BigDecimal.valueOf(val)
-                .setScale(scale, BigDecimal.ROUND_HALF_UP)
+                .setScale(scale, RoundingMode.HALF_UP)
                 .doubleValue();
     }
 
@@ -255,7 +256,7 @@ public final class Numbers {
 
     public static double lower(double value, int pow, int scale) {
         return BigDecimal.valueOf(value / Math.pow(10, pow))
-            .setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
+            .setScale(scale, RoundingMode.HALF_UP).doubleValue();
     }
 
     /**
@@ -271,7 +272,7 @@ public final class Numbers {
 
     public static double upper(double value, int pow, int scale) {
         return BigDecimal.valueOf(value * Math.pow(10, pow))
-            .setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
+            .setScale(scale, RoundingMode.HALF_UP).doubleValue();
     }
 
     /**
@@ -402,17 +403,6 @@ public final class Numbers {
     }
 
     /**
-     * Returns the two Long object is equals
-     * 
-     * @param a the Long a
-     * @param b the Long b
-     * @return if is equals then return {@code true}
-     */
-    public static boolean equals(Long a, Long b) {
-        return (a == b) || (a != null && a.equals(b));
-    }
-
-    /**
      * Returns the Long object is equals the Integer object
      * 
      * @param a the Long a
@@ -420,30 +410,10 @@ public final class Numbers {
      * @return if is equals then return {@code true}
      */
     public static boolean equals(Long a, Integer b) {
-        return a != null && b != null 
-            && a.longValue() == b.intValue();
-    }
-
-    /**
-     * Returns the two Integer object is equals
-     * 
-     * @param a the Integer a
-     * @param b the Integer b
-     * @return if is equals then return {@code true}
-     */
-    public static boolean equals(Integer a, Integer b) {
-        return (a == b) || (a != null && a.equals(b));
-    }
-
-    /**
-     * Returns the two Double object is equals
-     * 
-     * @param a the Double a
-     * @param b the Double b
-     * @return if is equals then return {@code true}
-     */
-    public static boolean equals(Double a, Double b) {
-        return (a == b) || (a != null && a.equals(b));
+        if (a == null && b == null) {
+            return true;
+        }
+        return a != null && b != null && a.longValue() == b.intValue();
     }
 
     /**
@@ -486,7 +456,7 @@ public final class Numbers {
         }
 
         // * 100
-        long number = amount.movePointRight(2).setScale(0, BigDecimal.ROUND_HALF_UP)
+        long number = amount.movePointRight(2).setScale(0, RoundingMode.HALF_UP)
                             .abs().longValue();
         int scale = (int) (number % 100), numIndex;
         if (scale == 0) {

@@ -147,9 +147,9 @@ public class SqlHelper {
             }
         }
         if (args != null && args.length == 1) {
-            Object _params = wrapCollection(args[0]);
-            if (_params instanceof Map) {
-                params.putAll((Map<String, ?>) _params);
+            Object params0 = wrapCollection(args[0]);
+            if (params0 instanceof Map) {
+                params.putAll((Map<String, ?>) params0);
             }
         }
         return getNamespaceSql(session, fullMapperMethodName, params);

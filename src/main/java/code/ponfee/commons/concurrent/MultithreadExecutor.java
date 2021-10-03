@@ -29,7 +29,7 @@ import com.google.common.base.Stopwatch;
  */
 public class MultithreadExecutor {
 
-    private static Logger logger = LoggerFactory.getLogger(MultithreadExecutor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MultithreadExecutor.class);
 
     /**
      * Exec async
@@ -63,7 +63,7 @@ public class MultithreadExecutor {
             flag.set(false);
             throw new RuntimeException(e);
         } finally {
-            logger.info("multi thread exec async duration: {}", watch.stop());
+            LOG.info("multi thread exec async duration: {}", watch.stop());
         }
     }
 
@@ -87,7 +87,7 @@ public class MultithreadExecutor {
                 x -> CompletableFuture.runAsync(command, executor)
             ).toArray(CompletableFuture[]::new)
         ).join();
-        logger.info("multi thread run async duration: {}", watch.stop());
+        LOG.info("multi thread run async duration: {}", watch.stop());
     }
 
     // -----------------------------------------------------------------callAsync
@@ -108,7 +108,7 @@ public class MultithreadExecutor {
         ).collect(
             Collectors.toList()
         );
-        logger.info("multi thread call async duration: {}", watch.stop());
+        LOG.info("multi thread call async duration: {}", watch.stop());
         return result;
     }
 
@@ -135,7 +135,7 @@ public class MultithreadExecutor {
         ).forEach(
             CompletableFuture::join
         );
-        logger.info("multi thread run async duration: {}", watch.stop());
+        LOG.info("multi thread run async duration: {}", watch.stop());
     }
 
     // -----------------------------------------------------------------callAsync
@@ -165,7 +165,7 @@ public class MultithreadExecutor {
         ).collect(
             Collectors.toList()
         );
-        logger.info("multi thread call async duration: {}", watch.stop());
+        LOG.info("multi thread call async duration: {}", watch.stop());
         return result;
     }
 

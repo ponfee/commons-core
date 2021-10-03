@@ -1,6 +1,6 @@
 package code.ponfee.commons.reflect;
 
-import code.ponfee.commons.collect.ObjectArrayWrapper;
+import code.ponfee.commons.collect.HashKey;
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.model.Null;
 import org.apache.commons.lang3.ArrayUtils;
@@ -348,7 +348,7 @@ public final class ClassUtils {
     @SuppressWarnings("unchecked")
     public static <T> Constructor<T> getConstructor(Class<T> type, Class<?>... parameterTypes) {
         boolean flag = ArrayUtils.isEmpty(parameterTypes);
-        Object key = flag ? type : ObjectArrayWrapper.of(ArrayUtils.insert(0, parameterTypes, type));
+        Object key = flag ? type : HashKey.of(ArrayUtils.insert(0, parameterTypes, type));
         Constructor<T> constructor = (Constructor<T>) CONSTRUCTOR_CACHE.get(key);
         if (constructor == null) {
             synchronized (CONSTRUCTOR_CACHE) {

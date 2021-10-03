@@ -88,6 +88,6 @@ public class NamedDataSource {
             }
         }
 
-        return dataSources.toArray(new NamedDataSource[dataSources.size()]);
+        return dataSources.toArray(new NamedDataSource[0]);
     }
 }

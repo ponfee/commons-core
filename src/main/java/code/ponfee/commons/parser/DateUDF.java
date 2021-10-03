@@ -16,7 +16,7 @@ import code.ponfee.commons.util.Dates;
  */
 public final class DateUDF {
 
-    private static final Pattern PATTERN = Pattern.compile("[\\-\\+]?\\d+[YyMDdHhmWw]");
+    private static final Pattern PATTERN = Pattern.compile("[\\-+]?\\d+[YyMDdHhmWw]");
 
     // -------------------------------------------------now
     public static String now(String format) {

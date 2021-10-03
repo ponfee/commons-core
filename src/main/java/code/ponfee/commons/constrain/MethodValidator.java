@@ -53,7 +53,7 @@ import code.ponfee.commons.reflect.GenericUtils;
  */
 public abstract class MethodValidator extends FieldValidator {
 
-    private static Logger logger = LoggerFactory.getLogger(MethodValidator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MethodValidator.class);
 
     /**
      * @param pjp
@@ -140,7 +140,7 @@ public abstract class MethodValidator extends FieldValidator {
         } catch (UnsupportedOperationException | IllegalArgumentException e) {
             builder.append(e.getMessage());
         } catch (Exception e) {
-            logger.error("参数约束校验异常", e);
+            LOG.error("参数约束校验异常", e);
             builder.append("参数约束校验异常：").append(e.getMessage());
         }
 

@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * @author Ponfee
  */
 final class WebappResourceLoader {
-    private static Logger logger = LoggerFactory.getLogger(WebappResourceLoader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WebappResourceLoader.class);
 
     private ServletContext servletContext;
 
@@ -38,7 +38,7 @@ final class WebappResourceLoader {
             File f = new File(servletContext.getRealPath(filePath));
             return new Resource(f.getAbsolutePath(), f.getName(), new FileInputStream(f));
         } catch (FileNotFoundException e) {
-            logger.error("file not found [" + filePath + "]", e);
+            LOG.error("file not found [" + filePath + "]", e);
             return null;
         }
     }
@@ -54,7 +54,7 @@ final class WebappResourceLoader {
                 }
             }
         } catch (FileNotFoundException e) {
-            logger.error("file not found [" + directory + "]", e);
+            LOG.error("file not found [" + directory + "]", e);
         }
         return list;
     }

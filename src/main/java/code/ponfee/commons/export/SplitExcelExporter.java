@@ -15,11 +15,11 @@ public class SplitExcelExporter extends AbstractSplitExporter {
     }
 
     @Override
-    protected AsnycSplitExporter splitExporter(Table<Object[]> subTable, String savingFilePath) {
+    protected AbstractAsnycSplitExporter splitExporter(Table<Object[]> subTable, String savingFilePath) {
         return new AsnycExcelExporter(subTable, savingFilePath, super.getName());
     }
 
-    private static class AsnycExcelExporter extends AsnycSplitExporter {
+    private static class AsnycExcelExporter extends AbstractAsnycSplitExporter {
         final String sheetName;
 
         AsnycExcelExporter(Table<Object[]> subTable, String savingFilePath,

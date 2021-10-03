@@ -23,7 +23,7 @@ import code.ponfee.commons.io.ExtendedGZIPOutputStream;
  */
 public class HessianSerializer extends Serializer {
 
-    private static Logger logger = LoggerFactory.getLogger(HessianSerializer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HessianSerializer.class);
 
     @Override
     protected byte[] serialize0(Object obj, boolean compress) {
@@ -52,7 +52,7 @@ public class HessianSerializer extends Serializer {
                 try {
                     hessian.close();
                 } catch (IOException e) {
-                    logger.error("close hessian exception", e);
+                    LOG.error("close hessian exception", e);
                 }
             }
             Closeables.log(gzout, "close GZIPOutputStream exception");
@@ -86,7 +86,7 @@ public class HessianSerializer extends Serializer {
                 try {
                     hessian.close();
                 } catch (Exception e) {
-                    logger.error("close hessian exception", e);
+                    LOG.error("close hessian exception", e);
                 }
             }
             Closeables.log(gzin, "close GZIPInputStream exception");

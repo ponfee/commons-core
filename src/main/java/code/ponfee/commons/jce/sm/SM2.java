@@ -80,7 +80,7 @@ public final class SM2 {
         this.count++;
     }
 
-    private void encrypt(byte data[]) {
+    private void encrypt(byte[] data) {
         this.sm3c3.update(data);
 
         for (int i = 0, len = data.length; i < len;) {
@@ -91,7 +91,7 @@ public final class SM2 {
         }
     }
 
-    private void decrypt(byte data[]) {
+    private void decrypt(byte[] data) {
         for (int i = 0, len = data.length; i < len;) {
             if (keyOffset == KEY_LENGTH) {
                 nextKey();

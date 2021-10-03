@@ -576,49 +576,53 @@ public final class WebUtils {
         // Create a place for the normalized path
         String normalized = path;
 
-        if (replaceBackSlash && normalized.indexOf('\\') >= 0)
+        if (replaceBackSlash && normalized.indexOf('\\') >= 0) {
             normalized = normalized.replace('\\', '/');
+        }
 
-        if (normalized.equals("/."))
+        if ("/.".equals(normalized)) {
             return "/";
+        }
 
         // Add a leading "/" if necessary
-        if (!normalized.startsWith("/"))
+        if (!normalized.startsWith("/")) {
             normalized = "/" + normalized;
+        }
 
         // Resolve occurrences of "//" in the normalized path
         while (true) {
             int index = normalized.indexOf("//");
-            if (index < 0)
+            if (index < 0) {
                 break;
-            normalized = normalized.substring(0, index) +
-                    normalized.substring(index + 1);
+            }
+            normalized = normalized.substring(0, index) + normalized.substring(index + 1);
         }
 
         // Resolve occurrences of "/./" in the normalized path
         while (true) {
             int index = normalized.indexOf("/./");
-            if (index < 0)
+            if (index < 0) {
                 break;
-            normalized = normalized.substring(0, index) +
-                    normalized.substring(index + 2);
+            }
+            normalized = normalized.substring(0, index) + normalized.substring(index + 2);
         }
 
         // Resolve occurrences of "/../" in the normalized path
         while (true) {
             int index = normalized.indexOf("/../");
-            if (index < 0)
+            if (index < 0) {
                 break;
-            if (index == 0)
-                return (null);  // Trying to go outside our context
+            }
+            if (index == 0) {
+                // Trying to go outside our context
+                return (null);
+            }
             int index2 = normalized.lastIndexOf('/', index - 1);
-            normalized = normalized.substring(0, index2) +
-                    normalized.substring(index + 3);
+            normalized = normalized.substring(0, index2) + normalized.substring(index + 3);
         }
 
         // Return the normalized path that we have completed
         return (normalized);
-
     }
 
     // --------------------------------------------------------------------private methods

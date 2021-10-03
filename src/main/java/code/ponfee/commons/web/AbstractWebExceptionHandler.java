@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.google.common.base.Throwables;
 
-import code.ponfee.commons.exception.BasicException;
+import code.ponfee.commons.exception.BaseException;
 import code.ponfee.commons.exception.UnauthorizedException;
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.model.ResultCode;
@@ -187,9 +187,9 @@ public abstract class AbstractWebExceptionHandler {
     /**
      * 500 - Biz operate failure
      */
-    @ExceptionHandler(BasicException.class)
+    @ExceptionHandler(BaseException.class)
     //@ResponseBody @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public void handle(HttpServletRequest req, HttpServletResponse resp, BasicException e) {
+    public void handle(HttpServletRequest req, HttpServletResponse resp, BaseException e) {
         LOGGER.debug("Biz operate failure", e);
         Integer code = e.getCode();
         handle(req, resp, code == null ? SERVER_ERROR : code, e.getMessage());

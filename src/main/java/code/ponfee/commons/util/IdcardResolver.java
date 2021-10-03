@@ -242,7 +242,7 @@ public class IdcardResolver {
             sum = sum + (int) c * iteration--;
         }
 
-        if (end.toUpperCase().equals("A")) {
+        if ("A".equalsIgnoreCase(end)) {
             sum = sum + 10;
         } else {
             sum = sum + Integer.parseInt(end);
@@ -343,7 +343,7 @@ public class IdcardResolver {
     }
 
     /** 每位加权因子 */
-    private static final int POWER[] = { 
+    private static final int[] POWER = {
         7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2 
     };
 

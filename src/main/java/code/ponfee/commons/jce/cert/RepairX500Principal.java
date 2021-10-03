@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
-import java.util.Objects;
 
 import javax.security.auth.x500.X500Principal;
 
@@ -29,9 +28,7 @@ public class RepairX500Principal implements Principal {
     private final ByteArrayInputStream input;
 
     public RepairX500Principal(X500Principal principal) {
-        input = new ByteArrayInputStream(
-            Objects.requireNonNull(principal).getEncoded()
-        );
+        input = new ByteArrayInputStream(principal.getEncoded());
     }
 
     @Override

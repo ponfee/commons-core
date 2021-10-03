@@ -235,7 +235,7 @@ public class KeyStoreResolver {
             Certificate[] certs = keyStore.getCertificateChain(alias);
             X509Certificate[] x509Certchain = new X509Certificate[certs.length];
             for (int i = 0; i < certs.length; i++) {
-                x509Certchain[i] = X509Certificate.class.cast(certs[i]);
+                x509Certchain[i] = (X509Certificate) certs[i];
             }
             return x509Certchain;
         } catch (KeyStoreException e) {

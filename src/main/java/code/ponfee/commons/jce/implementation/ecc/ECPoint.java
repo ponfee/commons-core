@@ -59,10 +59,7 @@ public class ECPoint {
             return;
         }
 
-        boolean ymt = false;
-        if (bytes[0] != 0) {
-            ymt = true;
-        }
+        boolean ymt = bytes[0] != 0;
         bytes[0] = 0;
         this.x = new BigInteger(1, bytes);
 

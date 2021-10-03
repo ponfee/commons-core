@@ -357,12 +357,12 @@ public class Strings {
      */
     public static boolean isEmpty(Object value) {
         return value == null
-            || (CharSequence.class.isInstance(value) && StringUtils.isEmpty((CharSequence) value));
+            || (value instanceof CharSequence && StringUtils.isEmpty((CharSequence) value));
     }
 
     public static boolean isBlank(Object value) {
         return value == null
-            || (CharSequence.class.isInstance(value) && StringUtils.isBlank((CharSequence) value));
+            || (value instanceof CharSequence && StringUtils.isBlank((CharSequence) value));
     }
 
     /**
@@ -462,7 +462,7 @@ public class Strings {
 
         List<String> list = new ArrayList<>();
         csvSplit(list, s, off, len);
-        return list.toArray(new String[list.size()]);
+        return list.toArray(new String[0]);
     }
 
     private enum CsvSplitState {
@@ -576,6 +576,8 @@ public class Strings {
                         continue;
                     }
                     continue;
+                default:
+                    throw new UnsupportedOperationException("Unsupported state " + state);
             }
         }
 
@@ -592,6 +594,8 @@ public class Strings {
                 out.setLength(last);
                 list.add(out.toString());
                 break;
+            default:
+                throw new UnsupportedOperationException("Unsupported state " + state);
         }
 
         return list;

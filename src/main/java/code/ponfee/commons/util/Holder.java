@@ -6,10 +6,10 @@ import java.util.function.Supplier;
 
 /**
  * 变量持有，用于lambda方法体内
- * non-thread-safe
+ * <p>non-thread-safe
  * 
  * @author Ponfee
- * @param <T>
+ * @param <T> the type T
  */
 public final class Holder<T> {
 
@@ -92,8 +92,7 @@ public final class Holder<T> {
         return this.value != null ? this.value : other.get();
     }
 
-    public <E extends Throwable> T orElseThrow(
-        Supplier<? extends E> exceptionSupplier) throws E {
+    public <E extends Throwable> T orElseThrow(Supplier<? extends E> exceptionSupplier) throws E {
         if (this.value != null) {
             return this.value;
         } else {
@@ -107,7 +106,7 @@ public final class Holder<T> {
             return true;
         }
 
-        if (!(obj instanceof Holder)) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
 
@@ -122,7 +121,7 @@ public final class Holder<T> {
     @Override
     public String toString() {
         return this.value != null
-            ? String.format("Holder[%s]", this.value)
-            : "Holder.empty";
+             ? String.format("Holder[%s]", this.value)
+             : "Holder.empty";
     }
 }

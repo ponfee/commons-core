@@ -5,6 +5,7 @@ import code.ponfee.commons.reflect.ClassUtils;
 import code.ponfee.commons.reflect.Fields;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -56,9 +57,8 @@ public final class ObjectUtils {
         return obj != null ? (Class<T>) obj.getClass() : null;
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> Predicate<T> not(Predicate<? super T> target) {
-        return (Predicate<T>) Objects.requireNonNull(target).negate();
+    public static <T> Predicate<T> not(Predicate<T> target) {
+        return target.negate();
     }
 
     /**
@@ -70,15 +70,15 @@ public final class ObjectUtils {
     public static boolean isEmpty(Object o) {
         if (o == null) {
             return true;
-        } else if (CharSequence.class.isInstance(o)) {
+        } else if (o instanceof CharSequence) {
             return ((CharSequence) o).length() == 0;
-        } else if (Collection.class.isInstance(o)) {
+        } else if (o instanceof Collection) {
             return ((Collection<?>) o).isEmpty();
         } else if (o.getClass().isArray()) {
             return Array.getLength(o) == 0;
-        } else if (Map.class.isInstance(o)) {
+        } else if (o instanceof Map) {
             return ((Map<?, ?>) o).isEmpty();
-        } else if (Dictionary.class.isInstance(o)) {
+        } else if (o instanceof Dictionary) {
             return ((Dictionary<?, ?>) o).isEmpty();
         } else {
             return false;
@@ -131,7 +131,7 @@ public final class ObjectUtils {
         if (type.isEnum()) {
             return (value instanceof Number)
                  ? type.getEnumConstants()[((Number) value).intValue()]
-                 : (T) Enums.ofIgnoreCase((Class<Enum>) type, value.toString());
+                 : (T) EnumUtils.getEnumIgnoreCase((Class<Enum>) type, value.toString());
         }
 
         if (Date.class == type) {

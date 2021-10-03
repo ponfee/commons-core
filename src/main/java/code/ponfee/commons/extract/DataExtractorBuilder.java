@@ -14,6 +14,7 @@ import code.ponfee.commons.extract.ExcelExtractor.ExcelType;
 import code.ponfee.commons.extract.streaming.StreamingExcelExtractor;
 import code.ponfee.commons.http.ContentType;
 import code.ponfee.commons.util.Enums;
+import org.apache.commons.lang3.EnumUtils;
 
 /**
  * The data extractor builder, facade operator
@@ -108,7 +109,7 @@ public class DataExtractorBuilder {
             // xls: application/vnd.ms-excel
             //      application/x-xls
             ExtractableDataSource ds = new ExtractableDataSource(dataSource);
-            ExcelType type = Enums.ofIgnoreCase(ExcelType.class, extension);
+            ExcelType type = EnumUtils.getEnumIgnoreCase(ExcelType.class, extension);
             return streaming 
                    ? new StreamingExcelExtractor(ds, headers, startRow, type, sheetIndex)
                    : new ExcelExtractor(ds, headers, startRow, type, sheetIndex);

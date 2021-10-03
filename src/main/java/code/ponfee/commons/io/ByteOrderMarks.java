@@ -17,9 +17,9 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
 
+import code.ponfee.commons.util.Enums;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.bouncycastle.util.Arrays;
 
@@ -57,13 +57,14 @@ public enum ByteOrderMarks {
 
     ;
 
+    private static final Map<Charset, ByteOrderMarks> MAPPING = Enums.toMap(ByteOrderMarks.class, ByteOrderMarks::charset);
+
     private final Charset charset;
     private final byte[]  bytes;
 
     ByteOrderMarks(Charset charset, byte... bytes) {
         this.charset = charset;
         this.bytes = bytes;
-        Hide.MAPPING.put(charset, this);
     }
 
     // ------------------------------------------------------------------------of bom without charset
@@ -89,7 +90,7 @@ public enum ByteOrderMarks {
     }
 
     public static ByteOrderMarks of(Charset charset, File file) throws IOException {
-        ByteOrderMarks bom = Hide.MAPPING.get(charset);
+        ByteOrderMarks bom = MAPPING.get(charset);
         if (bom == null) {
             return null; // no bom charset
         }
@@ -97,7 +98,7 @@ public enum ByteOrderMarks {
     }
 
     public static ByteOrderMarks of(Charset charset, InputStream input) throws IOException {
-        ByteOrderMarks bom = Hide.MAPPING.get(charset);
+        ByteOrderMarks bom = MAPPING.get(charset);
         if (bom == null) {
             return null; // no bom charset
         }
@@ -105,7 +106,7 @@ public enum ByteOrderMarks {
     }
 
     public static ByteOrderMarks of(Charset charset, byte[] bytes) {
-        ByteOrderMarks bom = Hide.MAPPING.get(charset);
+        ByteOrderMarks bom = MAPPING.get(charset);
         if (bom == null) {
             return null; // no bom charset
         }
@@ -169,11 +170,11 @@ public enum ByteOrderMarks {
                 headBytes = new byte[DETECT_COUNT];
                 count = raf.read(headBytes);
                 charset = detect(headBytes, count);
-                if ((bom = Hide.MAPPING.get(charset)) == null) {
+                if ((bom = MAPPING.get(charset)) == null) {
                     return null; // not bom charset
                 }
             } else {
-                if ((bom = Hide.MAPPING.get(charset)) == null) {
+                if ((bom = MAPPING.get(charset)) == null) {
                     return null; // not bom charset
                 }
                 headBytes = new byte[bom.length()];
@@ -220,11 +221,11 @@ public enum ByteOrderMarks {
                 headBytes = new byte[DETECT_COUNT];
                 count = raf.read(headBytes);
                 charset = detect(headBytes, count);
-                if ((bom = Hide.MAPPING.get(charset)) == null) {
+                if ((bom = MAPPING.get(charset)) == null) {
                     return null; // not bom charset
                 }
             } else {
-                if ((bom = Hide.MAPPING.get(charset)) == null) {
+                if ((bom = MAPPING.get(charset)) == null) {
                     return null; // not bom charset
                 }
                 headBytes = new byte[bom.length()];
@@ -249,7 +250,7 @@ public enum ByteOrderMarks {
     }
 
     public static byte[] get(Charset charset) {
-        ByteOrderMarks bom = Hide.MAPPING.get(charset);
+        ByteOrderMarks bom = MAPPING.get(charset);
         return bom == null ? null : bom.bytes();
     }
 
@@ -283,10 +284,6 @@ public enum ByteOrderMarks {
             }
         }
         return true;
-    }
-
-    private static class Hide {
-        private static final Map<Charset, ByteOrderMarks> MAPPING = new HashMap<>();
     }
 
 }

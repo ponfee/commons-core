@@ -72,7 +72,7 @@ public final class Bytes {
             }
 
             fmt.format("%s", SPACE_CHAR); // block与text间加一个空格
-            fmt.format("%s", text.toString()); // 输出text：“..@.s.UwH...b{.U”
+            fmt.format("%s", text); // 输出text：“..@.s.UwH...b{.U”
             fmt.format("%s", "\n"); // 输出换行
             text.close();
         }

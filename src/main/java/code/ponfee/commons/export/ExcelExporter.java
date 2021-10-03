@@ -530,7 +530,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
             if (Strings.isBlank(value)) {
                 cell.setCellType(CellType.NUMERIC);
                 cell.setCellValue(new XSSFRichTextString());
-            } else if (String.class.isInstance(value) && ((String) value).endsWith("%")) {
+            } else if (value instanceof String && ((String) value).endsWith("%")) {
                 String val = ((String) value).substring(0, ((String) value).length() - 1);
                 cell.setCellValue(Numbers.toDouble(val.replace(",", "")) / 100);
             } else {

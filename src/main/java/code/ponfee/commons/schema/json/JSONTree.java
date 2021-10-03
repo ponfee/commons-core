@@ -34,7 +34,7 @@ public class JSONTree implements Serializable, Comparable<JSONTree>, TreeTrait<J
     private String             name; // 节点
     private int              orders; // 次序
     private boolean         checked; // 是否选中
-    private DataType type; // 数据类型
+    private DataType           type; // 数据类型
     private List<JSONTree> children; // 子节点列表
 
     @Override

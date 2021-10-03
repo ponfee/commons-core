@@ -198,9 +198,7 @@ public abstract class CryptoProvider {
 
             @Override
             public byte[] decrypt(byte[] encrypted) {
-                return symmetricKey.decrypt(
-                    Objects.requireNonNull(encrypted)
-                );
+                return symmetricKey.decrypt(encrypted);
             }
         };
     }
@@ -214,13 +212,11 @@ public abstract class CryptoProvider {
      */
     public static CryptoProvider rsaPublicKeyProvider(String pkcs8PublicKey) {
         return new CryptoProvider() {
-            RSAPublicKey pubKey = RSAPublicKeys.fromPkcs8(pkcs8PublicKey); // thread-safe
+            final RSAPublicKey pubKey = RSAPublicKeys.fromPkcs8(pkcs8PublicKey); // thread-safe
 
             @Override
             public byte[] encrypt(byte[] original) {
-                return RSACryptor.encrypt(
-                    Objects.requireNonNull(original), pubKey
-                ); // 公钥加密
+                return RSACryptor.encrypt(original, pubKey); // 公钥加密
             }
 
             @Override
@@ -262,17 +258,13 @@ public abstract class CryptoProvider {
             public byte[] encrypt(byte[] original) {
                 // only support public key encrypt
                 // forbid encrypt with private key
-                return RSACryptor.encrypt(
-                    Objects.requireNonNull(original), pubKey
-                ); // 公钥加密
+                return RSACryptor.encrypt(original, pubKey); // 公钥加密
             }
 
             @Override
             public byte[] decrypt(byte[] encrypted) {
                 // only support private key decrypt
-                return RSACryptor.decrypt(
-                    Objects.requireNonNull(encrypted), priKey
-                ); // 私钥解密
+                return RSACryptor.decrypt(encrypted, priKey); // 私钥解密
             }
 
             @Override
@@ -295,7 +287,7 @@ public abstract class CryptoProvider {
     public static CryptoProvider sm2PublicKeyProvider(ECParameters ecParameter, 
                                                       byte[] publicKey) {
         return new CryptoProvider() {
-            byte[] publicKey0 = Arrays.copyOf(publicKey, publicKey.length);
+            final byte[] publicKey0 = Arrays.copyOf(publicKey, publicKey.length);
 
             @Override
             public byte[] encrypt(byte[] original) {
@@ -323,8 +315,8 @@ public abstract class CryptoProvider {
                                                        byte[] publicKey, 
                                                        byte[] privateKey) {
         return new CryptoProvider() {
-            byte[] publicKey0  = Arrays.copyOf(publicKey, publicKey.length);
-            byte[] privateKey0 = Arrays.copyOf(privateKey, privateKey.length);
+            final byte[] publicKey0  = Arrays.copyOf(publicKey, publicKey.length);
+            final byte[] privateKey0 = Arrays.copyOf(privateKey, privateKey.length);
 
             @Override
             public byte[] encrypt(byte[] original) {
@@ -351,7 +343,7 @@ public abstract class CryptoProvider {
     // -----------------------------------------------------------------------ECDSASinger
     public static CryptoProvider ecdsaPublicKeyProvider(byte[] publicKey) {
         return new CryptoProvider() {
-            ECPublicKey publicKey0 = ECDSASigner.decodePublicKey(publicKey);
+            final ECPublicKey publicKey0 = ECDSASigner.decodePublicKey(publicKey);
 
             @Override
             public byte[] encrypt(byte[] original) {
@@ -372,8 +364,8 @@ public abstract class CryptoProvider {
 
     public static CryptoProvider ecdsaPrivateKeyProvider(byte[] publicKey, byte[] privateKey) {
         return new CryptoProvider() {
-            ECPublicKey publicKey0 = ECDSASigner.decodePublicKey(publicKey);
-            ECPrivateKey privateKey0 = ECDSASigner.decodePrivateKey(privateKey);
+            final ECPublicKey publicKey0 = ECDSASigner.decodePublicKey(publicKey);
+            final ECPrivateKey privateKey0 = ECDSASigner.decodePrivateKey(privateKey);
 
             @Override
             public byte[] encrypt(byte[] original) {

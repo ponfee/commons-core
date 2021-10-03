@@ -145,7 +145,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
 
         // 2、检查是否存在重复节点
         List<T> checkDuplicateList = newLinkedList(super.nid);
-        nodes.stream().forEach(n -> checkDuplicateList.add(n.nid));
+        nodes.forEach(n -> checkDuplicateList.add(n.nid));
         Set<T> duplicated = Collects.duplicate(checkDuplicateList);
         if (CollectionUtils.isNotEmpty(duplicated)) {
             throw new RuntimeException("Duplicated nodes: " + duplicated);
@@ -263,7 +263,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
                 TreeNode<T, A> node = queue.poll();
                 collect.add(new FlatNode<>(node));
                 if (CollectionUtils.isNotEmpty(node.children)) {
-                    node.children.stream().forEach(c -> queue.offer(c));
+                    node.children.forEach(queue::offer);
                 }
             }
         }

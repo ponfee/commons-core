@@ -152,8 +152,7 @@ public class SimpleXmlHandler {
                 // 校验失败则打印错误信息
                 StringBuilder errors = new StringBuilder(128);
                 Set<String> exists = new HashSet<>();
-                for (Object obj : errorHandler.getErrors().elements()) {
-                    Element e = (Element) obj;
+                for (Element e : errorHandler.getErrors().elements()) {
                     String position = e.attributeValue("line") + "#" + e.attributeValue("column");
                     if (!exists.add(position)) {
                         continue;

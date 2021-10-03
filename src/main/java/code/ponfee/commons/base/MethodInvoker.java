@@ -32,7 +32,7 @@ public final class MethodInvoker {
         this.methodNames = methodNames;
     }
 
-    public final void invoke(Object caller) {
+    public void invoke(Object caller) {
         if (caller == null) {
             return;
         }
@@ -60,7 +60,7 @@ public final class MethodInvoker {
                     Exception reason = null;
                     for (String name : methodNames) {
                         try {
-                            Method m = type.getMethod(name); // find the public method
+                            Method m = type.getMethod(name); // find the no arg public method
                             if (!Modifier.isStatic(m.getModifiers())) {
                                 //m.setAccessible(true);
                                 method = m;

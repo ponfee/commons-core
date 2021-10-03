@@ -13,9 +13,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class Closeables {
 
-    private Closeables() {}
-
-    private static Logger logger = LoggerFactory.getLogger(Closeables.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Closeables.class);
 
     /**
      * Close and ignore
@@ -62,7 +60,7 @@ public final class Closeables {
             try {
                 closeable.close();
             } catch (Exception e) {
-                logger.error(errMsg, e);
+                LOG.error(errMsg, e);
             }
         }
     }

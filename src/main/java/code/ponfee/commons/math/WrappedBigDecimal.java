@@ -48,6 +48,7 @@ public class WrappedBigDecimal {
         return this.decimal.floatValue();
     }
 
+    @Override
     public String toString() {
         return this.decimal.toString();
     }

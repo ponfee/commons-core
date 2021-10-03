@@ -8,16 +8,15 @@
 
 package code.ponfee.commons.model;
 
-import static org.apache.commons.lang3.StringUtils.EMPTY;
+import code.ponfee.commons.http.HttpParams;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
-
-import code.ponfee.commons.http.HttpParams;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
  * Pagination html builder
@@ -26,7 +25,7 @@ import code.ponfee.commons.http.HttpParams;
  */
 public final class PaginationHtmlBuilder {
 
-    public static final String CDN_JQUERY = "<script src=\"http://libs.baidu.com/jquery/2.1.4/jquery.min.js\"></script>";
+    public static final String CDN_JQUERY = "<script src=\"https://libs.baidu.com/jquery/2.1.4/jquery.min.js\"></script>";
     public static final String CDN_BASE64 = "<script src=\"https://cdn.bootcss.com/Base64/1.1.0/base64.min.js\"></script>";
 
     private final String title;

@@ -112,8 +112,11 @@ public class Maths {
             end = 1.0D;
         }
         while (!isBorderline(r = start + (end - start) / 2, start, end) && (square = r * r) != value) {
-            if (square > value) end = r; // lower
-            else              start = r; // upper
+            if (square > value) {
+                end = r; // lower
+            } else {
+                start = r; // upper
+            }
         }
 
         return r; // cannot find a more rounded value

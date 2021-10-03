@@ -1,7 +1,7 @@
 package code.ponfee.commons.model;
 
 import code.ponfee.commons.reflect.BeanMaps;
-import code.ponfee.commons.reflect.CglibUtils;
+import code.ponfee.commons.reflect.BeanCopiers;
 import org.springframework.cglib.beans.BeanCopier;
 
 import java.util.List;
@@ -117,13 +117,9 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
             if (copier != null) {
                 copier.copy(source, target, null);
             } else {
-                CglibUtils.copyProperties(source, target);
+                BeanCopiers.copyProperties(source, target);
             }
             return target;
-            //org.apache.commons.beanutils.BeanUtils.copyProperties(target, source);
-            //org.apache.commons.beanutils.PropertyUtils.copyProperties(target, source);
-            //org.springframework.beans.BeanUtils.copyProperties(source, target);
-            //org.springframework.cglib.beans.BeanCopier.create(sourceType, targetType, false);
         }
     }
 
@@ -149,7 +145,7 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
         } else if (copier != null) {
             copier.copy(source, target, null);
         } else {
-            CglibUtils.copyProperties(source, target);
+            BeanCopiers.copyProperties(source, target);
         }
     }
 

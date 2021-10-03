@@ -15,17 +15,18 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * Extends TreeMap sort by value
- * 
- * {@code ValueSortedMap valueSortedMap = ValueSortedMap.nullsFirst(a map);}
- * 
- * 
- * Also use like this {@code
+ * <pre>
+ * Extends TreeMap sort by value: {@code
+ *   ValueSortedMap valueSortedMap = ValueSortedMap.nullsFirst(a map);
+ * }
+ *
+ * Also use like this: {@code
  *    Map<String, Integer> originMap = ImmutableMap.of("b", 2, "a", 1);
  *    TreeMap<String, Integer> sortedByValueMap = new TreeMap<>(Comparator.comparing(originMap::get));
  *    sortedByValueMap.putAll(originMap);
  * }
- * 
+ * </pre>
+ *
  * @author Ponfee
  */
 public class ValueSortedMap<K, V> extends TreeMap<K, V> {

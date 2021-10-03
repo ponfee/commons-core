@@ -154,7 +154,7 @@ public final class SqlUtils {
 
 
         return sql.substring(0, sql.length() - outermostSql.length()) 
-             + matcher.group(1) + " LIMIT " + Integer.toString(limit);
+             + matcher.group(1) + " LIMIT " + limit;
     }
 
     // --------------------------------------------------------------private methods
@@ -172,7 +172,7 @@ public final class SqlUtils {
         }
 
         int pos = sql.lastIndexOf(')'); // extract outermost sql string(include ")")
-        return (pos == -1) ? sql : sql.substring(pos, sql.length());
+        return (pos == -1) ? sql : sql.substring(pos);
     }
 
     private static String completeWhere(String outermost) {

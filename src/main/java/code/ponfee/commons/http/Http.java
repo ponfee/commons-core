@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.google.common.base.Preconditions;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
@@ -119,7 +120,7 @@ public final class Http {
     }
 
     public static Http of(String url, String method) {
-        return of(url, Enums.ofIgnoreCase(HttpMethod.class, method, HttpMethod.GET));
+        return of(url, EnumUtils.getEnumIgnoreCase(HttpMethod.class, method, HttpMethod.GET));
     }
 
     public static Http of(String url, HttpMethod method) {
@@ -387,7 +388,7 @@ public final class Http {
         if (values == null) {
             return null;
         }
-        return values.toArray(new String[values.size()]);
+        return values.toArray(new String[0]);
     }
 
     public String getRespHeader(String name) {

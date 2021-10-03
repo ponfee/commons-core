@@ -41,7 +41,7 @@ final class ClassPathResourceLoader {
     private static final String URL_PROTOCOL_ZIP = "zip";
     private static final String JAR_URL_SEPARATOR = "!/";
 
-    private static Logger logger = LoggerFactory.getLogger(ClassPathResourceLoader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ClassPathResourceLoader.class);
 
     /**
      * 加载资源文件
@@ -134,7 +134,7 @@ final class ClassPathResourceLoader {
             }
             return null;
         } catch (IOException e) {
-            logger.error("load resource from jar file occur error", e);
+            LOG.error("load resource from jar file occur error", e);
             return null;
         } finally {
             Closeables.console(jar);
@@ -243,7 +243,7 @@ final class ClassPathResourceLoader {
             }
             return list;
         } catch (IOException e) {
-            logger.error("load resource from jar file occur error", e);
+            LOG.error("load resource from jar file occur error", e);
             return list;
         } finally {
             Closeables.console(jar);

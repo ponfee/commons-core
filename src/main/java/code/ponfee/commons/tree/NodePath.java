@@ -35,6 +35,7 @@ import static java.util.Objects.requireNonNull;
  */
 // NodePath is extends ArrayList, so must be use mappingTo in fastjson
 // if not do it then deserialized json as a collection type(java.util.ArrayList)
+// hashCode()/equals() extends ImmutableArrayList
 @JSONType(mappingTo = NodePathFastjsonDeserializeMarker.class)
 @JsonDeserialize(using = NodePathJacksonDeserializer.class)
 public final class NodePath<T extends Serializable & Comparable<? super T>>

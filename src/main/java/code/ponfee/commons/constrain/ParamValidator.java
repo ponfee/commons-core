@@ -30,7 +30,7 @@ import code.ponfee.commons.reflect.ClassUtils;
  */
 public abstract class ParamValidator extends FieldValidator {
 
-    private static Logger logger = LoggerFactory.getLogger(ParamValidator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ParamValidator.class);
 
     /**
      * @param joinPoint
@@ -80,7 +80,7 @@ public abstract class ParamValidator extends FieldValidator {
         } catch (UnsupportedOperationException e) {
             builder.append(e.getMessage());
         } catch (NoSuchMethodException e) {
-            logger.error("reflect exception", e);
+            LOG.error("reflect exception", e);
             builder.append(Throwables.getStackTrace(e));
         }
 

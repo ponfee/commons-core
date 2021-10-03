@@ -122,7 +122,7 @@ public enum BeanMaps {
 
                     value = sourceMap.get(name);
                     if ((type = prop.getPropertyType()).isPrimitive() && Strings.isBlank(value)) {
-                        continue; // 原始类型时：value为null或为空字符串时跳过
+                        continue; // 基本类型时：value为null或为空字符串时跳过
                     }
 
                     // set value into bean field
@@ -143,6 +143,14 @@ public enum BeanMaps {
     public abstract Map<String, Object> toMap(Object bean);
 
     /**
+     * Copies map key-value to bean object field-value
+     *
+     * @param sourceMap  the source map
+     * @param targetBean the target bean
+     */
+    public abstract void copyFromMap(Map<String, Object> sourceMap, Object targetBean);
+
+    /**
      * Returns a bean object of specified Class<T> instance,
      * and copy map key-value to bean object field-value
      * 
@@ -155,14 +163,6 @@ public enum BeanMaps {
         this.copyFromMap(map, bean);
         return bean;
     }
-
-    /**
-     * Copies map key-value to bean object field-value
-     * 
-     * @param sourceMap  the source map
-     * @param targetBean the target bean
-     */
-    public abstract void copyFromMap(Map<String, Object> sourceMap, Object targetBean);
 
     /**
      * Copies bean object field-value to map key-value 

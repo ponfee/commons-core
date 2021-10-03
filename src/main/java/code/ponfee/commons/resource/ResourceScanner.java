@@ -45,7 +45,7 @@ import static org.springframework.core.io.support.ResourcePatternResolver.CLASSP
  */
 public class ResourceScanner {
 
-    private static Logger logger = LoggerFactory.getLogger(ResourceScanner.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ResourceScanner.class);
 
     private final List<String> scanPaths = new LinkedList<>();
 
@@ -109,7 +109,7 @@ public class ResourceScanner {
                     try {
                         result.add(Class.forName(reader.getClassMetadata().getClassName()));
                     } catch (Throwable e) {
-                        logger.error("Load class occur error.", e);
+                        LOG.error("Load class occur error.", e);
                     }
                 }
             }
@@ -151,7 +151,7 @@ public class ResourceScanner {
                     try (InputStream in = resource.getInputStream()) {
                         result.put(resource.getFilename(), IOUtils.toByteArray(in));
                     } catch (IOException e) {
-                        logger.error("scan binary error", e);
+                        LOG.error("scan binary error", e);
                     }
                 }
             }

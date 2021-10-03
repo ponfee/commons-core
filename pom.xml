@@ -12,11 +12,11 @@
   <!-- 
     > 不编译也不执行单元测试类：mvn package -Dmaven.test.skip=true
     > 编译但不会执行单元测试类：mvn package -DskipTests
-    > 指定参数：mvn clean install -Dmaven.test.skip=true -Dhadoop.version=2.7.7 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true
+    > 指定参数：mvn clean install -Dhadoop.version=2.7.7 -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true
     > 安装Maven Wrapper：mvn -N io.takari:maven:wrapper -Dmaven=3.6.3
     > Alibaba P3C手册：https://github.com/alibaba/p3c
     > sonar参考文章：https://www.jianshu.com/p/68a3ed571314
-    > 项目版本号批量修改插件文章：https://www.jianshu.com/p/88da01804d3c，mvn versions:set -DnewVersion=1.17-SNAPSHOT
+    > 项目版本号批量修改：mvn versions:set -DnewVersion=2.2-SNAPSHOT（https://www.jianshu.com/p/88da01804d3c）
 
     javac: 不加“-g”则默认为“-g:source,lines”
       -g                     生成所有调试信息
@@ -27,24 +27,22 @@
   -->
 
   <!-- 
-    https://www.slf4j.org/legacy.html
-
     slf4j-ext.jar         —>                                  扩展功能
     slf4j-nop.jar         —>    (slf4j    —>  null)           slf4j的空接口输出绑定，丢弃所有日志输出
     slf4j-simple.jar      —>    (slf4j    —>  slf4j-simple)   slf4j的自带的简单日志输出实现
     slf4j-android.jar     —>    (android  —>  slf4j)          将android环境下的日志，桥接到slf4j
     log4j-1.2-api.jar     —>    (log4j    —>  log4j2)         将log4j的日志转接到log4j2日志框架
 
-    slf4j的具体实现：slf4j-simple，logback
+    slf4j的具体实现：slf4j-simple、logback
 
-    slf4j adapter to impl(LogImpl)
+    slf4j adapter to impl(LogImpl)：http://www.slf4j.org/manual.html
       log4j  : slf4j-api -> org.slf4j:slf4j-log4j12, log4j:log4j
       log4j2 : slf4j-api -> org.apache.logging.log4j:(log4j-slf4j-impl, log4j-api, log4j-core)
       logback: slf4j-api -> ch.qos.logback:(logback-classic, logback-core)
       jcl    : slf4j-api -> org.slf4j:slf4j-jcl, commons-logging:commons-logging
       jul    : slf4j-api -> org.slf4j:slf4j-jdk14, java.util.logging
 
-    log api bridge to slf4j
+    log api bridge to slf4j：http://www.slf4j.org/legacy.html
       log4j            : log4j-over-slf4j(log4j api)  -> slf4j-api -> LogImpl
       log4j2           : log4j-to-slf4j  (log4j2 api) -> slf4j-api -> LogImpl
       logback          : logback就是slf4j的原生实现（即logback的api就是slf4j-api）
@@ -57,14 +55,14 @@
     <project.encoding>UTF-8</project.encoding>
     <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
     <java.version>1.8</java.version>
-    <!-- javac -serouce 1.8 -target 1.8 -->
+    <!-- javac -source 1.8 -target 1.8 -->
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
-    <spring.version>4.3.27.RELEASE</spring.version>
-    <slf4j.version>1.7.30</slf4j.version>
-    <log4j2.version>2.13.3</log4j2.version><!-- Java 9 Modular: 2.13.0[2.8.2] -->
-    <bouncycastle.version>1.65</bouncycastle.version><!-- Java 9 Modular: 1.64[1.60] -->
-    <jackson.version>2.11.3</jackson.version><!-- Java 9 Modular: 2.11.3[2.9.10] -->
+    <spring.version>5.3.12</spring.version>
+    <slf4j.version>1.7.32</slf4j.version>
+    <log4j2.version>2.14.1</log4j2.version><!-- Java 9 Modular: 2.14.1[2.8.2] -->
+    <bouncycastle.version>1.69</bouncycastle.version><!-- Java 9 Modular: 1.69[1.60] -->
+    <jackson.version>2.13.0</jackson.version><!-- Java 9 Modular: 2.13.0[2.9.10] -->
   </properties>
 
   <profiles>
@@ -89,8 +87,8 @@
         </repository>
       </distributionManagement>
       <properties>
-        <publish.version>2.2-SNAPSHOT</publish.version>
-        <separator>;</separator>
+        <publish.version>2.3-SNAPSHOT</publish.version>
+        <separator>:</separator>
       </properties>
     </profile>
     <profile>
@@ -111,39 +109,13 @@
         </repository>
       </distributionManagement>
       <properties>
-        <publish.version>2.2</publish.version>
+        <publish.version>2.3</publish.version>
         <separator>:</separator>
       </properties>
     </profile>
   </profiles>
 
   <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-library</artifactId>
-      <version>1.3</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <version>5.0.3</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <version>5.0.3</version>
-      <scope>test</scope>
-    </dependency> -->
-
-
     <!-- ==============================logger============================== -->
     <!-- slf4j api -->
     <dependency>
@@ -245,12 +217,12 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.10</version>
+      <version>3.12.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-text</artifactId>
-      <version>1.8</version>
+      <version>1.9</version>
       <exclusions>
         <exclusion>
           <groupId>org.apache.commons</groupId>
@@ -261,7 +233,7 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.6</version>
+      <version>2.11.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -276,7 +248,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-pool2</artifactId>
-      <version>2.8.0</version>
+      <version>2.11.1</version>
     </dependency>
 
     <!-- servlet -->
@@ -294,14 +266,9 @@
 
     <!-- jsr303 -->
     <dependency>
-      <groupId>javax.validation</groupId>
-      <artifactId>validation-api</artifactId>
-      <version>2.0.1.Final</version>
-    </dependency>
-    <dependency>
       <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator</artifactId>
-      <version>6.1.5.Final</version>
+      <version>7.0.1.Final</version>
     </dependency>
 
     <!-- dom4j -->
@@ -321,21 +288,21 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>29.0-jre</version>
+      <version>31.0.1-jre</version>
     </dependency>
 
     <!-- joda-time -->
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
-      <version>2.10.6</version>
+      <version>2.10.13</version>
     </dependency>
 
     <!-- zip压缩 -->
     <dependency>
       <groupId>net.lingala.zip4j</groupId>
       <artifactId>zip4j</artifactId>
-      <version>2.5.2</version>
+      <version>2.9.0</version>
     </dependency>
 
     <!-- ====================spring==================== -->
@@ -383,7 +350,7 @@
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi-ooxml</artifactId>
-      <version>4.1.2</version>
+      <version>5.1.0</version>
       <exclusions>
         <exclusion>
           <groupId>commons-codec</groupId>
@@ -404,7 +371,7 @@
     <dependency>
       <groupId>com.monitorjbl</groupId>
       <artifactId>xlsx-streamer</artifactId>
-      <version>2.1.0</version>
+      <version>2.2.0</version>
       <exclusions>
         <exclusion>
           <groupId>org.apache.poi</groupId>
@@ -446,7 +413,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-csv</artifactId>
-      <version>1.8</version>
+      <version>1.9.0</version>
     </dependency>
     <!-- ====================excel poi==================== -->
 
@@ -494,17 +461,17 @@
     <dependency>
       <groupId>io.protostuff</groupId>
       <artifactId>protostuff-runtime</artifactId>
-      <version>1.7.2</version>
+      <version>1.7.4</version>
     </dependency>
     <dependency>
       <groupId>io.protostuff</groupId>
       <artifactId>protostuff-core</artifactId>
-      <version>1.7.2</version>
+      <version>1.7.4</version>
     </dependency>
     <dependency>
       <groupId>com.alibaba</groupId>
       <artifactId>fastjson</artifactId>
-      <version>1.2.68</version>
+      <version>1.2.78</version>
     </dependency>
     <!-- ====================序列化==================== -->
 
@@ -514,34 +481,63 @@
     <dependency>
       <groupId>com.alibaba</groupId>
       <artifactId>druid</artifactId>
-      <version>1.1.22</version>
+      <version>1.2.8</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.mybatis</groupId>
       <artifactId>mybatis</artifactId>
-      <version>3.5.4</version>
+      <version>3.5.7</version>
     </dependency>
     <dependency>
       <groupId>org.mybatis</groupId>
       <artifactId>mybatis-spring</artifactId>
-      <version>1.3.3</version>
+      <version>2.0.6</version>
     </dependency>
     <!-- mybatis分页 -->
     <dependency>
       <groupId>com.github.pagehelper</groupId>
       <artifactId>pagehelper</artifactId>
-      <version>5.1.11</version>
+      <version>5.3.0</version>
     </dependency>
     <!-- ====================mybatis==================== -->
 
 
-    <!-- ====================pdf相关==================== -->
+    <!-- ====================加解密==================== -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcmail-jdk15on</artifactId>
+      <version>${bouncycastle.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcpg-jdk15on</artifactId>
+      <version>${bouncycastle.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bctls-jdk15on</artifactId>
+      <version>${bouncycastle.version}</version>
+    </dependency>
+    <!-- <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-ext-jdk15on</artifactId>
+      <version>${bouncycastle.version}</version>
+    </dependency> -->
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.15</version>
+    </dependency>
+    <!-- ====================加解密==================== -->
+
+
+    <!-- ====================pdf相关 REMOVE TODO ==================== -->
     <!-- pdf itext -->
     <dependency>
       <groupId>com.itextpdf</groupId>
       <artifactId>itextpdf</artifactId>
-      <version>5.5.13.1</version>
+      <version>5.5.13.2</version>
     </dependency>
     <!-- <dependency>
       <groupId>com.itextpdf</groupId>
@@ -551,7 +547,7 @@
     <!-- ====================pdf相关==================== -->
 
 
-    <!-- ====================文件类型处理==================== -->
+    <!-- ====================文件类型处理 REMOVE TODO ==================== -->
     <dependency>
       <groupId>net.sf.jmimemagic</groupId>
       <artifactId>jmimemagic</artifactId>
@@ -599,7 +595,7 @@
 
 
 
-    <!-- 文件编码探测（若有jar包无法下载可手动安装：lib/README.md） -->
+    <!-- 文件编码探测（若有jar包无法下载可手动安装：lib/README.md）REMOVE TODO  -->
     <dependency>
       <groupId>antlr</groupId>
       <artifactId>antlr</artifactId>
@@ -633,36 +629,26 @@
 
 
 
-    <!-- ====================加解密==================== -->
+    <!-- ====================only use in testing==================== -->
     <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bcmail-jdk15on</artifactId>
-      <version>${bouncycastle.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bcpg-jdk15on</artifactId>
-      <version>${bouncycastle.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bctls-jdk15on</artifactId>
-      <version>${bouncycastle.version}</version>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.2</version>
+      <scope>test</scope>
     </dependency>
     <!-- <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-ext-jdk15on</artifactId>
-      <version>${bouncycastle.version}</version>
-    </dependency> -->
-    <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-      <version>1.14</version>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.0.3</version>
+      <scope>test</scope>
     </dependency>
-    <!-- ====================加解密==================== -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>5.0.3</version>
+      <scope>test</scope>
+    </dependency> -->
 
-
-    <!-- ====================only use in testing==================== -->
     <dependency>
       <groupId>org.zeroturnaround</groupId>
       <artifactId>zt-zip</artifactId>

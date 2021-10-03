@@ -18,8 +18,8 @@ public class TransitPage<T> {
     private int pageNum; // 当前页
     private int pageSize; // 每页的数量
     private int size; // 当前页的数量
-    private int startRow; // 当前页面第一个元素在数据库中的行号
-    private int endRow; // 当前页面最后一个元素在数据库中的行号
+    private long startRow; // 当前页面第一个元素在数据库中的行号
+    private long endRow; // 当前页面最后一个元素在数据库中的行号
     private long total; // 总记录数
     private int pages; // 总页数
     private int prePage; // 前一页
@@ -65,19 +65,19 @@ public class TransitPage<T> {
         this.size = size;
     }
 
-    public int getStartRow() {
+    public long getStartRow() {
         return startRow;
     }
 
-    public void setStartRow(int startRow) {
+    public void setStartRow(long startRow) {
         this.startRow = startRow;
     }
 
-    public int getEndRow() {
+    public long getEndRow() {
         return endRow;
     }
 
-    public void setEndRow(int endRow) {
+    public void setEndRow(long endRow) {
         this.endRow = endRow;
     }
 

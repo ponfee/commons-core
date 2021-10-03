@@ -243,8 +243,8 @@ public class SM3Digest {
         }
 
         static int[][] expand(int[] B) {
-            int  W[] = new int[68];
-            int W1[] = new int[64];
+            int[] W  = new int[68];
+            int[] W1 = new int[64];
             System.arraycopy(B, 0, W, 0, B.length);
 
             for (int i = 16; i < 68; i++) {

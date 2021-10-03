@@ -31,7 +31,7 @@ import java.util.Enumeration;
 public final class Networks {
     private Networks() {}
 
-    private static Logger logger = LoggerFactory.getLogger(Networks.class);
+    private static final Logger logger = LoggerFactory.getLogger(Networks.class);
 
     private static final String  LOCALHOST_IP   = "127.0.0.1";
     private static final String  LOCALHOST_NAME = "localhost";
@@ -211,7 +211,7 @@ public final class Networks {
     /**
      * Convert ipv4 to long，max value is 4294967295
      *
-     * @param ipv4
+     * @param ip the ip address
      * @return
      */
     public static long toLong(String ip) {

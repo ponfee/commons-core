@@ -7,6 +7,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import com.alibaba.fastjson.serializer.PropertyFilter;
 
 /**
+ * <pre>
  * Object to json specified fields whether includes or excludes
  * 
  * {@code
@@ -18,7 +19,8 @@ import com.alibaba.fastjson.serializer.PropertyFilter;
  *   
  *   JSON.toJSONString(map, new SimplePropertyPreFilter("a", "b"))
  * }
- * 
+ * </pre>
+ *
  * @author Ponfee
  */
 public class FastjsonPropertyFilter implements PropertyFilter {

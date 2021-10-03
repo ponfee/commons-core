@@ -280,7 +280,7 @@ public final class WebContext {
     )*/
     public static class WebContextFilter implements Filter {
 
-        private static Logger logger = LoggerFactory.getLogger(WebContextFilter.class);
+        private static final Logger LOG = LoggerFactory.getLogger(WebContextFilter.class);
 
         // -------------------------------------------------------------Request headers
         private static final String ORIGIN_HEADER = "Origin";
@@ -316,11 +316,11 @@ public final class WebContext {
         private boolean anyOriginAllowed;
         private boolean anyTimingOriginAllowed;
         private boolean anyHeadersAllowed;
-        private List<String> allowedOrigins       = new ArrayList<>();
-        private List<String> allowedTimingOrigins = new ArrayList<>();
-        private List<String> allowedMethods       = new ArrayList<>();
-        private List<String> allowedHeaders       = new ArrayList<>();
-        private List<String> exposedHeaders       = new ArrayList<>();
+        private final List<String> allowedOrigins       = new ArrayList<>();
+        private final List<String> allowedTimingOrigins = new ArrayList<>();
+        private final List<String> allowedMethods       = new ArrayList<>();
+        private final List<String> allowedHeaders       = new ArrayList<>();
+        private final List<String> exposedHeaders       = new ArrayList<>();
         private int preflightMaxAge;
         private boolean allowCredentials;
         private boolean chainPreflight;
@@ -357,7 +357,7 @@ public final class WebContext {
             try {
                 preflightMaxAge = Integer.parseInt(preflightMaxAgeConfig);
             } catch (NumberFormatException x) {
-                logger.info(
+                LOG.info(
                     "Cross-origin filter, could not parse '{}' parameter as integer: {}", 
                     PREFLIGHT_MAX_AGE_PARAM, preflightMaxAgeConfig
                 );
@@ -381,8 +381,8 @@ public final class WebContext {
             }
             chainPreflight = Boolean.parseBoolean(chainPreflightConfig);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug(
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(
                     "Cross-origin filter configuration: {}={}, {}={}, {}={}, {}={}, {}={}, {}={}, {}={}, {}={}",
                     ALLOWED_ORIGINS_PARAM,        allowedOriginsConfig,
                     ALLOWED_TIMING_ORIGINS_PARAM, allowedTimingOriginsConfig,
@@ -470,7 +470,7 @@ public final class WebContext {
             }
 
             if (!anyOriginAllowed && !originMatches(allowedOrigins, origin)) {
-                logger.debug(
+                LOG.debug(
                      "Cross-origin request to {} with origin {} does not match allowed origins {}", 
                      request.getRequestURI(), origin, allowedOrigins
                  );
@@ -479,25 +479,25 @@ public final class WebContext {
             }
 
             if (isSimpleRequest(request)) {
-                logger.debug("Cross-origin request to {} is a simple cross-origin request", request.getRequestURI());
+                LOG.debug("Cross-origin request to {} is a simple cross-origin request", request.getRequestURI());
                 handleSimpleResponse(request, response, origin);
             } else if (isPreflightRequest(request)) {
-                logger.debug("Cross-origin request to {} is a preflight cross-origin request", request.getRequestURI());
+                LOG.debug("Cross-origin request to {} is a preflight cross-origin request", request.getRequestURI());
                 handlePreflightResponse(request, response, origin);
                 if (chainPreflight) {
-                    logger.debug("Preflight cross-origin request to {} forwarded to application", request.getRequestURI());
+                    LOG.debug("Preflight cross-origin request to {} forwarded to application", request.getRequestURI());
                 } else {
                     return false;
                 }
             } else {
-                logger.debug("Cross-origin request to {} is a non-simple cross-origin request", request.getRequestURI());
+                LOG.debug("Cross-origin request to {} is a non-simple cross-origin request", request.getRequestURI());
                 handleSimpleResponse(request, response, origin);
             }
 
             if (anyTimingOriginAllowed || originMatches(allowedTimingOrigins, origin)) {
                 response.setHeader(TIMING_ALLOW_ORIGIN_HEADER, origin);
             } else {
-                logger.debug(
+                LOG.debug(
                     "Cross-origin request to {} with origin {} does not match allowed timing origins {}", 
                     request.getRequestURI(), origin, allowedTimingOrigins
                 );
@@ -598,12 +598,12 @@ public final class WebContext {
 
         private boolean isMethodAllowed(HttpServletRequest request) {
             String accessControlRequestMethod = request.getHeader(ACCESS_CONTROL_REQUEST_METHOD_HEADER);
-            logger.debug("{} is {}", ACCESS_CONTROL_REQUEST_METHOD_HEADER, accessControlRequestMethod);
+            LOG.debug("{} is {}", ACCESS_CONTROL_REQUEST_METHOD_HEADER, accessControlRequestMethod);
             boolean result = false;
             if (accessControlRequestMethod != null) {
                 result = allowedMethods.contains(accessControlRequestMethod);
             }
-            logger.debug(
+            LOG.debug(
                 "Method {} is{} among allowed methods {}", 
                 accessControlRequestMethod, result ? "" : " not", allowedMethods
             );
@@ -612,7 +612,7 @@ public final class WebContext {
 
         private List<String> getAccessControlRequestHeaders(HttpServletRequest request) {
             String accessControlRequestHeaders = request.getHeader(ACCESS_CONTROL_REQUEST_HEADERS_HEADER);
-            logger.debug("{} is {}", ACCESS_CONTROL_REQUEST_HEADERS_HEADER, accessControlRequestHeaders);
+            LOG.debug("{} is {}", ACCESS_CONTROL_REQUEST_HEADERS_HEADER, accessControlRequestHeaders);
             if (accessControlRequestHeaders == null) {
                 return Collections.emptyList();
             }
@@ -630,7 +630,7 @@ public final class WebContext {
 
         private boolean areHeadersAllowed(List<String> requestedHeaders) {
             if (anyHeadersAllowed) {
-                logger.debug("Any header is allowed");
+                LOG.debug("Any header is allowed");
                 return true;
             }
 
@@ -648,7 +648,7 @@ public final class WebContext {
                     break;
                 }
             }
-            logger.debug(
+            LOG.debug(
                 "Headers {} are{} among allowed headers {}", 
                 requestedHeaders, result ? "" : " not", allowedHeaders
             );

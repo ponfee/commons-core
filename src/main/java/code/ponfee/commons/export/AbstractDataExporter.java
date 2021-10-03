@@ -105,7 +105,7 @@ public abstract class AbstractDataExporter<T> implements DataExporter<T> {
 
     private static Object[] iterator2array(Iterator<?> iter) {
         List<Object> list = new LinkedList<>();
-        for (; iter.hasNext();) {
+        while (iter.hasNext()) {
             list.add(iter.next());
         }
         return list.toArray();

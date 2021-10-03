@@ -18,14 +18,14 @@ import org.slf4j.LoggerFactory;
  */
 final class FileSystemResourceLoader {
 
-    private static Logger logger = LoggerFactory.getLogger(FileSystemResourceLoader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FileSystemResourceLoader.class);
 
     Resource getResource(String filePath, String encoding) {
         try {
             File f = new File(filePath);
             return new Resource(f.getAbsolutePath(), f.getName(), new FileInputStream(f));
         } catch (FileNotFoundException e) {
-            logger.error("file not found: " + filePath, e);
+            LOG.error("file not found: " + filePath, e);
             return null;
         }
     }
@@ -41,7 +41,7 @@ final class FileSystemResourceLoader {
                 }
             }
         } catch (FileNotFoundException e) {
-            logger.error("file not found: " + directory, e);
+            LOG.error("file not found: " + directory, e);
         }
         return list;
     }

@@ -134,9 +134,6 @@ public final class PageHandler {
         try {
             Object value;
             if (params instanceof Map) {
-                /*Method get = params.getClass().getMethod("get", Object.class);
-                get.setAccessible(true); // Guava ImmutableMap must be set accessible true
-                value = get.invoke(params, name);*/
                 value = ((Map<?, ?>) params).get(name);
             } else if (params instanceof Dictionary) {
                 value = ((Dictionary<?, ?>) params).get(name);

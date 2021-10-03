@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.Dictionary;
 import java.util.Map;
 
+import code.ponfee.commons.util.Dates;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -26,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-import code.ponfee.commons.collect.ObjectArrayWrapper;
+import code.ponfee.commons.collect.HashKey;
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.reflect.Fields;
 import code.ponfee.commons.reflect.GenericUtils;
@@ -48,7 +49,7 @@ import code.ponfee.commons.util.Strings;
  */
 public class FieldValidator {
 
-    private static Logger logger = LoggerFactory.getLogger(FieldValidator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FieldValidator.class);
 
     static final int MAX_MSG_SIZE = 500;
     private static final String CFG_ERR = "约束配置错误[";
@@ -56,7 +57,7 @@ public class FieldValidator {
 
     static final Cache<Method, String[]> METHOD_ARGSNAME = CacheBuilder.newBuilder().build();
 
-    private static final Cache<ObjectArrayWrapper<Object>, Pair<Boolean, String>> META_CFG_CACHE = CacheBuilder.newBuilder().build();
+    private static final Cache<HashKey, Pair<Boolean, String>> META_CFG_CACHE = CacheBuilder.newBuilder().build();
 
     protected FieldValidator() {}
 
@@ -101,8 +102,8 @@ public class FieldValidator {
             errorMsgBuilder.append("...");
         }
         String errMsg = errorMsgBuilder.toString();
-        if (logger.isInfoEnabled()) {
-            logger.info(
+        if (LOG.isInfoEnabled()) {
+            LOG.info(
                 "[args check not pass]-[{}]-{}-[{}]", 
                 method.toGenericString(), ObjectUtils.toString(args), errMsg
             );
@@ -121,7 +122,7 @@ public class FieldValidator {
 
     protected final String constrain(GenericDeclaration classOrMethod, String field, 
                                      Object value, Constraint cst, Class<?> type) {
-        ObjectArrayWrapper<Object> key = ObjectArrayWrapper.of(classOrMethod, field);
+        HashKey key = HashKey.of(classOrMethod, field);
         Pair<Boolean, String> result = META_CFG_CACHE.getIfPresent(key);
         if (result == null) {
             synchronized (META_CFG_CACHE) {
@@ -333,7 +334,7 @@ public class FieldValidator {
 
             String pattern = c.datePattern();
             if (isBlank(pattern)) {
-                pattern = "yyyy-MM-dd HH:mm:ss";
+                pattern = Dates.DEFAULT_DATE_FORMAT;
             }
             if (date == null) {
                 return n + "{null}：日期不能为空;";

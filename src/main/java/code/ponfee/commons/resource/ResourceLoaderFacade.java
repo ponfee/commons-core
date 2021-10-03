@@ -104,15 +104,15 @@ public final class ResourceLoaderFacade {
      * @param contextClass
      * @return
      */
-    public static List<Resource> listResources(String extensions[], Class<?> contextClass) {
+    public static List<Resource> listResources(String[] extensions, Class<?> contextClass) {
         return listResources("", extensions, false, contextClass, Files.UTF_8);
     }
 
-    public static List<Resource> listResources(String dir, String extensions[], boolean recursive) {
+    public static List<Resource> listResources(String dir, String[] extensions, boolean recursive) {
         return listResources(dir, extensions, recursive, null, Files.UTF_8);
     }
 
-    public static List<Resource> listResources(String dir, String extensions[],
+    public static List<Resource> listResources(String dir, String[] extensions,
                                                boolean recursive, String encoding) {
         return listResources(dir, extensions, recursive, null, encoding);
     }
@@ -126,7 +126,7 @@ public final class ResourceLoaderFacade {
      * @param encoding
      * @return
      */
-    public static List<Resource> listResources(String dir, String extensions[], boolean recursive,
+    public static List<Resource> listResources(String dir, String[] extensions, boolean recursive,
                                                Class<?> contextClass, String encoding) {
         if (StringUtils.isBlank(dir)) {
             dir = ".";
@@ -143,7 +143,7 @@ public final class ResourceLoaderFacade {
         dir = Strings.cleanPath(matcher.group(3).trim());
         switch (ObjectUtils.defaultIfNull(matcher.group(1), "").toLowerCase()) {
             case FS_PREFIX:
-                FS_LOADER.listResources(dir, extensions, recursive);
+                return FS_LOADER.listResources(dir, extensions, recursive);
             case WEB_PREFIX:
                 return WEB_LOADER.listResources(resolveWebapp(dir), extensions, recursive, encoding);
             default:

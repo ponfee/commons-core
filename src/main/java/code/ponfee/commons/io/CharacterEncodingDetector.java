@@ -20,6 +20,8 @@ import info.monitorenter.cpdetector.io.UnicodeDetector;
 
 /**
  * 字符编码检测
+ *
+ * @author ponfee
  */
 public class CharacterEncodingDetector {
 
@@ -109,13 +111,13 @@ public class CharacterEncodingDetector {
 
     // ---------------------------------------------------------------------custome detect
     private static class BytesEncodingDetect extends Encoding {
-        int GBFreq[][];
-        int GBKFreq[][];
-        int Big5Freq[][];
-        int Big5PFreq[][];
-        int EUC_TWFreq[][];
-        int KRFreq[][];
-        int JPFreq[][];
+        int[][] GBFreq;
+        int[][] GBKFreq;
+        int[][] Big5Freq;
+        int[][] Big5PFreq;
+        int[][] EUC_TWFreq;
+        int[][] KRFreq;
+        int[][] JPFreq;
 
         public boolean debug;
 
@@ -162,8 +164,9 @@ public class CharacterEncodingDetector {
             scores[Encoding.DEFAULT] = 0;
             // Tabulate Scores
             for (index = 0; index < Encoding.TOTAL_TYPES; index++) {
-                if (debug)
+                if (debug) {
                     System.err.println("Encoding " + Encoding.NICE_CHARSET[index] + " score " + scores[index]);
+                }
                 if (scores[index] > maxscore) {
                     encoding_guess = index;
                     maxscore = scores[index];

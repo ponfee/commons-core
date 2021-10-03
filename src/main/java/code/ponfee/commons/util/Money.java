@@ -4,6 +4,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Currency;
 import java.util.stream.LongStream;
 
@@ -20,7 +21,7 @@ public class Money implements Serializable, Comparable<Money>, Cloneable {
      * 缺省的取整模式，为<code>BigDecimal.ROUND_HALF_EVEN
      * （银行家舍入法: 四舍六入，当小数为0.5时，则取最近的偶数）
      */
-    public static final int DEFAULT_ROUNDING_MODE = BigDecimal.ROUND_HALF_EVEN;
+    public static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_EVEN;
 
     /**
      * 币种单位换算率
@@ -64,7 +65,7 @@ public class Money implements Serializable, Comparable<Money>, Cloneable {
         return new Money(currency, amount);
     }
 
-    public Money ofMajorUnit(Currency currency, String majorUnitAmount, int roundingMode) {
+    public Money ofMajorUnit(Currency currency, String majorUnitAmount, RoundingMode roundingMode) {
         return ofMajorUnit(currency, new BigDecimal(majorUnitAmount), roundingMode);
     }
 
@@ -84,7 +85,7 @@ public class Money implements Serializable, Comparable<Money>, Cloneable {
      *                          BigDecimal.ROUND_HALF_EVEN （银行家舍入法）
      *                          BigDecimal.ROUND_UNNECESSARY
      */
-    public static Money ofMajorUnit(Currency currency, BigDecimal majorUnitAmount, int roundingMode) {
+    public static Money ofMajorUnit(Currency currency, BigDecimal majorUnitAmount, RoundingMode roundingMode) {
         long amount = rounding(majorUnitAmount.movePointRight(currency.getDefaultFractionDigits()), roundingMode);
         return new Money(currency, amount);
     }
@@ -219,6 +220,7 @@ public class Money implements Serializable, Comparable<Money>, Cloneable {
      *
      * @return 转为字段串，如：$1.23
      */
+    @Override
     public String toString() {
         return Currencys.of(this.currency).symbol() + toMajorAmount().toString();
     }
@@ -414,7 +416,7 @@ public class Money implements Serializable, Comparable<Money>, Cloneable {
      *
      * @return 相乘后的结果。
      */
-    public Money multiply(BigDecimal val, int roundingMode) {
+    public Money multiply(BigDecimal val, RoundingMode roundingMode) {
         return copy(rounding(BigDecimal.valueOf(amount).multiply(val), roundingMode));
     }
 
@@ -431,7 +433,7 @@ public class Money implements Serializable, Comparable<Money>, Cloneable {
      *
      * @return 累乘后的结果。
      */
-    public Money multiplyBy(BigDecimal val, int roundingMode) {
+    public Money multiplyBy(BigDecimal val, RoundingMode roundingMode) {
         this.amount = rounding(BigDecimal.valueOf(amount).multiply(val), roundingMode);
         return this;
     }
@@ -465,7 +467,7 @@ public class Money implements Serializable, Comparable<Money>, Cloneable {
      *
      * @return 相除后的结果。
      */
-    public Money divide(BigDecimal val, int roundingMode) {
+    public Money divide(BigDecimal val, RoundingMode roundingMode) {
         return copy(BigDecimal.valueOf(amount).divide(val, roundingMode).longValue());
     }
 
@@ -498,7 +500,7 @@ public class Money implements Serializable, Comparable<Money>, Cloneable {
      *
      * @return 累除后的结果。
      */
-    public Money divideBy(BigDecimal val, int roundingMode) {
+    public Money divideBy(BigDecimal val, RoundingMode roundingMode) {
         this.amount = BigDecimal.valueOf(amount).divide(val, roundingMode).longValue();
         return this;
     }
@@ -601,7 +603,7 @@ public class Money implements Serializable, Comparable<Money>, Cloneable {
      *
      * @return 取整后的long型值
      */
-    private static long rounding(BigDecimal val, int roundingMode) {
+    private static long rounding(BigDecimal val, RoundingMode roundingMode) {
         return val.setScale(0, roundingMode).longValue();
     }
 

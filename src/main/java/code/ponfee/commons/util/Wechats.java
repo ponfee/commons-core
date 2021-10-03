@@ -1,14 +1,14 @@
 package code.ponfee.commons.util;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import code.ponfee.commons.http.Http;
 import code.ponfee.commons.http.HttpParams;
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.jce.digest.DigestUtils;
 import code.ponfee.commons.json.Jsons;
+
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * 微信工具类：https://www.cnblogs.com/txw1958/p/weixin76-user-info.html
@@ -35,6 +35,8 @@ public class Wechats {
      * @param appid the appid
      * 
      * @param charset the charset for params encoding
+     *
+     * @param redirect the service url
      * 
      * @param state 在发送state之后，可以把state保存到Session以便用于后续回调时的比较。
      *              这样做的目的是防止应用接受任意伪造的授权码（CSRF）。
@@ -43,8 +45,6 @@ public class Wechats {
      *              snsapi_userinfo：弹出授权页面，可通过openid拿到昵称、性别、所在地。并且，即使在未关注的情况下，只要用户授权，也能获取其信息<p>
      *              snsapi_login   ：登录
      *                               
-     * @param redirect the service url
-     * 
      * @return a url of wechat auth
      */
     public static String buildAuthorizeUrl(String appid, String charset,
@@ -55,14 +55,17 @@ public class Wechats {
         params.put("response_type", "code");
         params.put("scope", scope);
         params.put("state", state);
-        return HttpParams.buildUrlPath(
-            "https://open.weixin.qq.com/connect/oauth2/authorize", charset, params
-        ) + "#wechat_redirect";
+        return HttpParams.buildUrlPath("https://open.weixin.qq.com/connect/oauth2/authorize", charset, params) + "#wechat_redirect";
     }
 
     // -------------------------------------------------------通过授权地址的回调参数code换取网页授权access_token和openId
     /**
      * <pre>
+     * 1、构建的微信授权地址返回到客户端
+     * 2、用户客户端访问此微信授权地址进行登录授权
+     * 3、微信会让用户客户端重定向到redirect(应用的回调地址)并附带code参数
+     * 4、应用通过code换取网页授权access_token和openId
+     *
      * scope=snsapi_userinfo
      *  {
      *    "access_token":"OezXcEiiBSKSxW0eow",
@@ -87,8 +90,8 @@ public class Wechats {
      * 
      * password模式：https://api.oauth2server.com/token?grant_type=password&username=USERNAME&password=PASSWORD&client_id=CLIENT_ID
      * 
-     * @param appid
-     * @param secret
+     * @param appid the appid
+     * @param secret the secret
      * @param code   the aut url callback result data, 
      *               {@link #buildAuthorizeUrl(String, String, String, String, String)}
      * 

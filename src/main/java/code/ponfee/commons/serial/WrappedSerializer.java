@@ -10,6 +10,7 @@ import code.ponfee.commons.util.Enums;
 import com.google.common.collect.ImmutableMap.Builder;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.EnumUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -241,7 +242,7 @@ public class WrappedSerializer extends Serializer {
             return (T) ByteBuffer.wrap(value);
         } else if (type.isEnum()) {
             //return type.getEnumConstants()[Bytes.toInt(value)];
-            return (T) Enums.ofIgnoreCase((Class<Enum>) type, Serializers.STRING.fromBytes(value));
+            return (T) EnumUtils.getEnumIgnoreCase((Class<Enum>) type, Serializers.STRING.fromBytes(value));
         } else {
             return wrapper.deserialize(value, type);
         }
