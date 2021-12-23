@@ -166,11 +166,7 @@ public final class AsyncBatchTransmitter<T> {
             for (int left = thresholdChunk;;) {
                 if (isEnd && queue.isEmpty() && duration() > (thresholdPeriod << 1)) {
                     if (requireDestroyWhenEnd) {
-                        try {
-                            executor.shutdown();
-                        } catch (Exception ignored) {
-                            ignored.printStackTrace();
-                        }
+                        ThreadPoolExecutors.shutdown(executor);
                     }
                     break; // exit for loop when end
                 }

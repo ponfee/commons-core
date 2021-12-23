@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
+import code.ponfee.commons.collect.Maps;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -133,7 +134,7 @@ public class HttpParams {
     }
 
     public static String buildUrlPath(String url, String encoding, Object... params) {
-        return buildUrlPath(url, encoding, Collects.toMap(params));
+        return buildUrlPath(url, encoding, Maps.toMap(params));
     }
 
     // ---------------------------------构建签名数据---------------------------------

@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import code.ponfee.commons.collect.Collects;
+import code.ponfee.commons.collect.Maps;
 
 /**
  * 消息格式化
@@ -45,7 +45,7 @@ public final class MessageFormats {
     }
 
     public static String formatPair(String text, Object... args) {
-        return format(text, Collects.toMap(args));
+        return format(text, Maps.toMap(args));
     }
 
 }

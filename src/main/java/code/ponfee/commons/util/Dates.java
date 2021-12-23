@@ -22,6 +22,7 @@ import org.joda.time.format.DateTimeFormat;
 public class Dates {
 
     public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public static final String ZERO_DATE_TIME = "0000-00-00 00:00:00";
 
     /**
      * 简单的日期格式校验(yyyy-MM-dd HH:mm:ss)
@@ -469,7 +470,7 @@ public class Dates {
      * @param end 结束时间
      * @return 时间间隔
      */
-    public static long clockdiff(@Nonnull Date start, @Nonnull Date end) {
+    public static long clockDiff(@Nonnull Date start, @Nonnull Date end) {
         return (end.getTime() - start.getTime()) / 1000;
     }
 
@@ -480,7 +481,7 @@ public class Dates {
      * @param end   the end date
      * @return a number of between start to end days
      */
-    public static int daysbetween(Date start, Date end) {
+    public static int daysBetween(Date start, Date end) {
         return Days.daysBetween(new DateTime(start), new DateTime(end)).getDays();
     }
 
@@ -516,18 +517,14 @@ public class Dates {
     public static Date random(Date begin, Date end) {
         long beginMills = begin.getTime(), endMills = end.getTime();
         if (beginMills >= endMills) {
-            throw new IllegalArgumentException(
-                "Arg begin[" + format(begin) + "] must before end[" + format(end) + "]"
-            );
+            throw new IllegalArgumentException("Date [" + format(begin) + "] must before [" + format(end) + "]");
         }
         return random(beginMills, endMills);
     }
 
     public static Date random(long beginMills, long endMills) {
         if (beginMills >= endMills) {
-            throw new IllegalArgumentException(
-                "Arg beginMills[" + beginMills + "] must be less than endMills[" + endMills + "]"
-            );
+            throw new IllegalArgumentException("Date [" + beginMills + "] must before [" + endMills + "]");
         }
 
         return new Date(beginMills + ThreadLocalRandom.current().nextLong(endMills - beginMills));
@@ -549,9 +546,11 @@ public class Dates {
     }
 
     public static Date toDate(LocalDateTime localDateTime) {
-        return Date.from(
-            localDateTime.atZone(ZoneId.systemDefault()).toInstant()
-        );
+        return toDate(localDateTime, ZoneId.systemDefault());
+    }
+
+    public static Date toDate(LocalDateTime localDateTime, ZoneId zoneId) {
+        return Date.from(localDateTime.atZone(zoneId).toInstant());
     }
 
     public static LocalDate toLocalDate(LocalDateTime localDateTime) {

@@ -1,7 +1,6 @@
 package code.ponfee.commons.concurrent;
 
 import static code.ponfee.commons.concurrent.ThreadPoolExecutors.INFINITY_QUEUE_EXECUTOR;
-import static code.ponfee.commons.concurrent.ThreadPoolExecutors.CALLER_RUN_EXECUTOR;
 
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
@@ -32,7 +31,7 @@ public class ThreadPoolTest {
     }
 
     private static void BLOCK_PRODUCER() throws InterruptedException {
-        ThreadPoolExecutor executor = ThreadPoolExecutors.create(1, 2, 300, 10, "ThreadPoolTest", ThreadPoolExecutors.BLOCK_PRODUCER);
+        ThreadPoolExecutor executor = ThreadPoolExecutors.create(1, 2, 300, 10, "ThreadPoolTest", ThreadPoolExecutors.BLOCK_CALLER);
 
         for (int i = 0; i < 100; i++) {
             Thread.sleep(1000 + ThreadLocalRandom.current().nextInt(6000));
@@ -42,7 +41,7 @@ public class ThreadPoolTest {
     }
 
     private static void CALLER_RUN() throws InterruptedException {
-        ThreadPoolExecutor executor = ThreadPoolExecutors.create(1, 2, 300, 10, "ThreadPoolTest", ThreadPoolExecutors.CALLER_RUN);
+        ThreadPoolExecutor executor = ThreadPoolExecutors.create(1, 2, 300, 10, "ThreadPoolTest", ThreadPoolExecutors.CALLER_RUNS);
 
         for (int i = 0; i < 100; i++) {
             Thread.sleep(1000 + ThreadLocalRandom.current().nextInt(6000));
@@ -60,8 +59,7 @@ public class ThreadPoolTest {
                 while (flag.get() && !Thread.currentThread().isInterrupted()) {
                     command.run();
                 }
-                // INFINITY_QUEUE_EXECUTOR, CALLER_RUN_EXECUTOR
-            }, CALLER_RUN_EXECUTOR) // CALLER_RUN_EXECUTOR：caller run will be dead lock
+            }, INFINITY_QUEUE_EXECUTOR) // CALLER_RUN_EXECUTOR：caller run will be dead lock
        ).toArray(CompletableFuture[]::new);
 
         System.err.println("************************************************");

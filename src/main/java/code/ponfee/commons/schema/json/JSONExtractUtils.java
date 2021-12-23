@@ -1,6 +1,7 @@
 package code.ponfee.commons.schema.json;
 
 import code.ponfee.commons.collect.Collects;
+import code.ponfee.commons.collect.Maps;
 import code.ponfee.commons.exception.Throwables;
 import code.ponfee.commons.json.JsonUtils;
 import code.ponfee.commons.json.Jsons;
@@ -49,7 +50,7 @@ public final class JSONExtractUtils {
     static final String ARRAY_INDEX  = "[%02d]";
 
     static final Map<String, Object> NULL_VALUE_MAPPING = Collections.unmodifiableMap(
-        Collects.toMap(
+        Maps.toMap(
             ARRAY_EMPTY,  null,
             ARRAY_ARRAY,  Collections.singletonList(Collections.emptyList()),
             ARRAY_OBJECT, Collections.singletonList(Collections.emptyMap()),

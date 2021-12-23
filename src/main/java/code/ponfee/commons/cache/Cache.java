@@ -1,7 +1,7 @@
 package code.ponfee.commons.cache;
 
 
-import static code.ponfee.commons.concurrent.ThreadPoolExecutors.DISCARD_POLICY_SCHEDULER;
+import static code.ponfee.commons.concurrent.ThreadPoolExecutors.CALLER_RUN_SCHEDULER;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import code.ponfee.commons.concurrent.ThreadPoolExecutors;
 import com.google.common.base.Preconditions;
 
 import code.ponfee.commons.base.Releasable;
@@ -60,7 +61,7 @@ public class Cache<K, V> {
 
         if (autoReleaseInSeconds > 0) {
             if (scheduler == null) {
-                scheduler = DISCARD_POLICY_SCHEDULER;
+                scheduler = CALLER_RUN_SCHEDULER;
             }
 
             // 定时清理
@@ -313,11 +314,7 @@ public class Cache<K, V> {
     public void destroy() {
         isDestroy = true;
         if (scheduler != null) {
-            try {
-                scheduler.shutdown();
-            } catch (Exception ignored) {
-                ignored.printStackTrace();
-            }
+            ThreadPoolExecutors.shutdown(scheduler);
         }
         container.clear();
     }

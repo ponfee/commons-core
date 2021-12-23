@@ -1,5 +1,6 @@
 package code.ponfee.commons.concurrent;
 
+import code.ponfee.commons.exception.Throwables;
 import code.ponfee.commons.math.Numbers;
 
 import java.util.Collection;
@@ -20,6 +21,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy;
 import java.util.concurrent.ThreadPoolExecutor.DiscardOldestPolicy;
 import java.util.concurrent.ThreadPoolExecutor.DiscardPolicy;
+import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -32,18 +34,22 @@ import java.util.concurrent.TimeoutException;
  * @author Ponfee
  */
 public final class ThreadPoolExecutors {
-    private ThreadPoolExecutors() {}
 
     public static final int MAX_CAP = 0x7FFF; // max #workers - 1
 
-    // ----------------------------------------------------------rejected policy
-    public static final RejectedExecutionHandler CALLER_RUN = new CallerRunsPolicy();
+    // ----------------------------------------------------------build-in rejected policy
+    public static final RejectedExecutionHandler ABORT = new AbortPolicy();
 
-    public static final RejectedExecutionHandler DISCARD_POLICY = new DiscardPolicy();
+    public static final RejectedExecutionHandler DISCARD = new DiscardPolicy();
 
-    public static final RejectedExecutionHandler DISCARD_OLDEST_POLICY = new DiscardOldestPolicy();
+    // if not shutdown then run
+    public static final RejectedExecutionHandler CALLER_RUNS = new CallerRunsPolicy();
 
-    public static final RejectedExecutionHandler BLOCK_PRODUCER = (task, executor) -> {
+    // if not shutdown then discard oldest and execute the new
+    public static final RejectedExecutionHandler DISCARD_OLDEST = new DiscardOldestPolicy();
+
+    // if not shutdown then put queue until enqueue
+    public static final RejectedExecutionHandler BLOCK_CALLER = (task, executor) -> {
         if (!executor.isShutdown()) {
             try {
                 executor.getQueue().put(task);
@@ -53,25 +59,37 @@ public final class ThreadPoolExecutors {
         }
     };
 
-    // ----------------------------------------------------------scheduler
+    // anyway always run
+    public static final RejectedExecutionHandler ALWAYS_CALLER_RUNS = (task, executor) -> task.run();
+
+    // anyway always discard oldest and execute the new
+    public static final RejectedExecutionHandler ALWAYS_DISCARD_OLDEST = (task, executor) -> {
+        executor.getQueue().poll();
+        executor.execute(task);
+    };
+
+    // anyway always put queue until enqueue
+    public static final RejectedExecutionHandler ALWAYS_BLOCK_CALLER = (task, executor) -> {
+        try {
+            executor.getQueue().put(task);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Put a task to queue occur error: BLOCK_PRODUCER", e);
+        }
+    };
+
+    // ----------------------------------------------------------build-in scheduler/executor
     public static final ScheduledExecutorService CALLER_RUN_SCHEDULER =
-        new DelegatedScheduledExecutorService("caller-run-scheduled", CALLER_RUN);
-
-    public static final ScheduledExecutorService DISCARD_POLICY_SCHEDULER =
-        new DelegatedScheduledExecutorService("discard-policy-scheduled", DISCARD_POLICY);
-
-    public static final ScheduledExecutorService BLOCK_PRODUCER_SCHEDULER =
-        new DelegatedScheduledExecutorService("block-producer-scheduled", BLOCK_PRODUCER);
-
-    // ----------------------------------------------------------executor
-    public static final ExecutorService CALLER_RUN_EXECUTOR =
-        new DelegatedExecutorService("caller-run-executor", 0, CALLER_RUN);
+        new DelegatedScheduledExecutorService("caller-run-scheduler", CALLER_RUNS);
 
     public static final ExecutorService INFINITY_QUEUE_EXECUTOR =
-        new DelegatedExecutorService("infinity-queue-executor", Integer.MAX_VALUE, BLOCK_PRODUCER);
+        new DelegatedExecutorService("infinity-queue-executor", Integer.MAX_VALUE, BLOCK_CALLER);
 
-    public static final ExecutorService BLOCK_PRODUCER_EXECUTOR =
-        new DelegatedExecutorService("infinity-queue-executor", 8192, BLOCK_PRODUCER);
+    static {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            shutdown(((AbstractDelegatedExecutorService) CALLER_RUN_SCHEDULER).delegate);
+            shutdown(((AbstractDelegatedExecutorService) INFINITY_QUEUE_EXECUTOR).delegate);
+        }));
+    }
 
     // ----------------------------------------------------------
     public static ThreadPoolExecutor create(int corePoolSize, int maximumPoolSize, long keepAliveTime) {
@@ -116,21 +134,75 @@ public final class ThreadPoolExecutors {
 
         // rejected Handler Strategy 
         if (rejectedHandler == null) {
-            rejectedHandler = CALLER_RUN;
+            rejectedHandler = CALLER_RUNS;
         }
 
         maximumPoolSize = Numbers.bounds(maximumPoolSize, 1, MAX_CAP);
         corePoolSize = Numbers.bounds(corePoolSize, 1, maximumPoolSize);
 
         // create ThreadPoolExecutor instance
-        ThreadPoolExecutor executor = new ThreadPoolExecutor(
+        ThreadPoolExecutor pool = new ThreadPoolExecutor(
             corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.SECONDS, 
             workQueue, threadFactory, rejectedHandler
         );
-        // prestartAllCoreThreads, prestartCoreThread
-        executor.allowCoreThreadTimeOut(true); // 设置允许核心线程超时关闭
 
-        return executor;
+        // pool.prestartCoreThread(): 预先创建1条核心线程
+        // pool.prestartAllCoreThreads(): 可预先创建corePoolSize数量的核心线程
+        pool.allowCoreThreadTimeOut(true); // 设置允许核心线程超时关闭
+
+        return pool;
+    }
+
+    /**
+     * Shutdown the ExecutorService safe
+     * 
+     * @param executorService the executorService
+     * @return is safe shutdown
+     */
+    public static boolean shutdown(ExecutorService executorService) {
+        executorService.shutdown();
+        /*while (!executorService.isTerminated()) {
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (Throwable t) {
+                Throwables.console(t);
+            }
+        }*/
+        try {
+            while (!executorService.awaitTermination(1, TimeUnit.SECONDS)) {
+                // noop loop
+            }
+            return true;
+        } catch (Throwable t) {
+            Throwables.console(t);
+            executorService.shutdownNow();
+            return false;
+        }
+    }
+
+    /**
+     * Shutdown the executorService max wait time
+     * 
+     * @param executorService the executorService
+     * @param awaitSeconds the await seconds
+     * @return is safe shutdown
+     */
+    public static boolean shutdown(ExecutorService executorService, int awaitSeconds) {
+        executorService.shutdown();
+        boolean isSafeTerminated = false, hasCallShutdownNow = false;
+        try {
+            isSafeTerminated = executorService.awaitTermination(awaitSeconds, TimeUnit.SECONDS);
+            if (!isSafeTerminated) {
+                hasCallShutdownNow = true;
+                executorService.shutdownNow();
+            }
+        } catch (Throwable t) {
+            Throwables.console(t);
+            if (!hasCallShutdownNow) {
+                executorService.shutdownNow();
+            }
+        }
+        return isSafeTerminated;
     }
 
     private static class DelegatedScheduledExecutorService
@@ -149,7 +221,6 @@ public final class ThreadPoolExecutors {
             );
 
             // allowCoreThreadTimeOut(true); // Error: Core threads must have nonzero keep alive times
-            Runtime.getRuntime().addShutdownHook(new Thread(delegate::shutdownNow));
             return delegate;
         }
 
@@ -207,7 +278,6 @@ public final class ThreadPoolExecutors {
                 workQueue, new NamedThreadFactory(threadName), handler
             );
             delegate.allowCoreThreadTimeOut(true); // 设置允许核心线程超时关闭
-            Runtime.getRuntime().addShutdownHook(new Thread(delegate::shutdownNow));
             return delegate;
         }
     }

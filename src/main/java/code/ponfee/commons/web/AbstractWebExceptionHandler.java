@@ -213,7 +213,7 @@ public abstract class AbstractWebExceptionHandler {
                           String page, int code, String message) {
         if (page == null || LOGGER.isDebugEnabled() || WebUtils.isAjax(req)) {
             // resp.setStatus(code); HttpStatus.valueOf(code);
-            WebUtils.respJson(resp, new Result<>(code, message));
+            WebUtils.respJson(resp, new Result<>(code, false, message));
         } else {
             handErrorPage(req, resp, page);
         }

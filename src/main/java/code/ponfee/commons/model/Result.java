@@ -1,51 +1,53 @@
 package code.ponfee.commons.model;
 
-import java.beans.Transient;
-import java.io.Serializable;
-import java.util.function.Function;
-
+import code.ponfee.commons.json.Jsons;
 import com.google.common.base.Preconditions;
 
-import code.ponfee.commons.json.Jsons;
+import java.beans.Transient;
+import java.util.function.Function;
 
 /**
  * Representing the result-data structure
  * 
  * @see org.springframework.http.ResponseEntity#status(org.springframework.http.HttpStatus)
  * 
- * @param <T>
+ * @param <T> the data type
  * @author Ponfee
  */
-public class Result<T/* extends Serializable*/> implements CodeMsg {
+public class Result<T> implements CodeMsg, java.io.Serializable {
 
     private static final long serialVersionUID = -2804195259517755050L;
     public static final Result<Void> SUCCESS = new SuccessResult();
 
     private Integer    code; // 状态码
+    private boolean success; // 是否成功
     private String      msg; // 返回信息
     private T          data; // 结果数据
-    private boolean success; // 是否成功
 
     // -------------------------------------------constructor methods
-    public Result() {} // code is null
-
-    public Result(int code, String msg) {
-        this(code, msg, null);
-    }
-
-    public Result(CodeMsg cm, String msg) {
-        this(cm.getCode(), msg, null);
-    }
+    public Result() { } // code is null
 
     public Result(CodeMsg cm) {
-        this(cm.getCode(), cm.getMsg(), null);
+        this(cm.getCode(), cm.isSuccess(), cm.getMsg(), null);
     }
 
-    public Result(int code, String msg, T data) {
-        this.code    = code;
-        this.msg     = msg;
-        this.data    = data;
-        this.success = ResultCode.isSuccessCode(code);
+    public Result(CodeMsg cm, T data) {
+        this(cm.getCode(), cm.isSuccess(), cm.getMsg(), data);
+    }
+
+    public Result(int code, boolean success) {
+        this(code, success, null, null);
+    }
+
+    public Result(int code, boolean success, String msg) {
+        this(code, success, msg, null);
+    }
+
+    public Result(int code, boolean success, String msg, T data) {
+        this.code = code;
+        this.success = success;
+        this.msg = msg;
+        this.data = data;
     }
 
     // -------------------------------------------others methods
@@ -55,44 +57,96 @@ public class Result<T/* extends Serializable*/> implements CodeMsg {
     }
 
     public <E> Result<E> copy(E data) {
-        return new Result<>(code, msg, data);
+        return new Result<>(code, success, msg, data);
     }
 
     public <E> Result<E> map(Function<T, E> mapper) {
-        return new Result<>(code, msg, mapper.apply(data));
+        return new Result<>(code, success, msg, mapper.apply(data));
     }
 
-    // ---------------------------------static methods/success methods
+    // ---------------------------------static success methods
+    /**
+     * Returns success 200 code
+     * 
+     * @return Result success object
+     */
     public static Result<Void> success() {
         return SUCCESS;
     }
 
+    /**
+     * Returns success 200 code
+     * 
+     * @param data the data
+     * @param <T>  the data type
+     * @return Result success object
+     */
     public static <T> Result<T> success(T data) {
         return success("OK", data);
     }
 
+    /**
+     * Returns success 200 code
+     * 
+     * @param msg  the msg
+     * @param data the data
+     * @param <T>  the data type
+     * @return Result success object
+     */
     public static <T> Result<T> success(String msg, T data) {
-        return new Result<>(SUCCESS.getCode(), msg, data);
+        return new Result<>(SUCCESS.code, SUCCESS.success, msg, data);
     }
 
-    public static <T> Result<T> success(CodeMsg cm, T data) {
-        return success(cm.getCode(), cm.getMsg(), data);
+    /**
+     * Returns success specified code
+     * 
+     * @param code the code
+     * @param data the data
+     * @param <T>  the data type
+     * @return Result success object
+     */
+    public static <T> Result<T> success(int code, T data) {
+        return new Result<>(code, SUCCESS.success, SUCCESS.msg, data);
     }
 
+    /**
+     * Returns success specified code
+     * 
+     * @param code the code
+     * @param msg  the msg
+     * @param data the data
+     * @param <T>  the data type
+     * @return Result success object
+     */
     public static <T> Result<T> success(int code, String msg, T data) {
-        Preconditions.checkState(
-            ResultCode.isSuccessCode(code), "Invalid success code: " + code
-        );
-        return new Result<>(code, msg, data);
+        return new Result<>(code, SUCCESS.success, msg, data);
     }
 
-    // ---------------------------------static methods/failure methods
+    /**
+     * Returns success specified CodeMsg
+     * 
+     * @param cm   the CodeMsg
+     * @param data the data
+     * @param <T>  the data type
+     * @return Result success object
+     */
+    public static <T> Result<T> success(CodeMsg cm, T data) {
+        Preconditions.checkState(cm.isSuccess(), "Invalid success state '" + cm.isSuccess() + "', code=" + cm.getCode());
+        return new Result<>(cm.getCode(), cm.isSuccess(), cm.getMsg(), data);
+    }
+
+    // ---------------------------------static failure methods
     public static <T> Result<T> failure(CodeMsg cm) {
-        return failure(cm.getCode(), cm.getMsg(), null);
+        return failure(cm, null);
     }
 
-    public static <T> Result<T> failure(CodeMsg cm, String msg) {
-        return failure(cm.getCode(), msg, null);
+    public static <T> Result<T> failure(CodeMsg cm, T data) {
+        Preconditions.checkState(!cm.isSuccess(), "Invalid failure state '" + cm.isSuccess() + "', code=" + cm.getCode());
+        return new Result<>(cm.getCode(), cm.isSuccess(), cm.getMsg(), data);
+    }
+
+    public static <T> Result<T> failure(int code) {
+        return failure(code, null, null);
     }
 
     public static <T> Result<T> failure(int code, String msg) {
@@ -100,10 +154,7 @@ public class Result<T/* extends Serializable*/> implements CodeMsg {
     }
 
     public static <T> Result<T> failure(int code, String msg, T data) {
-        Preconditions.checkState(
-            !ResultCode.isSuccessCode(code), "Invalid failure code: " + code
-        );
-        return new Result<>(code, msg, data);
+        return new Result<>(code, false, msg, data);
     }
 
     // -----------------------------------------------of operations
@@ -112,15 +163,15 @@ public class Result<T/* extends Serializable*/> implements CodeMsg {
     }
 
     public static <T> Result<T> of(CodeMsg cm, T data) {
-        return new Result<>(cm.getCode(), cm.getMsg(), data);
+        return new Result<>(cm, data);
     }
 
-    public static <T> Result<T> of(int code, String msg) {
-        return new Result<>(code, msg);
+    public static <T> Result<T> of(int code, boolean success, String msg) {
+        return new Result<>(code, success, msg);
     }
 
-    public static <T> Result<T> of(int code, String msg, T data) {
-        return new Result<>(code, msg, data);
+    public static <T> Result<T> of(int code, boolean success, String msg, T data) {
+        return new Result<>(code, success, msg, data);
     }
 
     // -----------------------------------------------database update or delete affected rows
@@ -143,6 +194,11 @@ public class Result<T/* extends Serializable*/> implements CodeMsg {
     }
 
     @Override
+    public boolean isSuccess() {
+        return this.success;
+    }
+
+    @Override
     public String getMsg() {
         return msg;
     }
@@ -155,6 +211,10 @@ public class Result<T/* extends Serializable*/> implements CodeMsg {
         this.code = code;
     }
 
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
     public void setMsg(String msg) {
         this.msg = msg;
     }
@@ -163,13 +223,9 @@ public class Result<T/* extends Serializable*/> implements CodeMsg {
         this.data = data;
     }
 
-    public boolean isSuccess() {
-        return this.success;
-    }
-
     @Transient
     public boolean isFailure() {
-        return !isSuccess();
+        return !this.success;
     }
 
     @Override

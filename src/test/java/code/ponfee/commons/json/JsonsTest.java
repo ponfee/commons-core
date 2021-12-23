@@ -1,6 +1,6 @@
 package code.ponfee.commons.json;
 
-import code.ponfee.commons.collect.Collects;
+import code.ponfee.commons.collect.Maps;
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.util.ObjectUtils;
 import com.alibaba.fastjson.JSON;
@@ -17,7 +17,7 @@ public class JsonsTest {
 
     @Test
     public void test1() {
-        String json = Jsons.NORMAL.string(Collects.toMap("a", "abc", "b", 1));
+        String json = Jsons.NORMAL.string(Maps.toMap("a", "abc", "b", 1));
         System.out.println(json);
 
         Map<String, Object> map = Jsons.NORMAL.parse(json, Map.class);
@@ -33,7 +33,7 @@ public class JsonsTest {
 
     @Test
     public void test2() {
-        Map<?, ?> map = Collects.toMap("a", "xx", "b", 1, "c", 1.2D, "d", null);
+        Map<?, ?> map = Maps.toMap("a", "xx", "b", 1, "c", 1.2D, "d", null);
         System.out.println(Jsons.toJson(map));
 
         Result<String> result = Result.success("xx");
@@ -42,7 +42,7 @@ public class JsonsTest {
 
     @Test
     public void test3() {
-        Map<?, ?> map = Collects.toMap("a", "xx", "b", 1, "c", 1.2D, "d", null);
+        Map<?, ?> map = Maps.toMap("a", "xx", "b", 1, "c", 1.2D, "d", null);
         System.out.println(JSON.toJSONString(map));
         System.out.println(JSON.toJSONString(map, FastjsonPropertyFilter.include("a", "b")));
         System.out.println(JSON.toJSONString(map, FastjsonPropertyFilter.exclude("a", "b")));
@@ -55,7 +55,7 @@ public class JsonsTest {
 
     @Test
     public void test4() {
-        Map<?, ?> map = Collects.toMap("a", "xx", "b", 1, "c", 1.2D, "d", null);
+        Map<?, ?> map = Maps.toMap("a", "xx", "b", 1, "c", 1.2D, "d", null);
         System.out.println(JSON.toJSONString(map));
         System.out.println(JSON.toJSONString(map, new SimplePropertyPreFilter("a", "b")));
 

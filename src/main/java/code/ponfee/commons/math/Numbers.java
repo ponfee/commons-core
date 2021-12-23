@@ -10,10 +10,12 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 /**
+ * <pre>
  * Number utility
  * 
  * 十进制：10
@@ -21,11 +23,11 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
  * 八进制：010
  * 十六进制：0X10
  * 小数点：1e-9
+ * </pre>
  * 
  * @author Ponfee
  */
 public final class Numbers {
-    private Numbers() {}
 
     public static final int     INT_ZERO     = 0;
     public static final Integer INTEGER_ZERO = INT_ZERO;
@@ -394,12 +396,54 @@ public final class Numbers {
      * @return
      */
     public static int[] slice(int quantity, int segment) {
-        int[] array = new int[segment];
-        int remainder = quantity % segment;
+        int[] result = new int[segment];
         int quotient = quantity / segment;
-        Arrays.fill(array, 0, remainder, quotient + 1);
-        Arrays.fill(array, remainder, segment, quotient);
-        return array;
+        int remainder = quantity % segment;
+        int moreValue = quotient + 1, lessValue = quotient;
+        Arrays.fill(result, 0, remainder, moreValue);
+        Arrays.fill(result, remainder, segment, lessValue);
+        return result;
+    }
+
+    /**
+     * Split the bill for coupon amount
+     *
+     * @param bills the bills
+     * @param value the coupon amount value
+     * @return split result
+     */
+    public static int[] split(int[] bills, int value) {
+        int total = IntStream.of(bills).sum();
+        if (total < value) {
+            throw new IllegalArgumentException("the value cannot less than sum(bills)");
+        }
+
+        int[] result = new int[bills.length];
+        if (bills.length == 0 || value == 0) {
+            return result;
+        }
+
+        float rate;
+        int i = 0;
+        for (int n = bills.length - 1; i < n; i++) {
+            // rate <= 1.0
+            rate = value / (float) total;
+
+            // 不能用Math.round：面值为748分钱的券 去平摊账单 [249, 249, 249, 3]，最后金额为3分钱的账单项要平摊掉4分钱
+            //result[i] = Math.min((int) Math.round(bills[i] * rate), value);
+            // 因为result[i]是ceil后的结果，所以按比率上来算value减得会更多，即rate只会递减，所以不会出现溢出(后面的费用项不够抵扣)的情况
+            result[i] = Math.min((int) Math.ceil(bills[i] * rate), value);
+            value -= result[i];
+            total -= bills[i];
+
+            if (value == 0) {
+                break;
+            }
+        }
+
+        // the last bill item
+        result[i] = value;
+        return result;
     }
 
     /**

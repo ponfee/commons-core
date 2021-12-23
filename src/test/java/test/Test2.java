@@ -30,11 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -315,8 +311,17 @@ public class Test2 {
         System.out.println(Dates.format(new Date(0B0000000000000000000000011111111111111111111111111111111111111111L), format));
         System.out.println(Dates.format(new Date(0B0000000000000000000011111111111111111111111111111111111111111111L), format));
         System.out.println(Long.toBinaryString(Long.MAX_VALUE).length());
-        System.out.println(Maths.bitsMask(12));
 
+        System.out.println("====\n");
+        System.out.println("0  -> " + Maths.bitsMask(0) + " -> " + Bytes.toBinary(Bytes.toBytes(Maths.bitsMask(0))));
+        System.out.println("1  -> " + Maths.bitsMask(1) + " -> " + Bytes.toBinary(Bytes.toBytes(Maths.bitsMask(1))));
+        System.out.println("2  -> " + Maths.bitsMask(2) + " -> " + Bytes.toBinary(Bytes.toBytes(Maths.bitsMask(2))));
+        System.out.println("10 -> " + Maths.bitsMask(10) + " -> " + Bytes.toBinary(Bytes.toBytes(Maths.bitsMask(10))));
+        System.out.println("20 -> " + Maths.bitsMask(20) + " -> " + Bytes.toBinary(Bytes.toBytes(Maths.bitsMask(20))));
+        System.out.println("63 -> " + Maths.bitsMask(63) + " -> " + Bytes.toBinary(Bytes.toBytes(Maths.bitsMask(63))));
+        System.out.println("64 -> " + Maths.bitsMask(64) + " -> " + Bytes.toBinary(Bytes.toBytes(Maths.bitsMask(64))));
+        System.out.println("====\n");
+        
         System.out.println(Dates.format(new Date(17592186044415L), format));
 
         int bits = 41;
@@ -367,5 +372,13 @@ public class Test2 {
             ex = e;
         }
         Assert.assertNotNull(ex);
+    }
+
+    @Test
+    public void tes31() {
+        System.out.println(Arrays.toString(Numbers.slice(9, 3)));
+        System.out.println(Arrays.toString(Numbers.slice(10, 3)));
+        System.out.println(Arrays.toString(Numbers.slice(11, 3)));
+        System.out.println(Arrays.toString(Numbers.slice(12, 3)));
     }
 }

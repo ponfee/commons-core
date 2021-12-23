@@ -1,5 +1,7 @@
 package code.ponfee.commons.math;
 
+import org.springframework.util.Assert;
+
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
@@ -47,17 +49,28 @@ public class Maths {
     }
 
     /**
-     * Returns a long value of bit conut mask
+     * <pre>
+     * Returns a long value of bit count mask
      * calculate the bit counts mask long value
      *   a: (1 << bits) - 1
      *   b: -1L ^ (-1L << bits)
      *   c: Long.MAX_VALUE >>> (63 - bits)
+     *
+     *  bitsMask(0)  -> 0                   -> 0000000000000000000000000000000000000000000000000000000000000000
+     *  bitsMask(1)  -> 1                   -> 0000000000000000000000000000000000000000000000000000000000000001
+     *  bitsMask(2)  -> 3                   -> 0000000000000000000000000000000000000000000000000000000000000011
+     *  bitsMask(10) -> 1023                -> 0000000000000000000000000000000000000000000000000000001111111111
+     *  bitsMask(20) -> 1048575             -> 0000000000000000000000000000000000000000000011111111111111111111
+     *  bitsMask(63) -> 9223372036854775807 -> 0111111111111111111111111111111111111111111111111111111111111111
+     *  bitsMask(64) -> -1                  -> 1111111111111111111111111111111111111111111111111111111111111111
+     * </pre>
      * 
      * @param bits the bit count
      * @return a long value
      */
     public static long bitsMask(int bits) {
-        return (1L << bits) - 1;
+        Assert.isTrue(bits >= 0 && bits <= Long.SIZE, "bits must range [0,64].");
+        return bits == Long.SIZE ? -1 : -1L ^ (-1L << bits);
     }
 
     /**

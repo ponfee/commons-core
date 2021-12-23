@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 /**
  * The class use in Object array as hash map key
- * <p>Use for HashMap key
+ * <p>Use for HashMap key</p>
  *
  * @author Ponfee
  */

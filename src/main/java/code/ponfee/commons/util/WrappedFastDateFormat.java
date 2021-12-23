@@ -14,10 +14,8 @@ import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
+import java.util.regex.Pattern;
 
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -26,6 +24,7 @@ import org.apache.commons.lang3.time.FastDateFormat;
 
 /**
  * Wrapper the org.apache.commons.lang3.time.FastDateFormat
+ * <p>unix timestamp只支持对10位(秒)和13位(毫秒)做解析</p>
  * 
  * @ThreadSafe
  * 
@@ -35,6 +34,16 @@ import org.apache.commons.lang3.time.FastDateFormat;
 public class WrappedFastDateFormat extends DateFormat {
 
     private static final long serialVersionUID = 6837172676882367405L;
+
+    /**
+     * For {@link Date#toString()} "EEE MMM dd HH:mm:ss zzz yyyy" format
+     */
+    public static final Pattern DATE_TO_STRING_PATTERN = Pattern.compile("^(Sun|Mon|Tue|Wed|Thu|Fri|Sat) [A-Z][a-z]{2} \\d{2} \\d{2}:\\d{2}:\\d{2} CST \\d{4}$");
+
+    /**
+     * 日期时间戳：秒/毫秒
+     */
+    public static final Pattern DATE_TIMESTAMP_PATTERN = Pattern.compile("^0|[1-9]\\d*$");
 
     public static final FastDateFormat PATTERN01 = FastDateFormat.getInstance("yyyyMM");
     public static final FastDateFormat PATTERN02 = FastDateFormat.getInstance("yyyyMMdd");
@@ -53,7 +62,11 @@ public class WrappedFastDateFormat extends DateFormat {
     public static final FastDateFormat PATTERN24 = FastDateFormat.getInstance("yyyy/MM/dd HH:mm:ss.SSS");
     public static final FastDateFormat PATTERN25 = FastDateFormat.getInstance("yyyy/MM/dd'T'HH:mm:ss.SSSZ");
 
-    // thread-safe
+    public static final FastDateFormat PATTERN31 = FastDateFormat.getInstance("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+
+    /**
+     * The default date format with yyyy-MM-dd HH:mm:ss
+     */
     public static final WrappedFastDateFormat DEFAULT = new WrappedFastDateFormat(Dates.DEFAULT_DATE_FORMAT);
 
     /**
@@ -66,6 +79,7 @@ public class WrappedFastDateFormat extends DateFormat {
      */
     private final boolean strict;
 
+    private final int patternLength;
     private final Calendar calendar;
     private final NumberFormat numberFormat;
 
@@ -90,6 +104,7 @@ public class WrappedFastDateFormat extends DateFormat {
         this.format = format;
         this.strict = strict;
 
+        this.patternLength = format.getPattern().length();
         this.calendar = Calendar.getInstance(format.getTimeZone(), format.getLocale());
         this.numberFormat = NumberFormat.getIntegerInstance(format.getLocale());
         this.numberFormat.setGroupingUsed(false);
@@ -98,40 +113,30 @@ public class WrappedFastDateFormat extends DateFormat {
     @Override
     public StringBuffer format(Date date, StringBuffer toAppendTo, 
                                FieldPosition fieldPosition) {
-        return this.format.format(date, toAppendTo, fieldPosition);
+        return format.format(date, toAppendTo, fieldPosition);
     }
 
     @Override
     public Date parse(String source, ParsePosition pos) {
-        if (StringUtils.isEmpty(source)) {
+        Objects.requireNonNull(pos);
+        if (pos.getIndex() < 0) {
+            throw new IllegalArgumentException("Invalid parse position: " + pos.getIndex());
+        }
+        if (StringUtils.isEmpty(source) || source.length() <= pos.getIndex()) {
             return null;
         }
 
         if (strict) {
-            return this.format.parse(source, pos);
+            return format.parse(source, pos);
         }
 
-        int length = source.length();
-        if (length < 6) {
-            return null;
-        }
-        switch (length) {
-            case  6: return PATTERN01.parse(source, pos);
-            case  7: return (isCrossbar(source) ? PATTERN11 : PATTERN21).parse(source, pos);
-            case  8: return PATTERN02.parse(source, pos);
-            case 10: 
-                switch (source.charAt(4)) {
-                    case '-': return PATTERN12.parse(source, pos);
-                    case '/': return PATTERN22.parse(source, pos);
-                    default: return new Date(Long.parseLong(source) * 1000); // a long string of seconds unix timestamp 
-                }
-            case 13: return new Date(Long.parseLong(source));  // a long string of mills unix timestamp 
-            case 14: return PATTERN03.parse(source, pos);
-            case 19: return (isCrossbar(source) ? PATTERN13 : PATTERN23).parse(source, pos);
-            case 17: return PATTERN04.parse(source, pos);
-            case 23: return (isCrossbar(source) ? PATTERN14 : PATTERN24).parse(source, pos);
-            case 28: return (isCrossbar(source) ? PATTERN15 : PATTERN25).parse(source, pos);
-            default: return this.format.parse(source, pos);
+        String date = source.substring(pos.getIndex());
+        try {
+            return parse(date);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid date format: " + source + ", " + pos.getIndex() + ", " + date);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid date format: " + source + ", " + pos.getIndex() + ", " + date, e);
         }
     }
 
@@ -142,46 +147,58 @@ public class WrappedFastDateFormat extends DateFormat {
         }
 
         if (strict) {
-            return this.format.parse(source);
+            return format.parse(source);
         }
 
         int length = source.length();
-        if (length < 6) {
-            throw new ParseException("Invalid data format: " + source, 0);
-        }
         switch (length) {
             case  6: return PATTERN01.parse(source);
             case  7: return (isCrossbar(source) ? PATTERN11 : PATTERN21).parse(source);
             case  8: return PATTERN02.parse(source);
-            case 10: 
-                switch (source.charAt(4)) {
-                    case '-': return PATTERN12.parse(source);
-                    case '/': return PATTERN22.parse(source);
-                    default: return new Date(Long.parseLong(source) * 1000);
+            case 10:
+                char c = source.charAt(4);
+                if (c == '-') {
+                    return PATTERN12.parse(source);
+                } else if (c == '/') {
+                    return PATTERN22.parse(source);
+                } else if (DATE_TIMESTAMP_PATTERN.matcher(source).matches()) {
+                    // a long string(length 10) of unix timestamp(1640966400)
+                    return new Date(Long.parseLong(source) * 1000);
                 }
-            case 13: return new Date(Long.parseLong(source));
+                break;
+            case 13:
+                // a long string(length 13) of mills unix timestamp(1640966400000)
+                if (DATE_TIMESTAMP_PATTERN.matcher(source).matches()) {
+                    return new Date(Long.parseLong(source));
+                }
+                break;
             case 14: return PATTERN03.parse(source);
             case 19: return (isCrossbar(source) ? PATTERN13 : PATTERN23).parse(source);
             case 17: return PATTERN04.parse(source);
             case 23: return (isCrossbar(source) ? PATTERN14 : PATTERN24).parse(source);
-            case 28: return (isCrossbar(source) ? PATTERN15 : PATTERN25).parse(source);
-            default: return this.format.parse(source);
+            case 28: return (isCST(source) ? PATTERN31 : isCrossbar(source) ? PATTERN15 : PATTERN25).parse(source);
+            default: break;
+        }
+        if (patternLength == length) {
+            return format.parse(source);
+        } else {
+            throw new IllegalArgumentException("Invalid date format: " + source);
         }
     }
 
     @Override
     public Object parseObject(String source, ParsePosition pos) {
-        return this.parse(source, pos);
+        return parse(source, pos);
     }
 
     @Override
     public Object parseObject(String source) throws ParseException {
-        return this.parse(source);
+        return parse(source);
     }
 
     @Override
     public int hashCode() {
-        return this.format.hashCode();
+        return format.hashCode();
     }
 
     @Override
@@ -194,39 +211,38 @@ public class WrappedFastDateFormat extends DateFormat {
             return false;
         }
 
-        return this.format.equals(((WrappedFastDateFormat) obj).format);
+        WrappedFastDateFormat other = (WrappedFastDateFormat) obj;
+        return this.format.equals(other.format) && this.strict == other.strict;
     }
 
     @Override
     public AttributedCharacterIterator formatToCharacterIterator(Object obj) {
-        return this.format.formatToCharacterIterator(obj);
+        return format.formatToCharacterIterator(obj);
     }
 
     @Override
     public TimeZone getTimeZone() {
-        return this.format.getTimeZone();
+        return format.getTimeZone();
     }
 
     @Override
     public Calendar getCalendar() {
-        return this.calendar;
+        return calendar;
     }
 
     @Override
     public NumberFormat getNumberFormat() {
-        return this.numberFormat;
+        return numberFormat;
     }
 
     @Override
     public boolean isLenient() {
-        return this.calendar.isLenient();
+        return calendar.isLenient();
     }
 
     @Override
     public Object clone() {
-        return new WrappedFastDateFormat(
-            (FastDateFormat) this.format.clone(), this.strict
-        );
+        return new WrappedFastDateFormat((FastDateFormat) format.clone(), strict);
     }
 
     // ------------------------------------------------------------------------unsupported
@@ -254,4 +270,7 @@ public class WrappedFastDateFormat extends DateFormat {
         return str.charAt(4) == '-';
     }
 
+    private static boolean isCST(String str) {
+        return DATE_TO_STRING_PATTERN.matcher(str).matches();
+    }
 }

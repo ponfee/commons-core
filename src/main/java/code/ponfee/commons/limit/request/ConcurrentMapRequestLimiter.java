@@ -1,6 +1,6 @@
 package code.ponfee.commons.limit.request;
 
-import static code.ponfee.commons.concurrent.ThreadPoolExecutors.DISCARD_POLICY_SCHEDULER;
+import static code.ponfee.commons.concurrent.ThreadPoolExecutors.CALLER_RUN_SCHEDULER;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -25,7 +25,7 @@ public final class ConcurrentMapRequestLimiter extends RequestLimiter {
 
     private static final Lock LOCK = new ReentrantLock(); // 定时清理加锁
     static {
-        DISCARD_POLICY_SCHEDULER.scheduleAtFixedRate(() -> {
+        CALLER_RUN_SCHEDULER.scheduleAtFixedRate(() -> {
             if (!LOCK.tryLock()) {
                 return;
             }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import code.ponfee.commons.collect.Maps;
 import org.junit.Test;
 
 import code.ponfee.commons.collect.Collects;
@@ -39,8 +40,8 @@ public class ListTest {
         System.out.println(list2);
         
         
-        Map<String, Object> map1 = Collects.toMap("a", 1, "b", 2);
-        Map<String, Object> map2 = Collects.toMap("c", 3, "b", 2);
+        Map<String, Object> map1 = Maps.toMap("a", 1, "b", 2);
+        Map<String, Object> map2 = Maps.toMap("c", 3, "b", 2);
         System.out.println(Collects.different(map1, map2));
     }
 }
