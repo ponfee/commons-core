@@ -1,12 +1,14 @@
 package code.ponfee.commons.io;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import code.ponfee.commons.extract.DataExtractorBuilder;
@@ -15,15 +17,22 @@ import code.ponfee.commons.json.Jsons;
 public class FilesTest {
 
     @Test
+    public void testx() {
+        System.out.println(CharsetDetector.detect("/Users/ponfee/scm/github/commons-core/src/main/java/code/ponfee/commons/tree/TreeNode.java"));
+        System.out.println(CharsetDetector.detect("/Users/ponfee/test/code/ponfee/commons/tree/TreeNode.java"));
+        //System.out.println(CharsetDetector.Encoding.JAVA_CHARSET[new CharsetDetector.BytesEncodingDetect().detectEncoding(FileUtils.readFileToByteArray(new File("/Users/ponfee/test/code/ponfee/commons/tree/TreeNode.java")))]);
+    }
+
+    @Test
     public void test1() throws MalformedURLException {
-        System.out.println("GBK.properties -> "+CharacterEncodingDetector.detect("D:/temp/GBK.properties"));
-        System.out.println("UTF8.txt -> "+CharacterEncodingDetector.detect("D:/temp/UTF8.txt"));
-        System.out.println("UTF8-WITH-BOM.xml -> "+CharacterEncodingDetector.detect("D:/temp/UTF8-WITH-BOM.xml"));
-        System.out.println("UTF8-WITHOUT-BOM.xml -> "+CharacterEncodingDetector.detect("D:/temp/UTF8-WITHOUT-BOM.xml"));
-        System.out.println("UTF16-BIG-ENDIAN-WITH-BOM.xml -> "+CharacterEncodingDetector.detect("D:/temp/UTF16-BIG-ENDIAN-WITH-BOM.xml"));
-        System.out.println("UTF16-BIG-ENDIAN-WITHOUT-BOM.xml -> "+CharacterEncodingDetector.detect("D:/temp/UTF16-BIG-ENDIAN-WITHOUT-BOM.xml"));
-        System.out.println("UTF16-WITH-BOM.xml -> "+CharacterEncodingDetector.detect("D:/temp/UTF16-WITH-BOM.xml"));
-        System.out.println("UTF16-WITHOUT-BOM.xml -> "+CharacterEncodingDetector.detect("D:/temp/UTF16-WITHOUT-BOM.xml"));
+        System.out.println("GBK.properties -> "+ CharsetDetector.detect("D:/temp/GBK.properties"));
+        System.out.println("UTF8.txt -> "+ CharsetDetector.detect("D:/temp/UTF8.txt"));
+        System.out.println("UTF8-WITH-BOM.xml -> "+ CharsetDetector.detect("D:/temp/UTF8-WITH-BOM.xml"));
+        System.out.println("UTF8-WITHOUT-BOM.xml -> "+ CharsetDetector.detect("D:/temp/UTF8-WITHOUT-BOM.xml"));
+        System.out.println("UTF16-BIG-ENDIAN-WITH-BOM.xml -> "+ CharsetDetector.detect("D:/temp/UTF16-BIG-ENDIAN-WITH-BOM.xml"));
+        System.out.println("UTF16-BIG-ENDIAN-WITHOUT-BOM.xml -> "+ CharsetDetector.detect("D:/temp/UTF16-BIG-ENDIAN-WITHOUT-BOM.xml"));
+        System.out.println("UTF16-WITH-BOM.xml -> "+ CharsetDetector.detect("D:/temp/UTF16-WITH-BOM.xml"));
+        System.out.println("UTF16-WITHOUT-BOM.xml -> "+ CharsetDetector.detect("D:/temp/UTF16-WITHOUT-BOM.xml"));
     }
 
     @Test
@@ -82,7 +91,7 @@ public class FilesTest {
             "D:\\temp\\withbom\\csv-ansi-ascii-bom.csv", 
         };
         for (String file : files) {
-            Charset charset = CharacterEncodingDetector.detect(file);
+            Charset charset = CharsetDetector.detect(file);
             System.out.println("\n============================="+file+" -> "+", "+charset+"   "+Files.toString(new File(file)).replaceAll("\r\n|\n", ";"));
             DataExtractorBuilder builder = DataExtractorBuilder.newBuilder(file);
             builder.build().extract(100).stream().forEach(row -> System.out.println(Jsons.toJson(row)));
@@ -91,17 +100,17 @@ public class FilesTest {
     
     @Test
     public void test5() throws IOException {
-        System.out.println(CharacterEncodingDetector.detect("D:\\temp\\c24aafd4f3f24c2a86734b20f9a0edd3.Adobe_Fireworks_CS6_XiaZaiBa.exe"));
-        System.out.println(CharacterEncodingDetector.detect("D:\\temp\\csv-gbk.csv"));
-        System.out.println(CharacterEncodingDetector.detect("D:\\temp\\csv-gbk-bom.csv"));
-        System.out.println(CharacterEncodingDetector.detect("D:\\temp\\csv-utf8.csv"));
-        System.out.println(CharacterEncodingDetector.detect("D:\\temp\\csv-utf8-bom.csv"));
-        System.out.println(CharacterEncodingDetector.detect("D:\\temp\\csv-utf16.csv"));
-        System.out.println(CharacterEncodingDetector.detect("D:\\temp\\csv-utf16-bom.csv"));
-        System.out.println(CharacterEncodingDetector.detect("D:\\temp\\2.png"));
-        System.out.println(CharacterEncodingDetector.detect("D:\\temp\\IMG_2485.JPG"));
-        System.out.println(CharacterEncodingDetector.detect("D:\\temp\\ca.pfx"));
-        System.out.println(CharacterEncodingDetector.detect("D:\\temp\\signers.xml"));
+        System.out.println(CharsetDetector.detect("D:\\temp\\c24aafd4f3f24c2a86734b20f9a0edd3.Adobe_Fireworks_CS6_XiaZaiBa.exe"));
+        System.out.println(CharsetDetector.detect("D:\\temp\\csv-gbk.csv"));
+        System.out.println(CharsetDetector.detect("D:\\temp\\csv-gbk-bom.csv"));
+        System.out.println(CharsetDetector.detect("D:\\temp\\csv-utf8.csv"));
+        System.out.println(CharsetDetector.detect("D:\\temp\\csv-utf8-bom.csv"));
+        System.out.println(CharsetDetector.detect("D:\\temp\\csv-utf16.csv"));
+        System.out.println(CharsetDetector.detect("D:\\temp\\csv-utf16-bom.csv"));
+        System.out.println(CharsetDetector.detect("D:\\temp\\2.png"));
+        System.out.println(CharsetDetector.detect("D:\\temp\\IMG_2485.JPG"));
+        System.out.println(CharsetDetector.detect("D:\\temp\\ca.pfx"));
+        System.out.println(CharsetDetector.detect("D:\\temp\\signers.xml"));
     }
     
     @Test
@@ -122,7 +131,7 @@ public class FilesTest {
         };
         CSVFormat format = CSVFormat.DEFAULT.withDelimiter(',').withQuote('"');
         for (String file : files) {
-            Charset charset = CharacterEncodingDetector.detect(file);
+            Charset charset = CharsetDetector.detect(file);
             System.out.println("\n============================="+file+" -> "+", "+charset+"   "+Files.toString(new File(file)).substring(1, 1000).replaceAll("\r\n|\n", ";"));
             DataExtractorBuilder builder = DataExtractorBuilder.newBuilder(file).csvFormat(format).startRow(1);
             builder.build().extract(2).stream().forEach(row -> System.out.println(Jsons.toJson(row)));
@@ -150,11 +159,19 @@ public class FilesTest {
 
     @Test
     public void test8() throws IOException {
-        System.out.println(CharacterEncodingDetector.detect("D:\\temp\\withoutbom\\test-utf8.csv"));
-        System.out.println(CharacterEncodingDetector.detect("D:\\temp\\withoutbom\\test-utf16le.csv"));
-        System.out.println(CharacterEncodingDetector.detect("D:\\temp\\withoutbom\\test-utf16be.csv"));
+        System.out.println(CharsetDetector.detect("D:\\temp\\withoutbom\\test-utf8.csv"));
+        System.out.println(CharsetDetector.detect("D:\\temp\\withoutbom\\test-utf16le.csv"));
+        System.out.println(CharsetDetector.detect("D:\\temp\\withoutbom\\test-utf16be.csv"));
         //System.out.println(Files.toString(new File("D:\\temp\\withoutbom\\test-utf16be.csv"), "UTF-16BE"));
-        System.out.println(CharacterEncodingDetector.detect("D:\\temp\\withoutbom\\gbk.txt"));
+        System.out.println(CharsetDetector.detect("D:\\temp\\withoutbom\\gbk.txt"));
     }
 
+    @Test
+    public void testRead() throws IOException {
+        FileInputStream input = new FileInputStream("/Users/ponfee/test/code/ponfee/commons/tree/TreeNode.java");
+        Charset charset = CharsetDetector.detect(input);
+        System.out.println(charset);
+        System.out.println("\n\n---------\n\n");
+        System.out.println(IOUtils.toString(input, charset));
+    }
 }

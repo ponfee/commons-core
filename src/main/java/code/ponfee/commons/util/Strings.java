@@ -1,5 +1,10 @@
 package code.ponfee.commons.util;
 
+import code.ponfee.commons.math.Numbers;
+import com.google.common.base.CaseFormat;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -7,14 +12,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import com.google.common.base.CaseFormat;
-
-import code.ponfee.commons.math.Numbers;
 
 /**
  * 字符串工具类
@@ -31,8 +30,12 @@ public class Strings {
 
     private static final char[] REGEX_SPECIALS = { '\\', '$', '(', ')', '*', '+', '.', '[', ']', '?', '^', '{', '}', '|' };
 
-    public static String join(Collection<?> coll, String delim) {
-        return join(coll, delim, "", "");
+    public static String join(Collection<?> coll) {
+        return join(coll, ",", String::valueOf, "", "");
+    }
+
+    public static String join(Collection<?> coll, String delimiter) {
+        return join(coll, delimiter, String::valueOf, "", "");
     }
 
     /**
@@ -41,6 +44,7 @@ public class Strings {
      * 
      * @param coll      集合对象
      * @param delimiter 分隔符
+     * @param mapper    对象转String
      * @param open      每个元素添加的前缀
      * @param close     每个元素添加的后缀
      * @return a String with joined
@@ -54,7 +58,7 @@ public class Strings {
      * @see com.google.common.base.Joiner#join(Object, Object, Object...)
      * @see java.util.StringJoiner#StringJoiner(CharSequence, CharSequence, CharSequence)
      */
-    public static String join(Collection<?> coll, String delimiter, String open, String close) {
+    public static <T> String join(Collection<T> coll, String delimiter, Function<T, String> mapper, String open, String close) {
         if (coll == null) {
             return null;
         }
@@ -62,9 +66,9 @@ public class Strings {
             return "";
         }
 
-        StringBuilder builder = new StringBuilder(256);
-        for (Object o : coll) {
-            builder.append(open).append(o).append(close).append(delimiter);
+        StringBuilder builder = new StringBuilder(128);
+        for (T o : coll) {
+            builder.append(open).append(mapper.apply(o)).append(close).append(delimiter);
         }
         builder.setLength(builder.length() - delimiter.length());
         return builder.toString();
@@ -323,31 +327,6 @@ public class Strings {
             }
         }
         return result.toString();
-    }
-
-    /**
-     * 获取IEME校验码
-     * 
-     * @param str the string
-     * @return  校验码
-     */
-    public static int ieme(String str) {
-        int checkSum = 0;
-        for (int i = 0, len = str.length(), num; i < len; i++) {
-            num = str.charAt(i) - '0'; // ascii to num  
-            if ((i & 0x01) == 0) {
-                checkSum += num; // 1、将奇数位数字相加（从1开始计数）
-            } else {
-                num *= 2; // 2、将偶数位数字分别乘以2，分别计算个位数和十位数之和（从1开始计数）
-                if (num < 10) {
-                    checkSum += num;
-                } else {
-                    checkSum += num - 9;
-                }
-            }
-        }
-
-        return (10 - checkSum % 10) % 10;
     }
 
     /**

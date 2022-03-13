@@ -1,15 +1,13 @@
 package code.ponfee.commons.base.tuple;
 
-import java.io.Serializable;
-import java.util.*;
+import java.util.Objects;
 
 /**
- * Tuple1 consisting of an element.
- * 
+ * Tuple1 consisting of one element.
+ *
  * @author Ponfee
- * @param <A> the type A
  */
-public class Tuple1<A> implements Iterable<Object>, Serializable {
+public final class Tuple1<A> extends Tuple {
     private static final long serialVersionUID = -3627925720098458172L;
 
     public A a;
@@ -22,51 +20,27 @@ public class Tuple1<A> implements Iterable<Object>, Serializable {
         return new Tuple1<>(a);
     }
 
-    /**
-     * Get the object at the given index.
-     *
-     * @param index The index of the object to retrieve. Starts at 0.
-     * @return The object or {@literal null} if out of bounds.
-     */
-    public Object get(int index) {
-        switch (index) {
-            case  0: return a;
-            default: throw new IndexOutOfBoundsException("Index: " + index);
+    @Override
+    public <T> T get(int index) {
+        if (index == 0) {
+            return (T) a;
+        } else {
+            throw new IndexOutOfBoundsException("Index: " + index);
         }
     }
 
-    /**
-     * Turn this {@code Tuple} into a plain {@code Object[]}.
-     * The array isn't tied to this Tuple but is a <strong>copy</strong>.
-     *
-     * @return A copy of the tuple as a new {@link Object Object[]}.
-     */
+    @Override
+    public <T> void set(T value, int index) {
+        if (index == 0) {
+            a = (A) value;
+        } else {
+            throw new IndexOutOfBoundsException("Index: " + index);
+        }
+    }
+
+    @Override
     public Object[] toArray() {
         return new Object[]{a};
-    }
-
-    /**
-     * Turn this {@code Tuple} into a {@link List List&lt;Object&gt;}.
-     * The list isn't tied to this Tuple but is a <strong>copy</strong> with limited
-     * mutability ({@code add} and {@code remove} are not supported, but {@code set} is).
-     *
-     * @return A copy of the tuple as a new {@link List List&lt;Object&gt;}.
-     */
-    public final List<Object> toList() {
-        return Arrays.asList(toArray());
-    }
-
-    /**
-     * Return an <strong>immutable</strong> {@link Iterator Iterator&lt;Object&gt;} around
-     * the content of this {@code Tuple}.
-     *
-     * @return An unmodifiable {@link Iterator} over the elements in this Tuple.
-     * @implNote As an {@link Iterator} is always tied to its {@link Iterable} source by
-     * definition, the iterator cannot be mutable without the iterable also being mutable.
-     */
-    @Override
-    public final Iterator<Object> iterator() {
-        return Collections.unmodifiableList(toList()).iterator();
     }
 
     @Override
@@ -75,19 +49,31 @@ public class Tuple1<A> implements Iterable<Object>, Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        return Objects.equals(a, ((Tuple1<?>) o).a);
+        return (obj instanceof Tuple1) && Objects.equals(a, ((Tuple1<?>) obj).a);
+    }
+
+    public boolean eq(Object a) {
+        return Objects.equals(this.a, a);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(a);
+        return a != null ? a.hashCode() : 0;
+    }
+
+    @Override
+    public int length() {
+        return 1;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Tuple1<A> copy() {
+        return new Tuple1<>(a);
     }
 
 }

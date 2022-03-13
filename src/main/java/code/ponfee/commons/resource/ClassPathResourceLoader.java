@@ -1,7 +1,10 @@
 package code.ponfee.commons.resource;
 
-import static org.apache.commons.lang3.ArrayUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.join;
+import code.ponfee.commons.io.Closeables;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -17,17 +20,11 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-//import org.apache.tools.zip.ZipEntry;
-//import org.apache.tools.zip.ZipFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import code.ponfee.commons.io.Closeables;
+import static org.apache.commons.lang3.ArrayUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.join;
 
 /**
  * 类资源加载器
@@ -108,6 +105,8 @@ final class ClassPathResourceLoader {
                             continue;
                         }
                         zip = new ZipFile(zipPath);
+                        // org.apache.tools.zip.ZipEntry;
+                        // org.apache.tools.zip.ZipFile;
                         //Enumeration<ZipEntry> entries = zip.getEntries();
                         Enumeration<? extends ZipEntry> entries0 = zip.entries();
                         while (entries0.hasMoreElements()) {

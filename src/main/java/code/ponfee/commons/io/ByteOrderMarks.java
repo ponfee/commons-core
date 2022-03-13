@@ -8,8 +8,9 @@
 
 package code.ponfee.commons.io;
 
-import static code.ponfee.commons.io.CharacterEncodingDetector.DETECT_COUNT;
-import static code.ponfee.commons.io.CharacterEncodingDetector.detect;
+import code.ponfee.commons.util.Enums;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.bouncycastle.util.Arrays;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,9 +20,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import code.ponfee.commons.util.Enums;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.bouncycastle.util.Arrays;
+import static code.ponfee.commons.io.CharsetDetector.DETECT_COUNT;
+import static code.ponfee.commons.io.CharsetDetector.detect;
 
 /**
  * <pre>
@@ -167,7 +167,7 @@ public enum ByteOrderMarks {
             ByteOrderMarks bom;
             int count;
             if (charset == null) {
-                headBytes = new byte[DETECT_COUNT];
+                headBytes = new byte[(int) Math.min(file.length(), DETECT_COUNT)];
                 count = raf.read(headBytes);
                 charset = detect(headBytes, count);
                 if ((bom = MAPPING.get(charset)) == null) {
@@ -218,7 +218,7 @@ public enum ByteOrderMarks {
             ByteOrderMarks bom;
             int count;
             if (charset == null) {
-                headBytes = new byte[DETECT_COUNT];
+                headBytes = new byte[(int) Math.min(file.length(), DETECT_COUNT)];
                 count = raf.read(headBytes);
                 charset = detect(headBytes, count);
                 if ((bom = MAPPING.get(charset)) == null) {

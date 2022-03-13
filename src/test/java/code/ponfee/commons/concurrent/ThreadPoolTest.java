@@ -1,7 +1,5 @@
 package code.ponfee.commons.concurrent;
 
-import static code.ponfee.commons.concurrent.ThreadPoolExecutors.INFINITY_QUEUE_EXECUTOR;
-
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
@@ -59,7 +57,7 @@ public class ThreadPoolTest {
                 while (flag.get() && !Thread.currentThread().isInterrupted()) {
                     command.run();
                 }
-            }, INFINITY_QUEUE_EXECUTOR) // CALLER_RUN_EXECUTOR：caller run will be dead lock
+            }, ThreadPoolTestUtils.INFINITY_QUEUE_EXECUTOR) // CALLER_RUN_EXECUTOR：caller run will be dead lock
        ).toArray(CompletableFuture[]::new);
 
         System.err.println("************************************************");

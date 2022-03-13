@@ -1,5 +1,11 @@
 package code.ponfee.commons.model;
 
+import code.ponfee.commons.reflect.ClassUtils;
+import com.google.common.collect.Lists;
+import lombok.Data;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.cglib.beans.BeanCopier;
+
 import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,13 +14,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.cglib.beans.BeanCopier;
-
-import com.google.common.collect.Lists;
-
-import code.ponfee.commons.reflect.ClassUtils;
 
 /**
  * <pre>
@@ -35,9 +34,13 @@ import code.ponfee.commons.reflect.ClassUtils;
  * 
  * @author Ponfee
  */
+@Data
 public class Page<T> implements java.io.Serializable {
     private static final long serialVersionUID = 1313118491812094979L;
 
+    /**
+     * https://mapstruct.org/
+     */
     private static final BeanCopier COPIER = BeanCopier.create(Page.class, Page.class, false);
 
     private int pageNum; // 当前页（start 1）
@@ -191,151 +194,6 @@ public class Page<T> implements java.io.Serializable {
         hasNextPage = pageNum < pages;
     }
 
-    public int getPageNum() {
-        return pageNum;
-    }
-
-    public void setPageNum(int pageNum) {
-        this.pageNum = pageNum;
-    }
-
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public void setSize(int size) {
-        this.size = size;
-    }
-
-    public long getStartRow() {
-        return startRow;
-    }
-
-    public Boolean getFirstPage() {
-        return firstPage;
-    }
-
-    public void setFirstPage(Boolean firstPage) {
-        this.firstPage = firstPage;
-    }
-
-    public Boolean getLastPage() {
-        return lastPage;
-    }
-
-    public void setLastPage(Boolean lastPage) {
-        this.lastPage = lastPage;
-    }
-
-    public Boolean getHasPreviousPage() {
-        return hasPreviousPage;
-    }
-
-    public void setHasPreviousPage(Boolean hasPreviousPage) {
-        this.hasPreviousPage = hasPreviousPage;
-    }
-
-    public Boolean getHasNextPage() {
-        return hasNextPage;
-    }
-
-    public void setHasNextPage(Boolean hasNextPage) {
-        this.hasNextPage = hasNextPage;
-    }
-
-    public void setStartRow(long startRow) {
-        this.startRow = startRow;
-    }
-
-    public long getEndRow() {
-        return endRow;
-    }
-
-    public void setEndRow(long endRow) {
-        this.endRow = endRow;
-    }
-
-    public long getTotal() {
-        return total;
-    }
-
-    public void setTotal(long total) {
-        this.total = total;
-    }
-
-    public int getPages() {
-        return pages;
-    }
-
-    public void setPages(int pages) {
-        this.pages = pages;
-    }
-
-    public List<T> getRows() {
-        return rows;
-    }
-
-    public void setRows(List<T> rows) {
-        this.rows = rows;
-    }
-
-    public int getPrePage() {
-        return prePage;
-    }
-
-    public void setPrePage(int prePage) {
-        this.prePage = prePage;
-    }
-
-    public int getNextPage() {
-        return nextPage;
-    }
-
-    public void setNextPage(int nextPage) {
-        this.nextPage = nextPage;
-    }
-
-
-    public int getNavigatePages() {
-        return navigatePages;
-    }
-
-    public void setNavigatePages(int navigatePages) {
-        this.navigatePages = navigatePages;
-    }
-
-    public int[] getNavigatePageNums() {
-        return navigatePageNums;
-    }
-
-    public void setNavigatePageNums(int[] navigatePageNums) {
-        this.navigatePageNums = navigatePageNums;
-    }
-
-    public int getNavigateFirstPage() {
-        return navigateFirstPage;
-    }
-
-    public int getNavigateLastPage() {
-        return navigateLastPage;
-    }
-
-    public void setNavigateFirstPage(int navigateFirstPage) {
-        this.navigateFirstPage = navigateFirstPage;
-    }
-
-    public void setNavigateLastPage(int navigateLastPage) {
-        this.navigateLastPage = navigateLastPage;
-    }
-
     /**
      * 判断是否无数据
      * 
@@ -369,9 +227,7 @@ public class Page<T> implements java.io.Serializable {
         if (isEmpty()) {
             return page;
         }
-        page.setRows(
-            rows.stream().map(mapper).collect(Collectors.toList())
-        );
+        page.setRows(rows.stream().map(mapper).collect(Collectors.toList()));
         return page;
     }
 
@@ -408,7 +264,7 @@ public class Page<T> implements java.io.Serializable {
             return "List<>(0)";
         }
 
-        T row = rows.stream()/*.limit(10)*/.filter(Objects::nonNull).findFirst().orElse(null);
+        T row = rows.stream()/*.limit(10)*/.filter(Objects::nonNull).findAny().orElse(null);
         if (row == null) {
             return "List<>(" + rows.size() + ")";
         }

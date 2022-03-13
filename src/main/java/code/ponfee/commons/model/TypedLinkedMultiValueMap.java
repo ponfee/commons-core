@@ -1,10 +1,10 @@
 package code.ponfee.commons.model;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.util.LinkedMultiValueMap;
+
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.LinkedMultiValueMap;
 
 /**
  * Typed {@link LinkedMultiValueMap} with pre-defined get methods

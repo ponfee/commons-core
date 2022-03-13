@@ -17,7 +17,7 @@ import code.ponfee.commons.model.BaseEntity;
  */
 public class FieldsTest {
 
-    public static class ClassA extends BaseEntity<Long, String> {
+    public static class ClassA extends BaseEntity.Creator<String> {
         private static final long serialVersionUID = -5617457253295566886L;
 
     }

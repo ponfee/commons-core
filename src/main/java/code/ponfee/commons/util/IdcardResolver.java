@@ -1,6 +1,6 @@
 package code.ponfee.commons.util;
 
-import static java.util.Calendar.YEAR;
+import com.google.common.collect.ImmutableMap;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -11,7 +11,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 
-import com.google.common.collect.ImmutableMap;
+import static java.util.Calendar.YEAR;
 
 /**
  * 身份证解析及生成
@@ -167,10 +167,10 @@ public class IdcardResolver {
      * @return 身份证信息数组
      */
     private static final Pattern HONGKONG = Pattern.compile("^[A-Z]{1,2}[0-9]{6}\\(?[0-9A]\\)?$");
-    private static final Pattern MACO = Pattern.compile("^(1|5|7)[0-9]{6}\\(?[0-9A-Z]\\)?$");
+    private static final Pattern MACO = Pattern.compile("^([157])[0-9]{6}\\(?[0-9A-Z]\\)?$");
     private static final Pattern TAIWAN = Pattern.compile("^[a-zA-Z][0-9]{9}$");
     private boolean isOther(String idcard) {
-        idcard = idcard.replaceAll("[\\(|\\)]", "");
+        idcard = idcard.replaceAll("[(|)]", "");
 
         if (HONGKONG.matcher(idcard).matches()) { // 香港
             this.type = CertType.HONGKONG;

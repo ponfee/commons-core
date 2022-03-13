@@ -1,5 +1,8 @@
 package code.ponfee.commons.io;
 
+import code.ponfee.commons.math.Numbers;
+
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,107 +12,125 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-import code.ponfee.commons.exception.Throwables;
-import info.monitorenter.cpdetector.io.ASCIIDetector;
-import info.monitorenter.cpdetector.io.ByteOrderMarkDetector;
-import info.monitorenter.cpdetector.io.CodepageDetectorProxy;
-import info.monitorenter.cpdetector.io.ICodepageDetector;
-import info.monitorenter.cpdetector.io.JChardetFacade;
-import info.monitorenter.cpdetector.io.ParsingDetector;
-import info.monitorenter.cpdetector.io.UnicodeDetector;
-
 /**
- * 字符编码检测
+ * <p>字符编码检测</p>
+ * <p>依赖jar包：cpdetector-1.0.7.jar, jchardet-1.0.jar, antlr-2.7.7.jar</p>
  *
  * @author ponfee
  */
-public class CharacterEncodingDetector {
+public class CharsetDetector {
 
-    public static final int DETECT_COUNT = 1200;
-    public static final Charset DEFAULT_CHARSET  = StandardCharsets.ISO_8859_1;
+    public static final int DETECT_COUNT = 12000; // Integer.MAX_VALUE
+    public static final Charset DEFAULT_CHARSET  = StandardCharsets.US_ASCII;
 
-    public static Charset detect(String filePath) {
-        return detect(new File(filePath));
+    public static Charset detect(String path) {
+        return detect(path, DETECT_COUNT);
+    }
+
+    public static Charset detect(String path, int length) {
+        return detect(new File(path), length);
     }
 
     public static Charset detect(File file) {
+        return detect(file, DETECT_COUNT);
+    }
+
+    public static Charset detect(File file, int length) {
         try (InputStream input = new FileInputStream(file)) {
-            return detect(Files.readByteArray(input, DETECT_COUNT));
+            return detect(input, (int) Math.min(file.length(), length));
         } catch (IOException e) {
-            throw new RuntimeException("Read file byte array occur error.", e);
+            throw new RuntimeException("Detect file '" + file.getPath() + "' occur error.", e);
         }
     }
 
     public static Charset detect(URL url) {
-        try (InputStream input = url.openStream()) {
-            return detect(Files.readByteArray(input, DETECT_COUNT));
-        } catch (IOException e) {
-            throw new RuntimeException("Read file byte array occur error.", e);
-        }
+        return detect(url, DETECT_COUNT);
     }
 
-    public static Charset detect(InputStream input) {
-        try {
-            return detect(Files.readByteArray(input, DETECT_COUNT));
+    public static Charset detect(URL url, int length) {
+        // 对于网络输入流的InputStream.available()表示对方发过来可用的数据，并不是整个流的大小
+        try (InputStream input = url.openStream()) {
+            return detect(input, length);
         } catch (IOException e) {
-            throw new RuntimeException("Read file byte array occur error.", e);
+            throw new RuntimeException("Detect url '" + url.getPath() + "' occur error.", e);
         }
     }
 
     public static Charset detect(byte[] bytes) {
-        return detect(bytes, bytes.length);
+        return detect(bytes, 0, bytes.length);
     }
 
     public static Charset detect(byte[] bytes, int length) {
-        length = Math.min(bytes.length, length);
-        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+        return detect(bytes, 0, length);
+    }
 
+    public static Charset detect(byte[] bytes, int offset, int length) {
+        offset = Numbers.bounds(offset, 0, bytes.length);
+        length = Numbers.bounds(length, 0, bytes.length - offset);
         try {
-            String encoding = buildDetector().detectCodepage(bais, length).name();
-            return "void".equalsIgnoreCase(encoding) ? DEFAULT_CHARSET : of(encoding);
+            return detect(new ByteArrayInputStream(bytes, offset, length), length);
         } catch (IOException e) {
-            // Cannot happened, because the ByteArrayInputStream don't throws IOException 
-            Throwables.console(e);
-            return of(Encoding.JAVA_CHARSET[new BytesEncodingDetect().detectEncoding(bytes)]);
+            throw new RuntimeException("Detect byte array charset occur error.", e);
         }
     }
 
-    private static Charset of(String charset) {
-        try {
-            return Charset.forName(charset);
-        } catch (Exception e) {
-            Throwables.console(e);
-            return DEFAULT_CHARSET;
+    public static Charset detect(InputStream input) throws IOException {
+        return detect(input, DETECT_COUNT);
+    }
+
+    /*
+    public static Charset detect(InputStream input, int length) throws IOException {
+        org.mozilla.intl.chardet.nsDetector detector = new org.mozilla.intl.chardet.nsDetector(2);
+        DetectorObserver observer = new DetectorObserver();
+        detector.Init(observer);
+        try (java.io.BufferedInputStream bufInput = new java.io.BufferedInputStream(input)) {
+            byte[] buf = new byte[1200];
+            boolean isAscii = true;
+            int len, count = 0;
+            while ((len = bufInput.read(buf, 0, buf.length)) != -1) {
+                if (isAscii) {
+                    isAscii = detector.isAscii(buf, len);
+                }
+                if (!isAscii && detector.DoIt(buf, len, false)) {
+                    break;
+                }
+                count += len;
+                if (count >= length) {
+                    break;
+                }
+            }
+            detector.DataEnd();
+            return isAscii ? DEFAULT_CHARSET : Charset.forName(observer.found ? observer.result : detector.getProbableCharsets()[0]);
         }
     }
 
-    /**
-     * 编码控测器
-     * 
-     * cpdetector-1.0.10.jar, jchardet-1.1.jar, jargs-1.0.jar, antlr-2.7.7.jar
-     * 
-     * @return a ICodepageDetector
-     */
-    private static ICodepageDetector buildDetector() {
-        CodepageDetectorProxy detector = CodepageDetectorProxy.getInstance();
+    private static class DetectorObserver implements org.mozilla.intl.chardet.nsICharsetDetectionObserver {
+        private boolean found = false;
+        private String result;
 
-        // 通过BOM来测定编码
-        detector.add(new ByteOrderMarkDetector());
+        @Override
+        public void Notify(String charset) {
+            this.found = true;
+            this.result = charset;
+        }
+    }
+    */
 
-        // JChardetFacade封装了由Mozilla组织提供的JChardet，可以完成大多数文件的编码测定
-        detector.add(JChardetFacade.getInstance()); // 用到antlr.jar，jchardet-1.1.jar
+    public static Charset detect(InputStream input, int length) throws IOException {
+        //return of(Encoding.JAVA_CHARSET[new BytesEncodingDetect().detectEncoding(Files.readByteArray(input, length))]);
+        info.monitorenter.cpdetector.io.CodepageDetectorProxy detector = info.monitorenter.cpdetector.io.CodepageDetectorProxy.getInstance();
+        detector.add(new info.monitorenter.cpdetector.io.ByteOrderMarkDetector());   // 通过BOM来测定编码
+        detector.add(info.monitorenter.cpdetector.io.JChardetFacade.getInstance());  // 封装了由Mozilla提供的JChardet(jchardet-1.0.jar, antlr-2.7.7.jar)
+        detector.add(info.monitorenter.cpdetector.io.UnicodeDetector.getInstance()); // 用于Unicode家族编码的测定
+        detector.add(info.monitorenter.cpdetector.io.ASCIIDetector.getInstance());   // 用于ASCII编码测定
+        detector.add(new info.monitorenter.cpdetector.io.ParsingDetector(false));    // 用于检查HTML、XML等文件或字符流的编码
 
-        // 再多加几个探测器
-        detector.add(UnicodeDetector.getInstance()); // 用于Unicode家族编码的测定
-        detector.add(ASCIIDetector.getInstance());   // 用于ASCII编码测定
-
-        // 用于检查HTML、XML等文件或字符流的编码
-        detector.add(new ParsingDetector(false));
-
-        return detector;
+        input = input.markSupported()? input : new BufferedInputStream(input, 1200);
+        String charset = detector.detectCodepage(input, length).name();
+        return "void".equalsIgnoreCase(charset) ? DEFAULT_CHARSET : Charset.forName(charset);
     }
 
-    // ---------------------------------------------------------------------custome detect
+    // ---------------------------------------------------------------------custom detect
     private static class BytesEncodingDetect extends Encoding {
         int[][] GBFreq;
         int[][] GBKFreq;

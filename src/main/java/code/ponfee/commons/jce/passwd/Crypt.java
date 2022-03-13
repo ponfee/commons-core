@@ -1,20 +1,18 @@
 package code.ponfee.commons.jce.passwd;
 
-import static code.ponfee.commons.jce.HmacAlgorithms.ALGORITHM_MAPPING;
-
-import java.security.Provider;
-import java.util.Arrays;
-
-import javax.crypto.Mac;
-
-import com.google.common.base.Preconditions;
-
 import code.ponfee.commons.jce.HmacAlgorithms;
 import code.ponfee.commons.jce.Providers;
 import code.ponfee.commons.jce.digest.HmacUtils;
 import code.ponfee.commons.util.Base64UrlSafe;
 import code.ponfee.commons.util.Bytes;
 import code.ponfee.commons.util.SecureRandoms;
+import com.google.common.base.Preconditions;
+
+import javax.crypto.Mac;
+import java.security.Provider;
+import java.util.Arrays;
+
+import static code.ponfee.commons.jce.HmacAlgorithms.ALGORITHM_MAPPING;
 
 /**
  * The passwd crypt based hmac

@@ -5,20 +5,22 @@ import java.util.Objects;
 /**
  * Tuple5 consisting of five elements.
  *
- * @param <A> the type A
- * @param <B> the type B
- * @param <C> the type C
- * @param <D> the type D
- * @param <E> the type E
  * @author Ponfee
  */
-public class Tuple5<A, B, C, D, E> extends Tuple4<A, B, C, D> {
-    private static final long serialVersionUID = -5055304940772830843L;
+public final class Tuple5<A, B, C, D, E> extends Tuple {
+    private static final long serialVersionUID = -528096819207260665L;
 
+    public A a;
+    public B b;
+    public C c;
+    public D d;
     public E e;
 
     public Tuple5(A a, B b, C c, D d, E e) {
-        super(a, b, c, d);
+        this.a = a;
+        this.b = b;
+        this.c = c;
+        this.d = d;
         this.e = e;
     }
 
@@ -27,13 +29,25 @@ public class Tuple5<A, B, C, D, E> extends Tuple4<A, B, C, D> {
     }
 
     @Override
-    public Object get(int index) {
+    public <T> T get(int index) {
         switch (index) {
-            case  0: return a;
-            case  1: return b;
-            case  2: return c;
-            case  3: return d;
-            case  4: return e;
+            case  0: return (T) a;
+            case  1: return (T) b;
+            case  2: return (T) c;
+            case  3: return (T) d;
+            case  4: return (T) e;
+            default: throw new IndexOutOfBoundsException("Index: " + index);
+        }
+    }
+
+    @Override
+    public <T> void set(T value, int index) {
+        switch (index) {
+            case  0: a = (A) value; break;
+            case  1: b = (B) value; break;
+            case  2: c = (C) value; break;
+            case  3: d = (D) value; break;
+            case  4: e = (E) value; break;
             default: throw new IndexOutOfBoundsException("Index: " + index);
         }
     }
@@ -49,12 +63,44 @@ public class Tuple5<A, B, C, D, E> extends Tuple4<A, B, C, D> {
     }
 
     @Override
-    public boolean equals(Object o) {
-        return super.equals(o) && Objects.equals(e, ((Tuple5<?, ?, ?, ?, ?>) o).e);
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Tuple5)) {
+            return false;
+        }
+
+        Tuple5<?, ?, ?, ?, ?> o = (Tuple5<?, ?, ?, ?, ?>) obj;
+        return eq(o.a, o.b, o.c, o.d, o.e);
+    }
+
+    public boolean eq(Object a, Object b, Object c, Object d, Object e) {
+        return Objects.equals(this.a, a)
+            && Objects.equals(this.b, b)
+            && Objects.equals(this.c, c)
+            && Objects.equals(this.d, d)
+            && Objects.equals(this.e, e);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(a, b, c, d, e);
+        int result = a != null ? a.hashCode() : 0;
+        result = HASH_FACTOR * result + (b != null ? b.hashCode() : 0);
+        result = HASH_FACTOR * result + (c != null ? c.hashCode() : 0);
+        result = HASH_FACTOR * result + (d != null ? d.hashCode() : 0);
+        result = HASH_FACTOR * result + (e != null ? e.hashCode() : 0);
+        return result;
     }
+
+    @Override
+    public int length() {
+        return 5;
+    }
+
+    @Override
+    public Tuple5<A, B, C, D, E> copy() {
+        return new Tuple5<>(a, b, c, d, e);
+    }
+
 }

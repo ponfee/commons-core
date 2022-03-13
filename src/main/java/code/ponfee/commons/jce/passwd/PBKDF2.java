@@ -1,19 +1,17 @@
 package code.ponfee.commons.jce.passwd;
 
-import static code.ponfee.commons.jce.HmacAlgorithms.ALGORITHM_MAPPING;
-
-import java.security.spec.InvalidKeySpecException;
-import java.util.Arrays;
-
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-
-import com.google.common.base.Preconditions;
-
 import code.ponfee.commons.jce.HmacAlgorithms;
 import code.ponfee.commons.jce.Providers;
 import code.ponfee.commons.util.Base64UrlSafe;
 import code.ponfee.commons.util.SecureRandoms;
+import com.google.common.base.Preconditions;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
+
+import static code.ponfee.commons.jce.HmacAlgorithms.ALGORITHM_MAPPING;
 
 /**
  * PBKDF2 salted password hashing.

@@ -1,15 +1,10 @@
 package code.ponfee.commons.web;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-
+import code.ponfee.commons.exception.BaseException;
+import code.ponfee.commons.exception.UnauthorizedException;
+import code.ponfee.commons.model.Result;
+import code.ponfee.commons.model.ResultCode;
+import com.google.common.base.Throwables;
 import org.apache.commons.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +19,14 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.google.common.base.Throwables;
-
-import code.ponfee.commons.exception.BaseException;
-import code.ponfee.commons.exception.UnauthorizedException;
-import code.ponfee.commons.model.Result;
-import code.ponfee.commons.model.ResultCode;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Spring mvc global exception handler for web application
@@ -77,8 +74,7 @@ public abstract class AbstractWebExceptionHandler {
     //@ResponseBody @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public void handle(HttpServletRequest req, HttpServletResponse resp, UnauthorizedException e) {
         LOGGER.debug("Unauthorized", e);
-        Integer code = e.getCode();
-        handle(req, resp, unauthorizedPage, code == null ? UNAUTHORIZED : code, e.getMessage());
+        handle(req, resp, unauthorizedPage, e.getCode(), e.getMessage());
     }
 
     /**
@@ -191,8 +187,7 @@ public abstract class AbstractWebExceptionHandler {
     //@ResponseBody @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public void handle(HttpServletRequest req, HttpServletResponse resp, BaseException e) {
         LOGGER.debug("Biz operate failure", e);
-        Integer code = e.getCode();
-        handle(req, resp, code == null ? SERVER_ERROR : code, e.getMessage());
+        handle(req, resp, e.getCode(), e.getMessage());
     }
 
     /**

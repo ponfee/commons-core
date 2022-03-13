@@ -1,11 +1,12 @@
 package code.ponfee.commons.reflect;
 
+import code.ponfee.commons.base.tuple.Tuple2;
+import code.ponfee.commons.util.LazyLoader;
+import org.springframework.cglib.beans.BeanCopier;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
-
-import code.ponfee.commons.base.tuple.Tuple2;
-import org.springframework.cglib.beans.BeanCopier;
 
 /**
  * <p>The bean copier utility based cglib</p>
@@ -16,6 +17,12 @@ import org.springframework.cglib.beans.BeanCopier;
 public class BeanCopiers {
 
     private static final Map<Tuple2<Class<?>, Class<?>>, BeanCopier> COPIER_CACHES = new HashMap<>();
+
+    public static BeanCopier get(Class<?> sourceType, Class<?> targetType) {
+        //Long key = ((long) System.identityHashCode(sclass) << 32) | System.identityHashCode(tclass);
+        Tuple2<Class<?>, Class<?>> key = Tuple2.of(sourceType, targetType);
+        return LazyLoader.get(key, COPIER_CACHES, () -> BeanCopier.create(sourceType, targetType, false));
+    }
 
     /**
      * Copy properties from source to target
@@ -36,31 +43,19 @@ public class BeanCopiers {
      * @see org.springframework.beans.BeanUtils#copyProperties(Object, Object)
      * @see org.springframework.cglib.beans.BeanCopier#create(Class, Class, boolean)
      */
-    public static void copyProperties(Object source, Object target) {
-        Class<?> sclass = source.getClass(), tclass = target.getClass();
-        //Long beanKey = ((long) System.identityHashCode(sclass) << 32) | System.identityHashCode(tclass);
-        Tuple2<Class<?>, Class<?>> beanKey = Tuple2.of(sclass, tclass);
-        BeanCopier copier = COPIER_CACHES.get(beanKey);
-        if (copier == null) {
-            synchronized (COPIER_CACHES) {
-                if ((copier = COPIER_CACHES.get(beanKey)) == null) {
-                    copier = BeanCopier.create(sclass, tclass, false);
-                    COPIER_CACHES.put(beanKey, copier);
-                }
-            }
-        }
-        copier.copy(source, target, null);
+    public static void copy(Object source, Object target) {
+        get(source.getClass(), target.getClass()).copy(source, target, null);
     }
 
-    public static <T> T copyProperties(Object source, Supplier<T> supplier) {
+    public static <T> T copy(Object source, Supplier<T> supplier) {
         T target = supplier.get();
-        copyProperties(source, target);
+        copy(source, target);
         return target;
     }
 
-    public static <T> T copyProperties(Object source, Class<T> targetType) {
+    public static <T> T copy(Object source, Class<T> targetType) {
         T target = ClassUtils.newInstance(targetType);
-        copyProperties(source, target);
+        copy(source, target);
         return target;
     }
 

@@ -1,8 +1,8 @@
 package code.ponfee.commons.limit.request;
 
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.lang3.StringUtils;
+
+import javax.servlet.http.HttpSession;
 
 /**
  * The request limiter based http session

@@ -1,7 +1,5 @@
 package code.ponfee.commons.model;
 
-import java.io.Serializable;
-
 /**
  * The code and message for {@link Result}
  *
@@ -32,7 +30,7 @@ public interface CodeMsg {
 
         SystemExit(int code) {
             this.code = code;
-            this.success = code == 0;;
+            this.success = code == 0;
         }
 
         @Override

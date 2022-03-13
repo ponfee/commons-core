@@ -1,11 +1,11 @@
 package code.ponfee.commons.jce.pkcs;
 
+import code.ponfee.commons.jce.Providers;
+
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.cert.X509Certificate;
-
-import code.ponfee.commons.jce.Providers;
 
 /**
  * pkcs1方式的签名/验签工具类

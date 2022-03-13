@@ -17,8 +17,6 @@ import java.nio.charset.Charset;
  */
 public class WrappedBufferedReader extends Reader {
 
-    private InputStream input;
-    private InputStreamReader reader;
     private BufferedReader buffer;
 
     public WrappedBufferedReader(File file) throws FileNotFoundException {
@@ -34,20 +32,15 @@ public class WrappedBufferedReader extends Reader {
     }
 
     public WrappedBufferedReader(InputStream input, Charset charset) {
-        super();
-        this.input = input;
-        this.reader = new InputStreamReader(input, charset);
-        this.buffer = new BufferedReader(reader, Files.BUFF_SIZE);
+        this.buffer = new BufferedReader(
+            new InputStreamReader(input, charset), Files.BUFF_SIZE
+        );
     }
 
     @Override
     public void close() {
         Closeables.console(buffer);
-        Closeables.console(reader);
-        Closeables.console(input);
         buffer = null;
-        reader = null;
-        input = null;
     }
 
     @Override

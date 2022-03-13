@@ -1,8 +1,5 @@
 package code.ponfee.commons.cache;
 
-
-import static code.ponfee.commons.concurrent.ThreadPoolExecutors.CALLER_RUN_SCHEDULER;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import code.ponfee.commons.concurrent.ThreadPoolTestUtils;
 import code.ponfee.commons.concurrent.ThreadPoolExecutors;
 import com.google.common.base.Preconditions;
 
@@ -61,7 +59,7 @@ public class Cache<K, V> {
 
         if (autoReleaseInSeconds > 0) {
             if (scheduler == null) {
-                scheduler = CALLER_RUN_SCHEDULER;
+                scheduler = ThreadPoolTestUtils.CALLER_RUN_SCHEDULER;
             }
 
             // 定时清理

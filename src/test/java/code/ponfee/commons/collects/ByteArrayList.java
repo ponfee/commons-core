@@ -1,12 +1,12 @@
-package code.ponfee.commons.collect;
-
-import static com.google.common.base.Preconditions.checkElementIndex;
-import static com.google.common.base.Preconditions.checkPositionIndexes;
+package code.ponfee.commons.collects;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
+import static com.google.common.base.Preconditions.checkElementIndex;
+import static com.google.common.base.Preconditions.checkPositionIndexes;
 
 /**
  * The primitive byte array to list

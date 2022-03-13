@@ -41,7 +41,7 @@ public interface CurrentLimiter {
      * @param threshold
      * @return
      */
-    boolean setRequestThreshold(String key, long threshold);
+    void setRequestThreshold(String key, long threshold);
 
     /**
      * 获取配置的访问量

@@ -1,5 +1,12 @@
 package code.ponfee.commons.io;
 
+import code.ponfee.commons.exception.Throwables;
+import code.ponfee.commons.tree.BaseNode;
+import code.ponfee.commons.tree.TreeNode;
+import code.ponfee.commons.tree.TreeNodeBuilder;
+import code.ponfee.commons.tree.print.MultiwayTreePrinter;
+import org.apache.commons.io.output.StringBuilderWriter;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -11,27 +18,19 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.io.output.StringBuilderWriter;
-import org.apache.commons.lang3.ArrayUtils;
-
-import com.google.common.collect.ImmutableMap;
-
-import code.ponfee.commons.exception.Throwables;
 
 /**
  * 文件工具类
  * @author Ponfee
  */
 public final class Files {
-    private Files() {}
 
     public static final int EOF = -1; // end of file read
 
@@ -80,7 +79,9 @@ public final class Files {
      * @return
      */
     public static File mkdir(String path) {
-        return mkdir(new File(path));
+        File file = new File(path);
+        mkdir(file);
+        return file;
     }
 
     /**
@@ -89,18 +90,28 @@ public final class Files {
      * @param file
      * @return
      */
-    public static File mkdir(File file) {
+    public static void mkdir(File file) {
         if (file.isFile()) {
             throw new IllegalStateException(file.getAbsolutePath() + " is a directory.");
         }
 
         if (file.exists()) {
-            return file;
+            return;
         }
 
         if (file.mkdirs()) {
             file.setLastModified(System.currentTimeMillis());
         }
+    }
+
+    /**
+     * 创建文件
+     * @param path
+     * @return
+     */
+    public static File touch(String path) {
+        File file = new File(path);
+        touch(file);
         return file;
     }
 
@@ -109,22 +120,13 @@ public final class Files {
      * @param file
      * @return
      */
-    public static File touch(String file) {
-        return touch(new File(file));
-    }
-
-    /**
-     * 创建文件
-     * @param file
-     * @return
-     */
-    public static File touch(File file) {
+    public static void touch(File file) {
         if (file.isDirectory()) {
             throw new IllegalStateException(file.getAbsolutePath() + " is a directory.");
         }
 
         if (file.exists()) {
-            return file;
+            return;
         }
 
         if (!file.getParentFile().exists()) {
@@ -138,8 +140,6 @@ public final class Files {
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
-
-        return file;
     }
 
     public static void deleteQuietly(File file) {
@@ -161,7 +161,7 @@ public final class Files {
     }
 
     public static String toString(File file) throws IOException {
-        return toString(file, CharacterEncodingDetector.detect(file));
+        return toString(file, CharsetDetector.detect(file));
     }
 
     public static String toString(File file, String charsetName) throws IOException {
@@ -258,71 +258,50 @@ public final class Files {
         return readByteArray(new File(filePath), count);
     }
 
-    // -----------------------------------------------------------------file type
-    private static final int SUB_PREFIX = 64;
-    public static final Map<String, String> FILE_TYPE_MAGIC = ImmutableMap.<String, String> builder()
-        .put("jpg", "FFD8FF") // JPEG (jpg)
-        .put("png", "89504E47") // PNG (png)
-        .put("gif", "47494638") // GIF (gif)
-        .put("tif", "49492A00") // TIFF (tif)
-        .put("bmp", "424D") // Windows Bitmap (bmp)
-        .put("dwg", "41433130") // CAD (dwg)
-        .put("html","68746D6C3E") // HTML (html)
-        .put("rtf", "7B5C727466") // Rich Text Format (rtf)
-        .put("xml", "3C3F786D6C")
-        .put("zip", "504B0304")
-        .put("rar", "52617221")
-        .put("psd", "38425053") // Photoshop (psd)
-        .put("eml", "44656C69766572792D646174653A") // Email [thorough only] (eml)
-        .put("dbx", "CFAD12FEC5FD746F") // Outlook Express (dbx)
-        .put("pst", "2142444E") // Outlook (pst)
-        .put("xls", "D0CF11E0") // MS Word
-        .put("doc", "D0CF11E0") // MS Excel 注意：word 和 excel的文件头一样
-        .put("mdb", "5374616E64617264204A") // MS Access (mdb)
-        .put("wpd", "FF575043") // WordPerfect (wpd)
-        .put("eps", "252150532D41646F6265")
-        .put("ps",  "252150532D41646F6265")
-        .put("pdf", "255044462D312E") // Adobe Acrobat (pdf)
-        .put("qdf", "AC9EBD8F") // Quicken (qdf)
-        .put("pwl", "E3828596") // Windows Password (pwl)
-        .put("wav", "57415645") // Wave (wav)
-        .put("avi", "41564920")
-        .put("ram", "2E7261FD") // Real Audio (ram)
-        .put("rm", "2E524D46") // Real Media (rm)
-        .put("mpg", "000001BA")
-        .put("mov", "6D6F6F76") // Quicktime (mov)
-        .put("asf", "3026B2758E66CF11") // Windows Media (asf)
-        .put("mid", "4D546864") // MIDI (mid)
-        .build();
+    public static TreeNode<Integer, File> listFiles(String filePath) {
+        return listFiles(new File(filePath));
+    }
 
     /**
-     * 探测文件类型
-     * 
+     * 递归列出所有文件
+     *
+     * @param file
+     * @return
+     */
+    public static TreeNode<Integer, File> listFiles(File file) {
+        List<BaseNode<Integer, File>> files = new LinkedList<>();
+        AtomicInteger counter = new AtomicInteger(1);
+        Integer dummyRootPid = 0;
+        Deque<BaseNode<Integer, File>> stack = new LinkedList<>();
+        stack.push(new BaseNode<>(counter.getAndIncrement(), dummyRootPid, file));
+        while (!stack.isEmpty()) {
+            BaseNode<Integer, File> node = stack.pop();
+            files.add(node);
+            if (node.getAttach().isDirectory()) {
+                Arrays.stream(node.getAttach().listFiles())
+                      .sorted(Comparator.comparing(File::getName))
+                      .forEach(f -> stack.push(new BaseNode<>(counter.getAndIncrement(), node.getNid(), f)));
+            }
+        }
+
+        return TreeNodeBuilder.<Integer, File>newBuilder(dummyRootPid).build().mount(files).getChildren().get(0);
+    }
+
+    public static String tree(String filePath) throws IOException {
+        return tree(new File(filePath));
+    }
+
+    /**
+     * 打印文件树
+     *
      * @param file
      * @return
      * @throws IOException
      */
-    public static String detectFileType(File file) throws IOException {
-        return detectFileType(readByteArray(file, SUB_PREFIX));
-    }
-
-    public static String detectFileType(byte[] array) {
-        if (array.length > SUB_PREFIX) {
-            array = ArrayUtils.subarray(array, 0, SUB_PREFIX);
-        }
-
-        String hex = Hex.encodeHexString(array, false);
-        for (Entry<String, String> entry : FILE_TYPE_MAGIC.entrySet()) {
-            if (hex.startsWith(entry.getValue())) {
-                return entry.getKey();
-            }
-        }
-
-        try {
-            return net.sf.jmimemagic.Magic.getMagicMatch(array).getExtension();
-        } catch (Exception e) {
-            return null; // contentType = "text/plain";
-        }
+    public static String tree(File file) throws IOException {
+        StringBuilder builder = new StringBuilder();
+        new MultiwayTreePrinter<>(builder, f -> f.isDirectory() ? Arrays.asList(f.listFiles()) : null, File::getName).print(file);
+        return builder.toString();
     }
 
 }

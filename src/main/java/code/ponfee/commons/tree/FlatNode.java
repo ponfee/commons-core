@@ -8,10 +8,10 @@
 
 package code.ponfee.commons.tree;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import java.io.Serializable;
 import java.util.function.Function;
-
-import org.apache.commons.collections4.CollectionUtils;
 
 /**
  * 节点扁平结构
@@ -27,21 +27,23 @@ public final class FlatNode<T extends Serializable & Comparable<? super T>, A ex
 
     private final boolean leaf; // 是否叶子节点
 
-    FlatNode(TreeNode<T, A> nt) {
-        super(nt.nid, nt.pid, nt.enabled, nt.available, nt.attach);
+    FlatNode(TreeNode<T, A> n) {
+        super(n.nid, n.pid, n.enabled, n.available, n.attach);
 
-        super.level  = nt.level;
-        super.degree = nt.degree;
-        super.path   = nt.path;
+        super.level  = n.level;
+        super.degree = n.degree;
+        super.path   = n.path;
 
-        super.leftLeafCount = nt.leftLeafCount;
+        super.leftLeafCount = n.leftLeafCount;
 
-        super.treeDepth     = nt.treeDepth;
-        super.treeNodeCount = nt.treeNodeCount;
-        super.treeMaxDegree = nt.treeMaxDegree;
-        super.treeLeafCount = nt.treeLeafCount;
+        super.treeDepth     = n.treeDepth;
+        super.treeNodeCount = n.treeNodeCount;
+        super.treeMaxDegree = n.treeMaxDegree;
+        super.treeLeafCount = n.treeLeafCount;
+        super.childrenCount = n.childrenCount;
+        super.siblingOrder  = n.siblingOrder;
 
-        this.leaf = CollectionUtils.isEmpty(nt.getChildren());
+        this.leaf = CollectionUtils.isEmpty(n.getChildren());
     }
 
     public <R> R convert(Function<FlatNode<T, A>, R> convertor) {

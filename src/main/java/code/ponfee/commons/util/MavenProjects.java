@@ -1,9 +1,9 @@
 package code.ponfee.commons.util;
 
+import code.ponfee.commons.io.Files;
+
 import java.io.File;
 import java.io.IOException;
-
-import code.ponfee.commons.io.Files;
 
 /**
  * maven标准的项目文件工具类
@@ -18,7 +18,7 @@ import code.ponfee.commons.io.Files;
  */
 public class MavenProjects {
 
-    private static final String EXCLUSION_STRING = "\r|\n"; // "\r|\n|\\s+"
+    private static final String EXCLUSION_STRING = "[\r\n]"; // "\r|\n|\\s+"
 
     public static String getProjectBaseDir() {
         String path = Thread.currentThread().getContextClassLoader().getResource("").getFile();

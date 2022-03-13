@@ -1,19 +1,17 @@
 package code.ponfee.commons.ws.adapter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import code.ponfee.commons.reflect.GenericUtils;
 import code.ponfee.commons.ws.adapter.model.MapEntry;
 import code.ponfee.commons.ws.adapter.model.MapItem;
 import code.ponfee.commons.ws.adapter.model.MapItemArray;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * List<Map<K,V>转换器

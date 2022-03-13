@@ -1,11 +1,10 @@
 package code.ponfee.commons.data;
 
+import code.ponfee.commons.exception.CheckedThrowing;
+import code.ponfee.commons.math.Maths;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.Ordered;
-
-import code.ponfee.commons.exception.CheckedThrowing;
-import code.ponfee.commons.math.Maths;
 
 /**
  * <pre>

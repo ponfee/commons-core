@@ -1,9 +1,9 @@
 package code.ponfee.commons.ws.adapter;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.reflect.ClassUtils;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * MarshalJsonResult -> MarshalJsonXml

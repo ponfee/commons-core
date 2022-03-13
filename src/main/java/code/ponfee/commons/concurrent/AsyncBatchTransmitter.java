@@ -110,47 +110,34 @@ public final class AsyncBatchTransmitter<T> {
     }
 
     /**
-     * asnyc batch consume into this alone thread
+     * async batch consume into this alone thread
      */
     private final class AsyncBatchThread extends Thread {
         final BiFunction<List<T>, Boolean, Runnable> processor; // 处理器
         final int sleepTimeMillis; // 休眠时间
         final int thresholdPeriod; // 消费周期阀值
         final int thresholdChunk; // 消费数量阀值
-        final boolean requireDestroyWhenEnd;
         final ExecutorService executor;
 
         long lastConsumeTimeMillis = System.currentTimeMillis(); // 最近刷新时间
 
         /**
          * @param processor        处理器
-         * @param executor         线程执行器
          * @param thresholdPeriod  消费周期阀值
          * @param thresholdChunk   消费数量阀值
+         * @param executor         线程执行器
          */
         AsyncBatchThread(BiFunction<List<T>, Boolean, Runnable> processor, 
-                         int thresholdPeriod, int thresholdChunk, 
-                         ExecutorService executor) {
+                         int thresholdPeriod, int thresholdChunk, ExecutorService executor) {
             Preconditions.checkArgument(thresholdPeriod > 0);
             Preconditions.checkArgument(thresholdChunk > 0);
+            Preconditions.checkArgument(executor != null);
 
             this.processor = processor;
             this.sleepTimeMillis = Math.max(9, thresholdPeriod >>> 1);
             this.thresholdPeriod = thresholdPeriod;
             this.thresholdChunk = thresholdChunk;
-            if (executor == null) {
-                this.requireDestroyWhenEnd = true;
-                this.executor = ThreadPoolExecutors.create(
-                    1, Runtime.getRuntime().availableProcessors(), 
-                    120, 0, "async-batch-transmitter"
-                );
-                Runtime.getRuntime().addShutdownHook(
-                    new Thread(this.executor::shutdown)
-                );
-            } else {
-                this.requireDestroyWhenEnd = false;
-                this.executor = executor;
-            }
+            this.executor = executor;
             super.setName("async-batch-transmitter-thread-" + Integer.toHexString(hashCode()));
             super.setDaemon(true);
             super.start(); // 启动线程
@@ -165,9 +152,6 @@ public final class AsyncBatchTransmitter<T> {
             List<T> list = new ArrayList<>(thresholdChunk);
             for (int left = thresholdChunk;;) {
                 if (isEnd && queue.isEmpty() && duration() > (thresholdPeriod << 1)) {
-                    if (requireDestroyWhenEnd) {
-                        ThreadPoolExecutors.shutdown(executor);
-                    }
                     break; // exit for loop when end
                 }
 

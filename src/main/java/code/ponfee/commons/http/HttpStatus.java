@@ -1,8 +1,8 @@
 package code.ponfee.commons.http;
 
-import java.util.Map;
-
 import com.google.common.collect.ImmutableMap;
+
+import java.util.Map;
 
 /**
 * Enumeration of HTTP status codes.

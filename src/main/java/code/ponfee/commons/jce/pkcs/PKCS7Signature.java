@@ -1,16 +1,7 @@
 package code.ponfee.commons.jce.pkcs;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.Signature;
-import java.security.SignatureException;
-import java.security.cert.X509Certificate;
-
-import org.apache.commons.codec.binary.Hex;
-
 import code.ponfee.commons.jce.Providers;
+import org.apache.commons.codec.binary.Hex;
 import sun.security.pkcs.ContentInfo;
 import sun.security.pkcs.PKCS7;
 import sun.security.pkcs.ParsingException;
@@ -18,6 +9,14 @@ import sun.security.pkcs.SignerInfo;
 import sun.security.util.DerValue;
 import sun.security.x509.AlgorithmId;
 import sun.security.x509.X500Name;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.Signature;
+import java.security.SignatureException;
+import java.security.cert.X509Certificate;
 
 /**
  * pkcs7工具类

@@ -46,7 +46,7 @@ public class ForkJoinPoolTest1 {
      * @throws Exception 
      */
     public static void main(String[] args) throws Exception {
-        // 创建包含Runtime.getRuntime().availableProcessors()返回值作为个数的并行线程的ForkJoinPool  
+        // 创建包含Runtime.getRuntime().availableProcessors()返回值作为个数的并行线程的ForkJoinPool
         ForkJoinPool forkJoinPool = ForkJoinPool.commonPool();
 
         ForkJoinTask<Void> future = forkJoinPool.submit(new PrintTask(0, 200));

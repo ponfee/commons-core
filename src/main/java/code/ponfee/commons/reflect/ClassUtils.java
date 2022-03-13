@@ -1,10 +1,18 @@
 package code.ponfee.commons.reflect;
 
-import code.ponfee.commons.collect.HashKey;
+import code.ponfee.commons.base.PrimitiveTypes;
+import code.ponfee.commons.base.tuple.Tuple2;
+import code.ponfee.commons.base.tuple.Tuple3;
+import code.ponfee.commons.collect.ArrayHashKey;
+import code.ponfee.commons.collect.Collects;
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.model.Null;
+import code.ponfee.commons.model.Predicates;
+import code.ponfee.commons.util.Asserts;
+import code.ponfee.commons.util.LazyLoader;
+import code.ponfee.commons.util.Strings;
+import code.ponfee.commons.util.UrlCoder;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.asm.ClassReader;
 import org.springframework.asm.ClassVisitor;
 import org.springframework.asm.ClassWriter;
@@ -16,43 +24,41 @@ import org.springframework.objenesis.ObjenesisHelper;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 /**
- * 基于asm的字节码工具类
- * 
+ * 基于asm的Class工具类
+ *
  * @author Ponfee
  */
 public final class ClassUtils {
-    private ClassUtils() {}
 
     private static final Map<Object, Constructor<?>> CONSTRUCTOR_CACHE = new HashMap<>();
+    private static final Map<Object, Method> METHOD_CACHE = new HashMap<>();
 
     /**
      * 获取方法的参数名（编译未清除）<p>
-     * getMethodParamNames()                         -> []
-     * getMethodSignature(Method method)             -> [method]
-     * getClassGenricType(Class<?> clazz, int index) -> [clazz,index]
-     * 
-     * @param method
-     * @return
+     * ClassUtils.getMethodParamNames(ClassUtils.class.getMethod("newInstance", Class.class, Class.class, Object.class)) -> [type, parameterType, arg]
+     *
+     * @param method the method
+     * @return method args name
      * @see org.springframework.core.LocalVariableTableParameterNameDiscoverer#getParameterNames(Method)
      */
-    public static String[] getMethodParamNames(final Method method) {
+    public static String[] getMethodParamNames(Method method) {
+        // 获取ClassReader
         ClassReader classReader;
         try {
-            // 第一种方式，cannot use in jar file
+            // 第一种方式(cannot use in jar file)
             /*String name = getClassFilePath(method.getDeclaringClass());
             classReader = new ClassReader(new FileInputStream(name));*/
 
@@ -66,11 +72,11 @@ public final class ClassUtils {
             throw new RuntimeException(e);
         }
 
-        final String[] paramNames = new String[method.getParameterTypes().length];
+        String[] paramNames = new String[method.getParameterTypes().length];
         classReader.accept(new ClassVisitor(Opcodes.ASM5, new ClassWriter(ClassWriter.COMPUTE_MAXS)) {
             @Override
             public MethodVisitor visitMethod(int access, String name, String desc, String sign, String[] ex) {
-                if (!name.equals(method.getName()) || !sameType(Type.getArgumentTypes(desc), method.getParameterTypes())) {
+                if (!name.equals(method.getName()) || !isSameType(Type.getArgumentTypes(desc), method.getParameterTypes())) {
                     return super.visitMethod(access, name, desc, sign, ex); // 方法名相同并且参数个数相同
                 }
 
@@ -94,15 +100,15 @@ public final class ClassUtils {
     }
 
     /**
-     * 获取方法签名
-     * Method m = ObjectUtils.class.getMethod("map2array", List.class, String[].class);
-     * getMethodSignature(m) -> public static java.util.List code.ponfee.commons.util.ObjectUtils.map2array(java.util.List data, java.lang.String[] fields)
-     * @param method
+     * 获取方法签名<p>
+     * ClassUtils.getMethodSignature(ClassUtils.class.getMethod("newInstance", Class.class, Class.class, Object.class)) -> public static java.lang.Object code.ponfee.commons.reflect.ClassUtils.newInstance(java.lang.Class type, java.lang.Class parameterType, java.lang.Object arg)
+     *
+     * @param method the method
      * @return the method string
      * @see java.lang.reflect.Method#toString()
      * @see java.lang.reflect.Method#toGenericString()
      */
-    public static String getMethodSignature(final Method method) {
+    public static String getMethodSignature(Method method) {
         String[] names = getMethodParamNames(method);
         Class<?>[] types = method.getParameterTypes();
 
@@ -112,43 +118,47 @@ public final class ClassUtils {
         }
 
         return new StringBuilder(Modifier.toString(method.getModifiers() & Modifier.methodModifiers()))
-                    .append(' ').append(getClassName(method.getReturnType()))
-                    .append(' ').append(getClassName(method.getDeclaringClass()))
-                    .append('.').append(method.getName())
-                    .append('(').append(StringUtils.join(params.toArray(), ", ")).append(')')
-                    .toString();
+                .append(' ').append(getClassName(method.getReturnType()))
+                .append(' ').append(getClassName(method.getDeclaringClass()))
+                .append('.').append(method.getName())
+                .append('(').append(Strings.join(params, ",")).append(')')
+                .toString();
     }
 
     /**
-     * Returns a sepc field include super class
-     * 
-     * @param clazz the class
-     * @param field the field name
-     * @return Filed a field for spec name 
+     * Returns the member field(include super class)
+     *
+     * @param clazz the type
+     * @param fieldName the field name
+     * @return member field object
      */
-    public static Field getField(Class<?> clazz, String field) {
+    public static Field getField(Class<?> clazz, String fieldName) {
         if (clazz.isInterface() || clazz == Object.class) {
             return null;
         }
 
-        Exception ex = null;
+        Exception firstOccurException = null;
         do {
             try {
-                return clazz.getDeclaredField(field);
-            } catch (NoSuchFieldException | SecurityException e) {
-                if (ex == null) {
-                    ex = e;
+                Field field = clazz.getDeclaredField(fieldName);
+                if (!Modifier.isStatic(field.getModifiers())) {
+                    return field;
                 }
-                clazz = clazz.getSuperclass();
+            } catch (Exception e) {
+                if (firstOccurException == null) {
+                    firstOccurException = e;
+                }
             }
+            clazz = clazz.getSuperclass();
         } while (clazz != null && clazz != Object.class);
 
-        throw new RuntimeException(ex);
+        // not found
+        throw new RuntimeException(firstOccurException);
     }
 
     /**
-     * Returns field list include super class
-     * 
+     * Returns member field list include super class(exclude transient field)
+     *
      * @param clazz the class
      * @return a list filled fields
      */
@@ -161,13 +171,13 @@ public final class ClassUtils {
         do {
             try {
                 for (Field field : clazz.getDeclaredFields()) {
-                    if (   !Modifier.isStatic(field.getModifiers())
-                        && !Modifier.isTransient(field.getModifiers())
-                    ) {
+                    int mdf = field.getModifiers();
+                    if (!Modifier.isStatic(mdf) && !Modifier.isTransient(mdf)) {
                         list.add(field);
                     }
                 }
-            } catch (SecurityException ignored) {
+            } catch (Exception ignored) {
+                // ignored
             }
             clazz = clazz.getSuperclass();
         } while (clazz != null && clazz != Object.class);
@@ -176,10 +186,73 @@ public final class ClassUtils {
     }
 
     /**
-     * 获取类名称
-     * getClassName(ClassUtils.class)  ->  code.ponfee.commons.reflect.ClassUtils
-     * @param clazz
-     * @return
+     * Returns the static field, find in class pointer chain
+     *
+     * @param clazz the clazz
+     * @param staticFieldName the static field name
+     * @return static field object
+     */
+    public static Tuple2<Class<?>, Field> getStaticFieldInClassChain(Class<?> clazz, String staticFieldName) {
+        if (clazz == Object.class) {
+            return null;
+        }
+
+        Exception firstOccurException = null;
+        Queue<Class<?>> queue = Collects.newLinkedList(clazz);
+        while (!queue.isEmpty()) {
+            for (int i = queue.size(); i > 0; i--) {
+                Class<?> type = queue.poll();
+                try {
+                    Field field = type.getDeclaredField(staticFieldName);
+                    if (Modifier.isStatic(field.getModifiers())) {
+                        return Tuple2.of(type, field);
+                    }
+                } catch (Exception e) {
+                    if (firstOccurException == null) {
+                        firstOccurException = e;
+                    }
+                }
+                // 可能是父类/父接口定义的属性（如：Tuple1.HASH_FACTOR，非继承，而是查找Class的指针链）
+                if (type.getSuperclass() != Object.class) {
+                    queue.offer(type.getSuperclass());
+                }
+                Arrays.stream(type.getInterfaces()).forEach(queue::offer);
+            }
+        }
+
+        // not found
+        throw new RuntimeException(firstOccurException);
+    }
+
+    /**
+     * Returns the static field
+     *
+     * @param clazz the clazz
+     * @param staticFieldName the static field name
+     * @return static field object
+     */
+    public static Field getStaticField(Class<?> clazz, String staticFieldName) {
+        if (clazz == Object.class) {
+            return null;
+        }
+        try {
+            Field field = clazz.getDeclaredField(staticFieldName);
+            if (Modifier.isStatic(field.getModifiers())) {
+                return field;
+            } else {
+                throw new RuntimeException("Non-static field " + getClassName(clazz) + "#" + staticFieldName);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 获取类名称<p>
+     * ClassUtils.getClassName(ClassUtils.class)  ->  code.ponfee.commons.reflect.ClassUtils
+     *
+     * @param clazz the class
+     * @return class full name
      */
     public static String getClassName(Class<?> clazz) {
         String name = clazz.getCanonicalName();
@@ -191,22 +264,23 @@ public final class ClassUtils {
     }
 
     /**
-     * 包名称转目录路径名
+     * 包名称转目录路径名<p>
      * getPackagePath("code.ponfee.commons.reflect")  ->  code/ponfee/commons/reflect
      *
-     * @param packageName
+     * @param packageName the package name
      * @return
      * @see org.springframework.util.ClassUtils#convertClassNameToResourcePath
      */
     public static String getPackagePath(String packageName) {
-        return packageName.replace('.', '/');
+        return packageName.replace('.', '/') + "/";
     }
 
     /**
-     * 包名称转目录路径名
-     * getPackagePath(ClassUtils.class)  ->  code/ponfee/commons/reflect
-     * @param clazz
-     * @return
+     * 包名称转目录路径名<p>
+     * ClassUtils.getPackagePath(ClassUtils.class)  ->  code/ponfee/commons/reflect
+     *
+     * @param clazz the class
+     * @return spec class file path
      */
     public static String getPackagePath(Class<?> clazz) {
         String className = getClassName(clazz);
@@ -218,21 +292,16 @@ public final class ClassUtils {
     }
 
     /**
-     * 获取类文件的路径（文件）
-     * getClassFilePath(ClassUtils.class)  ->  D:\github\commons-code\target\classes\code\ponfee\commons\reflect\ClassUtils.class
-     * getClassFilePath(StringUtils.class) ->  D:\maven_repos\org\apache\commons\commons-lang3\3.5\commons-lang3-3.5.jar!\org\apache\commons\lang3\StringUtils.class
-     * @param clazz
-     * @return
+     * 获取类文件的路径（文件）<p>
+     * ClassUtils.getClassFilePath(ClassUtils.class)  ->  /Users/ponfee/scm/github/commons-core/target/classes/code/ponfee/commons/reflect/ClassUtils.class<p>
+     * ClassUtils.getClassFilePath(org.apache.commons.lang3.StringUtils.class) ->  /Users/ponfee/.m2/repository/org/apache/commons/commons-lang3/3.12.0/commons-lang3-3.12.0.jar!/org/apache/commons/lang3/StringUtils.class
+     *
+     * @param clazz the class
+     * @return spec class file path
      */
     public static String getClassFilePath(Class<?> clazz) {
         URL url = clazz.getProtectionDomain().getCodeSource().getLocation();
-        String path;
-        try {
-            path = URLDecoder.decode(url.getPath(), Files.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-        path = new File(path).getAbsolutePath();
+        String path = new File(UrlCoder.decodeURI(url.getPath(), Files.UTF_8)).getAbsolutePath();
 
         if (path.toLowerCase().endsWith(".jar")) {
             path += "!";
@@ -241,21 +310,16 @@ public final class ClassUtils {
     }
 
     /**
-     * 获取指定类的类路径（目录）
-     * getClasspath(ClassUtils.class)   ->  D:\github\commons-code\target\classes\
-     * getClasspath(StringUtils.class)  ->  D:\maven_repos\org\apache\commons\commons-lang3\3.5\
-     * @param clazz
-     * @return
+     * 获取指定类的类路径（目录）<p>
+     * ClassUtils.getClasspath(ClassUtils.class)   ->  /Users/ponfee/scm/github/commons-core/target/classes/<p>
+     * ClassUtils.getClasspath(org.apache.commons.lang3.StringUtils.class)  ->  /Users/ponfee/.m2/repository/org/apache/commons/commons-lang3/3.12.0/
+     *
+     * @param clazz the class
+     * @return spec classpath
      */
     public static String getClasspath(Class<?> clazz) {
         URL url = clazz.getProtectionDomain().getCodeSource().getLocation();
-        String path;
-        try {
-            path = URLDecoder.decode(url.getPath(), Files.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-
+        String path = UrlCoder.decodeURI(url.getPath(), Files.UTF_8);
         if (path.toLowerCase().endsWith(".jar")) {
             path = path.substring(0, path.lastIndexOf("/") + 1);
         }
@@ -263,107 +327,277 @@ public final class ClassUtils {
     }
 
     /**
-     * 获取当前的类路径（目录）
-     * getClasspath()  ->  D:\github\commons-code\target\classes\
-     * @return
+     * 获取当前的类路径（目录）<p>
+     * ClassUtils.getClasspath()  ->  /Users/ponfee/scm/github/commons-core/target/test-classes/
+     *
+     * @return current main classpath
      */
     public static String getClasspath() {
         String path = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-        try {
-            path = URLDecoder.decode(new File(path).getAbsolutePath(), Files.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        path = UrlCoder.decodeURI(new File(path).getAbsolutePath(), Files.UTF_8);
         return path + File.separator;
     }
 
-    /**
-     * 比较参数类型是否一致<p>
-     * @param types asm的类型({@link Type})
-     * @param clazzes java 类型({@link Class})
-     * @return {@code true} if the Type array each of equals the Class array
-     */
-    private static boolean sameType(Type[] types, Class<?>[] clazzes) {
-        if (types.length != clazzes.length) {
-            return false;
+    // -----------------------------------------------------------------------------constructor & instance
+    @SuppressWarnings("unchecked")
+    public static <T> Constructor<T> getConstructor(Class<T> type, Class<?>... parameterTypes) {
+        boolean noArgs = ArrayUtils.isEmpty(parameterTypes);
+        Object key = noArgs ? type : Tuple2.of(type, ArrayHashKey.of((Object[]) parameterTypes));
+        Constructor<T> constructor = (Constructor<T>) LazyLoader.get(key, CONSTRUCTOR_CACHE, () -> {
+            try {
+                return noArgs ? type.getConstructor() : type.getConstructor(parameterTypes);
+            } catch (Exception ignored) {
+                // No such constructor, use placeholder
+                return Null.BROKEN_CONSTRUCTOR;
+            }
+        });
+        return constructor == Null.BROKEN_CONSTRUCTOR ? null : constructor;
+    }
+
+    public static <T> T newInstance(Constructor<T> constructor) {
+        return newInstance(constructor, null);
+    }
+
+    public static <T> T newInstance(Constructor<T> constructor, Object[] args) {
+        checkObjectArray(args);
+        try {
+            return ArrayUtils.isEmpty(args) ? constructor.newInstance() : constructor.newInstance(args);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> T newInstance(Class<T> type, Class<?>[] parameterTypes, Object[] args) {
+        checkObjectArray(args);
+        checkSameLength(parameterTypes, args);
+        if (ArrayUtils.isEmpty(parameterTypes)) {
+            // no args constructor
+            return newInstance(type, null);
         }
 
-        for (int i = 0; i < types.length; i++) {
-            if (!Type.getType(clazzes[i]).equals(types[i])) {
+        Constructor<T> constructor = getConstructor(type, parameterTypes);
+        if (constructor == null) {
+            throw new RuntimeException("No such constructor: " + getClassName(type) + toString(parameterTypes));
+        }
+        return newInstance(constructor, args);
+    }
+
+    public static <T> T newInstance(Class<T> type) {
+        return newInstance(type, null);
+    }
+
+    /**
+     * 泛型参数的构造函数需要使用 {{@link #newInstance(Class, Class[], Object[])}} <p>
+     * ClassUtils.newInstance(Tuple3.class, new Object[]{1, 2, 3}) <p>
+     * ClassUtils.newInstance(Tuple2.class, new Object[]{new String[]{"a", "b"}, new Integer[]{1, 2}}) <p>
+     *
+     * @param type the type
+     * @param args the args
+     * @param <T>
+     * @return
+     */
+    public static <T> T newInstance(Class<T> type, Object[] args) {
+        checkObjectArray(args);
+        if (ArrayUtils.isEmpty(args)) {
+            Constructor<T> constructor = getConstructor(type);
+            return constructor != null ? newInstance(constructor, null) : ObjenesisHelper.newInstance(type);
+        }
+
+        Class<?>[] parameterTypes = parseParameterTypes(args);
+        Constructor<T> constructor = obtainConstructor(type, parameterTypes);
+        if (constructor == null) {
+            throw new RuntimeException("Not found constructor: " + getClassName(type) + toString(parameterTypes));
+        }
+        return newInstance(constructor, args);
+    }
+
+    // -------------------------------------------------------------------------------------------method & invoke
+    public static Method getMethod(Object caller, String methodName, Class<?>... parameterTypes) {
+        Tuple2<Class<?>, Predicates> tuple = obtainClass(caller);
+        Class<?> type = tuple.a;
+        boolean noArgs = ArrayUtils.isEmpty(parameterTypes);
+        Object key = noArgs ? Tuple2.of(type, methodName) : Tuple3.of(type, methodName, ArrayHashKey.of((Object[]) parameterTypes));
+        Method method = LazyLoader.get(key, METHOD_CACHE, () -> {
+            try {
+                Method m = noArgs ? type.getMethod(methodName) : type.getMethod(methodName, parameterTypes);
+                return (tuple.b.equals(Modifier.isStatic(m.getModifiers())) && !m.isSynthetic()) ? m : null;
+            } catch (Exception ignored) {
+                // No such method, use placeholder
+                return Null.BROKEN_METHOD;
+            }
+        });
+        return method == Null.BROKEN_METHOD ? null : method;
+    }
+
+    public static <T> T invoke(Object caller, Method method) {
+        return invoke(caller, method, null);
+    }
+
+    public static <T> T invoke(Object caller, Method method, Object[] args) {
+        checkObjectArray(args);
+        try {
+            return (T) (ArrayUtils.isEmpty(args) ? method.invoke(caller) : method.invoke(caller, args));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> T invoke(Object caller, String methodName) {
+        return invoke(caller, methodName, null, null);
+    }
+
+    public static <T> T invoke(Object caller, String methodName, Class<?>[] parameterTypes, Object[] args) {
+        checkObjectArray(args);
+        checkSameLength(parameterTypes, args);
+        Method method = getMethod(caller, methodName, parameterTypes);
+        if (method == null) {
+            throw new RuntimeException(
+                "No such method: " + getClassName(caller.getClass()) + "#" + methodName + toString(parameterTypes)
+            );
+        }
+        return invoke(caller, method, args);
+    }
+
+    public static <T> T invoke(Object caller, String methodName, Object[] args) {
+        checkObjectArray(args);
+        if (ArrayUtils.isEmpty(args)) {
+            return invoke(caller, methodName, null, null);
+        }
+
+        Class<?>[] parameterTypes = parseParameterTypes(args);
+        Method method = obtainMethod(caller, methodName, parameterTypes);
+        if (method == null) {
+            Class<?> clazz = (caller instanceof Class<?>) ? (Class<?>) caller : caller.getClass();
+            throw new RuntimeException("Not found method: " + getClassName(clazz) + "#" + methodName + toString(parameterTypes));
+        }
+        return invoke(caller, method, args);
+    }
+
+    public static Tuple2<Class<?>, Predicates> obtainClass(Object obj) {
+        if (obj instanceof Class<?> && obj != Class.class) {
+            // 静态方法
+            // 普通Class类实例(如String.class)：只处理其所表示类的静态方法，如“String.valueOf(1)”。不支持Class类中的实例方法，如“String.class.getName()”
+            return Tuple2.of((Class<?>) obj, Predicates.Y);
+        } else {
+            // 实例方法
+            // 对于Class.class对象：只处理Class类中的实例方法，如“Class.class.getName()”。不支持Class类中的静态方法，如“Class.forName("code.ponfee.commons.base.tuple.Tuple0")”
+            return Tuple2.of(obj.getClass(), Predicates.N);
+        }
+    }
+
+    // -------------------------------------------------------------------------------------------private methods
+    private static void checkSameLength(Object[] a, Object[] b) {
+        if (ArrayUtils.isEmpty(a) && ArrayUtils.isEmpty(b)) {
+            return;
+        }
+        if (a.length != b.length) {
+            throw new RuntimeException("Two array are different length: " + a.length + ", " + b.length);
+        }
+    }
+
+    private static void checkObjectArray(Object[] array) {
+        if (array != null && array.getClass() != Object[].class) {
+            throw new RuntimeException("Args must Object[] type, but actual is " + array.getClass().getSimpleName());
+        }
+    }
+
+    private static Class<?>[] parseParameterTypes(Object[] args) {
+        Asserts.isTrue(ArrayUtils.isNotEmpty(args), "Should be always non empty.");
+        Class<?>[] parameterTypes = new Class<?>[args.length];
+        for (int i = 0, n = args.length; i < n; i++) {
+            parameterTypes[i] = (args[i] == null) ? null : args[i].getClass();
+        }
+        return parameterTypes;
+    }
+
+    private static <T> Constructor<T> obtainConstructor(Class<T> type, Class<?>[] actualTypes) {
+        Asserts.isTrue(ArrayUtils.isNotEmpty(actualTypes), "Should be always non empty.");
+
+        Constructor<T>[] constructors = (Constructor<T>[]) type.getConstructors();
+        if (ArrayUtils.isEmpty(constructors)) {
+            return null;
+        }
+
+        for (Constructor<T> constructor : constructors) {
+            if (matches(constructor.getParameterTypes(), actualTypes)) {
+                return constructor;
+            }
+        }
+        return null;
+    }
+
+    private static Method obtainMethod(Object caller, String methodName, Class<?>[] actualTypes) {
+        Asserts.isTrue(ArrayUtils.isNotEmpty(actualTypes), "Should be always non empty.");
+        Tuple2<Class<?>, Predicates> tuple = obtainClass(caller);
+        final Method[] methods = tuple.a.getMethods();
+        if (ArrayUtils.isEmpty(methods)) {
+            return null;
+        }
+
+        for (Method method : methods) {
+            boolean matches = method.getName().equals(methodName)
+                           && !method.isSynthetic()
+                           && tuple.b.equals(Modifier.isStatic(method.getModifiers()))
+                           && matches(method.getParameterTypes(), actualTypes);
+            if (matches) {
+                return method;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 方法匹配
+     *
+     * @param definedTypes 方法体中定义的参数类型
+     * @param actualTypes 调用方法实际传入的参数类型
+     * @return
+     */
+    private static boolean matches(Class<?>[] definedTypes, Class<?>[] actualTypes) {
+        Asserts.isTrue(ArrayUtils.isNotEmpty(definedTypes), "Should be always non empty.");
+        if (definedTypes.length != actualTypes.length) {
+            return false;
+        }
+        for (int i = 0, n = definedTypes.length; i < n; i++) {
+            Class<?> definedType = definedTypes[i], actualType = actualTypes[i];
+            if (definedType.isPrimitive()) {
+                // 方法参数为基本数据类型
+                PrimitiveTypes ept = PrimitiveTypes.ofPrimitive(definedType);
+                PrimitiveTypes apt = PrimitiveTypes.ofPrimitiveOrWrapper(actualType);
+                if (apt == null || !apt.isCastable(ept)) {
+                    return false;
+                }
+            } else if (actualType != null && !definedType.isAssignableFrom(actualType)) {
+                // actualType为空则可转任何对象类型（非基本数据类型）
                 return false;
             }
         }
         return true;
     }
 
-    // -----------------------------------------------------------------------------new instance
-    public static <T> T newInstance(Class<T> type, Object... args) {
-        if (args.getClass() != Object[].class) {
-            // newInstance(XXX.class, new String[]{"s1", "s2"});
-            return newInstance(type, args.getClass(), args);
+    /**
+     * 比较参数类型是否一致<p>
+     *
+     * @param types   asm的类型({@link Type})
+     * @param classes java 类型({@link Class})
+     * @return {@code true} if the Type array each of equals the Class array
+     */
+    private static boolean isSameType(Type[] types, Class<?>[] classes) {
+        if (types.length != classes.length) {
+            return false;
         }
 
-        if (ArrayUtils.isEmpty(args)) {
-            Constructor<T> constructor = getConstructor(type);
-            if (constructor != null) {
-                try {
-                    return constructor.newInstance();
-                } catch (Exception e) {
-                    throw new IllegalStateException(e);
-                }
-            } else {
-                return ObjenesisHelper.newInstance(type);
+        for (int i = 0; i < types.length; i++) {
+            if (!Type.getType(classes[i]).equals(types[i])) {
+                return false;
             }
         }
-
-        Class<?>[] parameterTypes = null;
-        if (ArrayUtils.isNotEmpty(args)) {
-            parameterTypes = new Class<?>[args.length];
-            for (int i = 0, n = args.length; i < n; i++) {
-                parameterTypes[i] = args[i].getClass();
-            }
-        }
-        return newInstance(type, parameterTypes, args);
+        return true;
     }
 
-    public static <T> T newInstance(Class<T> type, Class<?> parameterType, Object arg) {
-        return newInstance(type, new Class[] { parameterType }, new Object[] { arg });
+    private static String toString(Class<?>[] parameterTypes) {
+        return ArrayUtils.isEmpty(parameterTypes)
+            ? "()"
+            : "(" + Strings.join(Arrays.asList(parameterTypes), ", ") + ")";
     }
-
-    public static <T> T newInstance(Class<T> type, Class<?>[] parameterTypes, Object[] args) {
-        Constructor<T> constructor = getConstructor(type, parameterTypes);
-        if (constructor == null) {
-            throw new UnsupportedOperationException(
-                "Not such " + Arrays.toString(parameterTypes) + " argument constructor."
-            );
-        }
-        try {
-            return ArrayUtils.isEmpty(args) ? constructor.newInstance() : constructor.newInstance(args);
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    // -----------------------------------------------------------------------------get constructor
-    @SuppressWarnings("unchecked")
-    public static <T> Constructor<T> getConstructor(Class<T> type, Class<?>... parameterTypes) {
-        boolean flag = ArrayUtils.isEmpty(parameterTypes);
-        Object key = flag ? type : HashKey.of(ArrayUtils.insert(0, parameterTypes, type));
-        Constructor<T> constructor = (Constructor<T>) CONSTRUCTOR_CACHE.get(key);
-        if (constructor == null) {
-            synchronized (CONSTRUCTOR_CACHE) {
-                if ((constructor = (Constructor<T>) CONSTRUCTOR_CACHE.get(key)) == null) {
-                    try {
-                        constructor = flag ? type.getConstructor() : type.getConstructor(parameterTypes);
-                    } catch (NoSuchMethodException | SecurityException ignored) {
-                        // Not such constructor, placeholder
-                        constructor = (Constructor<T>) Null.UNCONSTRUCTOR;
-                    }
-                    CONSTRUCTOR_CACHE.put(key, constructor);
-                }
-            }
-        }
-        return constructor == Null.UNCONSTRUCTOR ? null : constructor;
-    }
-
 }

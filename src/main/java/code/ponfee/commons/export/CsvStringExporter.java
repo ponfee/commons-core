@@ -1,11 +1,11 @@
 package code.ponfee.commons.export;
 
+import code.ponfee.commons.io.ByteOrderMarks;
+import code.ponfee.commons.io.WrappedBufferedWriter;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-
-import code.ponfee.commons.io.ByteOrderMarks;
-import code.ponfee.commons.io.WrappedBufferedWriter;
 
 /**
  * Exports csv string
@@ -42,11 +42,6 @@ public class CsvStringExporter extends AbstractCsvExporter<String> {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public void close() {
-        //((StringBuilder) super.csv).setLength(0);
     }
 
 }

@@ -1,8 +1,8 @@
 package code.ponfee.commons.base;
 
-import javax.security.auth.Destroyable;
-
 import code.ponfee.commons.exception.CheckedException;
+
+import javax.security.auth.Destroyable;
 
 /**
  * Release resources
@@ -12,8 +12,11 @@ import code.ponfee.commons.exception.CheckedException;
 @FunctionalInterface
 public interface Releasable {
 
-    MethodInvoker RELEASER = new MethodInvoker("close", "destroy", "release");
+    NoArgMethodInvoker RELEASER = new NoArgMethodInvoker("close", "destroy", "release");
 
+    /**
+     * 释放资源
+     */
     void release();
 
     static void release(Object caller) {
@@ -25,9 +28,15 @@ public interface Releasable {
             if (caller instanceof AutoCloseable) {
                 ((AutoCloseable) caller).close();
             } else if (caller instanceof Destroyable) {
-                ((Destroyable) caller).destroy();
+                Destroyable destroyable = (Destroyable) caller;
+                if (!destroyable.isDestroyed()) {
+                    destroyable.destroy();
+                }
             } else if (caller instanceof Releasable) {
-                ((Releasable) caller).release();
+                Releasable releasable = (Releasable) caller;
+                if (!releasable.isReleased()) {
+                    ((Releasable) caller).release();
+                }
             } else {
                 RELEASER.invoke(caller);
             }
@@ -38,4 +47,12 @@ public interface Releasable {
         }
     }
 
+    /**
+     * 是否已经释放，true为已经释放，false未释放
+     *
+     * @return {@code true}已经释放
+     */
+    default boolean isReleased() {
+        return false;
+    }
 }

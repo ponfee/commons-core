@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  * 
  * @author Ponfee
  */
-public final class JSONExtractUtils {
+public final class JsonExtractUtils {
 
     static final String ARRAY_EMPTY  = "[--]";
     static final String ARRAY_ARRAY  = "[[]]";
@@ -60,7 +60,7 @@ public final class JSONExtractUtils {
 
     private static final String ROOT = "Root";
 
-    public static TreeNode<JSONId, Null> extractSchema(String text) throws ParseException {
+    public static TreeNode<JsonId, Null> extractSchema(String text) throws ParseException {
         return extractSchema(JSON.parse(text));
     }
 
@@ -70,18 +70,18 @@ public final class JSONExtractUtils {
      * @param obj the object of use {@link JSON#parse(String)} parsed
      * @return a tree node of json data schema
      */
-    public static TreeNode<JSONId, Null> extractSchema(Object obj) throws ParseException {
+    public static TreeNode<JsonId, Null> extractSchema(Object obj) throws ParseException {
         if (!JsonUtils.isComplexType(obj)) {
             throw new ParseException("The basic type data cannot extract schema: " + obj, 0);
         }
 
-        List<JSONId> ids = new LinkedList<>();
+        List<JsonId> ids = new LinkedList<>();
         extractSchema(ids, null, obj, new AtomicInteger(1));
 
         return ids.isEmpty() ? null : buildTree(ids);
     }
 
-    public static DataStructure extractData(String original, @Nonnull JSONTree tree) {
+    public static DataStructure extractData(String original, @Nonnull JsonTree tree) {
         Object obj;
         try {
             obj = JSON.parse(original);
@@ -104,28 +104,26 @@ public final class JSONExtractUtils {
      * @param tree the json tree
      * @return a DataStructure object
      */
-    public static TableStructure extractData(@Nonnull Object object, @Nonnull JSONTree tree) {
+    public static TableStructure extractData(@Nonnull Object object, @Nonnull JsonTree tree) {
         List<List<Object>> dataset = new LinkedList<>();
         LinkedHashSet<NodePath<String>> extracted = new LinkedHashSet<>();
-        Map<NodePath<String>, JSONTree> config = tree.toFlatMap();
+        Map<NodePath<String>, JsonTree> config = tree.toFlatMap();
         extractData(dataset, tree.getPath(), object, config, extracted);
 
-        Set<String> duplicate = extracted.stream().map(
-            path -> path.get(path.size() - 1)
-        ).collect(
-            Collectors.groupingBy(Function.identity(), Collectors.counting())
-        ).entrySet().stream().filter(
-            e -> (e.getValue() > 1)
-        ).map(
-            Entry::getKey
-        ).collect(
-            Collectors.toSet()
-        );
+        Set<String> duplicate = extracted
+                .stream()
+                .map(Collects::getLast)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .entrySet()
+                .stream()
+                .filter(e -> e.getValue() > 1)
+                .map(Entry::getKey)
+                .collect(Collectors.toSet());
 
         DataColumn[] columns = new DataColumn[extracted.size()];
         int i = 0;
         for (NodePath<String> path : extracted) {
-            JSONTree node = config.get(path);
+            JsonTree node = config.get(path);
             String name = node.getName();
             if (duplicate.contains(name)) {
                 // prevent repeat name
@@ -135,18 +133,18 @@ public final class JSONExtractUtils {
         }
 
         return new TableStructure(
-            columns, 
+            columns,
             dataset.stream().map(List::toArray).collect(Collectors.toList())
         );
     }
 
     // -----------------------------------------------------------------------------------private methods
     @SuppressWarnings("unchecked")
-    private static void extractSchema(List<JSONId> ids, JSONId parent, Object object, AtomicInteger count) {
+    private static void extractSchema(List<JsonId> ids, JsonId parent, Object object, AtomicInteger count) {
         if (object instanceof Map) { // JSONObject
             for (Entry<String, Object> entry : ((Map<String, Object>) object).entrySet()) {
                 DataType dataType = detectDataType(entry.getValue());
-                JSONId id = new JSONId(parent, entry.getKey(), dataType, count.getAndIncrement());
+                JsonId id = new JsonId(parent, entry.getKey(), dataType, count.getAndIncrement());
                 ids.add(id);
                 if (dataType == null) {
                     // complex json data type
@@ -157,18 +155,18 @@ public final class JSONExtractUtils {
             List<?> list = Collects.toList(object);
             switch (detectArrayType(list)) {
                 case EMPTY: // 空的数组
-                    ids.add(new JSONId(parent, ARRAY_EMPTY, null, count.getAndIncrement()));
+                    ids.add(new JsonId(parent, ARRAY_EMPTY, null, count.getAndIncrement()));
                     break;
                 case ARRAY: // 二维数组
-                    ids.add(parent = new JSONId(parent, ARRAY_ARRAY, null, count.getAndIncrement()));
+                    ids.add(parent = new JsonId(parent, ARRAY_ARRAY, null, count.getAndIncrement()));
                     buildArrayColumns(findFirstArray((List<List<Object>>) list), ids, parent, count);
                     break;
                 case OBJECT: // 数组对象
-                    ids.add(parent = new JSONId(parent, ARRAY_OBJECT, null, count.getAndIncrement()));
+                    ids.add(parent = new JsonId(parent, ARRAY_OBJECT, null, count.getAndIncrement()));
                     extractSchema(ids, parent, findFirstObject((List<Map<String, Object>>) list), count); // 继续下钻解析
                     break;
                 case BASIC: // 基本类型（一行）
-                    ids.add(parent = new JSONId(parent, ARRAY_BASIC, null, count.getAndIncrement()));
+                    ids.add(parent = new JsonId(parent, ARRAY_BASIC, null, count.getAndIncrement()));
                     buildArrayColumns(list, ids, parent, count);
                     break;
                 default:
@@ -179,32 +177,32 @@ public final class JSONExtractUtils {
         }
     }
 
-    private static TreeNode<JSONId, Null> buildTree(List<JSONId> ids) {
+    private static TreeNode<JsonId, Null> buildTree(List<JsonId> ids) {
         if (CollectionUtils.isEmpty(ids)) {
             return null;
         }
 
-        TreeNode<JSONId, Null> root = TreeNodeBuilder.<JSONId, Null> newBuilder(
-            new JSONId(null, ROOT, null, 0)
+        TreeNode<JsonId, Null> root = TreeNodeBuilder.<JsonId, Null> newBuilder(
+            new JsonId(null, ROOT, null, 0)
         ).build();
 
         try {
-            root.mount(ids.stream().map(JSONExtractUtils::toNode).collect(Collectors.toList()));
+            root.mount(ids.stream().map(JsonExtractUtils::toNode).collect(Collectors.toList()));
             return root;
         } catch (Exception e) {
             throw new IllegalStateException("Parsed json schema occur error: " + e.getMessage(), e);
         }
     }
 
-    private static BaseNode<JSONId, Null> toNode(JSONId id) {
+    private static BaseNode<JsonId, Null> toNode(JsonId id) {
         return new BaseNode<>(id, id.getParent(), null);
     }
 
     @SuppressWarnings("unchecked")
     private static void extractData(List<List<Object>> dataset, NodePath<String> parent,
-                                    Object object, Map<NodePath<String>, JSONTree> config,
+                                    Object object, Map<NodePath<String>, JsonTree> config,
                                     LinkedHashSet<NodePath<String>> extracted) {
-        JSONTree tree = config.get(parent);
+        JsonTree tree = config.get(parent);
         if (CollectionUtils.isEmpty(tree.getChildren())) {
             throw new IllegalStateException("Parent \"" + parent + "\" have not children.");
         }
@@ -224,18 +222,18 @@ public final class JSONExtractUtils {
 
         if (object instanceof Map) { // JSONObject
             Map<String, Object> map = (Map<String, Object>) object;
-            List<JSONTree> checkedNodes = new LinkedList<>();
+            List<JsonTree> checkedNodes = new LinkedList<>();
             for (String name : map.keySet()) {
-                JSONTree node = config.get(new NodePath<>(parent, name));
+                JsonTree node = config.get(new NodePath<>(parent, name));
                 if (node != null && node.isChecked()) {
                     checkedNodes.add(node);
                 }
             }
             // adjust orders
-            checkedNodes.sort(Comparator.comparing(JSONTree::getOrders));
+            checkedNodes.sort(Comparator.comparing(JsonTree::getOrders));
 
             List<List<Object>> subset = new LinkedList<>();
-            for (JSONTree node : checkedNodes) {
+            for (JsonTree node : checkedNodes) {
                 Object value = map.get(node.getName());
                 if (node.getType() != null) { // or CollectionUtils.isEmpty(node.getChildren())
                     // leaf node, extract this value data
@@ -251,7 +249,7 @@ public final class JSONExtractUtils {
             append(dataset, subset);
         } else if ((object instanceof List) || object.getClass().isArray()) { // JSONArray
             List<?> list = Collects.toList(object);
-            JSONTree node;
+            JsonTree node;
             switch (detectArrayType(list)) {
                 case EMPTY: // 空的数组
                     // Nothing to do
@@ -259,12 +257,12 @@ public final class JSONExtractUtils {
                 case ARRAY: // 二维数组
                     node = config.get(new NodePath<>(parent, ARRAY_ARRAY));
                     if (node != null && node.isChecked()) {
-                        List<Pair<Integer, JSONTree>> checkedNodes = getCheckedChildren(node, config, extracted);
+                        List<Pair<Integer, JsonTree>> checkedNodes = getCheckedChildren(node, config, extracted);
                         List<List<Object>> subset = new LinkedList<>();
                         for (List<Object> array : ((List<List<Object>>) list)) {
                             List<Object> row = new LinkedList<>();
                             int size = array.size();
-                            for (Pair<Integer, JSONTree> pair : checkedNodes) {
+                            for (Pair<Integer, JsonTree> pair : checkedNodes) {
                                 int idx = pair.getLeft();
                                 row.add(idx >= size ? null : getValue(array.get(idx), pair.getRight().getType()));
                             }
@@ -287,10 +285,10 @@ public final class JSONExtractUtils {
                 case BASIC: // 基本类型（一行多列）
                     node = config.get(new NodePath<>(parent, ARRAY_BASIC));
                     if (node != null && node.isChecked()) {
-                        List<Pair<Integer, JSONTree>> checkedNodes = getCheckedChildren(node, config, extracted);
+                        List<Pair<Integer, JsonTree>> checkedNodes = getCheckedChildren(node, config, extracted);
                         int size = list.size();
                         List<Object> row = new LinkedList<>();
-                        for (Pair<Integer, JSONTree> pair : checkedNodes) {
+                        for (Pair<Integer, JsonTree> pair : checkedNodes) {
                             int idx = pair.getLeft();
 
                             // 如果之后数据的长度不够就横向重复
@@ -393,23 +391,23 @@ public final class JSONExtractUtils {
         return dataType == DataType.STRING ? Objects.toString(value, null) : value;
     }
 
-    private static void buildArrayColumns(List<?> list, List<JSONId> ids,
-                                          JSONId parent, AtomicInteger count) {
+    private static void buildArrayColumns(List<?> list, List<JsonId> ids,
+                                          JsonId parent, AtomicInteger count) {
         for (Object element : list) {
             int index = count.getAndIncrement();
             // 二维数组和基本数组不再下钻解析，如果为复合类型（二维数组），则直接判决其为STRING
             DataType dataType = detectDataType(element, DataType.STRING);
-            ids.add(new JSONId(parent, String.format(ARRAY_INDEX, index), dataType, index));
+            ids.add(new JsonId(parent, String.format(ARRAY_INDEX, index), dataType, index));
         }
     }
 
-    private static List<Pair<Integer, JSONTree>> getCheckedChildren(
-            JSONTree node, Map<NodePath<String>, JSONTree> config, LinkedHashSet<NodePath<String>> columns) {
+    private static List<Pair<Integer, JsonTree>> getCheckedChildren(
+            JsonTree node, Map<NodePath<String>, JsonTree> config, LinkedHashSet<NodePath<String>> columns) {
         int startIndex = node.getOrders() + 1;
-        List<Pair<Integer, JSONTree>> checkedNodes = new LinkedList<>();
+        List<Pair<Integer, JsonTree>> checkedNodes = new LinkedList<>();
         for (int i = 0, n = node.getChildren().size(); i < n; i++) {
             String name = String.format(ARRAY_INDEX, startIndex + i);
-            JSONTree child = config.get(new NodePath<>(node.getPath(), name));
+            JsonTree child = config.get(new NodePath<>(node.getPath(), name));
             if (child != null && child.isChecked()) {
                 checkedNodes.add(Pair.of(i, child));
                 columns.add(child.getPath());

@@ -6,8 +6,8 @@ import com.google.common.base.Preconditions;
 
 import java.io.IOException;
 import java.util.concurrent.CompletionService;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
@@ -21,10 +21,10 @@ public abstract class AbstractSplitExporter extends AbstractDataExporter<Void> {
     private final int batchSize;
     private final String savingFilePathPrefix;
     private final String fileSuffix;
-    private final ExecutorService executor;
+    private final Executor executor;
 
     public AbstractSplitExporter(int batchSize, String savingFilePathPrefix, 
-                                 String fileSuffix, ExecutorService executor) {
+                                 String fileSuffix, Executor executor) {
         Preconditions.checkArgument(batchSize > 0);
         this.batchSize = batchSize;
         this.savingFilePathPrefix = savingFilePathPrefix;
@@ -42,7 +42,7 @@ public abstract class AbstractSplitExporter extends AbstractDataExporter<Void> {
             subTable.get().addRow(data);
             if (count.incrementAndGet() == batchSize) {
                 // sets a new table and return the last
-                Table<Object[]> last = subTable.getAndSet(table.copyOfWithoutTbody(Function.identity()));
+                Table<Object[]> last = subTable.set(table.copyOfWithoutTbody(Function.identity()));
                 String path = buildFilePath(split.incrementAndGet());
                 service.submit(splitExporter(last, path), Boolean.TRUE);
                 count.set(0); // reset count and sub table
@@ -59,7 +59,7 @@ public abstract class AbstractSplitExporter extends AbstractDataExporter<Void> {
         }
     }
 
-    protected abstract AbstractAsnycSplitExporter splitExporter(Table<Object[]> subTable,
+    protected abstract AbstractAsyncSplitExporter splitExporter(Table<Object[]> subTable,
                                                                 String savingFilePath);
 
     @Override
@@ -67,18 +67,15 @@ public abstract class AbstractSplitExporter extends AbstractDataExporter<Void> {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public final void close() {}
-
     private String buildFilePath(int fileNo) {
         return savingFilePathPrefix + String.format("%04d", fileNo) + fileSuffix;
     }
 
-    public static abstract class AbstractAsnycSplitExporter implements Runnable {
+    public static abstract class AbstractAsyncSplitExporter implements Runnable {
         private final Table<Object[]> subTable;
         protected final String savingFilePath;
 
-        public AbstractAsnycSplitExporter(Table<Object[]> subTable, String savingFilePath) {
+        public AbstractAsyncSplitExporter(Table<Object[]> subTable, String savingFilePath) {
             this.subTable = subTable;
             this.savingFilePath = savingFilePath;
         }

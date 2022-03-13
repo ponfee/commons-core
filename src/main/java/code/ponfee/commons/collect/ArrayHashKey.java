@@ -10,20 +10,18 @@ import java.util.Arrays;
  *
  * @author Ponfee
  */
-public final class HashKey implements java.io.Serializable, Comparable<HashKey> {
+public final class ArrayHashKey implements java.io.Serializable, Comparable<ArrayHashKey> {
 
     private static final long serialVersionUID = -8749483734287105153L;
 
     private final Object[] key;
-    private final int hashCode;
 
-    public HashKey(Object... key) {
+    public ArrayHashKey(Object... key) {
         this.key = key;
-        this.hashCode = Arrays.hashCode(key);
     }
 
-    public static HashKey of(Object... key) {
-        return new HashKey(key);
+    public static ArrayHashKey of(Object... key) {
+        return new ArrayHashKey(key);
     }
 
     @Override
@@ -31,16 +29,16 @@ public final class HashKey implements java.io.Serializable, Comparable<HashKey> 
         if (other == this) {
             return true;
         }
-        return (other instanceof HashKey) ? Arrays.equals(key, ((HashKey) other).key) : false;
+        return other instanceof ArrayHashKey && Arrays.equals(key, ((ArrayHashKey) other).key);
     }
 
     @Override
     public int hashCode() {
-        return hashCode;
+        return Arrays.hashCode(key);
     }
 
     @Override
-    public int compareTo(HashKey o) {
+    public int compareTo(ArrayHashKey o) {
         return new CompareToBuilder().append(key, o.key).toComparison();
     }
 

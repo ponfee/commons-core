@@ -2,7 +2,11 @@ package code.ponfee.commons.collect;
 
 import code.ponfee.commons.model.Page;
 import code.ponfee.commons.model.Result;
-import java.util.*;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -62,11 +66,7 @@ public final class Maps {
         if (data == null) {
             return null;
         }
-
-        return data.entrySet()
-                   .stream()
-                   .map(e -> Optional.ofNullable(e.getValue()).orElse(""))
-                   .toArray();
+        return data.values().stream().map(e -> e != null ? e : "").toArray();
     }
 
     /**

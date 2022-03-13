@@ -8,19 +8,22 @@
 
 package code.ponfee.commons.util;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
+
+import javax.annotation.concurrent.ThreadSafe;
 import java.text.AttributedCharacterIterator;
 import java.text.DateFormat;
 import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
-
-import javax.annotation.concurrent.ThreadSafe;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.FastDateFormat;
 
 /**
  * Wrapper the org.apache.commons.lang3.time.FastDateFormat

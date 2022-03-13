@@ -1,11 +1,10 @@
 package code.ponfee.commons.ws;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import javax.xml.namespace.QName;
 import javax.xml.ws.Endpoint;
 import javax.xml.ws.Service;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * jax-ws工具类

@@ -1,9 +1,10 @@
 package test;
 
-import code.ponfee.commons.collect.FilteredIterable;
+import code.ponfee.commons.collect.FilterableIterator;
 import code.ponfee.commons.exception.UnimplementedException;
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.reflect.Fields;
+import org.junit.Assert;
 import org.openjdk.jol.info.ClassLayout;
 
 public class Test3 {
@@ -41,7 +42,7 @@ public class Test3 {
         public void setExt1(String ext1) {
             this.ext1 = ext1;
         }
-        
+
     }
 
     public static interface A {
@@ -54,6 +55,7 @@ public class Test3 {
         public B() {
             System.out.println("Create B.");
         }
+
         static B fromByteArray(byte[] arg) {
             return new B();
         }
@@ -63,26 +65,30 @@ public class Test3 {
         public C() {
             System.out.println("Create C.");
         }
+
         static C fromByteArray(byte[] arg) {
             return new C();
         }
     }
 
     public static void main(String[] args) throws Exception {
-        System.out.println(null==null);
+        Assert.assertTrue(null == null);
         System.out.println(Double.doubleToLongBits(0.1D));
         System.out.println(Double.doubleToLongBits(0.0D));
 
-        for (Integer s : new FilteredIterable<>(1, null, 3,4,5)) {
-            System.out.println("|"+s+"|");
+        System.out.println();
+        for (Integer s : FilterableIterator.of(e -> e != null && e % 2 == 1, null, 3, 4, 5)) {
+            System.out.println("|" + s + "|");
         }
-        System.out.println(0>>1);
-        System.out.println(1>>1);
-        System.out.println(4>>1);
+        System.out.println();
+
+        System.out.println(0 >> 1);
+        System.out.println(1 >> 1);
+        System.out.println(4 >> 1);
         System.out.println(System.getProperty("user.home"));
-        B.fromByteArray(new byte[] {});
+        B.fromByteArray(new byte[]{});
         Class<? extends A> clazz1 = B.class;
-        clazz1.getDeclaredMethod("fromByteArray", byte[].class).invoke(null, new byte[] {});
+        clazz1.getDeclaredMethod("fromByteArray", byte[].class).invoke(null, new byte[]{});
 
         Dog dog = new Dog();
         dog.setName("xxx");

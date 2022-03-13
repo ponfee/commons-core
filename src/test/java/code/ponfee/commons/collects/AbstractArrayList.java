@@ -1,4 +1,6 @@
-package code.ponfee.commons.collect;
+package code.ponfee.commons.collects;
+
+import com.google.common.base.Preconditions;
 
 import java.io.Serializable;
 import java.util.AbstractList;
@@ -6,8 +8,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.RandomAccess;
-
-import com.google.common.base.Preconditions;
 
 /**
  * The primitive array of abstract list

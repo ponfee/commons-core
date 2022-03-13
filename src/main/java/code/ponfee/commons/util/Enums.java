@@ -1,10 +1,10 @@
 package code.ponfee.commons.util;
 
-import java.util.Map;
-import java.util.function.Function;
-
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.EnumUtils;
+
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Enum utility

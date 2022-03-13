@@ -1,15 +1,14 @@
 package code.ponfee.commons.constrain;
 
-import static code.ponfee.commons.model.ResultCode.BAD_REQUEST;
-
-import java.util.stream.Collectors;
-
+import code.ponfee.commons.model.Result;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 
-import code.ponfee.commons.model.Result;
+import java.util.stream.Collectors;
+
+import static code.ponfee.commons.model.ResultCode.BAD_REQUEST;
 
 /**
  * 基于JSR303的Web端参数校验统一处理

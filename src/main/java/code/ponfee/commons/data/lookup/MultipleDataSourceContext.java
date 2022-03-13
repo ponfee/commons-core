@@ -12,7 +12,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -77,20 +76,17 @@ public final class MultipleDataSourceContext {
         names.add(0, defaultName); // default data source at the first
 
         // checks whether duplicate datasource name
-        Set<String> duplicates = Collects.duplicate(names);
+        List<String> duplicates = Collects.duplicate(names);
         if (CollectionUtils.isNotEmpty(duplicates)) {
-            throw new IllegalArgumentException(
-                "Duplicated data source name: " + duplicates
-            );
+            throw new IllegalArgumentException("Duplicated data source name: " + duplicates);
         }
 
         addAll(names); // add data source keys 
 
         Map<String, DataSource> dataSources = new LinkedHashMap<>(othersDataSource.length + 1, 1);
         dataSources.put(defaultName, defaultDataSource);
-        Arrays.stream(othersDataSource).forEach(
-            ns -> dataSources.put(ns.getName(), ns.getDataSource())
-        );
+        Arrays.stream(othersDataSource)
+              .forEach(ns -> dataSources.put(ns.getName(), ns.getDataSource()));
         return dataSources;
     }
 

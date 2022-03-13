@@ -3,12 +3,14 @@ package code.ponfee.commons.io;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import code.ponfee.commons.util.MavenProjects;
 import org.junit.Test;
 
 public class WindowsBomTest {
 
     @Test
     public void testhas() throws IOException {
+        System.out.println(ByteOrderMarks.has(MavenProjects.getTestJavaFile(WindowsBomTest.class)));
         System.out.println(ByteOrderMarks.has("D:\\temp\\withbom\\csv-utf8-bom.csv"));
         System.out.println(ByteOrderMarks.has("D:\\temp\\withbom\\csv-utf16le-bom.csv"));
         System.out.println(ByteOrderMarks.has("D:\\temp\\withbom\\csv-utf16be-bom.csv"));

@@ -1,24 +1,22 @@
 package code.ponfee.commons.serial;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import code.ponfee.commons.io.Closeables;
+import code.ponfee.commons.io.ExtendedGZIPOutputStream;
+import code.ponfee.commons.io.Files;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.ByteBufferInput;
 import com.esotericsoftware.kryo.io.ByteBufferOutput;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.pool.KryoPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import code.ponfee.commons.io.Closeables;
-import code.ponfee.commons.io.ExtendedGZIPOutputStream;
-import code.ponfee.commons.io.Files;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * kryo序例化

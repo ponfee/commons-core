@@ -1,15 +1,14 @@
 package code.ponfee.commons.serial;
 
+import code.ponfee.commons.io.GzipProcessor;
+import code.ponfee.commons.reflect.ClassUtils;
+import code.ponfee.commons.util.ObjectUtils;
+
+import javax.annotation.Nonnull;
 import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-
-import javax.annotation.Nonnull;
-
-import code.ponfee.commons.io.GzipProcessor;
-import code.ponfee.commons.reflect.ClassUtils;
-import code.ponfee.commons.util.ObjectUtils;
 
 /**
  * Object toString Serializer
@@ -48,7 +47,7 @@ public class ToStringSerializer extends Serializer {
                 throw new IllegalStateException(e);
             }
         } else {
-            return ObjectUtils.convert(new String(bytes, charset), type);
+            return ObjectUtils.cast(new String(bytes, charset), type);
         }
     }
 

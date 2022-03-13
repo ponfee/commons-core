@@ -47,12 +47,13 @@ public class Money implements Serializable, Comparable<Money>, Cloneable {
      */
     public Money(Currency currency, long majorUnitAmount, int minorUnitAmount) {
         // check minorUnitAmount whether overflow
-        if (minorUnitAmount >= getFactor()) {
-            throw new RuntimeException("Overflow of minor, cannot greater than factor.");
+        int factor = getFactor();
+        if (minorUnitAmount >= factor) {
+            throw new RuntimeException("Minor[" + minorUnitAmount + "] must less than factor[" + factor + "].");
         }
 
         this.currency = currency;
-        this.amount = majorUnitAmount * getFactor() + minorUnitAmount;
+        this.amount = majorUnitAmount * factor + minorUnitAmount;
     }
 
     public Money(Currency currency, long amount) {
@@ -65,8 +66,8 @@ public class Money implements Serializable, Comparable<Money>, Cloneable {
         return new Money(currency, amount);
     }
 
-    public Money ofMajorUnit(Currency currency, String majorUnitAmount, RoundingMode roundingMode) {
-        return ofMajorUnit(currency, new BigDecimal(majorUnitAmount), roundingMode);
+    public Money ofMajor(Currency currency, String majorUnitAmount, RoundingMode roundingMode) {
+        return ofMajor(currency, new BigDecimal(majorUnitAmount), roundingMode);
     }
 
     /**
@@ -85,7 +86,7 @@ public class Money implements Serializable, Comparable<Money>, Cloneable {
      *                          BigDecimal.ROUND_HALF_EVEN （银行家舍入法）
      *                          BigDecimal.ROUND_UNNECESSARY
      */
-    public static Money ofMajorUnit(Currency currency, BigDecimal majorUnitAmount, RoundingMode roundingMode) {
+    public static Money ofMajor(Currency currency, BigDecimal majorUnitAmount, RoundingMode roundingMode) {
         long amount = rounding(majorUnitAmount.movePointRight(currency.getDefaultFractionDigits()), roundingMode);
         return new Money(currency, amount);
     }

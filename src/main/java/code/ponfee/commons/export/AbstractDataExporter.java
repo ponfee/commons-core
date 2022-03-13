@@ -1,5 +1,8 @@
 package code.ponfee.commons.export;
 
+import code.ponfee.commons.reflect.Fields;
+import code.ponfee.commons.tree.FlatNode;
+
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Dictionary;
@@ -11,9 +14,6 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import code.ponfee.commons.reflect.Fields;
-import code.ponfee.commons.tree.FlatNode;
 
 /**
  * Exports abstract class
@@ -30,6 +30,11 @@ public abstract class AbstractDataExporter<T> implements DataExporter<T> {
     @Override
     public boolean isEmpty() {
         return empty;
+    }
+
+    @Override
+    public void close() {
+        // nothing to do
     }
 
     public final void nonEmpty() {
@@ -69,6 +74,8 @@ public abstract class AbstractDataExporter<T> implements DataExporter<T> {
                             array = covariantArray(data);
                         } else if (data instanceof Collection<?>) {
                             array = collection2array((Collection<?>) data);
+                        } else if (data instanceof Iterable<?>) {
+                            array = iterable2array((Iterable<?>) data);
                         } else if (data instanceof Iterator<?>) {
                             array = iterator2array((Iterator<?>) data);
                         } else if (data instanceof Map<?, ?>) {
@@ -101,6 +108,12 @@ public abstract class AbstractDataExporter<T> implements DataExporter<T> {
             array[i++] = obj;
         }
         return array;
+    }
+
+    private static Object[] iterable2array(Iterable<?> iterable) {
+        List<Object> list = new LinkedList<>();
+        iterable.forEach(list::add);
+        return list.toArray();
     }
 
     private static Object[] iterator2array(Iterator<?> iter) {

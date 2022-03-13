@@ -1,14 +1,13 @@
 package code.ponfee.commons.jce.implementation.ecc;
 
+import code.ponfee.commons.jce.ECParameters;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import code.ponfee.commons.jce.ECParameters;
 
 /**
  * An implementation of an elliptic curve over a finite field.

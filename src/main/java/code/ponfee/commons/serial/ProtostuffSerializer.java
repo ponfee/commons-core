@@ -1,14 +1,15 @@
 package code.ponfee.commons.serial;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import code.ponfee.commons.io.GzipProcessor;
+import code.ponfee.commons.util.LazyLoader;
 import code.ponfee.commons.util.ObjectUtils;
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtostuffIOUtil;
 import io.protostuff.Schema;
 import io.protostuff.runtime.RuntimeSchema;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Protostuff Serializer
@@ -47,15 +48,7 @@ public class ProtostuffSerializer extends Serializer {
     // ------------------------------------------------------------------------private methods
     @SuppressWarnings("unchecked")
     private static <T> Schema<T> getSchema(Class<T> type) {
-        Schema<T> schema = (Schema<T>) SCHEMA_CACHE.get(type);
-        if (schema == null) {
-            synchronized (SCHEMA_CACHE) {
-                if ((schema = (Schema<T>) SCHEMA_CACHE.get(type)) == null) {
-                    SCHEMA_CACHE.put(type, schema = RuntimeSchema.createFrom(type));
-                }
-            }
-        }
-        return schema;
+        return (Schema<T>) LazyLoader.get(type, SCHEMA_CACHE, RuntimeSchema::createFrom);
     }
 
 }

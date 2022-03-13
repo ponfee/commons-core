@@ -1,9 +1,9 @@
 package code.ponfee.commons.concurrent;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * 线程工厂

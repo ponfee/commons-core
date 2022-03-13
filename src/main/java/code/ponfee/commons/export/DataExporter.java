@@ -30,10 +30,4 @@ public interface DataExporter<T> extends Closeable {
      */
     boolean isEmpty();
 
-    /**
-     * 关闭资源
-     * <p>No throw IOException</p>
-     */
-    @Override
-    void close();
 }

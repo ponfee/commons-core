@@ -1,9 +1,8 @@
 package code.ponfee.commons.serial;
 
+import code.ponfee.commons.io.GzipProcessor;
 import org.apache.commons.lang3.ClassUtils;
 import org.nustaq.serialization.FSTConfiguration;
-
-import code.ponfee.commons.io.GzipProcessor;
 
 /**
  * Fst Serializer

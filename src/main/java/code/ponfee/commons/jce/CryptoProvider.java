@@ -18,6 +18,7 @@ import code.ponfee.commons.jce.symmetric.SymmetricCryptor;
 import code.ponfee.commons.util.Base64UrlSafe;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nonnull;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.interfaces.ECPrivateKey;
@@ -26,8 +27,6 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
 import java.util.Objects;
-
-import javax.annotation.Nonnull;
 
 /**
  * 加解密服务提供

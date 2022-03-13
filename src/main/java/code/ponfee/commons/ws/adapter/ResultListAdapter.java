@@ -1,15 +1,13 @@
 package code.ponfee.commons.ws.adapter;
 
-import java.lang.reflect.Array;
-import java.util.List;
-
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-
-import com.google.common.collect.Lists;
-
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.reflect.GenericUtils;
 import code.ponfee.commons.ws.adapter.model.ArrayItem;
+import com.google.common.collect.Lists;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import java.lang.reflect.Array;
+import java.util.List;
 
 /**
  * Result<List<T>>转换器

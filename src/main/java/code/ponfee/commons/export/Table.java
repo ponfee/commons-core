@@ -3,7 +3,7 @@ package code.ponfee.commons.export;
 import code.ponfee.commons.tree.BaseNode;
 import code.ponfee.commons.tree.FlatNode;
 import code.ponfee.commons.tree.TreeNodeBuilder;
-import org.springframework.util.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;

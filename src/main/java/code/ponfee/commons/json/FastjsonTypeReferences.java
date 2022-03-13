@@ -1,10 +1,10 @@
 package code.ponfee.commons.json;
 
+import com.alibaba.fastjson.TypeReference;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.alibaba.fastjson.TypeReference;
 
 /**
  * The Fastjson TypeReference holder
@@ -12,7 +12,6 @@ import com.alibaba.fastjson.TypeReference;
  * @author Ponfee
  */
 public final class FastjsonTypeReferences {
-    private FastjsonTypeReferences() {}
 
     public static final TypeReference<Map<String, Object>> MAP_NORMAL = new TypeReference<Map<String, Object>>() {};
     public static final TypeReference<Map<String, String>> MAP_STRING = new TypeReference<Map<String, String>>() {};

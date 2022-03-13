@@ -1,5 +1,6 @@
 package code.ponfee.commons.reflect;
 
+import code.ponfee.commons.util.LazyLoader;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -7,6 +8,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -137,29 +139,45 @@ public final class GenericUtils {
     }
 
     // -------------------------------------------------------------------get actual variable type
+    public static <T> Class<T> getFieldActualType(Class<?> clazz, String fieldName) {
+        Field field = ClassUtils.getField(clazz, fieldName);
+        if (field == null) {
+            throw new IllegalArgumentException("Type " + ClassUtils.getClassName(clazz) + " not exists field '" + fieldName + "'");
+        }
+        return getFieldActualType(clazz, field);
+    }
+
     /**
+     * <pre>{@code
      * public abstract class BaseEntity<I> {
      *   private I id;
      * }
-     * 
+     * }</pre>
+     *
+     * <pre>{@code
      * public class BeanClass extends BaseEntity<String> {}
-     * 
+     * }</pre>
+     *
      * @param clazz the sub class
      * @param field the super class defined field
      * @return a Class of field actual type
      */
     public static <T> Class<T> getFieldActualType(Class<?> clazz, Field field) {
-        return getActualType(clazz, field.getGenericType());
+        return Modifier.isStatic(field.getModifiers())
+             ? (Class<T>) field.getType()
+             : getActualType(clazz, field.getGenericType());
     }
 
     /**
      * Returns method arg actual type
-     * 
+     * <pre>{@code
      * public abstract class ClassA<T> {
      *   public void method(T arg) {}
      * }
-     * 
+     * }</pre>
+     * <pre>{@code
      * public class ClassB extends classA<String>{}
+     * }</pre>
      * 
      * @param clazz            the sub class
      * @param method           the super class defined method
@@ -172,13 +190,15 @@ public final class GenericUtils {
 
     /**
      * Returns method return actual type
-     * 
+     * <pre>{@code
      * public abstract class ClassA<T> {
      *   public T method() {}
      * }
-     * 
+     * }</pre>
+     * <pre>{@code
      * public class ClassB extends classA<String>{}
-     * 
+     * }</pre>
+     *
      * @param clazz  the sub class
      * @param method the super class defined method
      * @return a Class of method return actual type
@@ -225,14 +245,23 @@ public final class GenericUtils {
     @SuppressWarnings("unchecked")
     private static <T> Class<T> getActualType(Class<?> clazz, Type type) {
         if (type instanceof Class<?>) {
+            // private String name;
             return (Class<T>) type;
         } else if (type instanceof ParameterizedType) {
-            // List<E> -> java.util.List
+            // public class Sup<E> {
+            //   private List<E>      list1; -> java.util.List
+            //   private List<String> list2; -> java.util.List
+            // }
             return getActualType(clazz, ((ParameterizedType) type).getRawType());
-        } else if (type instanceof GenericArrayType) { // E[]
+        } else if (type instanceof GenericArrayType) {
+            // private E[] array;
             Type etype = ((GenericArrayType) type).getGenericComponentType(); // E: element type
             return (Class<T>) Array.newInstance(getActualType(clazz, etype), 0).getClass();
         } else if (type instanceof TypeVariable) {
+            // public class Sup<E> {
+            //   private E id;
+            // }
+            // public class Sub extends Sup<Long> {}
             return getVariableActualType(clazz, (TypeVariable<?>) type);
         } else if (type instanceof WildcardType) {
             WildcardType wtype = (WildcardType) type;
@@ -257,15 +286,8 @@ public final class GenericUtils {
             return (Class<T>) Object.class;
         }
 
-        Map<String, Class<?>> map = VARIABLE_TYPE_MAPPING.get(clazz);
-        if (map == null) {
-            synchronized (VARIABLE_TYPE_MAPPING) {
-                if ((map = VARIABLE_TYPE_MAPPING.get(clazz)) == null) {
-                    VARIABLE_TYPE_MAPPING.put(clazz, map = getActualTypeVariableMapping(clazz));
-                }
-            }
-        }
-        return (Class<T>) map.getOrDefault(getTypeVariableName(null, var).get(0), Object.class);
+        return (Class<T>) LazyLoader.get(clazz, VARIABLE_TYPE_MAPPING, GenericUtils::getActualTypeVariableMapping)
+                                    .getOrDefault(getTypeVariableName(null, var).get(0), Object.class);
     }
 
     private static void resolveMapping(Map<String, Class<?>> result, Type type) {
@@ -280,7 +302,7 @@ public final class GenericUtils {
         Type[] acts = ptype.getActualTypeArguments();
         for (int i = 0; i < acts.length; i++) {
             Class<?> varType = getActualType(null, acts[i]);
-            getTypeVariableName(rawType, vars[i]).forEach(x -> result.put(x, varType));
+            getTypeVariableName(rawType, vars[i]).forEach(e -> result.put(e, varType));
             resolveMapping(result, acts[i]);
         }
     }

@@ -1,64 +1,64 @@
-package code.ponfee.commons.collect;
-
-import static com.google.common.base.Preconditions.checkElementIndex;
-import static com.google.common.base.Preconditions.checkPositionIndexes;
+package code.ponfee.commons.collects;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import static com.google.common.base.Preconditions.checkElementIndex;
+import static com.google.common.base.Preconditions.checkPositionIndexes;
+
 /**
- * The primitive long array to list
+ * The primitive int array to list
  * 
  * @author Ponfee
  */
-public class LongArrayList extends AbstractArrayList<Long> {
+public class IntArrayList extends AbstractArrayList<Integer> {
 
-    private static final long serialVersionUID = 1648346699558392015L;
+    private static final long serialVersionUID = -1601389928083241185L;
 
-    private final long[] array;
+    private final int[] array;
 
-    public LongArrayList(long... array) {
+    public IntArrayList(int... array) {
         this(array, 0, array.length);
     }
 
-    public LongArrayList(long[] array, int start, int end) {
+    public IntArrayList(int[] array, int start, int end) {
         super(start, end);
         this.array = Objects.requireNonNull(array);
     }
 
     @Override
-    public Long get(int index) {
+    public Integer get(int index) {
         checkElementIndex(index, size);
         return array[start + index];
     }
 
     @Override
     public int indexOf(Object target) {
-        return (target instanceof Long) ? indexOf((long) target) : INDEX_NOT_FOUND;
+        return (target instanceof Integer) ? indexOf((int) target) : INDEX_NOT_FOUND;
     }
 
     @Override
     public int lastIndexOf(Object target) {
-        return (target instanceof Long) ? lastIndexOf((long) target) : INDEX_NOT_FOUND;
+        return (target instanceof Integer) ? lastIndexOf((int) target) : INDEX_NOT_FOUND;
     }
 
     @Override
-    public Long set(int index, Long element) {
+    public Integer set(int index, Integer element) {
         checkElementIndex(index, size);
-        long oldValue = array[start + index];
+        int oldValue = array[start + index];
         array[start + index] = Objects.requireNonNull(element);
         return oldValue;
     }
 
     @Override
-    public List<Long> subList(int fromIndex, int toIndex) {
+    public List<Integer> subList(int fromIndex, int toIndex) {
         checkPositionIndexes(fromIndex, toIndex, size);
         if (fromIndex == toIndex) {
             return Collections.emptyList();
         }
-        return new LongArrayList(array, start + fromIndex, start + toIndex);
+        return new IntArrayList(array, start + fromIndex, start + toIndex);
     }
 
     @Override
@@ -66,8 +66,8 @@ public class LongArrayList extends AbstractArrayList<Long> {
         if (object == this) {
             return true;
         }
-        if (object instanceof LongArrayList) {
-            LongArrayList that = (LongArrayList) object;
+        if (object instanceof IntArrayList) {
+            IntArrayList that = (IntArrayList) object;
             if (this.size != that.size) {
                 return false;
             }
@@ -85,7 +85,7 @@ public class LongArrayList extends AbstractArrayList<Long> {
     public int hashCode() {
         int result = 1;
         for (int i = start; i < end; i++) {
-            result = 31 * result + (int) array[i];
+            result = 31 * result + array[i];
         }
         return result;
     }
@@ -95,12 +95,12 @@ public class LongArrayList extends AbstractArrayList<Long> {
         return Arrays.toString(array);
     }
 
-    public long[] getArray() {
+    public int[] getArray() {
         return Arrays.copyOfRange(array, start, end);
     }
 
     // ----------------------------------------------------------others methods
-    public int indexOf(long target) {
+    public int indexOf(int target) {
         for (int i = 0; i < size; i++) {
             if (array[i + start] == target) {
                 return i;
@@ -109,7 +109,7 @@ public class LongArrayList extends AbstractArrayList<Long> {
         return INDEX_NOT_FOUND;
     }
 
-    public int lastIndexOf(long target) {
+    public int lastIndexOf(int target) {
         for (int i = size - 1; i >= 0; i--) {
             if (array[i + start] == target) {
                 return i;

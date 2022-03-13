@@ -8,7 +8,6 @@ import code.ponfee.commons.io.StringPrintWriter;
  * @author Ponfee
  */
 public final class Throwables {
-    private Throwables() {}
 
     /**
      * Gets the throwable stack trace

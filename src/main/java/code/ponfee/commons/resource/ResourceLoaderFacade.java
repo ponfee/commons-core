@@ -13,29 +13,30 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 
- * Class.getResourceAsStream(path)：不以'/'开头则相对此类的包路径获取，以'/'开头从ClassPath根下获取（内部还是由ClassLoader获取）
- * ClassLoader.getResourceAsStream(path)：从ClassPath根下获取，path不能以'/'开头
- * ServletContext.getResourceAsStream(path)：从WebAPP根目录下取资源，'/'开头和不以'/'开头情况一样
- * 
+ * 资源文件加载门面类
+ * <pre>
+ *  Class.getResourceAsStream(path)：以'/'开头表示classpath根路径（内部还是由ClassLoader获取），不以'/'开头表示相对此类的路径
+ *  ClassLoader.getResourceAsStream(path)：从classpath根路径下获取（path不能以'/'开头）
+ *  ServletContext.getResourceAsStream(path)：从WebAPP根目录下取资源，'/'开头和不以'/'开头情况一样
+ * </pre>
+ *
  * <ul>
- *   <li>classpath:<p>当以“/”开头时contextClass只起到jar包定位的作用（且会去掉“/”），不以“/”开头时contextClass还起到package相对路径的作用
+ *   <li>classpath:<p>以'/'开头表示在jar包中的绝对路径（内部还是由ClassLoader获取），不以'/'开头表示在jar包中与指定类的相对路径
  *   </li>
  *   <li>webapp:</li>
  *   <li>file:</li>
  * </ul>
  * <p>default classpath:</p>
  *
- * <p>
- * ResourceLoaderFacade.getResource("StringUtils.class", StringUtils.class);
- * ResourceLoaderFacade.getResource("Log4j-config.xsd", ResourceLoaderFacade.class); // null
- * ResourceLgit pulloaderFacade.getResource("/Log4j-config.xsd", LogEventListener.class);
- * ResourceLoaderFacade.getResource("/log4j2.xml");
- * ResourceLoaderFacade.getResource("log4j2.xml");
- * ResourceLoaderFacade.getResource("file:d:/import.txt")
- * 
- * 资源文件加载门面类
- * 
+ * <pre>
+ *  ResourceLoaderFacade.getResource("StringUtils.class", StringUtils.class);
+ *  ResourceLoaderFacade.getResource("/mybatis-conf.xml", ResourceLoaderFacade.class); // 类所在jar包中的绝对路径
+ *  ResourceLoaderFacade.getResource("mybatis-conf.xml", ResourceLoaderFacade.class); // 类所在jar包中且相对该类的路径
+ *  ResourceLoaderFacade.getResource("/log4j2.xml");
+ *  ResourceLoaderFacade.getResource("log4j2.xml");
+ *  ResourceLoaderFacade.getResource("file:d:/import.txt");
+ * </pre>
+ *
  * @author Ponfee
  */
 public final class ResourceLoaderFacade {
@@ -43,7 +44,7 @@ public final class ResourceLoaderFacade {
     //private static final String CP_ALL_PREFIX = "classpath*:";
     private static final String WEB_PREFIX = "webapp:";
     static final String FS_PREFIX = "file:";
-    private static final Pattern PATTERN = Pattern.compile("^(\\s*(?i)(classpath|webapp|file)\\:\\s*)?(.+)$");
+    private static final Pattern PATTERN = Pattern.compile("^(\\s*(?i)(classpath|webapp|file):\\s*)?(.+)$");
 
     private static final ClassPathResourceLoader  CP_LOADER = new ClassPathResourceLoader();
     private static final FileSystemResourceLoader FS_LOADER = new FileSystemResourceLoader();

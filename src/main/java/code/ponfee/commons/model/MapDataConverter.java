@@ -1,13 +1,13 @@
 package code.ponfee.commons.model;
 
+import code.ponfee.commons.reflect.Fields;
+
 import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import code.ponfee.commons.reflect.Fields;
 
 /**
  * Converts model object to map, specified source fields
@@ -46,7 +46,7 @@ public class MapDataConverter<S> extends AbstractDataConverter<S, Map<String, Ob
         if (list == null) {
             return null;
         }
-        return list.stream().map(x -> convert(x, fields)).collect(Collectors.toList());
+        return list.stream().map(e -> convert(e, fields)).collect(Collectors.toList());
     }
 
     public static <S> Page<Map<String, Object>> convert(Page<S> page, String... fields) {

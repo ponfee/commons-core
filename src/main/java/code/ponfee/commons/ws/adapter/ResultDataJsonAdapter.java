@@ -1,12 +1,11 @@
 package code.ponfee.commons.ws.adapter;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-
-import org.apache.commons.lang3.StringUtils;
-
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.reflect.GenericUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * Result<data> -> Result<json>

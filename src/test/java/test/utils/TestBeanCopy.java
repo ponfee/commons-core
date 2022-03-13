@@ -34,7 +34,7 @@ public class TestBeanCopy {
         Result<Void> result1 = Result.failure(-1, "error");
         Result<Void> result2 = new Result<>();
         for (int i = 0; i < round; i++) {
-            BeanCopiers.copyProperties(result1, result2);
+            BeanCopiers.copy(result1, result2);
         }
     }
 

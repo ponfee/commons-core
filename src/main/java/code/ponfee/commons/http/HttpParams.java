@@ -1,5 +1,13 @@
 package code.ponfee.commons.http;
 
+import code.ponfee.commons.collect.Maps;
+import code.ponfee.commons.io.Files;
+import code.ponfee.commons.util.ObjectUtils;
+import code.ponfee.commons.util.UrlCoder;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collections;
@@ -8,16 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
-
-import code.ponfee.commons.collect.Maps;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import code.ponfee.commons.collect.Collects;
-import code.ponfee.commons.io.Files;
-import code.ponfee.commons.util.ObjectUtils;
-import code.ponfee.commons.util.UrlCoder;
 
 /**
  * http参数工具类
@@ -81,12 +79,6 @@ public class HttpParams {
      * @return
      */
     public static String buildParams(Map<String, ?> params, String encoding) {
-        /*return params.entrySet().stream().map(
-           e -> String.join("=", e.getKey(), UrlCoder.encodeURIComponent(Objects.toString(e.getValue(), ""), encoding))
-        ).collect(
-           Collectors.reducing((a, b) -> a + "&" + b)
-        ).orElse("");*/
-
         StringBuilder builder = new StringBuilder();
         String[] values;
         Object value;

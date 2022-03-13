@@ -1,5 +1,9 @@
 package code.ponfee.commons.jce.cert;
 
+import code.ponfee.commons.jce.pkcs.PKCS7Signature;
+import sun.security.pkcs.PKCS7;
+import sun.security.pkcs.SignerInfo;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
@@ -8,10 +12,6 @@ import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
-
-import code.ponfee.commons.jce.pkcs.PKCS7Signature;
-import sun.security.pkcs.PKCS7;
-import sun.security.pkcs.SignerInfo;
 
 /**
  * pkcs7方式验签

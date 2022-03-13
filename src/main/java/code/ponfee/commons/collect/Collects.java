@@ -5,8 +5,19 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -39,18 +50,26 @@ public final class Collects {
     public static List<Object> toList(Object obj) {
         if (obj == null) {
             return null;
-        } else if (obj.getClass().isArray()) {
+        }
+        if (obj.getClass().isArray()) {
             int length = Array.getLength(obj);
             List<Object> result = new ArrayList<>(length);
             for (int i = 0; i < length; i++) {
                 result.add(Array.get(obj, i));
             }
             return result;
-        } else if (obj instanceof Collection) {
-            return new ArrayList<>((Collection<?>) obj);
-        } else {
-            return Collections.singletonList(obj);
         }
+        if (obj instanceof Collection) {
+            return new ArrayList<>((Collection<?>) obj);
+        }
+        return Collections.singletonList(obj);
+
+    }
+
+    public static <E> LinkedList<E> newLinkedList(E element) {
+        LinkedList<E> list = new LinkedList<>();
+        list.add(element);
+        return list;
     }
 
     // -----------------------------the collection of intersect, union and different operations
@@ -140,13 +159,21 @@ public final class Collects {
      * @return
      */
     public static <K, V> Map<K, V> different(Map<K, V> map1, Map<K, V> map2) {
-        Map<K, V> res = new HashMap<>();
-        map1.entrySet().stream().filter(e -> !map2.containsKey(e.getKey()))
-                                .forEach(e -> res.put(e.getKey(), e.getValue()));
+        Map<K, V> res = new HashMap<>(Math.max(map1.size(), map2.size()));
+        map1.entrySet()
+            .stream()
+            .filter(e -> !map2.containsKey(e.getKey()))
+            .forEach(e -> res.put(e.getKey(), e.getValue()));
 
-        map2.entrySet().stream().filter(e -> !map1.containsKey(e.getKey()))
-                                .forEach(e -> res.put(e.getKey(), e.getValue()));
+        map2.entrySet()
+            .stream()
+            .filter(e -> !map1.containsKey(e.getKey()))
+            .forEach(e -> res.put(e.getKey(), e.getValue()));
         return res;
+    }
+
+    public static <T> List<T> duplicate(Collection<T> list) {
+        return duplicate(list, Function.identity());
     }
 
     /**
@@ -155,18 +182,19 @@ public final class Collects {
      * @param list the list
      * @return a set of duplicates elements for list
      */
-    public static <T> Set<T> duplicate(List<T> list) {
+    public static <T, R> List<R> duplicate(Collection<T> list, Function<T, R> mapper) {
         if (CollectionUtils.isEmpty(list)) {
-            return Collections.emptySet();
+            return Collections.emptyList();
         }
 
         return list.stream()
+                   .map(mapper::apply)
                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                    .entrySet()
                    .stream()
-                   .filter(e -> (e.getValue() > 1))
+                   .filter(e -> e.getValue() > 1)
                    .map(Entry::getKey)
-                   .collect(Collectors.toSet());
+                   .collect(Collectors.toList());
     }
 
     /**
@@ -180,11 +208,8 @@ public final class Collects {
         if (list == null || list.isEmpty()) {
             return null;
         }
-        if (list instanceof LinkedList) {
-            return ((LinkedList<T>) list).getLast();
-        }
-        return list.get(list.size() - 1);
         //return list.stream().reduce((a, b) -> b).orElse(null);
+        return list instanceof Deque ? ((Deque<T>) list).getLast() : list.get(list.size() - 1);
     }
 
     /**
@@ -256,18 +281,22 @@ public final class Collects {
 
     /**
      * Compute cartesian product
+     *
+     * [1, 2, 3] x [4, 5, 6] = [[4, 5, 6], [8, 10, 12], [12, 15, 18]]
      * 
      * @param x the list of type A
      * @param y the list of type B
      * @param fun convert A and B to T
      * @return a list of type T
      */
-    public static <A, B, T> List<T> cartesian(List<A> x, List<B> y, BiFunction<A, B, T> fun) {
-        List<T> product = new ArrayList<>(x.size() * y.size());
+    public static <A, B, T> List<List<T>> cartesian(List<A> x, List<B> y, BiFunction<A, B, T> fun) {
+        List<List<T>> product = new ArrayList<>(x.size());
         for (A a : x) {
+            List<T> row = new ArrayList<>(y.size());
             for (B b : y) {
-                product.add(fun.apply(a, b));
+                row.add(fun.apply(a, b));
             }
+            product.add(row);
         }
         return product;
     }

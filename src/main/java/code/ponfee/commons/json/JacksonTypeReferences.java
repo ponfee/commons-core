@@ -1,10 +1,10 @@
 package code.ponfee.commons.json;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * The Jackson TypeReference holder
@@ -12,7 +12,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
  * @author Ponfee
  */
 public final class JacksonTypeReferences {
-    private JacksonTypeReferences() {}
 
     public static final TypeReference<Map<String, Object>> MAP_NORMAL = new TypeReference<Map<String, Object>>() {};
     public static final TypeReference<Map<String, String>> MAP_STRING = new TypeReference<Map<String, String>>() {};

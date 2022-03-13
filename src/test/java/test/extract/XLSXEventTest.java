@@ -14,7 +14,7 @@ import java.util.Iterator;
 import org.apache.poi.ooxml.util.SAXHelper;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
-import org.apache.poi.xssf.model.SharedStringsTable;
+import org.apache.poi.xssf.model.SharedStrings;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -28,7 +28,7 @@ public class XLSXEventTest {
     public void processOneSheet(String filename) throws Exception {
         OPCPackage pkg = OPCPackage.open(filename);
         XSSFReader r = new XSSFReader( pkg );
-        SharedStringsTable sst = r.getSharedStringsTable();
+        SharedStrings sst = r.getSharedStringsTable();
 
         XMLReader parser = fetchSheetParser(sst);
 
@@ -44,7 +44,7 @@ public class XLSXEventTest {
     public void processAllSheets(String filename) throws Exception {
         OPCPackage pkg = OPCPackage.open(filename);
         XSSFReader r = new XSSFReader( pkg );
-        SharedStringsTable sst = r.getSharedStringsTable();
+        SharedStrings sst = r.getSharedStringsTable();
 
         XMLReader parser = fetchSheetParser(sst);
 
@@ -59,7 +59,7 @@ public class XLSXEventTest {
         }
     }
 
-    public XMLReader fetchSheetParser(SharedStringsTable sst) throws SAXException, ParserConfigurationException {
+    public XMLReader fetchSheetParser(SharedStrings sst) throws SAXException, ParserConfigurationException {
         XMLReader parser = SAXHelper.newXMLReader();
         ContentHandler handler = new SheetHandler(sst);
         parser.setContentHandler(handler);
@@ -70,11 +70,11 @@ public class XLSXEventTest {
      * See org.xml.sax.helpers.DefaultHandler javadocs
      */
     private static class SheetHandler extends DefaultHandler {
-        private SharedStringsTable sst;
+        private SharedStrings sst;
         private String lastContents;
         private boolean nextIsString;
 
-        private SheetHandler(SharedStringsTable sst) {
+        private SheetHandler(SharedStrings sst) {
             this.sst = sst;
         }
 

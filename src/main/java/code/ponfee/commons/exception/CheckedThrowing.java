@@ -12,7 +12,6 @@ import java.util.function.Supplier;
  * @author Ponfee
  */
 public final class CheckedThrowing {
-    private CheckedThrowing() {}
 
     public static <R, T extends Throwable> Callable<R> callable(ThrowingCallable<R, T> c) {
         return ThrowingCallable.checked(c);

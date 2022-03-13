@@ -5,19 +5,20 @@ import java.util.Objects;
 /**
  * Tuple4 consisting of four elements.
  *
- * @param <A> the type A
- * @param <B> the type B
- * @param <C> the type C
- * @param <D> the type D
  * @author Ponfee
  */
-public class Tuple4<A, B, C, D> extends Tuple3<A, B, C> {
-    private static final long serialVersionUID = 6317175705377921586L;
+public final class Tuple4<A, B, C, D> extends Tuple {
+    private static final long serialVersionUID = -4282006520880127762L;
 
+    public A a;
+    public B b;
+    public C c;
     public D d;
 
     public Tuple4(A a, B b, C c, D d) {
-        super(a, b, c);
+        this.a = a;
+        this.b = b;
+        this.c = c;
         this.d = d;
     }
 
@@ -26,12 +27,23 @@ public class Tuple4<A, B, C, D> extends Tuple3<A, B, C> {
     }
 
     @Override
-    public Object get(int index) {
+    public <T> T get(int index) {
         switch (index) {
-            case  0: return a;
-            case  1: return b;
-            case  2: return c;
-            case  3: return d;
+            case  0: return (T) a;
+            case  1: return (T) b;
+            case  2: return (T) c;
+            case  3: return (T) d;
+            default: throw new IndexOutOfBoundsException("Index: " + index);
+        }
+    }
+
+    @Override
+    public <T> void set(T value, int index) {
+        switch (index) {
+            case  0: a = (A) value; break;
+            case  1: b = (B) value; break;
+            case  2: c = (C) value; break;
+            case  3: d = (D) value; break;
             default: throw new IndexOutOfBoundsException("Index: " + index);
         }
     }
@@ -47,12 +59,42 @@ public class Tuple4<A, B, C, D> extends Tuple3<A, B, C> {
     }
 
     @Override
-    public boolean equals(Object o) {
-        return super.equals(o) && Objects.equals(d, ((Tuple4<?, ?, ?, ?>) o).d);
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Tuple4)) {
+            return false;
+        }
+
+        Tuple4<?, ?, ?, ?> o = (Tuple4<?, ?, ?, ?>) obj;
+        return eq(o.a, o.b, o.c, o.d);
+    }
+
+    public boolean eq(Object a, Object b, Object c, Object d) {
+        return Objects.equals(this.a, a)
+            && Objects.equals(this.b, b)
+            && Objects.equals(this.c, c)
+            && Objects.equals(this.d, d);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(a, b, c, d);
+        int result = a != null ? a.hashCode() : 0;
+        result = HASH_FACTOR * result + (b != null ? b.hashCode() : 0);
+        result = HASH_FACTOR * result + (c != null ? c.hashCode() : 0);
+        result = HASH_FACTOR * result + (d != null ? d.hashCode() : 0);
+        return result;
     }
+
+    @Override
+    public int length() {
+        return 4;
+    }
+
+    @Override
+    public Tuple4<A, B, C, D> copy() {
+        return new Tuple4<>(a, b, c, d);
+    }
+
 }

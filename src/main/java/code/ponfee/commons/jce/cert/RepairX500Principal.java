@@ -1,11 +1,10 @@
 package code.ponfee.commons.jce.cert;
 
+import javax.security.auth.x500.X500Principal;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
-
-import javax.security.auth.x500.X500Principal;
 
 /**
  * 解决X500Principal乱码问题

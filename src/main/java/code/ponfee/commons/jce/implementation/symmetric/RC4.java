@@ -1,8 +1,8 @@
 package code.ponfee.commons.jce.implementation.symmetric;
 
-import java.util.Arrays;
-
 import org.apache.commons.lang3.ArrayUtils;
+
+import java.util.Arrays;
 
 /**
  * RC4 implementation

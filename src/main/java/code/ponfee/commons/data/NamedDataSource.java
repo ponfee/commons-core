@@ -67,9 +67,10 @@ public class NamedDataSource {
 
         Pattern pattern = Pattern.compile("^(?!(" + Strings.join(names, "|") + ")\\.).*");
         Properties commonConfig = new Properties(); // commons properties
-        props.entrySet().stream()
-             .filter(x -> pattern.matcher(x.toString()).matches())
-             .forEach(x -> commonConfig.put(x.getKey(), x.getValue()));
+        props.entrySet()
+             .stream()
+             .filter(e -> pattern.matcher(e.toString()).matches())
+             .forEach(e -> commonConfig.put(e.getKey(), e.getValue()));
         String defaultDsName = (String) commonConfig.remove("default"); // default datasource name
         String defaultType = (String) commonConfig.remove("type"); // default datasource type
 

@@ -1,7 +1,11 @@
 package code.ponfee.commons.parser;
 
-import static com.google.common.base.CaseFormat.LOWER_CAMEL;
-import static com.google.common.base.CaseFormat.LOWER_UNDERSCORE;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -10,12 +14,8 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import static com.google.common.base.CaseFormat.LOWER_CAMEL;
+import static com.google.common.base.CaseFormat.LOWER_UNDERSCORE;
 
 /**
  * EL parser utility.
@@ -26,9 +26,9 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
  */
 public class ELParser {
 
-    private static final Pattern PARAMS_PATTERN = Pattern.compile("\\$\\{\\s*([a-zA-Z0-9_\\-\\.]+)\\s*\\}");
-    private static final Pattern DATETM_PATTERN = Pattern.compile("\\$\\[\\s*([a-zA-Z0-9_,\\-\\+\\.\\(\\)\\s]+)\\s*\\]");
-    private static final Pattern SPEL_PATTERN   = Pattern.compile("\\{\\{\\s*([^\\{\\}]+)\\s*\\}\\}");
+    private static final Pattern PARAMS_PATTERN = Pattern.compile("\\$\\{\\s*([a-zA-Z0-9_\\-.]+)\\s*\\}");
+    private static final Pattern DATETM_PATTERN = Pattern.compile("\\$\\[\\s*([a-zA-Z0-9_,\\-+.()\\s]+)\\s*\\]");
+    private static final Pattern SPEL_PATTERN   = Pattern.compile("\\{\\{\\s*([^{}]+)\\s*\\}\\}");
 
     public static String parse(String text) {
         return parseDateUDF(text);

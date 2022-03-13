@@ -22,7 +22,6 @@ public class ByteArraySerializer extends Serializer {
         return compress ? GzipProcessor.compress(bytes) : bytes;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected <T> T deserialize0(byte[] bytes, Class<T> clazz, boolean compress) {
         if (clazz != byte[].class) {

@@ -1,11 +1,11 @@
 package code.ponfee.commons.ws.adapter;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-
 import code.ponfee.commons.model.Page;
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.reflect.GenericUtils;
 import code.ponfee.commons.ws.adapter.model.TransitPage;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * Result<Page<T>>转换器

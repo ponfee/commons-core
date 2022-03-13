@@ -2,7 +2,13 @@ package code.ponfee.commons.model;
 
 import code.ponfee.commons.http.HttpStatus;
 
-import static java.net.HttpURLConnection.*;
+import static java.net.HttpURLConnection.HTTP_ACCEPTED;
+import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_NOT_AUTHORITATIVE;
+import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
+import static java.net.HttpURLConnection.HTTP_OK;
+import static java.net.HttpURLConnection.HTTP_PARTIAL;
+import static java.net.HttpURLConnection.HTTP_RESET;
 
 /**
  * <pre>

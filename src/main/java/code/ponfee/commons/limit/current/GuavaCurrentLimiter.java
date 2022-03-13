@@ -1,10 +1,11 @@
 package code.ponfee.commons.limit.current;
 
+import code.ponfee.commons.util.LazyLoader;
+import com.google.common.util.concurrent.RateLimiter;
+
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import com.google.common.util.concurrent.RateLimiter;
 
 /**
  * The rate limiter based guava RateLimiter
@@ -29,15 +30,7 @@ public class GuavaCurrentLimiter implements CurrentLimiter {
             return false; // 禁止访问
         }
 
-        RateLimiter limiter = LIMITER_MAP.get(key);
-        if (limiter == null) {
-            synchronized (LIMITER_MAP) {
-                if ((limiter = LIMITER_MAP.get(key)) == null) {
-                    limiter = RateLimiter.create(requestThreshold);
-                    LIMITER_MAP.put(key, limiter);
-                }
-            }
-        }
+        RateLimiter limiter = LazyLoader.get(key, LIMITER_MAP, () -> RateLimiter.create(requestThreshold));
 
         if (((Double) limiter.getRate()).longValue() != requestThreshold) {
             synchronized (limiter) {
@@ -55,25 +48,13 @@ public class GuavaCurrentLimiter implements CurrentLimiter {
     }
 
     @Override
-    public boolean setRequestThreshold(String key, long threshold) {
+    public void setRequestThreshold(String key, long threshold) {
         if (threshold < -1) {
             LIMITER_MAP.remove(key);
-            return true;
         }
 
-        RateLimiter limiter = LIMITER_MAP.get(key);
-        if (limiter == null) {
-            synchronized (LIMITER_MAP) {
-                if ((limiter = LIMITER_MAP.get(key)) == null) {
-                    limiter = RateLimiter.create(threshold);
-                    LIMITER_MAP.put(key, limiter);
-                    return true;
-                }
-            }
-        }
-
-        limiter.setRate(threshold);
-        return true;
+        LazyLoader.get(key, LIMITER_MAP, () -> RateLimiter.create(threshold))
+                  .setRate(threshold);
     }
 
     @Override

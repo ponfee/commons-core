@@ -1,10 +1,9 @@
 package code.ponfee.commons.jce.symmetric;
 
-import java.security.Provider;
-import java.security.spec.AlgorithmParameterSpec;
-
 import javax.crypto.SecretKey;
 import javax.crypto.spec.PBEParameterSpec;
+import java.security.Provider;
+import java.security.spec.AlgorithmParameterSpec;
 
 /**
  * <pre>

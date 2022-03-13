@@ -40,7 +40,7 @@ public class ByteArrayTraitSerializer extends Serializer {
 
     public static <T extends ByteArrayTrait> T ofBytes(byte[] bytes, Class<T> type) {
         //return clazz.getDeclaredMethod("fromByteArray", byte[].class).invoke(null, bytes);
-        return ClassUtils.newInstance(type, byte[].class, bytes);
+        return ClassUtils.newInstance(type, new Class<?>[]{byte[].class}, new Object[]{bytes});
     }
 
     // ----------------------------------------------------------------------

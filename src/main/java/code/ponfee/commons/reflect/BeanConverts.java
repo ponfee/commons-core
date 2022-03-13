@@ -1,12 +1,12 @@
 package code.ponfee.commons.reflect;
 
+import com.google.common.collect.ImmutableMap;
+
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.google.common.collect.ImmutableMap;
 
 /**
  * Extract bean to array, list and map
@@ -26,9 +26,7 @@ public final class BeanConverts {
         if (bean == null || fields == null) {
             return null;
         }
-        return Stream.of(fields).map(
-            field -> Fields.get(bean, field)
-        ).toArray();
+        return Stream.of(fields).map(f -> Fields.get(bean, f)).toArray();
     }
 
     /**
@@ -43,9 +41,7 @@ public final class BeanConverts {
         if (beans == null) {
             return null;
         }
-        return beans.stream().map(
-            bean -> (T) Fields.get(bean, field)
-        ).collect(Collectors.toList());
+        return beans.stream().map(e -> (T) Fields.get(e, field)).collect(Collectors.toList());
     }
 
     public static <E> List<Object[]> toList(List<E> beans, String... fields) {
@@ -53,9 +49,9 @@ public final class BeanConverts {
             return null;
         }
 
-        return beans.stream().map(
-            b -> Stream.of(fields).map(f -> Fields.get(b, f)).toArray()
-        ).collect(Collectors.toList());
+        return beans.stream()
+                    .map(e -> Stream.of(fields).map(f -> Fields.get(e, f)).toArray())
+                    .collect(Collectors.toList());
     }
 
     /**
@@ -81,10 +77,8 @@ public final class BeanConverts {
         if (beans == null) {
             return null;
         }
-        return beans.stream().collect(Collectors.toMap(
-            bean -> (K) Fields.get(bean, keyField), 
-            bean -> (V) Fields.get(bean, valueField)
-        ));
+        return beans.stream()
+                    .collect(Collectors.toMap(e -> (K) Fields.get(e, keyField), e -> (V) Fields.get(e, valueField)));
     }
 
     @SuppressWarnings("unchecked")
@@ -92,10 +86,8 @@ public final class BeanConverts {
         if (beans == null) {
             return null;
         }
-        return beans.stream().collect(Collectors.toMap(
-            bean -> (K) Fields.get(bean, keyField), 
-            Function.identity()
-        ));
+        return beans.stream()
+                    .collect(Collectors.toMap(e -> (K) Fields.get(e, keyField), Function.identity()));
     }
 
 }

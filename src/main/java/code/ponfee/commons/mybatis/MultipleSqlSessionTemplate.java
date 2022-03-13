@@ -1,17 +1,6 @@
 package code.ponfee.commons.mybatis;
 
-import static org.apache.ibatis.reflection.ExceptionUtil.unwrapThrowable;
-import static org.mybatis.spring.SqlSessionUtils.closeSqlSession;
-import static org.mybatis.spring.SqlSessionUtils.getSqlSession;
-import static org.mybatis.spring.SqlSessionUtils.isSqlSessionTransactional;
-
-import java.lang.reflect.Proxy;
-import java.sql.Connection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
+import code.ponfee.commons.data.lookup.MultipleDataSourceContext;
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.ibatis.executor.BatchResult;
@@ -25,7 +14,17 @@ import org.mybatis.spring.MyBatisExceptionTranslator;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 
-import code.ponfee.commons.data.lookup.MultipleDataSourceContext;
+import java.lang.reflect.Proxy;
+import java.sql.Connection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
+import static org.apache.ibatis.reflection.ExceptionUtil.unwrapThrowable;
+import static org.mybatis.spring.SqlSessionUtils.closeSqlSession;
+import static org.mybatis.spring.SqlSessionUtils.getSqlSession;
+import static org.mybatis.spring.SqlSessionUtils.isSqlSessionTransactional;
 
 /**
  * Mutiple datasource for SqlSessionTemplate
@@ -166,19 +165,16 @@ public class MultipleSqlSessionTemplate extends SqlSessionTemplate {
         return this.sqlSessionProxy.selectList(statement, parameter, rowBounds);
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public void select(String statement, ResultHandler handler) {
         this.sqlSessionProxy.select(statement, handler);
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public void select(String statement, Object parameter, ResultHandler handler) {
         this.sqlSessionProxy.select(statement, parameter, handler);
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public void select(String statement, Object parameter, RowBounds rowBounds, ResultHandler handler) {
         this.sqlSessionProxy.select(statement, parameter, rowBounds, handler);

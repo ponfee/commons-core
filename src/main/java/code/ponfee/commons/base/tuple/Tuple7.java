@@ -5,22 +5,26 @@ import java.util.Objects;
 /**
  * Tuple7 consisting of seven elements.
  *
- * @param <A> the type A
- * @param <B> the type B
- * @param <C> the type C
- * @param <D> the type D
- * @param <E> the type E
- * @param <F> the type F
- * @param <G> the type G
  * @author Ponfee
  */
-public class Tuple7<A, B, C, D, E, F, G> extends Tuple6<A, B, C, D, E, F> {
-    private static final long serialVersionUID = -5055304940772830843L;
+public final class Tuple7<A, B, C, D, E, F, G> extends Tuple {
+    private static final long serialVersionUID = 4235194450172178770L;
 
+    public A a;
+    public B b;
+    public C c;
+    public D d;
+    public E e;
+    public F f;
     public G g;
 
     public Tuple7(A a, B b, C c, D d, E e, F f, G g) {
-        super(a, b, c, d, e, f);
+        this.a = a;
+        this.b = b;
+        this.c = c;
+        this.d = d;
+        this.e = e;
+        this.f = f;
         this.g = g;
     }
 
@@ -29,15 +33,29 @@ public class Tuple7<A, B, C, D, E, F, G> extends Tuple6<A, B, C, D, E, F> {
     }
 
     @Override
-    public Object get(int index) {
+    public <T> T get(int index) {
         switch (index) {
-            case  0: return a;
-            case  1: return b;
-            case  2: return c;
-            case  3: return d;
-            case  4: return e;
-            case  5: return f;
-            case  6: return g;
+            case  0: return (T) a;
+            case  1: return (T) b;
+            case  2: return (T) c;
+            case  3: return (T) d;
+            case  4: return (T) e;
+            case  5: return (T) f;
+            case  6: return (T) g;
+            default: throw new IndexOutOfBoundsException("Index: " + index);
+        }
+    }
+
+    @Override
+    public <T> void set(T value, int index) {
+        switch (index) {
+            case  0: a = (A) value; break;
+            case  1: b = (B) value; break;
+            case  2: c = (C) value; break;
+            case  3: d = (D) value; break;
+            case  4: e = (E) value; break;
+            case  5: f = (F) value; break;
+            case  6: g = (G) value; break;
             default: throw new IndexOutOfBoundsException("Index: " + index);
         }
     }
@@ -53,12 +71,48 @@ public class Tuple7<A, B, C, D, E, F, G> extends Tuple6<A, B, C, D, E, F> {
     }
 
     @Override
-    public boolean equals(Object o) {
-        return super.equals(o) && Objects.equals(g, ((Tuple7<?, ?, ?, ?, ?, ?, ?>) o).g);
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Tuple7)) {
+            return false;
+        }
+
+        Tuple7<?, ?, ?, ?, ?, ?, ?> o = (Tuple7<?, ?, ?, ?, ?, ?, ?>) obj;
+        return eq(o.a, o.b, o.c, o.d, o.e, o.f, o.g);
+    }
+
+    public boolean eq(Object a, Object b, Object c, Object d, Object e, Object f, Object g) {
+        return Objects.equals(this.a, a)
+            && Objects.equals(this.b, b)
+            && Objects.equals(this.c, c)
+            && Objects.equals(this.d, d)
+            && Objects.equals(this.e, e)
+            && Objects.equals(this.f, f)
+            && Objects.equals(this.g, g);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(a, b, c, d, e, f, g);
+        int result = a != null ? a.hashCode() : 0;
+        result = HASH_FACTOR * result + (b != null ? b.hashCode() : 0);
+        result = HASH_FACTOR * result + (c != null ? c.hashCode() : 0);
+        result = HASH_FACTOR * result + (d != null ? d.hashCode() : 0);
+        result = HASH_FACTOR * result + (e != null ? e.hashCode() : 0);
+        result = HASH_FACTOR * result + (f != null ? f.hashCode() : 0);
+        result = HASH_FACTOR * result + (g != null ? g.hashCode() : 0);
+        return result;
     }
+
+    @Override
+    public int length() {
+        return 7;
+    }
+
+    @Override
+    public Tuple7<A, B, C, D, E, F, G> copy() {
+        return new Tuple7<>(a, b, c, d, e, f, g);
+    }
+
 }

@@ -1,15 +1,13 @@
 package code.ponfee.commons.limit.request;
 
-import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.crypto.Mac;
-
+import code.ponfee.commons.jce.HmacAlgorithms;
+import code.ponfee.commons.jce.digest.HmacUtils;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 
-import code.ponfee.commons.jce.HmacAlgorithms;
-import code.ponfee.commons.jce.digest.HmacUtils;
+import javax.crypto.Mac;
+import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Request limiter, like as send sms and so on
@@ -192,31 +190,39 @@ public abstract class RequestLimiter {
      */
     public static String format(int seconds) {
         int days = seconds / 86400;
-        if (days > 365) { // 年
+
+        // 年
+        if (days > 365) {
             return (days / 365 + ((days % 365) / 30 + 10) / 12) + "年";
         }
-        if (days > 30) { // 月
+
+        // 月
+        if (days > 30) {
             return (days / 30 + (days % 30 + 25) / 30) + "个月";
         }
 
+        // 日
         seconds %= 86400;
         int hours = seconds / 3600;
-        if (days > 0) { // 日
+        if (days > 0) {
             return (days + (hours + 20) / 24) + "天";
         }
 
+        // 时
         seconds %= 3600;
         int minutes = seconds / 60;
-        if (hours > 0) { // 时
+        if (hours > 0) {
             return (hours + (minutes + 50) / 60) + "小时";
         }
 
+        // 分
         seconds %= 60;
-        if (minutes > 0) { // 分
+        if (minutes > 0) {
             return (minutes + (seconds + 50) / 60) + "分钟";
         }
 
-        return seconds + "秒"; // 秒
+        // 秒
+        return seconds + "秒";
     }
 
     static long expire(int ttl) {
@@ -230,7 +236,7 @@ public abstract class RequestLimiter {
         final long expireTimeMillis;
         final AtomicInteger count;
 
-        public CacheValue(T value, long expireTimeMillis) {
+        CacheValue(T value, long expireTimeMillis) {
             this.value = value;
             this.expireTimeMillis = expireTimeMillis;
             this.count = new AtomicInteger(1);

@@ -1,15 +1,18 @@
 package code.ponfee.commons.util;
 
 import java.util.Objects;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
  * 变量持有，用于lambda方法体内
  * <p>non-thread-safe
- * 
- * @author Ponfee
+ *
  * @param <T> the type T
+ * @author Ponfee
  */
 public final class Holder<T> {
 
@@ -23,22 +26,34 @@ public final class Holder<T> {
         return new Holder<>(null);
     }
 
-    public static <T> Holder<T> of(T t) {
-        return new Holder<>(t);
+    public static <T> Holder<T> of(T value) {
+        return new Holder<>(value);
     }
 
     /**
      * Returns the holder value whether null
-     * 
+     *
      * @return a boolean, if {@code true} then the value is null
      */
     public boolean isEmpty() {
-        return this.value == null;
+        return value == null;
+    }
+
+    /**
+     * Sets a newly value and return former value
+     *
+     * @param value the newly value
+     * @return then former value
+     */
+    public T set(T value) {
+        T former = this.value;
+        this.value = value;
+        return former;
     }
 
     /**
      * Sets a new value if former value is null
-     * 
+     *
      * @param value the new value
      */
     public void setIfAbsent(T value) {
@@ -48,9 +63,9 @@ public final class Holder<T> {
     }
 
     /**
-     * Replaces value if former value is not null, 
+     * Replaces value if former value is not null,
      * and return former value
-     * 
+     *
      * @param value the newly value
      * @return then former value
      */
@@ -62,39 +77,53 @@ public final class Holder<T> {
         return former;
     }
 
-    /**
-     * Sets a newly value and return former value
-     * 
-     * @param value the newly value
-     * @return  then former value
-     */
-    public T getAndSet(T value) {
+    public T setIfMatches(T value, Predicate<T> predicate) {
         T former = this.value;
-        this.value = value;
+        if (predicate.test(this.value)) {
+            this.value = value;
+        }
+        return former;
+    }
+
+    public T setIfMatches(T value, BiPredicate<T, T> predicate) {
+        T former = this.value;
+        if (predicate.test(this.value, value)) {
+            this.value = value;
+        }
         return former;
     }
 
     public void ifPresent(Consumer<? super T> consumer) {
-        if (this.value != null) {
-            consumer.accept(this.value);
+        if (value != null) {
+            consumer.accept(value);
         }
     }
 
+    public <U> Holder<U> map(Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper);
+        return isEmpty() ? empty() : of(mapper.apply(value));
+    }
+
+    public Holder<T> filter(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate);
+        return (isEmpty() || predicate.test(value)) ? this : empty();
+    }
+
     public T get() {
-        return this.value;
+        return value;
     }
 
     public T orElse(T other) {
-        return this.value != null ? this.value : other;
+        return value != null ? value : other;
     }
 
     public T orElseGet(Supplier<T> other) {
-        return this.value != null ? this.value : other.get();
+        return value != null ? value : other.get();
     }
 
     public <E extends Throwable> T orElseThrow(Supplier<? extends E> exceptionSupplier) throws E {
-        if (this.value != null) {
-            return this.value;
+        if (value != null) {
+            return value;
         } else {
             throw exceptionSupplier.get();
         }
@@ -106,22 +135,17 @@ public final class Holder<T> {
             return true;
         }
 
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-
-        return Objects.equals(this.value, ((Holder<?>) obj).value);
+        return (obj instanceof Holder)
+            && Objects.equals(value, ((Holder<?>) obj).value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.value);
+        return Objects.hashCode(value);
     }
 
     @Override
     public String toString() {
-        return this.value != null
-             ? String.format("Holder[%s]", this.value)
-             : "Holder.empty";
+        return value != null ? String.format("Holder(%s)", value) : "Holder.empty";
     }
 }

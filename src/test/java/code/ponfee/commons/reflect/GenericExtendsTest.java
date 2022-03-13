@@ -2,7 +2,7 @@ package code.ponfee.commons.reflect;
 
 import java.util.List;
 
-import code.ponfee.commons.model.BaseModifierEntity;
+import code.ponfee.commons.model.BaseEntity;
 
 public class GenericExtendsTest {
 
@@ -18,7 +18,7 @@ public class GenericExtendsTest {
     public static void main(String[] args) {
         System.out.println(GenericUtils.getActualTypeVariableMapping(ClassB.class));
         System.out.println(GenericUtils.getGenericTypes(ClassB.class));
-        System.out.println(GenericUtils.getGenericTypes(BaseModifierEntity.class));
+        System.out.println(GenericUtils.getGenericTypes(BaseEntity.Updater.class));
     }
 
 }

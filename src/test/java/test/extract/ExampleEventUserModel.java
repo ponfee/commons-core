@@ -17,7 +17,7 @@ import org.apache.poi.ooxml.util.SAXHelper;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.openxml4j.opc.PackageAccess;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
-import org.apache.poi.xssf.model.SharedStringsTable;
+import org.apache.poi.xssf.model.SharedStrings;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -28,7 +28,7 @@ public class ExampleEventUserModel {
     public void processWorkebook(String filename) throws Exception {
         try (OPCPackage pkg = OPCPackage.open(filename, PackageAccess.READ)) {
             XSSFReader r = new XSSFReader(pkg);
-            SharedStringsTable sst = r.getSharedStringsTable();
+            SharedStrings sst = r.getSharedStringsTable();
             XMLReader parser = SAXHelper.newXMLReader();
             parser.setContentHandler(new SheetHandler(sst)); // custome handler
             for (Iterator<InputStream> iter = r.getSheetsData(); iter.hasNext();) {
@@ -44,7 +44,7 @@ public class ExampleEventUserModel {
      * See org.xml.sax.helpers.DefaultHandler javadocs 重写 startElement characters endElements方法 
      */
     private static class SheetHandler extends DefaultHandler {
-        private SharedStringsTable sst;
+        private SharedStrings sst;
         private String lastContents;
         private boolean nextIsString; //是否为string格式标识
         private final LruCache<Integer, String> lruCache = new LruCache<>(60);
@@ -74,7 +74,7 @@ public class ExampleEventUserModel {
             }
         }
 
-        private SheetHandler(SharedStringsTable sst) {
+        private SheetHandler(SharedStrings sst) {
             this.sst = sst;
         }
 

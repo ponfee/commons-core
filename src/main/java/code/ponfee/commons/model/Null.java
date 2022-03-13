@@ -10,6 +10,7 @@ package code.ponfee.commons.model;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 
 /**
  * The {@code Null} class is representing unable instance object
@@ -20,10 +21,12 @@ public final class Null implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static final Constructor<Null> UNCONSTRUCTOR;
+    public static final Constructor<Null> BROKEN_CONSTRUCTOR;
+    public static final Method BROKEN_METHOD;
     static {
         try {
-            UNCONSTRUCTOR = Null.class.getDeclaredConstructor();
+            BROKEN_CONSTRUCTOR = Null.class.getDeclaredConstructor();
+            BROKEN_METHOD = Null.class.getDeclaredMethod("broken");
         } catch (Exception e) {
             throw new RuntimeException(e); // cannot happened
         }
@@ -31,6 +34,10 @@ public final class Null implements Serializable {
 
     private Null() {
         throw new AssertionError("Null cannot create instance.");
+    }
+
+    private void broken() {
+        throw new AssertionError("Forbid invoke this method.");
     }
 
 }

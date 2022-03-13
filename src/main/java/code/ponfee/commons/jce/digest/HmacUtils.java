@@ -1,19 +1,17 @@
 package code.ponfee.commons.jce.digest;
 
+import code.ponfee.commons.io.Files;
+import code.ponfee.commons.jce.HmacAlgorithms;
+import code.ponfee.commons.jce.Providers;
+import org.apache.commons.codec.binary.Hex;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
-import org.apache.commons.codec.binary.Hex;
-
-import code.ponfee.commons.io.Files;
-import code.ponfee.commons.jce.HmacAlgorithms;
-import code.ponfee.commons.jce.Providers;
 
 /**
  * HMAC的一个典型应用是用在“质询/响应”（Challenge/Response）身份认证中

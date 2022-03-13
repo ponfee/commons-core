@@ -1,19 +1,18 @@
 package code.ponfee.commons.extract;
 
+import code.ponfee.commons.io.ByteOrderMarks;
+import code.ponfee.commons.io.CharsetDetector;
+import code.ponfee.commons.io.PrereadInputStream;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.ObjectUtils;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.function.BiConsumer;
-
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.lang3.ArrayUtils;
-
-import code.ponfee.commons.io.BeforeReadInputStream;
-import code.ponfee.commons.io.ByteOrderMarks;
-import code.ponfee.commons.io.CharacterEncodingDetector;
-import org.apache.commons.lang3.ObjectUtils;
 
 /**
  * Csv file data extractor
@@ -42,17 +41,17 @@ public class CsvExtractor extends DataExtractor {
 
     @Override
     public void extract(BiConsumer<Integer, String[]> processor) throws IOException {
-        BeforeReadInputStream bris = new BeforeReadInputStream(
-            super.dataSource.asInputStream(), CharacterEncodingDetector.DETECT_COUNT
+        PrereadInputStream bris = new PrereadInputStream(
+            super.dataSource.asInputStream(), CharsetDetector.DETECT_COUNT
         );
 
         // 检测文件编码
         Charset encoding = this.charset != null 
                          ? this.charset 
-                         : CharacterEncodingDetector.detect(bris.getArray());
+                         : CharsetDetector.detect(bris.heads());
 
         // 检查是否有BOM
-        ByteOrderMarks bom = ByteOrderMarks.of(encoding, bris.getArray());
+        ByteOrderMarks bom = ByteOrderMarks.of(encoding, bris.heads());
         if (bom != null) {
             bris.skip(bom.length());
         }

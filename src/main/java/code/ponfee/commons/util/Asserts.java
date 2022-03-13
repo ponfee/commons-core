@@ -33,11 +33,17 @@ public class Asserts extends org.springframework.util.Assert {
         }
     }
 
-    public static void rangeLen(String text, int min, int max, String msg) {
-        int len;
-        if (text != null && ((len = text.length()) > max || len < min)) {
+    public static void range(int value, int min, int max, String msg) {
+        if (value < min || value > max) {
             throw new IllegalArgumentException(msg);
         }
+    }
+
+    public static void rangeLen(String text, int min, int max, String msg) {
+        if (text == null) {
+            return;
+        }
+        range(text.length(), min, max, msg);
     }
 
 }

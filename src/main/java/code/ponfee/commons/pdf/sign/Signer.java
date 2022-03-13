@@ -1,14 +1,13 @@
 package code.ponfee.commons.pdf.sign;
 
+import code.ponfee.commons.util.ImageUtils;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Image;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
-
-import com.itextpdf.text.BadElementException;
-import com.itextpdf.text.Image;
-
-import code.ponfee.commons.util.ImageUtils;
 
 /**
  * 签名人信息

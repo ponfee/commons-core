@@ -1,8 +1,8 @@
 package code.ponfee.commons.math;
 
+import com.google.common.base.Strings;
 import com.google.common.primitives.Chars;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -307,7 +307,8 @@ public final class Numbers {
 
         String format = "#,##0";
         if (scale > 0) {
-            format += "." + StringUtils.leftPad("", scale, '0');
+            // StringUtils.leftPad("", scale, '0'); String.format("%0" + scale + "d", 0);
+            format += "." + Strings.repeat("0", scale);
         }
         return new DecimalFormat(format + "%").format(value);
     }
@@ -399,9 +400,9 @@ public final class Numbers {
         int[] result = new int[segment];
         int quotient = quantity / segment;
         int remainder = quantity % segment;
-        int moreValue = quotient + 1, lessValue = quotient;
+        int moreValue = quotient + 1;
         Arrays.fill(result, 0, remainder, moreValue);
-        Arrays.fill(result, remainder, segment, lessValue);
+        Arrays.fill(result, remainder, segment, quotient);
         return result;
     }
 

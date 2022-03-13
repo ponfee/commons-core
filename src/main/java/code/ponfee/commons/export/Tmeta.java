@@ -1,9 +1,9 @@
 package code.ponfee.commons.export;
 
+import code.ponfee.commons.util.Colors;
+
 import java.awt.Color;
 import java.io.Serializable;
-
-import code.ponfee.commons.util.Colors;
 
 /**
  * 每列的元数据配置

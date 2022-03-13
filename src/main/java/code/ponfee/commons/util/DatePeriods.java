@@ -1,15 +1,14 @@
 package code.ponfee.commons.util;
 
-import static code.ponfee.commons.util.WrappedFastDateFormat.PATTERN14;
-
-import java.util.Date;
-
+import com.google.common.base.Preconditions;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
 import org.joda.time.format.DateTimeFormat;
 
-import com.google.common.base.Preconditions;
+import java.util.Date;
+
+import static code.ponfee.commons.util.WrappedFastDateFormat.PATTERN14;
 
 /**
  * 1990-04-15 00:00:00这天调整了夏令时，即在4月15号0点的时候将表调快了一小时，导致这一天少了一小时。

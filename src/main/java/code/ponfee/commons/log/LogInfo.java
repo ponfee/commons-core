@@ -1,13 +1,14 @@
 package code.ponfee.commons.log;
 
 import code.ponfee.commons.log.LogAnnotation.LogType;
+import code.ponfee.commons.model.ToJsonString;
 
 /**
  * 日志信息
  * 
  * @author Ponfee
  */
-public class LogInfo implements java.io.Serializable {
+public class LogInfo extends ToJsonString implements java.io.Serializable {
     private static final long serialVersionUID = -4824757481106145723L;
 
     private LogType type; // 日志类型

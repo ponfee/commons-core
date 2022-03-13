@@ -11,9 +11,11 @@ public abstract class ByteArrayTrait {
 
     public ByteArrayTrait(byte[] array) {}
 
+    /**
+     * Returns byte array
+     *
+     * @return byte array
+     */
     public abstract byte[] toByteArray();
 
-    /*public static ByteArrayTrait fromByteArray(byte[] arg) {
-        throw new UnimplementedException();
-    }*/
 }

@@ -1,5 +1,7 @@
 package code.ponfee.commons.util;
 
+import code.ponfee.commons.collect.Maps;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,15 +12,12 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import code.ponfee.commons.collect.Maps;
-
 /**
  * 消息格式化
  * 
  * @author Ponfee
  */
 public final class MessageFormats {
-    private MessageFormats() {}
 
     private static final String PREFIX = "#\\{(\\s|\\t)*";
     private static final String SUFFIX = "(\\s|\\t)*\\}";

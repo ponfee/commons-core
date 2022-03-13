@@ -1,17 +1,15 @@
 package code.ponfee.commons.json;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
-import javax.annotation.concurrent.ThreadSafe;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.annotation.concurrent.ThreadSafe;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * The json utility based jackson

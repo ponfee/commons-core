@@ -8,7 +8,7 @@
 
 package code.ponfee.commons.tree;
 
-import code.ponfee.commons.json.Jsons;
+import code.ponfee.commons.model.ToJsonString;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.Serializable;
@@ -20,7 +20,7 @@ import java.util.Objects;
  * @author Ponfee
  * @param <T> the NodeId implementation sub class
  */
-public abstract class NodeId<T extends NodeId<T>> implements Comparable<T>, Serializable, Cloneable {
+public abstract class NodeId<T extends NodeId<T>> extends ToJsonString implements Comparable<T>, Serializable, Cloneable {
 
     private static final long serialVersionUID = -9004940918491918780L;
 
@@ -37,40 +37,35 @@ public abstract class NodeId<T extends NodeId<T>> implements Comparable<T>, Seri
         }
 
         T o = (T) obj;
-        return Objects.equals(this.parent, o.parent) && this.equalsNode(o);
+        return Objects.equals(this.parent, o.parent) && this.equals(o);
     }
 
     @Override
     public final int compareTo(T another) {
         if (this.parent == null) {
-            return another.parent == null ? this.compareNode(another) : -1;
+            return another.parent == null ? this.compare(another) : -1;
         }
         if (another.parent == null) {
             return 1;
         }
 
         int a = this.parent.compareTo(another.parent);
-        return a != 0 ? a : this.compareNode(another);
+        return a != 0 ? a : this.compare(another);
     }
 
     @Override
     public final int hashCode() {
         return new HashCodeBuilder()
             .append(this.parent)
-            .append(this.hashNode())
+            .append(this.hash())
             .build();
     }
 
-    @Override
-    public String toString() {
-        return Jsons.toJson(this);
-    }
+    protected abstract boolean equals(T another);
 
-    protected abstract boolean equalsNode(T another);
+    protected abstract int compare(T another);
 
-    protected abstract int compareNode(T another);
-
-    protected abstract int hashNode();
+    protected abstract int hash();
 
     @Override
     public abstract T clone();

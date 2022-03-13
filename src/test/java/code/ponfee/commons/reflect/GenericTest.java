@@ -134,11 +134,11 @@ public class GenericTest {
     }
 
     // -------------------------------------------------------------
-    public static class BeanClass extends BaseEntity<Long, String> {
+    public static class BeanClass extends BaseEntity.Creator<String> {
         private static final long serialVersionUID = 1L;
     }
     
-    public static class BeanClass2<E> extends BaseEntity<Long, List<E>> {
+    public static class BeanClass2<E> extends BaseEntity.Creator<List<E>> {
         private static final long serialVersionUID = 1L;
     }
 

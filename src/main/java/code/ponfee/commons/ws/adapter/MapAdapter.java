@@ -1,13 +1,11 @@
 package code.ponfee.commons.ws.adapter;
 
-import java.util.Map;
-
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-
-import com.google.common.collect.Maps;
-
 import code.ponfee.commons.reflect.GenericUtils;
 import code.ponfee.commons.ws.adapter.model.MapEntry;
+import com.google.common.collect.Maps;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import java.util.Map;
 
 /**
  * Map<K,V>转换器

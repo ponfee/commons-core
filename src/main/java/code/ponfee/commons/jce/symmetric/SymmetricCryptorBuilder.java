@@ -1,14 +1,13 @@
 package code.ponfee.commons.jce.symmetric;
 
-import java.security.Provider;
+import code.ponfee.commons.jce.Providers;
+import code.ponfee.commons.util.SecureRandoms;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-
-import code.ponfee.commons.jce.Providers;
-import code.ponfee.commons.util.SecureRandoms;
+import java.security.Provider;
 
 /**
  * 对称加密构建类

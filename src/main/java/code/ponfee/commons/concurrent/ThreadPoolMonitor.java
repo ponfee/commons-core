@@ -1,6 +1,6 @@
 package code.ponfee.commons.concurrent;
 
-import code.ponfee.commons.json.Jsons;
+import code.ponfee.commons.model.ToJsonString;
 
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
  * 
  * @author Ponfee
  */
-public class ThreadPoolMonitor implements java.io.Serializable {
+public class ThreadPoolMonitor extends ToJsonString implements java.io.Serializable {
 
     private static final long serialVersionUID = 3890678647435855868L;
 
@@ -30,11 +30,6 @@ public class ThreadPoolMonitor implements java.io.Serializable {
     private final boolean terminated;
 
     public ThreadPoolMonitor(ThreadPoolExecutor pool) {
-        /*String threadPoolInfo = String.format(
-            "thread_pool_info: keep_alive_time=%d, core_pool_size=%d, maximum_pool_size=%d, largest_pool_size=%d, pool_size=%d, task_count=%d, completed_task_count=%d, queue_size=%d, active_count=%d, is_shutdown=%s, is_terminated=%s",
-            pool.getKeepAliveTime(TimeUnit.MILLISECONDS), pool.getCorePoolSize(), pool.getMaximumPoolSize(), pool.getLargestPoolSize(), pool.getPoolSize(), 
-            pool.getTaskCount(), pool.getCompletedTaskCount(), pool.getQueue().size(), pool.getActiveCount(), pool.isShutdown(), pool.isTerminated()
-        );*/
         this.keepAliveTime = pool.getKeepAliveTime(TimeUnit.MILLISECONDS);
 
         this.corePoolSize = pool.getCorePoolSize();
@@ -93,11 +88,6 @@ public class ThreadPoolMonitor implements java.io.Serializable {
 
     public boolean isTerminated() {
         return terminated;
-    }
-
-    @Override
-    public String toString() {
-        return Jsons.toJson(this);
     }
 
 }

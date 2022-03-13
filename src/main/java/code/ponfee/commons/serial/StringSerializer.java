@@ -1,9 +1,9 @@
 package code.ponfee.commons.serial;
 
-import java.nio.charset.Charset;
-
 import code.ponfee.commons.io.GzipProcessor;
 import code.ponfee.commons.reflect.ClassUtils;
+
+import java.nio.charset.Charset;
 
 /**
  * 字段串序例化

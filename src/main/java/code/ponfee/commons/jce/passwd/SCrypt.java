@@ -2,23 +2,21 @@
 
 package code.ponfee.commons.jce.passwd;
 
-import static code.ponfee.commons.jce.HmacAlgorithms.ALGORITHM_MAPPING;
-import static java.lang.Integer.MAX_VALUE;
-import static java.lang.System.arraycopy;
-import static java.nio.charset.StandardCharsets.UTF_8;
-
-import java.util.Arrays;
-
-import javax.crypto.Mac;
-import javax.crypto.ShortBufferException;
-
-import com.google.common.base.Preconditions;
-
 import code.ponfee.commons.jce.HmacAlgorithms;
 import code.ponfee.commons.jce.Providers;
 import code.ponfee.commons.jce.digest.HmacUtils;
 import code.ponfee.commons.util.Base64UrlSafe;
 import code.ponfee.commons.util.SecureRandoms;
+import com.google.common.base.Preconditions;
+
+import javax.crypto.Mac;
+import javax.crypto.ShortBufferException;
+import java.util.Arrays;
+
+import static code.ponfee.commons.jce.HmacAlgorithms.ALGORITHM_MAPPING;
+import static java.lang.Integer.MAX_VALUE;
+import static java.lang.System.arraycopy;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * An implementation of the <a href="http://www.tarsnap.com/scrypt/scrypt.pdf"/>scrypt</a> 

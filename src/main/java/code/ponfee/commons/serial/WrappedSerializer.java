@@ -6,7 +6,6 @@ import code.ponfee.commons.io.GzipProcessor;
 import code.ponfee.commons.math.Numbers;
 import code.ponfee.commons.reflect.ClassUtils;
 import code.ponfee.commons.util.Bytes;
-import code.ponfee.commons.util.Enums;
 import com.google.common.collect.ImmutableMap.Builder;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -233,7 +232,7 @@ public class WrappedSerializer extends Serializer {
         }
 
         if (CharSequence.class.isAssignableFrom(type)) {
-            return ClassUtils.newInstance(type, String.class, Serializers.STRING.fromBytes(value));
+            return ClassUtils.newInstance(type, new Class<?>[]{String.class}, new Object[]{Serializers.STRING.fromBytes(value)});
         } else if (InputStream.class.isAssignableFrom(type)) {
             return (T) new ByteArrayInputStream(value);
         } else if (ByteArrayTrait.class.isAssignableFrom(type)) {

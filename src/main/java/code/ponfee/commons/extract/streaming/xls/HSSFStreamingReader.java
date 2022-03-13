@@ -1,14 +1,13 @@
 package code.ponfee.commons.extract.streaming.xls;
 
+import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.concurrent.ExecutorService;
-
-import org.apache.commons.lang3.ArrayUtils;
-
-import com.google.common.base.Preconditions;
+import java.util.concurrent.Executor;
 
 /**
  * The version for 2003 or early XSL excel file 
@@ -66,13 +65,13 @@ public class HSSFStreamingReader {
         return reader;
     }
 
-    public HSSFStreamingWorkbook open(InputStream input, ExecutorService executor) {
+    public HSSFStreamingWorkbook open(InputStream input, Executor executor) {
         return new HSSFStreamingWorkbook(
             input, rowCacheSize, sheetIndexs, sheetNames, executor
         );
     }
 
-    public HSSFStreamingWorkbook open(File file, ExecutorService executor) {
+    public HSSFStreamingWorkbook open(File file, Executor executor) {
         try {
             return open(new FileInputStream(file), executor);
         } catch (FileNotFoundException e) {
@@ -80,7 +79,7 @@ public class HSSFStreamingReader {
         }
     }
 
-    public HSSFStreamingWorkbook open(String filePath, ExecutorService executor) {
+    public HSSFStreamingWorkbook open(String filePath, Executor executor) {
         return open(new File(filePath), executor);
     }
 

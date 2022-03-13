@@ -1,7 +1,6 @@
 package code.ponfee.commons.util;
 
 import java.util.Currency;
-import java.util.HashMap;
 import java.util.Map;
 
 /**

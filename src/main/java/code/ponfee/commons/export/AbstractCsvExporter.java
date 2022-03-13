@@ -1,15 +1,14 @@
 package code.ponfee.commons.export;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
+import code.ponfee.commons.io.Files;
+import code.ponfee.commons.tree.FlatNode;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import code.ponfee.commons.io.Files;
-import code.ponfee.commons.tree.FlatNode;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Exports csv
@@ -34,7 +33,7 @@ public abstract class AbstractCsvExporter<T> extends AbstractDataExporter<T> {
     @Override
     public final <E> void build(Table<E> table) {
         if (hasBuild.getAndSet(true)) {
-            throw new UnsupportedOperationException("Only support signle table.");
+            throw new UnsupportedOperationException("Only support single table.");
         }
 
         List<FlatNode<Integer, Thead>> thead = table.getThead();

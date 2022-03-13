@@ -5,25 +5,34 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>code.ponfee</groupId>
   <artifactId>commons-core</artifactId>
-  <version>${publish.version}</version>
+  <version>2.3-${publish.type}</version>
   <name>commons-core</name>
   <packaging>jar</packaging>
 
-  <!-- 
-    > 不编译也不执行单元测试类：mvn package -Dmaven.test.skip=true
-    > 编译但不会执行单元测试类：mvn package -DskipTests
-    > 指定参数：mvn clean install -Dhadoop.version=2.7.7 -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true
-    > 安装Maven Wrapper：mvn -N io.takari:maven:wrapper -Dmaven=3.6.3
+  <!--
+    > Maven：
+    >   1）不编译也不执行单元测试类：mvn package -Dmaven.test.skip=true
+    >   2）编译但不会执行单元测试类：mvn package -DskipTests
+    >   3）指定参数：mvn clean install -Dhadoop.version=2.7.7 -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true
+    >   4）项目版本号批量修改：mvn versions:set -DnewVersion=2.2-SNAPSHOT（https://www.jianshu.com/p/88da01804d3c）
+
+    > maven wrapper：https://maven.apache.org/wrapper/index.html
+    > 1）Install：会生成mvnw和mvnw.cmd脚本
+    >   1.1）Apache maven wrapper：mvn wrapper:wrapper [-Dmaven=3.8.4]
+    >   1.2）Takari maven wrapper(建议用apache的)：mvn -N io.takari:maven:wrapper -Dmaven=3.8.4
+    > 2）Usage：
+    >   2.1）Linux：./mvnw clean install -Dmaven.test.skip=true
+    >   2.2）Windows：mvnw.cmd clean install -Dmaven.test.skip=true
+
+    > javac: 不加“-g”则默认为“-g:source,lines”
+    >   -g                     生成所有调试信息
+    >   -g:none                不生成任何调试信息
+    >   -g:{lines,vars,source} 只生成某些调试信息
+    >   -source: version
+    >   -target: version
+
     > Alibaba P3C手册：https://github.com/alibaba/p3c
     > sonar参考文章：https://www.jianshu.com/p/68a3ed571314
-    > 项目版本号批量修改：mvn versions:set -DnewVersion=2.2-SNAPSHOT（https://www.jianshu.com/p/88da01804d3c）
-
-    javac: 不加“-g”则默认为“-g:source,lines”
-      -g                     生成所有调试信息
-      -g:none                不生成任何调试信息
-      -g:{lines,vars,source} 只生成某些调试信息
-      -source: version
-      -target: version
   -->
 
   <!-- 
@@ -54,69 +63,75 @@
   <properties>
     <project.encoding>UTF-8</project.encoding>
     <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
     <!-- javac -source 1.8 -target 1.8 -->
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
-    <spring.version>5.3.12</spring.version>
+    <maven.compiler.compilerVersion>${java.version}</maven.compiler.compilerVersion>
+
+    <!-- default publish type -->
+    <publish.type>SNAPSHOT</publish.type>
+
+    <spring.version>5.3.19</spring.version>
     <slf4j.version>1.7.32</slf4j.version>
     <log4j2.version>2.14.1</log4j2.version><!-- Java 9 Modular: 2.14.1[2.8.2] -->
     <bouncycastle.version>1.69</bouncycastle.version><!-- Java 9 Modular: 1.69[1.60] -->
-    <jackson.version>2.13.0</jackson.version><!-- Java 9 Modular: 2.13.0[2.9.10] -->
+    <jackson.version>2.13.2</jackson.version><!-- Java 9 Modular: 2.13.0[2.9.10] -->
   </properties>
 
   <profiles>
+    <!-- 1、查看处于激活状态的profile：mvn help:active-profiles
+         2、查看计算机上的这些OS属性：mvn enforcer:display-info
+         3、查看系统属性：mvn help:system | grep "os\."
+      -->
     <profile>
-      <!-- clean deploy -Dmaven.test.skip=true -P deve -->
-      <id>deve</id>
+      <id>unix</id>
       <activation>
-        <activeByDefault>true</activeByDefault>
+        <os><family>unix</family></os>
       </activation>
-      <distributionManagement>
-        <repository>
-          <!-- 添加到maven的安装目录的settings.xml中
-          <servers>
-            <server>
-              <id>repos-snapshots</id>
-              <username>username</username>
-              <password>password</password>
-            </server>
-          </servers> -->
-          <id>repos-snapshots</id>
-          <url>https://maven.aliyun.com/repository/snapshots</url>
-        </repository>
-      </distributionManagement>
       <properties>
-        <publish.version>2.3-SNAPSHOT</publish.version>
-        <separator>:</separator>
+        <system.separator>:</system.separator>
+      </properties>
+    </profile>
+    <profile>
+      <id>windows</id>
+      <activation>
+        <os><family>windows</family></os>
+      </activation>
+      <properties>
+        <system.separator>;</system.separator>
+      </properties>
+    </profile>
+
+    <profile>
+      <!-- clean deploy -Dmaven.test.skip=true -P dev -->
+      <id>dev</id>
+      <!--<activation>前面加了OS的profile后，此处的默认设置无效
+        <activeByDefault>true</activeByDefault>
+      </activation>-->
+      <properties>
+        <publish.type>SNAPSHOT</publish.type>
       </properties>
     </profile>
     <profile>
       <!-- clean deploy -Dmaven.test.skip=true -P prod -->
-      <id>prod</id>
-      <distributionManagement>
-        <repository>
-          <!-- 添加到maven的安装目录的settings.xml中
-          <servers>
-            <server>
-              <id>repos-releases</id>
-              <username>username</username>
-              <password>password</password>
-            </server>
-          </servers> -->
-          <id>repos-releases</id>
-          <url>https://maven.aliyun.com/repository/releases</url>
-        </repository>
-      </distributionManagement>
+      <id>prd</id>
       <properties>
-        <publish.version>2.3</publish.version>
-        <separator>:</separator>
+        <publish.type>RELEASE</publish.type>
       </properties>
     </profile>
   </profiles>
 
   <dependencies>
     <!-- ==============================logger============================== -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.22</version>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- slf4j api -->
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -275,7 +290,8 @@
     <dependency>
       <groupId>org.dom4j</groupId>
       <artifactId>dom4j</artifactId>
-      <version>[2.1.3,)</version>
+      <!--<version>[2.1.3,)</version>-->
+      <version>2.1.3</version>
       <exclusions>
         <exclusion>
           <groupId>xml-apis</groupId>
@@ -288,7 +304,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>31.0.1-jre</version>
+      <version>31.1-jre</version>
     </dependency>
 
     <!-- joda-time -->
@@ -350,7 +366,7 @@
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi-ooxml</artifactId>
-      <version>5.1.0</version>
+      <version>5.2.2</version>
       <exclusions>
         <exclusion>
           <groupId>commons-codec</groupId>
@@ -471,7 +487,7 @@
     <dependency>
       <groupId>com.alibaba</groupId>
       <artifactId>fastjson</artifactId>
-      <version>1.2.78</version>
+      <version>1.2.80</version>
     </dependency>
     <!-- ====================序列化==================== -->
 
@@ -532,12 +548,12 @@
     <!-- ====================加解密==================== -->
 
 
-    <!-- ====================pdf相关 REMOVE TODO ==================== -->
+    <!-- ====================pdf相关 ==================== -->
     <!-- pdf itext -->
     <dependency>
       <groupId>com.itextpdf</groupId>
       <artifactId>itextpdf</artifactId>
-      <version>5.5.13.2</version>
+      <version>5.5.13.3</version>
     </dependency>
     <!-- <dependency>
       <groupId>com.itextpdf</groupId>
@@ -547,86 +563,25 @@
     <!-- ====================pdf相关==================== -->
 
 
-    <!-- ====================文件类型处理 REMOVE TODO ==================== -->
-    <dependency>
-      <groupId>net.sf.jmimemagic</groupId>
-      <artifactId>jmimemagic</artifactId>
-      <version>0.1.5</version>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>commons-io</groupId>
-          <artifactId>commons-io</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xercesImpl</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xml-apis</groupId>
-          <artifactId>xml-apis</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xml-apis</groupId>
-          <artifactId>xmlParserAPIs</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>oro</groupId>
-          <artifactId>oro</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.codehaus.jackson</groupId>
-          <artifactId>jackson-xc</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.codehaus.jackson</groupId>
-          <artifactId>jackson-jaxrs</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <!-- ====================文件类型处理==================== -->
-
-
-
-    <!-- 文件编码探测（若有jar包无法下载可手动安装：lib/README.md）REMOVE TODO  -->
+    <!-- 文件编码探测（若有jar包无法下载可手动安装：lib/README.md） -->
     <dependency>
       <groupId>antlr</groupId>
       <artifactId>antlr</artifactId>
       <version>2.7.7</version>
     </dependency>
     <dependency>
-      <groupId>net.sourceforge.jargs</groupId>
-      <artifactId>jargs</artifactId>
-      <version>1.0</version>
-      <!-- https://sourceforge.net/projects/jargs/
-      <scope>system</scope>
-      <systemPath>${pom.basedir}/lib/jargs-1.0.jar</systemPath> -->
-    </dependency>
-    <dependency>
+      <!-- https://nexus.nuiton.org/nexus/content/repositories/central/ -->
       <groupId>net.sourceforge.jchardet</groupId>
       <artifactId>jchardet</artifactId>
       <version>1.0</version>
-      <!-- https://sourceforge.net/projects/jchardet/
-      <scope>system</scope>
-      <systemPath>${pom.basedir}/lib/jchardet-1.0.jar</systemPath> -->
     </dependency>
     <dependency>
+      <!-- https://nexus.nuiton.org/nexus/content/repositories/thirdparty/ -->
       <groupId>net.sourceforge.cpdetector</groupId>
       <artifactId>cpdetector</artifactId>
       <version>1.0.7</version>
-      <!-- https://sourceforge.net/projects/cpdetector/
-      <scope>system</scope>
-      <systemPath>${pom.basedir}/lib/cpdetector-1.0.7.jar</systemPath> -->
     </dependency>
     <!-- 文件编码探测（若有jar包无法下载可手动安装：lib/README.md） -->
-
 
 
     <!-- ====================only use in testing==================== -->
@@ -773,12 +728,15 @@
       <version>2.6</version>
       <scope>test</scope>
     </dependency>
+    
+    <!-- Java Object Layout -->
     <dependency>
       <groupId>org.openjdk.jol</groupId>
       <artifactId>jol-core</artifactId>
       <version>0.16</version>
       <scope>test</scope>
     </dependency>
+
     <!-- 二维码生成 -->
     <!-- <dependency>
       <groupId>com.github.kenglxn.QRGen</groupId>
@@ -787,12 +745,131 @@
       <scope>test</scope>
     </dependency> -->
 
+    <!-- money -->
+    <dependency>
+      <groupId>javax.money</groupId>
+      <artifactId>money-api</artifactId>
+      <version>1.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.javamoney</groupId>
+      <artifactId>moneta</artifactId>
+      <version>1.4.2</version>
+      <type>pom</type>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <!-- https://nexus.nuiton.org/nexus/content/repositories/thirdparty/ -->
+      <groupId>net.sourceforge.jargs</groupId>
+      <artifactId>jargs</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!-- 文件类型处理 -->
+    <dependency>
+      <groupId>net.sf.jmimemagic</groupId>
+      <artifactId>jmimemagic</artifactId>
+      <version>0.1.5</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>xercesImpl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xmlParserAPIs</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>oro</groupId>
+          <artifactId>oro</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.codehaus.jackson</groupId>
+          <artifactId>jackson-xc</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.codehaus.jackson</groupId>
+          <artifactId>jackson-jaxrs</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
 
+  <repositories>
+    <repository>
+      <!-- 1、“https://repo1.maven.org/maven2”与“https://repo.maven.apache.org/maven2”是同一个仓库(central，即mavenCentral)
+           2、central是在“$MAVEN_HOME/lib/maven-model-builder.jar!/org/apache/maven/model/pom-4.0.0.xml”中配置的
+           3、central仓的镜像：https://maven.aliyun.com/repository/central
+           4、central仓和jcenter仓的聚合镜像仓：https://maven.aliyun.com/repository/public
+           5、搜索地址：https://search.maven.org/
+           6、文档：https://developer.aliyun.com/mvn/guide
+      -->
+      <id>central</id>
+      <url>https://repo.maven.apache.org/maven2</url>
+    </repository>
+    <!--<repository>
+      2022-02-01后jcenter不再支持下载(已停用)
+      <id>jcenter</id>
+      <url>https://jcenter.bintray.com</url>
+    </repository>-->
+    <repository>
+      <id>nexus.nuiton.org-central</id>
+      <url>https://nexus.nuiton.org/nexus/content/repositories/central</url>
+    </repository>
+    <repository>
+      <id>nexus.nuiton.org-thirdparty</id>
+      <url>https://nexus.nuiton.org/nexus/content/repositories/thirdparty</url>
+    </repository>
+  </repositories>
+
+  <!-- 根据version中是否带有“-SNAPSHOT”来判断是快照版本还是正式版本 -->
+  <distributionManagement>
+    <!-- 添加到maven的安装目录的settings.xml中
+    <servers>
+      <server>
+        <id>repos-snapshots</id>
+        <username>username</username>
+        <password>password</password>
+      </server>
+    </servers> -->
+    <snapshotRepository>
+      <id>repos-snapshots</id>
+      <url>https://maven.aliyun.com/repository/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>repos-releases</id>
+      <url>https://maven.aliyun.com/repository/releases</url>
+    </repository>
+  </distributionManagement>
+
   <build>
-
-    <finalName>${project.artifactId}-${publish.version}</finalName>
-
+    <finalName>${project.artifactId}</finalName>
     <resources>
       <resource>
         <directory>src/main/resources</directory>
@@ -816,7 +893,6 @@
     </testResources>
 
     <plugins>
-
       <plugin>
         <!-- http://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html -->
         <groupId>org.apache.maven.plugins</groupId>
@@ -833,7 +909,7 @@
           <compilerArgs>
             <arg>-bootclasspath</arg>
             <!-- windows用“;”号分隔；linux用“:”号分隔；${JAVA_HOME}/lib/tools.jar； -->
-            <arg>${java.home}/lib/rt.jar${separator}${java.home}/lib/jce.jar${separator}${java.home}/lib/jsse.jar</arg>
+            <arg>${java.home}/lib/rt.jar${system.separator}${java.home}/lib/jce.jar${system.separator}${java.home}/lib/jsse.jar</arg>
             <arg>-parameters</arg>
           </compilerArgs>
           <excludes>

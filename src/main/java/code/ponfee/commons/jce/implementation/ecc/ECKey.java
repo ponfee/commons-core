@@ -1,14 +1,14 @@
 package code.ponfee.commons.jce.implementation.ecc;
 
+import code.ponfee.commons.jce.implementation.Key;
+import code.ponfee.commons.util.SecureRandoms;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
-
-import code.ponfee.commons.jce.implementation.Key;
-import code.ponfee.commons.util.SecureRandoms;
 
 /**
  * This is Elliptic Curve key

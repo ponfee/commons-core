@@ -16,15 +16,14 @@
 
 package code.ponfee.commons.web;
 
-import static com.google.common.collect.ImmutableList.of;
+import org.apache.commons.collections4.CollectionUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.collections4.CollectionUtils;
+import static com.google.common.collect.ImmutableList.of;
 
 /**
  * A "lightweight" device resolver algorithm based on Wordpress's Mobile pack. Detects the

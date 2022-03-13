@@ -1,16 +1,15 @@
 package code.ponfee.commons.export;
 
+import code.ponfee.commons.export.Tmeta.Type;
+import code.ponfee.commons.math.Numbers;
+import code.ponfee.commons.tree.FlatNode;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import code.ponfee.commons.export.Tmeta.Type;
-import code.ponfee.commons.math.Numbers;
-import code.ponfee.commons.tree.FlatNode;
 
 /**
  * html导出
@@ -61,8 +60,8 @@ public class HtmlExporter extends AbstractDataExporter<String> {
        .append("</html>                                                                           \n")
        .toString().replaceAll("\\s+\n", "\n");
 
-    private StringBuilder html; // StringBuilder扩容：(value.length << 1) + 2
-                                // 容量如果不够，直接扩充到需要的容量大小
+    private final StringBuilder html; // StringBuilder扩容：(value.length << 1) + 2
+                                     // 容量如果不够，直接扩充到需要的容量大小
 
     public HtmlExporter() {
         this.html = new StringBuilder(0x2000); // 初始容量8192
@@ -180,11 +179,6 @@ public class HtmlExporter extends AbstractDataExporter<String> {
 
     public String body() {
         return html.toString();
-    }
-
-    @Override
-    public void close() {
-        html = null;
     }
 
     public HtmlExporter horizon() {

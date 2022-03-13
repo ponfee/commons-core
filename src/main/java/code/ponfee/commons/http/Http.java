@@ -3,7 +3,6 @@ package code.ponfee.commons.http;
 import code.ponfee.commons.io.Closeables;
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.json.Jsons;
-import code.ponfee.commons.util.Enums;
 import com.fasterxml.jackson.databind.JavaType;
 import com.google.common.base.Preconditions;
 import org.apache.commons.collections4.MapUtils;
@@ -73,8 +72,8 @@ public final class Http {
     private final List<MimePart>      parts   = new ArrayList<>(0); // http文件上传
 
     private String data;                       // request body（json or form params, such as name1=value1&name2=value2&...&namen=valuen）
-    private int connectTimeout = 1000 * 3;     // 连接超时时间
-    private int readTimeout = 1000 * 7;        // 读取返回数据超时时间（socket timeout）
+    private int connectTimeout = 2000;         // 连接超时时间
+    private int readTimeout = 5000;            // 读取返回数据超时时间（socket timeout）
     private Boolean encode = Boolean.TRUE;     // 是否编码
     private String contentType;                // 请求内容类型：header("Content-Type", "application/json; charset=UTF-8")
     private String contentCharset;             // 请求内容编码

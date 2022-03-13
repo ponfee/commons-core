@@ -1,8 +1,23 @@
 package code.ponfee.commons.constrain;
 
-import static code.ponfee.commons.model.ResultCode.BAD_REQUEST;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import code.ponfee.commons.base.PrimitiveTypes;
+import code.ponfee.commons.base.tuple.Tuple2;
+import code.ponfee.commons.model.Result;
+import code.ponfee.commons.reflect.Fields;
+import code.ponfee.commons.reflect.GenericUtils;
+import code.ponfee.commons.util.Dates;
+import code.ponfee.commons.util.ObjectUtils;
+import code.ponfee.commons.util.RegexUtils;
+import code.ponfee.commons.util.Strings;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericDeclaration;
@@ -15,25 +30,9 @@ import java.util.Date;
 import java.util.Dictionary;
 import java.util.Map;
 
-import code.ponfee.commons.util.Dates;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.commons.lang3.time.DateUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-
-import code.ponfee.commons.collect.HashKey;
-import code.ponfee.commons.model.Result;
-import code.ponfee.commons.reflect.Fields;
-import code.ponfee.commons.reflect.GenericUtils;
-import code.ponfee.commons.util.ObjectUtils;
-import code.ponfee.commons.util.RegexUtils;
-import code.ponfee.commons.util.Strings;
+import static code.ponfee.commons.model.ResultCode.BAD_REQUEST;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * <pre>
@@ -57,7 +56,7 @@ public class FieldValidator {
 
     static final Cache<Method, String[]> METHOD_ARGSNAME = CacheBuilder.newBuilder().build();
 
-    private static final Cache<HashKey, Pair<Boolean, String>> META_CFG_CACHE = CacheBuilder.newBuilder().build();
+    private static final Cache<Tuple2<?, ?>, Pair<Boolean, String>> META_CFG_CACHE = CacheBuilder.newBuilder().build();
 
     protected FieldValidator() {}
 
@@ -122,7 +121,7 @@ public class FieldValidator {
 
     protected final String constrain(GenericDeclaration classOrMethod, String field, 
                                      Object value, Constraint cst, Class<?> type) {
-        HashKey key = HashKey.of(classOrMethod, field);
+        Tuple2<?, ?> key = Tuple2.of(classOrMethod, field);
         Pair<Boolean, String> result = META_CFG_CACHE.getIfPresent(key);
         if (result == null) {
             synchronized (META_CFG_CACHE) {
@@ -180,7 +179,7 @@ public class FieldValidator {
         }
 
         // 基本类型转包装类型（如果是）
-        type = org.apache.commons.lang3.ClassUtils.primitiveToWrapper(type);
+        type = PrimitiveTypes.ofPrimitive(type).wrapper();
 
         // 字串类型验证
         if (   (isNotBlank(c.regExp()) || isNotBlank(c.datePattern()) || c.notBlank() || c.maxLen() > -1 || c.minLen() > -1)

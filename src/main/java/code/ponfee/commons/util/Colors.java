@@ -2,8 +2,6 @@ package code.ponfee.commons.util;
 
 import java.awt.Color;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * color rgb and hex transform
  * 
@@ -19,14 +17,12 @@ public final class Colors {
     }
 
     public static String toHex(Color c) {
-        if (c == null) {
-            return null;
-        }
-
-        return '#' + toHex(c.getRed()) + toHex(c.getGreen()) + toHex(c.getBlue());
+        return '#' + hex(c.getRed()) + hex(c.getGreen()) + hex(c.getBlue());
     }
 
-    private static String toHex(int i) {
-        return StringUtils.leftPad(Integer.toHexString(i), 2, "0");
+    private static String hex(int i) {
+        // StringUtils.leftPad(Integer.toHexString(i), 2, "0")
+        return String.format("%02x", i);
     }
+
 }

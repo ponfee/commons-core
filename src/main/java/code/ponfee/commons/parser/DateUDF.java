@@ -1,11 +1,10 @@
 package code.ponfee.commons.parser;
 
-import java.util.Date;
-import java.util.regex.Pattern;
-
+import code.ponfee.commons.util.Dates;
 import org.apache.commons.lang3.StringUtils;
 
-import code.ponfee.commons.util.Dates;
+import java.util.Date;
+import java.util.regex.Pattern;
 
 /**
  * https://www.cnblogs.com/qcfeng/p/7553500.html

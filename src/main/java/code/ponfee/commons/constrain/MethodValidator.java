@@ -1,5 +1,14 @@
 package code.ponfee.commons.constrain;
 
+import code.ponfee.commons.reflect.ClassUtils;
+import code.ponfee.commons.reflect.Fields;
+import code.ponfee.commons.reflect.GenericUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -7,16 +16,6 @@ import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.reflect.MethodSignature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import code.ponfee.commons.reflect.ClassUtils;
-import code.ponfee.commons.reflect.Fields;
-import code.ponfee.commons.reflect.GenericUtils;
 
 /**
  * <pre>

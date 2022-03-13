@@ -84,17 +84,6 @@ public class TypedMapWrapper<K, V> implements TypedMap<K, V>, Serializable, Clon
         return this.target.entrySet();
     }
 
-    public TypedMapWrapper<K, V> deepCopy() {
-        return new TypedMapWrapper<>(
-            this.target.entrySet().stream().collect(Collectors.toMap(Entry::getKey, Entry::getValue))
-        );
-    }
-
-    @Override
-    public TypedMapWrapper<K, V> clone() {
-        return new TypedMapWrapper<>(this.target);
-    }
-
     @Override
     public boolean equals(Object obj) {
         return this.target.equals(obj);
@@ -111,7 +100,16 @@ public class TypedMapWrapper<K, V> implements TypedMap<K, V>, Serializable, Clon
     }
 
     public static <K, V> TypedMapWrapper<K, V> empty() {
-        return new TypedMapWrapper<>(null);
+        return new TypedMapWrapper<>(Collections.emptyMap());
+    }
+
+    @Override
+    public TypedMapWrapper<K, V> clone() {
+        return new TypedMapWrapper<>(this.target);
+    }
+
+    public TypedMapWrapper<K, V> copy() {
+        return new TypedMapWrapper<>(target.entrySet().stream().collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
     }
 
 }

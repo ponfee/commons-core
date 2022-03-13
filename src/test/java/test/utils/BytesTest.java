@@ -1,17 +1,16 @@
 package test.utils;
 
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.concurrent.ThreadLocalRandom;
-
+import code.ponfee.commons.util.Bytes;
+import code.ponfee.commons.util.ObjectUtils;
+import code.ponfee.commons.util.SecureRandoms;
+import com.google.common.base.Stopwatch;
 import org.apache.commons.codec.binary.Hex;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.google.common.base.Stopwatch;
-
-import code.ponfee.commons.util.Bytes;
-import code.ponfee.commons.util.SecureRandoms;
+import java.nio.ByteBuffer;
+import java.util.Base64;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class BytesTest {
 
@@ -62,4 +61,21 @@ public class BytesTest {
             Assert.assertArrayEquals(data, Bytes.hexDecode(hex));
         }
     }
+
+    @Test
+    public void test4() {
+        byte[] uuid = ObjectUtils.uuid();
+        long a = System.nanoTime();
+        long b = Thread.currentThread().getId();
+        long c = System.identityHashCode(SecureRandoms.class);
+
+        ByteBuffer buffer = ByteBuffer.allocate(40);
+        buffer.put(uuid);
+        buffer.putLong(a);
+        buffer.putLong(b);
+        buffer.putLong(c);
+        buffer.flip();
+        Assert.assertEquals(Bytes.hexEncode(buffer.array()), Bytes.hexEncode(uuid) + Bytes.hexEncode(Bytes.toBytes(a)) + Bytes.hexEncode(Bytes.toBytes(b)) + Bytes.hexEncode(Bytes.toBytes(c)));
+    }
+
 }

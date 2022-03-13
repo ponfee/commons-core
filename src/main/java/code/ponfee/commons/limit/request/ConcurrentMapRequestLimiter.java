@@ -1,14 +1,14 @@
 package code.ponfee.commons.limit.request;
 
-import static code.ponfee.commons.concurrent.ThreadPoolExecutors.CALLER_RUN_SCHEDULER;
+import code.ponfee.commons.util.Asserts;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * The request limiter based ConcurrentHashMap
@@ -17,31 +17,24 @@ import org.apache.commons.lang3.StringUtils;
  * 
  * @author Ponfee
  */
-@SuppressWarnings("unchecked")
 public final class ConcurrentMapRequestLimiter extends RequestLimiter {
 
-    private static final ConcurrentMap<String, CacheValue<?>> CACHE = new ConcurrentHashMap<>();
-    private static final ConcurrentMapRequestLimiter INSTANCE = new ConcurrentMapRequestLimiter();
+    private final ConcurrentMap<String, CacheValue<?>> cache = new ConcurrentHashMap<>();
+    private final Lock lock = new ReentrantLock(); // 定时清理加锁
 
-    private static final Lock LOCK = new ReentrantLock(); // 定时清理加锁
-    static {
-        CALLER_RUN_SCHEDULER.scheduleAtFixedRate(() -> {
-            if (!LOCK.tryLock()) {
+    private ConcurrentMapRequestLimiter(ScheduledExecutorService scheduler) {
+        Asserts.notNull(scheduler, "Scheduler cannot be null.");
+        scheduler.scheduleAtFixedRate(() -> {
+            if (!lock.tryLock()) {
                 return;
             }
             try {
                 long now = System.currentTimeMillis();
-                CACHE.entrySet().removeIf(x -> x.getValue().isExpire(now));
+                cache.entrySet().removeIf(x -> x.getValue().isExpire(now));
             } finally {
-                LOCK.unlock();
+                lock.unlock();
             }
         }, 60, 120, TimeUnit.SECONDS);
-    }
-
-    private ConcurrentMapRequestLimiter() {}
-
-    public static ConcurrentMapRequestLimiter singleton() {
-        return INSTANCE;
     }
 
     // ---------------------------------------------------------------------request limit
@@ -147,45 +140,45 @@ public final class ConcurrentMapRequestLimiter extends RequestLimiter {
     }
 
     private CacheValue<?> incrementAndGet(String key, long expireTimeMillis) {
-        CacheValue<?> cache = CACHE.get(key);
-        if (cache == null || cache.isExpire()) {
-            synchronized (CACHE) {
-                cache = CACHE.get(key);
-                if (cache == null || cache.isExpire()) { // 失效则重置
-                    cache = new CacheValue<>(null, expireTimeMillis);
-                    CACHE.put(key, cache);
-                    return cache;
+        CacheValue<?> value = cache.get(key);
+        if (value == null || value.isExpire()) {
+            synchronized (cache) {
+                value = cache.get(key);
+                if (value == null || value.isExpire()) { // 失效则重置
+                    value = new CacheValue<>(null, expireTimeMillis);
+                    cache.put(key, value);
+                    return value;
                 }
             }
         }
-        cache.increment();
-        return cache;
+        value.increment();
+        return value;
     }
 
     private void remove(String... keys) {
         for (String key : keys) {
-            CACHE.remove(key);
+            cache.remove(key);
         }
     }
 
     private <T> CacheValue<T> getAndRemove(String key) {
-        CacheValue<T> cache = (CacheValue<T>) CACHE.remove(key);
-        return cache == null || cache.isExpire() ? null : cache;
+        CacheValue<T> value = (CacheValue<T>) cache.remove(key);
+        return value == null || value.isExpire() ? null : value;
     }
 
     private <T> void add(String key, T value, int ttl) {
-        CACHE.put(key, new CacheValue<>(value, expire(ttl)));
+        cache.put(key, new CacheValue<>(value, expire(ttl)));
     }
 
     private <T> CacheValue<T> get(String key) {
-        CacheValue<T> cache = (CacheValue<T>) CACHE.get(key);
-        if (cache == null) {
+        CacheValue<T> value = (CacheValue<T>) cache.get(key);
+        if (value == null) {
             return null;
-        } else if (cache.isExpire()) {
-            CACHE.remove(key);
+        } else if (value.isExpire()) {
+            cache.remove(key);
             return null;
         } else {
-            return cache;
+            return value;
         }
     }
 

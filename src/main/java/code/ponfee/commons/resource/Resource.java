@@ -1,9 +1,9 @@
 package code.ponfee.commons.resource;
 
+import code.ponfee.commons.io.Closeables;
+
 import java.io.Closeable;
 import java.io.InputStream;
-
-import code.ponfee.commons.io.Closeables;
 
 /**
  * 资源类

@@ -1,13 +1,12 @@
 package code.ponfee.commons.jce.passwd;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import code.ponfee.commons.util.Base64UrlSafe;
+import code.ponfee.commons.util.SecureRandoms;
+import com.google.common.base.Preconditions;
 
 import java.util.Arrays;
 
-import com.google.common.base.Preconditions;
-
-import code.ponfee.commons.util.Base64UrlSafe;
-import code.ponfee.commons.util.SecureRandoms;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
 * BCrypt implements OpenBSD-style Blowfish password hashing using

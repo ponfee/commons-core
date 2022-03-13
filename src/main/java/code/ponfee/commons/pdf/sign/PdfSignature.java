@@ -1,12 +1,7 @@
 package code.ponfee.commons.pdf.sign;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.cert.X509Certificate;
-import java.util.Calendar;
-
+import code.ponfee.commons.io.Files;
+import code.ponfee.commons.jce.Providers;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfReader;
@@ -19,10 +14,14 @@ import com.itextpdf.text.pdf.security.ExternalSignature;
 import com.itextpdf.text.pdf.security.MakeSignature;
 import com.itextpdf.text.pdf.security.MakeSignature.CryptoStandard;
 import com.itextpdf.text.pdf.security.PrivateKeySignature;
-
-import code.ponfee.commons.io.Files;
-import code.ponfee.commons.jce.Providers;
 import sun.security.x509.AlgorithmId;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.cert.X509Certificate;
+import java.util.Calendar;
 
 /**
  * pdf签章

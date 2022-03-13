@@ -18,8 +18,7 @@ import java.util.regex.Pattern;
 public final class RegexUtils {
     private RegexUtils() {}
 
-    private static final LoadingCache<String, Pattern> PATTERNS =
-    CacheBuilder.newBuilder().softValues().build(
+    private static final LoadingCache<String, Pattern> PATTERNS = CacheBuilder.newBuilder().softValues().build(
         new CacheLoader<String, Pattern>() {
             @Override
             public Pattern load(String pattern) {
@@ -106,7 +105,7 @@ public final class RegexUtils {
     }
 
     // ----------------------------------------------------------ipv6 regexp
-    public static final String REGEXP_IPV6 = "^([0-9a-fA-F]{1,4}:){7,7}([0-9a-fA-F]{1,4}|:)|([0-9a-fA-F]{1,4}:){1,6}(:[0-9a-fA-F]{1,4}|:)|([0-9a-fA-F]{1,4}:){1,5}((:[0-9a-fA-F]{1,4}){1,2}|:)|([0-9a-fA-F]{1,4}:){1,4}((:[0-9a-fA-F]{1,4}){1,3}|:)|([0-9a-fA-F]{1,4}:){1,3}((:[0-9a-fA-F]{1,4}){1,4}|:)|([0-9a-fA-F]{1,4}:){1,2}((:[0-9a-fA-F]{1,4}){1,5}|:)|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6}|:)|:((:[0-9a-fA-F]{1,4}){1,7}|:)";
+    public static final String REGEXP_IPV6 = "^([0-9a-fA-F]{1,4}:){7}([0-9a-fA-F]{1,4}|:)|([0-9a-fA-F]{1,4}:){1,6}(:[0-9a-fA-F]{1,4}|:)|([0-9a-fA-F]{1,4}:){1,5}((:[0-9a-fA-F]{1,4}){1,2}|:)|([0-9a-fA-F]{1,4}:){1,4}((:[0-9a-fA-F]{1,4}){1,3}|:)|([0-9a-fA-F]{1,4}:){1,3}((:[0-9a-fA-F]{1,4}){1,4}|:)|([0-9a-fA-F]{1,4}:){1,2}((:[0-9a-fA-F]{1,4}){1,5}|:)|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6}|:)|:((:[0-9a-fA-F]{1,4}){1,7}|:)";
     private static final Pattern PATTERN_IPV6 = Pattern.compile(REGEXP_IPV6);
 
     /**

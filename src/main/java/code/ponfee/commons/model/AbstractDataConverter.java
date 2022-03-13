@@ -1,7 +1,7 @@
 package code.ponfee.commons.model;
 
-import code.ponfee.commons.reflect.BeanMaps;
 import code.ponfee.commons.reflect.BeanCopiers;
+import code.ponfee.commons.reflect.BeanMaps;
 import org.springframework.cglib.beans.BeanCopier;
 
 import java.util.List;
@@ -117,7 +117,7 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
             if (copier != null) {
                 copier.copy(source, target, null);
             } else {
-                BeanCopiers.copyProperties(source, target);
+                BeanCopiers.copy(source, target);
             }
             return target;
         }
@@ -145,7 +145,7 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
         } else if (copier != null) {
             copier.copy(source, target, null);
         } else {
-            BeanCopiers.copyProperties(source, target);
+            BeanCopiers.copy(source, target);
         }
     }
 
@@ -198,7 +198,7 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
         }
 
         try {
-            return BeanCopier.create(sourceType, targetType, false);
+            return BeanCopiers.get(sourceType, targetType);
         } catch (Exception e) {
             throw new UnsupportedOperationException("Create BeanCopier occur error.", e);
         }

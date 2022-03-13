@@ -1,5 +1,6 @@
 package code.ponfee.commons.util;
 
+import code.ponfee.commons.base.PrimitiveTypes;
 import code.ponfee.commons.math.Numbers;
 import code.ponfee.commons.reflect.ClassUtils;
 import code.ponfee.commons.reflect.Fields;
@@ -20,11 +21,13 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 
+import static code.ponfee.commons.base.Comparators.EQ;
+import static code.ponfee.commons.base.Comparators.GT;
+import static code.ponfee.commons.base.Comparators.LT;
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 
 /**
@@ -50,6 +53,39 @@ public final class ObjectUtils {
         return (obj == null) 
                ? defaultStr 
                : reflectionToString(obj, ToStringStyle.JSON_STYLE);
+    }
+
+    /**
+     * Compare two object numerically
+     *
+     * @param a the object a
+     * @param b the object b
+     * @return 0(a==b), 1(a>b), -1(a<b)
+     */
+    public static int compare(Object a, Object b) {
+        if (a == b) {
+            return EQ;
+        }
+        if (a == null) {
+            // null last
+            return GT;
+        }
+        if (b == null) {
+            // null last
+            return LT;
+        }
+
+        if ((a instanceof Comparable) && (b instanceof Comparable)) {
+            if (a.getClass().isInstance(b)) {
+                return ((Comparable) a).compareTo(b);
+            } else if (b.getClass().isInstance(a)) {
+                return ((Comparable) b).compareTo(a);
+            }
+        }
+
+        // Fields.addressOf
+        int res = Integer.compare(System.identityHashCode(a.getClass()), System.identityHashCode(b.getClass()));
+        return res != EQ ? res : Integer.compare(System.identityHashCode(a), System.identityHashCode(b));
     }
 
     @SuppressWarnings("unchecked")
@@ -105,16 +141,16 @@ public final class ObjectUtils {
     }
 
     /**
-     * Returns a object that convert spec value to type
+     * Returns target type value from origin value cast
      * 
      * @param value source object
      * @param type  target object type
-     * @return a this type object
+     * @return target type object
      *
      * @see com.alibaba.fastjson.util.TypeUtils
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> T convert(Object value, Class<T> type) {
+    public static <T> T cast(Object value, Class<T> type) {
         if (type.isInstance(value)) {
             return (T) value;
         }
@@ -149,7 +185,7 @@ public final class ObjectUtils {
             }
         }
 
-        return ClassUtils.newInstance(type, value.toString());
+        return ClassUtils.newInstance(type, new Object[]{value.toString()});
     }
 
     /**
@@ -180,7 +216,8 @@ public final class ObjectUtils {
     public static String uuid32() {
         //return Bytes.hexEncode(uuid());
         UUID uuid = UUID.randomUUID();
-        return Long.toHexString(uuid.getMostSignificantBits()) + Long.toHexString(uuid.getLeastSignificantBits());
+        return Long.toHexString(uuid.getMostSignificantBits())
+             + Long.toHexString(uuid.getLeastSignificantBits());
     }
 
     /**
@@ -261,7 +298,7 @@ public final class ObjectUtils {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static <T> T copyFrom(T source, String... fields) {
+    public static <T> T copyOf(T source, String... fields) {
         Preconditions.checkState(ArrayUtils.isNotEmpty(fields));
         T target = (T) newInstance(source.getClass());
         copy(source, target, fields);
@@ -285,10 +322,10 @@ public final class ObjectUtils {
         } else if (Dictionary.class == type) { // abstract
             return (T) new Hashtable<>();
         } else if (type.isPrimitive()) {
-            Class<?> wrapper = org.apache.commons.lang3.ClassUtils.primitiveToWrapper(type);
-            return (T) ClassUtils.newInstance(wrapper, String.class, "0"); // Boolean: false
-        } else if (org.apache.commons.lang3.ClassUtils.isPrimitiveWrapper(type)) {
-            return ClassUtils.newInstance(type, String.class, "0");
+            Class<?> wrapper = PrimitiveTypes.ofPrimitive(type).wrapper();
+            return (T) ClassUtils.newInstance(wrapper, new Class<?>[]{String.class}, new Object[]{"0"}); // Boolean: false
+        } else if (PrimitiveTypes.isWrapperType(type)) {
+            return ClassUtils.newInstance(type, new Class<?>[]{String.class}, new Object[]{"0"});
         } else {
             return ClassUtils.newInstance(type);
         }
@@ -303,7 +340,7 @@ public final class ObjectUtils {
     public static boolean isNotBeanType(Class<?> type) {
         return null == type
             || Object.class == type
-            || org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper(type)
+            || PrimitiveTypes.ofPrimitiveOrWrapper(type) != null
             || CharSequence.class.isAssignableFrom(type)
             || Map.class.isAssignableFrom(type)
             || Dictionary.class.isAssignableFrom(type)
@@ -425,18 +462,24 @@ public final class ObjectUtils {
             }
         };
 
-        PrimitiveOrWrapperConvertors(Class<?> targetType) {
-            Hide.MAPPING.put(targetType, this);
+        private static final Map<Class<?>, PrimitiveOrWrapperConvertors> MAPPING =
+                Enums.toMap(PrimitiveOrWrapperConvertors.class, PrimitiveOrWrapperConvertors::type);
+
+        private final Class<?> type;
+
+        PrimitiveOrWrapperConvertors(Class<?> type) {
+            this.type = type;
         }
 
         abstract <T> T to(Object value);
 
+        public Class<?> type() {
+            return this.type;
+        }
+
         static PrimitiveOrWrapperConvertors of(Class<?> targetType) {
-            return Hide.MAPPING.get(targetType);
+            return MAPPING.get(targetType);
         }
     }
 
-    private static class Hide {
-        private static final Map<Class<?>, PrimitiveOrWrapperConvertors> MAPPING = new HashMap<>();
-    }
 }

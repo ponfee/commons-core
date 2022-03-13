@@ -1,20 +1,17 @@
 package code.ponfee.commons.extract;
 
+import code.ponfee.commons.extract.ExcelExtractor.ExcelType;
+import code.ponfee.commons.extract.streaming.StreamingExcelExtractor;
+import code.ponfee.commons.http.ContentType;
+import com.google.common.collect.ImmutableList;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.EnumUtils;
+
 import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.List;
-
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.io.FilenameUtils;
-
-import com.google.common.collect.ImmutableList;
-
-import code.ponfee.commons.extract.ExcelExtractor.ExcelType;
-import code.ponfee.commons.extract.streaming.StreamingExcelExtractor;
-import code.ponfee.commons.http.ContentType;
-import code.ponfee.commons.util.Enums;
-import org.apache.commons.lang3.EnumUtils;
 
 /**
  * The data extractor builder, facade operator

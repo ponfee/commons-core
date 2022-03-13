@@ -1,9 +1,8 @@
 package code.ponfee.commons.tree;
 
+import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.Comparator;
-
-import javax.annotation.Nonnull;
 
 /**
  * Builds tree node as root node

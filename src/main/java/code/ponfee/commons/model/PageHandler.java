@@ -1,15 +1,13 @@
 package code.ponfee.commons.model;
 
-import java.util.Dictionary;
-import java.util.Map;
-
-import javax.annotation.Nonnull;
-
+import code.ponfee.commons.math.Numbers;
+import code.ponfee.commons.reflect.Fields;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.ImmutableMap;
 
-import code.ponfee.commons.math.Numbers;
-import code.ponfee.commons.reflect.Fields;
+import javax.annotation.Nonnull;
+import java.util.Dictionary;
+import java.util.Map;
 
 /**
  * 分页参数处理类
@@ -58,9 +56,7 @@ public final class PageHandler {
         Integer limit = getInt(params, paramLimit);
 
         // 默认通过pageSize查询
-        if (   (pageSize == null || pageSize < 0) 
-            && (limit == null    || limit < 0)
-        ) {
+        if (nullOrNegative(pageSize) && nullOrNegative(limit)) {
             pageSize = 0;
         }
 
@@ -88,7 +84,7 @@ public final class PageHandler {
         if (pageNum == null || pageNum < 1) {
             pageNum = 1;
         }
-        if (pageSize < 0) {
+        if (nullOrNegative(pageSize)) {
             pageSize = 0;
         }
         PageHelper.startPage(pageNum, pageSize);
@@ -102,10 +98,10 @@ public final class PageHandler {
      * @param limit the limit
      */
     public static void offsetPage(Integer offset, Integer limit) {
-        if (offset == null || offset < 0) {
+        if (nullOrNegative(offset)) {
             offset = 0;
         }
-        if (limit == null || limit < 0) {
+        if (nullOrNegative(limit)) {
             limit = 0;
         }
         PageHelper.offsetPage(offset, limit);
@@ -146,4 +142,7 @@ public final class PageHandler {
         }
     }
 
+    private static boolean nullOrNegative(Integer val) {
+        return val == null || val < 0;
+    }
 }

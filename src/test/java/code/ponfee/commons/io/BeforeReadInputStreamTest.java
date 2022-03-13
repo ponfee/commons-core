@@ -27,7 +27,7 @@ public class BeforeReadInputStreamTest {
 
         for (int i = 1, n = (int) f.length() + 500; i < n; i += 7) {
             try (InputStream input1 = new FileInputStream(f);
-                 InputStream input2 = new BeforeReadInputStream(new FileInputStream(f), i)
+                 InputStream input2 = new PrereadInputStream(new FileInputStream(f), i)
             ){
                 fb = IOUtils.toByteArray(input1);
                 bb = IOUtils.toByteArray(input2);

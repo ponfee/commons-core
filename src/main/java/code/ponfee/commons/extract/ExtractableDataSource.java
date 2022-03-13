@@ -1,12 +1,11 @@
 package code.ponfee.commons.extract;
 
+import javax.annotation.Nonnull;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import javax.annotation.Nonnull;
 
 /**
  * The extractable DataSource is a Inputstream or File

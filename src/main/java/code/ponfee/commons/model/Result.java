@@ -1,6 +1,5 @@
 package code.ponfee.commons.model;
 
-import code.ponfee.commons.json.Jsons;
 import com.google.common.base.Preconditions;
 
 import java.beans.Transient;
@@ -14,7 +13,7 @@ import java.util.function.Function;
  * @param <T> the data type
  * @author Ponfee
  */
-public class Result<T> implements CodeMsg, java.io.Serializable {
+public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializable {
 
     private static final long serialVersionUID = -2804195259517755050L;
     public static final Result<Void> SUCCESS = new SuccessResult();
@@ -52,8 +51,8 @@ public class Result<T> implements CodeMsg, java.io.Serializable {
 
     // -------------------------------------------others methods
     @SuppressWarnings("unchecked")
-    public <E> Result<E> copy() {
-        return copy((E) data);
+    public <E> Result<E> cast() {
+        return (Result<E>) this;
     }
 
     public <E> Result<E> copy(E data) {
@@ -228,15 +227,6 @@ public class Result<T> implements CodeMsg, java.io.Serializable {
         return !this.success;
     }
 
-    @Override
-    public String toString() {
-        return this.toJson();
-    }
-
-    public String toJson() {
-        return Jsons.toJson(this);
-    }
-
     /**
      * SUCCESS RESULT
      */
@@ -260,6 +250,10 @@ public class Result<T> implements CodeMsg, java.io.Serializable {
         @Override
         public void setData(Void void0) {
             throw new UnsupportedOperationException();
+        }
+
+        private Object readResolve() {
+            return SUCCESS;
         }
     }
 

@@ -36,6 +36,7 @@ import static org.springframework.core.io.support.ResourcePatternResolver.CLASSP
  *   
  *   new ResourceScanner("code.ponfee").scan4class();
  *   new ResourceScanner("code.ponfee").scan4class(new Class[] { Service.class });
+ *   new ResourceScanner(ClassUtils.getPackagePath(XXX.class)).scan4text("abc.txt");
  * </pre>
  * 
  * 资源扫描

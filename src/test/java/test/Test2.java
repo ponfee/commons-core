@@ -8,6 +8,10 @@
 
 package test;
 
+import code.ponfee.commons.base.tuple.Tuple;
+import code.ponfee.commons.base.tuple.Tuple1;
+import code.ponfee.commons.base.tuple.Tuple2;
+import code.ponfee.commons.collect.Collects;
 import code.ponfee.commons.collect.ValueSortedMap;
 import code.ponfee.commons.io.HumanReadables;
 import code.ponfee.commons.json.Jsons;
@@ -18,6 +22,8 @@ import code.ponfee.commons.reflect.BeanCopiers;
 import code.ponfee.commons.util.Bytes;
 import code.ponfee.commons.util.Dates;
 import code.ponfee.commons.util.IdWorker;
+import code.ponfee.commons.util.ObjectUtils;
+import code.ponfee.commons.util.SecureRandoms;
 import com.google.common.base.Stopwatch;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -28,6 +34,7 @@ import org.springframework.objenesis.ObjenesisHelper;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -72,7 +79,7 @@ public class Test2 {
     public void test2() {
         Page<Map<String, Object>> source = new Page<>();
         Page<Map> target = new Page<>();
-        BeanCopiers.copyProperties(source, target);
+        BeanCopiers.copy(source, target);
         System.out.println(source.copy());
     }
 
@@ -376,9 +383,89 @@ public class Test2 {
 
     @Test
     public void tes31() {
+        System.out.println(Character.toUpperCase('y'));
+        System.out.println(Character.toUpperCase('Y'));
         System.out.println(Arrays.toString(Numbers.slice(9, 3)));
         System.out.println(Arrays.toString(Numbers.slice(10, 3)));
         System.out.println(Arrays.toString(Numbers.slice(11, 3)));
         System.out.println(Arrays.toString(Numbers.slice(12, 3)));
+    }
+
+    @Test
+    public void tes32() {
+        System.out.println(String.format("Holder(%s)", "null"));
+        List<Integer> x = Arrays.asList(1, 2, 3);
+        List<Integer> y = Arrays.asList(4, 5, 6);
+        System.out.println(Collects.cartesian(x, y, (a, b) -> a * b));
+        System.out.println(SecureRandoms.random(512));
+        System.out.println(Bytes.toBigInteger(SecureRandoms.nextBytes(10)));
+    }
+
+    @Test
+    public void tes33() {
+        List<Tuple1<Object>> list = new ArrayList<>();
+        /*list.add(Tuple1.of(new Object()));*/
+        list.add(Tuple1.of(SecureRandoms.nextInt(10)));
+        list.add(Tuple1.of(SecureRandoms.nextInt(10)));
+        list.add(Tuple1.of(SecureRandoms.nextInt(10)));
+        list.add(Tuple1.of(SecureRandoms.nextInt(10)));
+        list.add(Tuple1.of(SecureRandoms.nextInt(10)));
+        System.out.println(list);
+        list.sort(Comparator.naturalOrder());
+        System.out.println(list);
+        Assert.assertTrue(Object.class.isInstance(new Object()));
+        Assert.assertTrue(Object.class.isInstance(new Object[0]));
+        Assert.assertTrue(Object.class.isInstance(1));
+        Assert.assertTrue(Integer.class.isInstance(1));
+        Assert.assertFalse(Integer.class.isInstance(1L));
+        Assert.assertTrue(Number.class.isInstance(1L));
+        Assert.assertTrue(Number.class.isInstance(1));
+
+        List<Tuple> list1 = new ArrayList<>();
+        list1.add(Tuple1.of(new Object()));
+        list1.add(Tuple1.of(1));
+        list1.add(Tuple1.of("z"));
+        list1.add(Tuple2.of("x", 4));
+        list1.add(Tuple1.of(null));
+        list1.add(Tuple1.of(new RuntimeException()));
+        list1.add(null);
+        list1.add(Tuple1.of("b"));
+        list1.add(Tuple1.of(null));
+        list1.add(Tuple1.of(2));
+        list1.add(Tuple1.of(null));
+        System.out.println(list1);
+        list1.sort(Comparator.nullsLast(Comparator.naturalOrder()));
+        System.out.println(list1);
+
+
+        System.out.println();
+        List<Tuple> list2 = new ArrayList<>();
+        list2.add(Tuple1.of(SecureRandoms.nextInt(100)));
+        list2.add(Tuple1.of("a"));
+        list2.add(Tuple1.of(SecureRandoms.nextInt(100)));
+        list2.add(Tuple1.of('x'));
+        list2.add(Tuple1.of(SecureRandoms.nextInt(100)));
+        list2.add(Tuple1.of(null));
+        list2.add(Tuple1.of(SecureRandoms.nextInt(100)));
+        list2.add(Tuple1.of("x"));
+        list2.add(Tuple1.of(SecureRandoms.nextInt(100)));
+        list2.add(Tuple1.of('z'));
+        list2.add(Tuple1.of(SecureRandoms.nextInt(100)));
+        list2.add(Tuple1.of(SecureRandoms.nextInt(100)));
+        list2.add(Tuple1.of('c'));
+        list2.add(Tuple1.of(new Object()));
+        list2.add(Tuple1.of(new Object()));
+        list2.add(Tuple1.of('a'));
+        list2.add(Tuple1.of(new Object()));
+        list2.add(Tuple1.of(SecureRandoms.nextInt(100)));
+        list2.add(Tuple1.of(SecureRandoms.nextInt(100)));
+        list2.add(Tuple1.of("y"));
+        list2.add(Tuple1.of(null));
+        list2.add(Tuple1.of(SecureRandoms.nextInt(100)));
+        list2.add(Tuple1.of('a'));
+        list2.add(Tuple1.of(SecureRandoms.nextInt(10)));
+        System.out.println("un-sorted: "+list2);
+        list2.sort(Comparator.nullsLast(Comparator.naturalOrder()));
+        System.out.println("do-sorted: "+list2);
     }
 }

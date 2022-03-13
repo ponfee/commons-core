@@ -1,5 +1,9 @@
 package code.ponfee.commons.serial;
 
+import code.ponfee.commons.io.Closeables;
+import code.ponfee.commons.io.ExtendedGZIPOutputStream;
+import org.apache.commons.lang3.ClassUtils;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -8,13 +12,24 @@ import java.io.ObjectOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import org.apache.commons.lang3.ClassUtils;
-
-import code.ponfee.commons.io.Closeables;
-import code.ponfee.commons.io.ExtendedGZIPOutputStream;
-
 /**
- * java序例化
+ * <pre>
+ * JDK序例化
+ *
+ * 1、Default serialization process：仅实现了Serializable接口，则JDK会使用默认的序列化进程序列化和反序列化对象
+ * Note：针对所有non-transient和non-static成员变量
+ * {@code java.io.ObjectOutputStream#defaultWriteObject() }
+ * {@code java.io.ObjectInputStream#defaultReadObject() }
+ *
+ * 2、Customizing the serialization process：不仅实现了Serializable接口还定义了两个方法，则JDK会使用这两个方法定制化的进行序列化和反序列化对象
+ * Note: must private access modifier, Subclasses will be inherit this method
+ * {@code private void readObject(ObjectInputStream input) }
+ * {@code private void writeObject(ObjectOutputSteam out) }
+ *
+ * 3、java.io.Externalizable：该接口是继承于Serializable，也是自定义实现序列化和反序列化方式的一种方式
+ * {@code void writeExternal(ObjectOutput out) }
+ * {@code void readExternal(ObjectInput in) }
+ * </pre>
  * 
  * @author Ponfee
  */

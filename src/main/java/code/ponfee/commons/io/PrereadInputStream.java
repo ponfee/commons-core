@@ -8,18 +8,18 @@ import java.io.InputStream;
  * 
  * @author Ponfee
  */
-public class BeforeReadInputStream extends InputStream {
+public class PrereadInputStream extends InputStream {
 
     private final InputStream input;
-    private final byte[] beforeReadByteArray;
+    private final byte[] heads;
     private final int limit;
     private int offset;
 
-    public BeforeReadInputStream(InputStream input, int maxCount) throws IOException {
+    public PrereadInputStream(InputStream input, int maxCount) throws IOException {
         this.input = input;
-        this.beforeReadByteArray = Files.readByteArray(input, maxCount);
+        this.heads = Files.readByteArray(input, maxCount);
         this.offset = 0;
-        this.limit = this.beforeReadByteArray.length;
+        this.limit = this.heads.length;
     }
 
     /**
@@ -28,7 +28,7 @@ public class BeforeReadInputStream extends InputStream {
     @Override
     public int read() throws IOException {
         if (this.offset < this.limit) {
-            return this.beforeReadByteArray[this.offset];
+            return this.heads[this.offset];
         } else {
             return this.input.read();
         }
@@ -40,11 +40,11 @@ public class BeforeReadInputStream extends InputStream {
         if (remaining > 0) {
             int count = len - off;
             if (remaining >= count) {
-                System.arraycopy(this.beforeReadByteArray, this.offset, buf, off, len);
+                System.arraycopy(this.heads, this.offset, buf, off, len);
                 this.offset += count;
                 return count;
             } else {
-                System.arraycopy(this.beforeReadByteArray, this.offset, buf, off, remaining);
+                System.arraycopy(this.heads, this.offset, buf, off, remaining);
                 int cnt = this.input.read(buf, off + remaining, len - remaining);
                 this.offset = this.limit;
                 return cnt == -1 ? remaining : remaining + cnt;
@@ -59,8 +59,8 @@ public class BeforeReadInputStream extends InputStream {
         return read(buf, 0, buf.length);
     }
 
-    public byte[] getArray() {
-        return this.beforeReadByteArray;
+    public byte[] heads() {
+        return this.heads;
     }
 
     @Override
@@ -89,7 +89,7 @@ public class BeforeReadInputStream extends InputStream {
     }
 
     @Override @Deprecated
-    public synchronized void mark(int readlimit) {
+    public synchronized void mark(int readLimit) {
         throw new UnsupportedOperationException("mark/reset not supported");
     }
 

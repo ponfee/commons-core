@@ -1,14 +1,12 @@
 package code.ponfee.commons.jce.sm;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-
-import javax.annotation.Nonnull;
-
+import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.ArrayUtils;
 import org.bouncycastle.util.Arrays;
 
-import com.google.common.base.Preconditions;
+import javax.annotation.Nonnull;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 
 /**
  * SM4 symmetric cryptor implementation

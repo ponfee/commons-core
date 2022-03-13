@@ -1,7 +1,6 @@
 package code.ponfee.commons.util;
 
-import static java.util.concurrent.ThreadLocalRandom.current;
-
+import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -12,7 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.imageio.ImageIO;
+import static java.util.concurrent.ThreadLocalRandom.current;
 
 /**
  * 图片验证码生成类
@@ -140,8 +139,8 @@ public class Captchas {
 
     //-------------------------private methods
     private static Color getRandColor(int fc, int bc) {
-        fc = fc > 255 ? 255 : fc;
-        bc = bc > 255 ? 255 : bc;
+        fc = Math.min(fc, 255);
+        bc = Math.min(bc, 255);
         int r = fc + current().nextInt(bc - fc);
         int g = fc + current().nextInt(bc - fc);
         int b = fc + current().nextInt(bc - fc);
@@ -172,7 +171,7 @@ public class Captchas {
     private static void shearX(Graphics g, int w, int h, Color color) {
         int period = current().nextInt(2),
              phase = current().nextInt(2);
-        double frames = (2 * Math.PI * phase) / 1.0D;
+        double frames = 2 * Math.PI * phase;
 
         for (int d, i = 0; i < h; i++) {
             d = (int) ((period >> 1) * Math.sin((double) i / period + frames));

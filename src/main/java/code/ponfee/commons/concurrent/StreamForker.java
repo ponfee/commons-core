@@ -1,5 +1,7 @@
 package code.ponfee.commons.concurrent;
 
+import code.ponfee.commons.exception.CheckedException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,8 +15,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
-import code.ponfee.commons.exception.CheckedException;
 
 /**
  * The class use in fork {@link Stream},

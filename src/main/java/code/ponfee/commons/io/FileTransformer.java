@@ -1,12 +1,10 @@
 package code.ponfee.commons.io;
 
-import static code.ponfee.commons.io.CharacterEncodingDetector.detect;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * 文件编码转换与文本内容替换
@@ -86,7 +84,7 @@ public class FileTransformer {
 
             if (   isMatch 
                 && StringUtils.isNotEmpty(encoding) 
-                && ArrayUtils.contains(CHARSETS, charset = detect(path).name().toUpperCase()) 
+                && ArrayUtils.contains(CHARSETS, charset = CharsetDetector.detect(path).name().toUpperCase())
                 && !encoding.equalsIgnoreCase(charset)
             ) {
                 log.append("转换：[").append(charset).append("]").append(StringUtils.rightPad(path, FIX_LENGTH)).append("  -->  ");

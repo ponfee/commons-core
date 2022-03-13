@@ -1,10 +1,9 @@
 package code.ponfee.commons.json;
 
-import javax.annotation.Nonnull;
-
+import com.alibaba.fastjson.serializer.PropertyFilter;
 import org.apache.commons.lang3.ArrayUtils;
 
-import com.alibaba.fastjson.serializer.PropertyFilter;
+import javax.annotation.Nonnull;
 
 /**
  * <pre>

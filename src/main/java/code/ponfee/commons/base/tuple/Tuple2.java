@@ -5,17 +5,16 @@ import java.util.Objects;
 /**
  * Tuple2 consisting of two elements.
  *
- * @param <A> the type A
- * @param <B> the type B
  * @author Ponfee
  */
-public class Tuple2<A, B> extends Tuple1<A> {
+public final class Tuple2<A, B> extends Tuple {
     private static final long serialVersionUID = -3627925720098458172L;
 
+    public A a;
     public B b;
 
     public Tuple2(A a, B b) {
-        super(a);
+        this.a = a;
         this.b = b;
     }
 
@@ -24,10 +23,19 @@ public class Tuple2<A, B> extends Tuple1<A> {
     }
 
     @Override
-    public Object get(int index) {
+    public <T> T get(int index) {
         switch (index) {
-            case  0: return a;
-            case  1: return b;
+            case  0: return (T) a;
+            case  1: return (T) b;
+            default: throw new IndexOutOfBoundsException("Index: " + index);
+        }
+    }
+
+    @Override
+    public <T> void set(T value, int index) {
+        switch (index) {
+            case  0: a = (A) value; break;
+            case  1: b = (B) value; break;
             default: throw new IndexOutOfBoundsException("Index: " + index);
         }
     }
@@ -43,12 +51,47 @@ public class Tuple2<A, B> extends Tuple1<A> {
     }
 
     @Override
-    public boolean equals(Object o) {
-        return super.equals(o) && Objects.equals(b, ((Tuple2<?, ?>) o).b);
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Tuple2)) {
+            return false;
+        }
+
+        Tuple2<?, ?> o = (Tuple2<?, ?>) obj;
+        return eq(o.a, o.b);
+    }
+
+    public boolean eq(Object a, Object b) {
+        return Objects.equals(this.a, a)
+            && Objects.equals(this.b, b);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(a, b);
+        int result = a != null ? a.hashCode() : 0;
+        result = HASH_FACTOR * result + (b != null ? b.hashCode() : 0);
+        return result;
     }
+
+    @Override
+    public int length() {
+        return 2;
+    }
+
+    @Override
+    public Tuple2<A, B> copy() {
+        return new Tuple2<>(a, b);
+    }
+
+    /**
+     * Returns a Tuple2 Object of this instance swapped values.
+     *
+     * @return a Tuple2 Object of this instance swapped values
+     */
+    public Tuple2<B, A> swap() {
+        return new Tuple2<>(b, a);
+    }
+
 }

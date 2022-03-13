@@ -9,6 +9,7 @@
 package test;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -17,15 +18,19 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import code.ponfee.commons.base.tuple.Tuple2;
+import code.ponfee.commons.collect.ArrayHashKey;
+import code.ponfee.commons.concurrent.ThreadPoolTestUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 
-import code.ponfee.commons.concurrent.ThreadPoolExecutors;
 import code.ponfee.commons.jce.CryptoProvider;
 import code.ponfee.commons.resource.ResourceLoaderFacade;
 import code.ponfee.commons.util.Bytes;
@@ -40,6 +45,16 @@ import io.netty.util.internal.ThreadLocalRandom;
 public class Test1 {
     
     public static void main(String[] args) throws InterruptedException, ExecutionException {
+        String nids = Arrays.stream(new Integer[]{1,2,3}).map(e -> String.valueOf(e)).collect(Collectors.joining(","));
+        System.out.println(nids);
+        String[] arr = {"a", "b"};
+        System.out.println(Arrays.toString(Arrays.copyOfRange(arr, 1, 1)));
+        System.out.println(null==null);
+        Tuple2 a = Tuple2.of(String.class, ArrayHashKey.of(new Class[]{IntStream.class, Object.class}));
+        Tuple2 b = Tuple2.of(String.class, ArrayHashKey.of(new Class[]{IntStream.class, Object.class}));
+        System.out.println(a.equals(b));
+        System.out.println(a.hashCode() == b.hashCode());
+        System.out.println((-1L ^ (-1L << 10)) == (~(-1L << 10)));
         System.out.println(String.format("%02d", 1));
         Date d1 = Dates.toDate("2019-05-10 10:23:34");
         Date d2 = Dates.toDate("2019-05-11 08:23:34");
@@ -131,7 +146,7 @@ public class Test1 {
     }
     @Test
     public void test3() throws InterruptedException {
-        System.out.println(ThreadPoolExecutors.INFINITY_QUEUE_EXECUTOR);
+        System.out.println(ThreadPoolTestUtils.INFINITY_QUEUE_EXECUTOR);
         Lists.newArrayList(1,2,3)
             .parallelStream().parallel().sequential() // 并行或串行由最后一个设置决定
         ;

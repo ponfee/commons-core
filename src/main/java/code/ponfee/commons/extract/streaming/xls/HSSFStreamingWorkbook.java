@@ -8,7 +8,6 @@ import org.apache.poi.hssf.eventusermodel.HSSFListener;
 import org.apache.poi.hssf.eventusermodel.HSSFRequest;
 import org.apache.poi.hssf.eventusermodel.MissingRecordAwareHSSFListener;
 import org.apache.poi.hssf.record.BOFRecord;
-import org.apache.poi.hssf.record.BlankRecord;
 import org.apache.poi.hssf.record.BoolErrRecord;
 import org.apache.poi.hssf.record.BoundSheetRecord;
 import org.apache.poi.hssf.record.CellRecord;
@@ -22,6 +21,7 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.formula.EvaluationWorkbook;
 import org.apache.poi.ss.formula.udf.UDFFinder;
+import org.apache.poi.ss.usermodel.CellReferenceType;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormat;
@@ -40,7 +40,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 
 /**
  * The version for 2003 or early XSL excel file streaming reader excel workbook
@@ -56,8 +56,8 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
 
     public HSSFStreamingWorkbook(InputStream input, int rowCacheSize,
                                  int[] sheetIndexs, String[] sheetNames,
-                                 ExecutorService executor) {
-        executor.submit(new AsyncHSSFReader(
+                                 Executor executor) {
+        executor.execute(new AsyncHSSFReader(
             rowCacheSize, sheetIndexs, sheetNames, input
         ));
     }
@@ -266,8 +266,6 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
 
         private String getString(CellRecord record) {
             switch (record.getSid()) {
-                case BlankRecord.sid:
-                    return null;
                 case BoolErrRecord.sid:
                     return Boolean.toString(((BoolErrRecord) record).getBooleanValue());
                 case FormulaRecord.sid:
@@ -541,6 +539,16 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
 
     @Override @Deprecated
     public EvaluationWorkbook createEvaluationWorkbook() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override @Deprecated
+    public CellReferenceType getCellReferenceType() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override @Deprecated
+    public void setCellReferenceType(CellReferenceType cellReferenceType) {
         throw new UnsupportedOperationException();
     }
 

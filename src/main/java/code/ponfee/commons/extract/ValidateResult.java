@@ -1,12 +1,10 @@
 package code.ponfee.commons.extract;
 
-import java.util.List;
-
+import code.ponfee.commons.io.Files;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.common.collect.Lists;
-
-import code.ponfee.commons.io.Files;
+import java.util.List;
 
 /**
  * Validate result

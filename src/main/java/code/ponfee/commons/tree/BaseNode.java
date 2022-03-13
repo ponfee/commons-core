@@ -8,14 +8,12 @@
 
 package code.ponfee.commons.tree;
 
-import java.io.Serializable;
-import java.util.List;
-
+import code.ponfee.commons.util.Strings;
+import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.SerializationUtils;
 
-import com.google.common.base.Preconditions;
-
-import code.ponfee.commons.util.Strings;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * 基于树形结构节点的基类
@@ -49,6 +47,10 @@ public class BaseNode<T extends Serializable & Comparable<? super T>, A extends 
     protected int treeNodeCount; // 树的节点数量
     protected int treeMaxDegree; // 树中最大的度数（树中所有节点数目=所有节点度数之和+1）
     protected int treeLeafCount; // 树的叶子节点数量（叶子节点为1）
+
+    protected int childrenCount; // 子节点个数
+    protected int  siblingOrder; // 兄弟节点按顺序排行（从1开始）
+
 
     public BaseNode(T nid, T pid, A attach) {
         this(nid, pid, true, attach);
@@ -144,4 +146,11 @@ public class BaseNode<T extends Serializable & Comparable<? super T>, A extends 
         return treeLeafCount;
     }
 
+    public int getChildrenCount() {
+        return childrenCount;
+    }
+
+    public int getSiblingOrder() {
+        return siblingOrder;
+    }
 }

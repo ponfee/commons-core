@@ -17,7 +17,6 @@ import java.nio.charset.Charset;
 public class WrappedBufferedWriter extends Writer {
 
     private OutputStream output;
-    private OutputStreamWriter writer;
     private BufferedWriter buffer;
 
     public WrappedBufferedWriter(File file) throws FileNotFoundException {
@@ -33,14 +32,10 @@ public class WrappedBufferedWriter extends Writer {
     }
 
     public WrappedBufferedWriter(OutputStream output, Charset charset) {
-        super();
         this.output = output;
-        this.writer = new OutputStreamWriter(output, charset);
-        this.buffer = new BufferedWriter(writer, Files.BUFF_SIZE);
-    }
-
-    public void write(byte[] bytes) throws IOException {
-        output.write(bytes);
+        this.buffer = new BufferedWriter(
+            new OutputStreamWriter(output, charset), Files.BUFF_SIZE
+        );
     }
 
     @Override
@@ -81,17 +76,12 @@ public class WrappedBufferedWriter extends Writer {
     @Override
     public void flush() throws IOException {
         buffer.flush();
-        writer.flush();
-        output.flush();
     }
 
     @Override
     public void close() {
         Closeables.console(buffer);
-        Closeables.console(writer);
-        Closeables.console(output);
         buffer = null;
-        writer = null;
         output = null;
     }
 
@@ -102,6 +92,10 @@ public class WrappedBufferedWriter extends Writer {
 
     public void newLine() throws IOException {
         buffer.newLine();
+    }
+
+    public void write(byte[] bytes) throws IOException {
+        output.write(bytes);
     }
 
     public void writeln() throws IOException {

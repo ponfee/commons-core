@@ -8,19 +8,24 @@
 
 package test.tree;
 
+import code.ponfee.commons.base.tuple.Tuple2;
+import code.ponfee.commons.collect.ImmutableArrayList;
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.tree.NodePath;
-import code.ponfee.commons.tree.NodePath.NodePathFastjsonDeserializer;
+import code.ponfee.commons.tree.NodePath.FastjsonDeserializer;
 import code.ponfee.commons.util.Asserts;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +35,28 @@ import java.util.Map;
  * @author Ponfee
  */
 public class NodePathTest {
+
+    @Test
+    public void test0() {
+        System.out.println(ImmutableList.of(new Integer[]{1,2}).get(0).getClass());
+        System.out.println(ImmutableArrayList.of(new Integer[]{1,2}).get(0).getClass());
+
+
+        for (Object o : Tuple2.of(1, 2)) {
+            System.out.println(o);
+        }
+
+        System.out.println();
+        System.out.println(new NodePath<>(1, 2, 3, 4));
+        System.out.println(new NodePath<>(new Integer[]{1, 2, 3, 4}, 5));
+
+        System.out.println(new NodePath<>(Arrays.asList(1, 2, 3)));
+        System.out.println(new NodePath<>(Arrays.asList(1, 2, 3), 4));
+
+        NodePath<Integer> ids = new NodePath<>(1, 2, 3, 4);
+        System.out.println(new NodePath<>(ids));
+        System.out.println(new NodePath<>(ids, 1));
+    }
 
     @Test
     public void test1() {
@@ -112,9 +139,42 @@ public class NodePathTest {
 
     // -----------------------------------------------------------ERROR
     @Test
-    public void test9() {
+    public void test10() {
+        System.out.println(Jsons.fromJson(DATA, NodePathBean5.class).getPath().getClass()); // class java.util.ArrayList
+        System.out.println(JSON.parseObject(DATA, NodePathBean5.class).getPath().getClass()); // class java.util.ArrayList
+    }
+
+    @Test
+    public void test11() {
+        System.out.println(Jsons.fromJson(DATA, NodePathBean6.class).getPath());
+        System.out.println(JSON.parseObject(DATA, NodePathBean6.class).getPath());
+    }
+
+    @Test @Ignore
+    public void test12() {
         System.out.println(Jsons.fromJson(DATA, NodePathBean4.class).getPath());
-        System.out.println(JSON.parseObject(DATA, NodePathBean4.class).getPath()); // ERROR
+        System.out.println(JSON.parseObject(DATA, NodePathBean4.class).getPath()); // add method UnsupportedOperationException
+    }
+
+    /**
+     * add method UnsupportedOperationException
+     */
+    @Test @Ignore
+    public void test13() {
+        System.out.println(Jsons.fromJson(DATA, NodePathBean7.class).getPath());
+        System.out.println(JSON.parseObject(DATA, NodePathBean7.class).getPath());
+    }
+
+    /**
+     * ERROR non-concrete Collection
+     */
+    @Test @Ignore
+    public void test14() {
+        System.out.println(ImmutableList.of().getClass());
+        System.out.println(ImmutableList.of(1).getClass());
+        System.out.println(ImmutableList.of(1,2).getClass());
+        System.out.println(Jsons.fromJson("[1,2,3,4]", ImmutableList.class));
+        System.out.println(JSON.parseObject("[1,2,3,4]", ImmutableList.class));
     }
 
     @SuppressWarnings("rawtypes")
@@ -165,7 +225,7 @@ public class NodePathTest {
     public static class NodePathBean3 implements java.io.Serializable {
         private static final long serialVersionUID = 1L;
         private int id;
-        @JSONField(deserializeUsing = NodePathFastjsonDeserializer.class)
+        @JSONField(deserializeUsing = FastjsonDeserializer.class)
         private NodePath<Integer> path;
 
         public int getId() {
@@ -206,6 +266,72 @@ public class NodePathTest {
         }
 
         public void setPath(NodePath<Integer> path) {
+            this.path = path;
+        }
+    }
+
+    public static class NodePathBean5 implements java.io.Serializable {
+        private static final long serialVersionUID = 1L;
+        private int id;
+        private List<Integer> path;
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public List<Integer> getPath() {
+            return path;
+        }
+
+        public void setPath(List<Integer> path) {
+            this.path = path;
+        }
+    }
+
+    public static class NodePathBean6 implements java.io.Serializable {
+        private static final long serialVersionUID = 1L;
+        private int id;
+        private ArrayList<Integer> path;
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public ArrayList<Integer> getPath() {
+            return path;
+        }
+
+        public void setPath(ArrayList<Integer> path) {
+            this.path = path;
+        }
+    }
+
+    public static class NodePathBean7 implements java.io.Serializable {
+        private static final long serialVersionUID = 1L;
+        private int id;
+        private ImmutableArrayList<Integer> path;
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public ImmutableArrayList<Integer> getPath() {
+            return path;
+        }
+
+        public void setPath(ImmutableArrayList<Integer> path) {
             this.path = path;
         }
     }

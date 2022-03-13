@@ -1,18 +1,16 @@
 package code.ponfee.commons.jce.symmetric;
 
-import java.security.Provider;
-import java.security.spec.AlgorithmParameterSpec;
-import java.security.spec.InvalidKeySpecException;
+import code.ponfee.commons.jce.Providers;
+import code.ponfee.commons.jce.symmetric.PBECryptor.PBEAlgorithm;
+import org.apache.commons.text.RandomStringGenerator;
 
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
-
-import org.apache.commons.text.RandomStringGenerator;
-
-import code.ponfee.commons.jce.Providers;
-import code.ponfee.commons.jce.symmetric.PBECryptor.PBEAlgorithm;
+import java.security.Provider;
+import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidKeySpecException;
 
 /**
  * PBE Cryptor builder

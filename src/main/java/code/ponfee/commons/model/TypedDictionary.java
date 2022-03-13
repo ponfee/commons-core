@@ -17,6 +17,18 @@ public interface TypedDictionary<K, V> {
 
     V removeKey(K key);
 
+    // --------------------------------------------------------object
+    default V getRequired(K key) {
+        V value = getValue(key);
+        assertPresented(key, value);
+        return value;
+    }
+
+    default V get(K key, V defaultVal) {
+        V value = getValue(key);
+        return value == null ? defaultVal : value;
+    }
+
     // --------------------------------------------------------string
     default String getRequiredString(K key) {
         V value = getValue(key);

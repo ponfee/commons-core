@@ -1,16 +1,16 @@
 package code.ponfee.commons.ws.adapter;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-
 import code.ponfee.commons.model.Page;
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.reflect.GenericUtils;
 import code.ponfee.commons.ws.adapter.model.MapEntry;
 import code.ponfee.commons.ws.adapter.model.MapItem;
+import org.apache.commons.collections4.CollectionUtils;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Result<Page<Map<K, V>>>转换器
@@ -34,37 +34,30 @@ public abstract class ResultPageMapAdapter<K, V>
 
     @Override
     public Result<Page<Map<K, V>>> unmarshal(Result<Page<MapItem>> v) {
-        if (v.getData() == null) {
-            return v.copy();
-        } else if (v.getData().getRows() == null) {
-            return v.copy(Page.empty());
+        if (v.getData() == null || CollectionUtils.isEmpty(v.getData().getRows())) {
+            return (Result<Page<Map<K, V>>>) ((Result<?>) v);
         }
 
         return v.copy(v.getData().map(items -> {
             if (items == null) {
                 return null;
             }
-            return Arrays.stream(items.getItem()).collect(
-                Collectors.toMap(MapEntry<K, V>::getKey, MapEntry<K, V>::getValue)
-            );
+            return Arrays.stream(items.getItem())
+                         .collect(Collectors.toMap(MapEntry<K, V>::getKey, MapEntry<K, V>::getValue));
         }));
     }
 
     @Override
     public Result<Page<MapItem>> marshal(Result<Page<Map<K, V>>> v) {
-        if (v.getData() == null) {
-            return v.copy();
-        } else if (v.getData().getRows() == null) {
-            return v.copy(Page.empty());
+        if (v.getData() == null || CollectionUtils.isEmpty(v.getData().getRows())) {
+            return (Result<Page<MapItem>>) ((Result<?>) v);
         }
 
-        return v.copy(v.getData().map(map -> {
-            if (map == null) {
+        return v.copy(v.getData().map(e -> {
+            if (e == null) {
                 return null;
             }
-            return new MapItem(
-                map.entrySet().stream().map(MapEntry::new).toArray(MapEntry[]::new)
-            );
+            return new MapItem(e.entrySet().stream().map(MapEntry::new).toArray(MapEntry[]::new));
         }));
     }
 

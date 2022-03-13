@@ -1,8 +1,10 @@
 package code.ponfee.commons.schema.json;
 
-import code.ponfee.commons.schema.DataType;
+import code.ponfee.commons.collect.Collects;
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.model.Null;
+import code.ponfee.commons.model.ToJsonString;
+import code.ponfee.commons.schema.DataType;
 import code.ponfee.commons.tree.NodePath;
 import code.ponfee.commons.tree.TreeNode;
 import code.ponfee.commons.tree.TreeTrait;
@@ -14,9 +16,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -24,21 +23,21 @@ import java.util.stream.Collectors;
  * 
  * @author Ponfee
  */
-public class JSONTree implements Serializable, Comparable<JSONTree>, TreeTrait<JSONId, Null, JSONTree> {
+public class JsonTree extends ToJsonString implements Serializable, Comparable<JsonTree>, TreeTrait<JsonId, Null, JsonTree> {
 
     private static final long serialVersionUID = 2185766536906561848L;
 
     // 解决NodePath泛型参数为具体类型时，FastJson反序列化的报错问题
-    @JSONField(deserializeUsing = NodePath.NodePathFastjsonDeserializer.class)
+    @JSONField(deserializeUsing = NodePath.FastjsonDeserializer.class)
     private NodePath<String>   path; // 路径
     private String             name; // 节点
     private int              orders; // 次序
     private boolean         checked; // 是否选中
     private DataType           type; // 数据类型
-    private List<JSONTree> children; // 子节点列表
+    private List<JsonTree> children; // 子节点列表
 
     @Override
-    public int compareTo(JSONTree o) {
+    public int compareTo(JsonTree o) {
         return this.path.compareTo(o.path);
     }
 
@@ -49,11 +48,11 @@ public class JSONTree implements Serializable, Comparable<JSONTree>, TreeTrait<J
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof JSONTree)) {
+        if (!(obj instanceof JsonTree)) {
             return false;
         }
 
-        JSONTree other = (JSONTree) obj;
+        JsonTree other = (JsonTree) obj;
         try {
             this.sortByName();
             other.sortByName();
@@ -95,22 +94,11 @@ public class JSONTree implements Serializable, Comparable<JSONTree>, TreeTrait<J
     }
 
     @Override
-    public void setChildren(List<JSONTree> children) {
+    public void setChildren(List<JsonTree> children) {
         if (CollectionUtils.isNotEmpty(children)) {
-            Set<String> duplicated = children.stream().map(
-                JSONTree::getName
-            ).collect(
-                Collectors.groupingBy(Function.identity(), Collectors.counting())
-            ).entrySet().stream().filter(
-                 e -> e.getValue() > 1
-             ).map(
-                 Entry::getKey
-             ).collect(
-                 Collectors.toSet()
-             );
-
+            List<String> duplicated = Collects.duplicate(children, JsonTree::getName);
             if (CollectionUtils.isNotEmpty(duplicated)) {
-                throw new IllegalStateException("Duplicated json id name: " + duplicated);
+                throw new IllegalStateException("Duplicated child name " + duplicated);
             }
         }
 
@@ -119,45 +107,43 @@ public class JSONTree implements Serializable, Comparable<JSONTree>, TreeTrait<J
 
     // --------------------------------------------------------------------------sort
     public void sortByOrders() {
-        this.sortChildren(Comparator.comparing(JSONTree::getOrders));
+        this.sortChildren(Comparator.comparing(JsonTree::getOrders));
     }
 
     public void sortByName() {
-        this.sortChildren(Comparator.comparing(JSONTree::getName));
+        this.sortChildren(Comparator.comparing(JsonTree::getName));
     }
 
-    public void sortChildren(Comparator<JSONTree> comparator) {
+    public void sortChildren(Comparator<JsonTree> comparator) {
         if (CollectionUtils.isNotEmpty(this.children)) {
             this.children.sort(comparator);
-            for (JSONTree node : this.children) {
+            for (JsonTree node : this.children) {
                 node.sortChildren(comparator);
             }
         }
     }
 
-    public Map<NodePath<String>, JSONTree> toFlatMap() {
-        Map<NodePath<String>, JSONTree> map = new HashMap<>();
+    public Map<NodePath<String>, JsonTree> toFlatMap() {
+        Map<NodePath<String>, JsonTree> map = new HashMap<>();
         this.toFlatMap(map);
         return map;
     }
 
     // --------------------------------------------------------------------------static methods
-    public static JSONTree convert(TreeNode<JSONId, Null> tree) {
-        JSONId id = tree.getNid();
-        JSONTree jt = new JSONTree();
+    public static JsonTree convert(TreeNode<JsonId, Null> tree) {
+        JsonId id = tree.getNid();
+        JsonTree jt = new JsonTree();
 
         jt.setName(id.getName());
         jt.setOrders(id.getOrders());
         jt.setChecked(false);
         jt.setType(id.getType());
-        jt.setPath(new NodePath<>(
-            tree.getPath().stream().map(JSONId::getName).collect(Collectors.toList())
-        ));
+        jt.setPath(new NodePath<>(tree.getPath().stream().map(JsonId::getName).collect(Collectors.toList())));
 
         return jt;
     }
 
-    public static boolean hasChoose(JSONTree root) {
+    public static boolean hasChoose(JsonTree root) {
         if (root == null) {
             return false;
         }
@@ -198,7 +184,7 @@ public class JSONTree implements Serializable, Comparable<JSONTree>, TreeTrait<J
         this.checked = checked;
     }
 
-    public List<JSONTree> getChildren() {
+    public List<JsonTree> getChildren() {
         return children;
     }
 
@@ -211,13 +197,13 @@ public class JSONTree implements Serializable, Comparable<JSONTree>, TreeTrait<J
     }
 
     // --------------------------------------------------------------------------private methods
-    private static boolean checkChoose(JSONTree node) {
+    private static boolean checkChoose(JsonTree node) {
         if (CollectionUtils.isEmpty(node.children)) {
             return node.checked;
         }
 
         boolean hasLeafChildChoose = false;
-        for (JSONTree child : node.children) {
+        for (JsonTree child : node.children) {
             if (child.checked && !node.checked) {
                 throw new IllegalStateException(
                     "Child is checked but parent is unchecked: " + child.path.toString()
@@ -225,7 +211,7 @@ public class JSONTree implements Serializable, Comparable<JSONTree>, TreeTrait<J
             }
             if (CollectionUtils.isEmpty(child.children)) {
                 // leaf node
-                if (child.checked && JSONExtractUtils.ARRAY_EMPTY.equals(child.name)) {
+                if (child.checked && JsonExtractUtils.ARRAY_EMPTY.equals(child.name)) {
                     throw new IllegalStateException(
                         "Empty array cannot be checked: " + child.path.toString()
                     );
@@ -244,10 +230,10 @@ public class JSONTree implements Serializable, Comparable<JSONTree>, TreeTrait<J
         return hasLeafChildChoose;
     }
 
-    private void toFlatMap(Map<NodePath<String>, JSONTree> map) {
+    private void toFlatMap(Map<NodePath<String>, JsonTree> map) {
         map.put(this.getPath(), this);
         if (CollectionUtils.isNotEmpty(this.children)) {
-            for (JSONTree node : this.children) {
+            for (JsonTree node : this.children) {
                 node.toFlatMap(map);
             }
         }

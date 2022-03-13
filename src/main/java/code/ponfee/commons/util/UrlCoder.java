@@ -1,10 +1,10 @@
 package code.ponfee.commons.util;
 
+import code.ponfee.commons.io.Files;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-
-import code.ponfee.commons.io.Files;
 
 /**
  * url编码/解码

@@ -1,5 +1,6 @@
 package code.ponfee.commons.reflect;
 
+import code.ponfee.commons.util.LazyLoader;
 import code.ponfee.commons.util.ObjectUtils;
 import code.ponfee.commons.util.Strings;
 import com.google.common.collect.ImmutableList;
@@ -16,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.CaseFormat.LOWER_CAMEL;
-import static com.google.common.base.CaseFormat.LOWER_UNDERSCORE;
 import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
+import static com.google.common.base.CaseFormat.LOWER_UNDERSCORE;
 
 /**
  * Utility of Java Bean and Map mutual conversion
@@ -62,23 +63,16 @@ public enum BeanMaps {
                 String name = field.getName();
                 if (sourceMap.containsKey(name)) {
                     Class<?> type = GenericUtils.getFieldActualType(clazz, field);
-                    Fields.put(targetBean, field, ObjectUtils.convert(sourceMap.get(name), type));
+                    Fields.put(targetBean, field, ObjectUtils.cast(sourceMap.get(name), type));
                 }
             }
         }
 
         private List<Field> getFields(Class<?> beanType) {
-            List<Field> fields = cachedFields.get(beanType);
-            if (fields == null) {
-                synchronized (FIELDS) {
-                    if ((fields = cachedFields.get(beanType)) == null) {
-                        List<Field> list = ClassUtils.listFields(beanType);
-                        fields = CollectionUtils.isEmpty(list) ? Collections.emptyList() : ImmutableList.copyOf(list);
-                        cachedFields.put(beanType, fields);
-                    }
-                }
-            }
-            return fields;
+            return LazyLoader.get(beanType, cachedFields, bt -> {
+                List<Field> list = ClassUtils.listFields(bt);
+                return CollectionUtils.isEmpty(list) ? Collections.emptyList() : ImmutableList.copyOf(list);
+            });
         }
     },
 
@@ -108,7 +102,7 @@ public enum BeanMaps {
             try {
                 BeanInfo beanInfo = Introspector.getBeanInfo(targetBean.getClass());
                 for (PropertyDescriptor prop : beanInfo.getPropertyDescriptors()) {
-                    if ("class".equals(name = prop.getName())) { // getClass()
+                    if ("class".equals(name = prop.getName())) { // exclude getClass()
                         continue;
                     }
 
@@ -126,7 +120,7 @@ public enum BeanMaps {
                     }
 
                     // set value into bean field
-                    prop.getWriteMethod().invoke(targetBean, ObjectUtils.convert(value, type));
+                    prop.getWriteMethod().invoke(targetBean, ObjectUtils.cast(value, type));
                 }
             } catch (Exception e) {
                 throw new IllegalStateException(e);

@@ -58,7 +58,8 @@ public class ELParserTest {
         System.out.println(name);
     }
 
-    public static void main(String[] args) {
+    @Test
+    public void test5() {
         System.out.println(ELParser.parse("dfsa |${abc}| a |${12}|  |$[ yyyyMM \n]|  xx  |$[start_year(  yyyyMMddHHmmss,  -1y)]| aa |$[now(  timestamp\n,  -1y)]", ImmutableMap.of("abc", 123, "test.1", "xxx")));
 
         String params =

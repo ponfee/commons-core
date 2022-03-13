@@ -1,5 +1,19 @@
 package code.ponfee.commons.web;
 
+import code.ponfee.commons.http.ContentType;
+import code.ponfee.commons.io.ByteOrderMarks;
+import code.ponfee.commons.io.Files;
+import code.ponfee.commons.io.GzipProcessor;
+import code.ponfee.commons.json.Jsons;
+import code.ponfee.commons.util.Networks;
+import code.ponfee.commons.util.UrlCoder;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,22 +27,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import code.ponfee.commons.http.ContentType;
-import code.ponfee.commons.io.ByteOrderMarks;
-import code.ponfee.commons.io.Files;
-import code.ponfee.commons.io.GzipProcessor;
-import code.ponfee.commons.json.Jsons;
-import code.ponfee.commons.util.Networks;
-import code.ponfee.commons.util.UrlCoder;
 
 /**
  * web工具类

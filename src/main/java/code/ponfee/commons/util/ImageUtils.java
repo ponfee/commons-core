@@ -1,5 +1,11 @@
 package code.ponfee.commons.util;
 
+import code.ponfee.commons.io.Closeables;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.MemoryCacheImageInputStream;
+import javax.swing.ImageIcon;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -8,13 +14,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.MemoryCacheImageInputStream;
-import javax.swing.ImageIcon;
-
-import code.ponfee.commons.io.Closeables;
 
 /**
  * 图片工具类

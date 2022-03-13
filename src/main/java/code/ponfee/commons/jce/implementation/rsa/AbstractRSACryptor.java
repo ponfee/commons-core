@@ -1,17 +1,17 @@
 package code.ponfee.commons.jce.implementation.rsa;
 
+import code.ponfee.commons.io.Files;
+import code.ponfee.commons.jce.implementation.Cryptor;
+import code.ponfee.commons.jce.implementation.Key;
+import code.ponfee.commons.math.Numbers;
+import code.ponfee.commons.util.SecureRandoms;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.Arrays;
-
-import code.ponfee.commons.io.Files;
-import code.ponfee.commons.jce.implementation.Cryptor;
-import code.ponfee.commons.jce.implementation.Key;
-import code.ponfee.commons.math.Numbers;
-import code.ponfee.commons.util.SecureRandoms;
 
 /**
  * http://blog.51cto.com/xnuil/1698673
@@ -79,7 +79,7 @@ public abstract class AbstractRSACryptor extends Cryptor {
             }
             return out.toByteArray();
         } catch (IOException e) {
-            throw new SecurityException(e); // cannot happened
+            throw new SecurityException(e); // cannot happen
         }
     }
 
@@ -191,7 +191,7 @@ public abstract class AbstractRSACryptor extends Cryptor {
     }
 
     /**
-     * This method generates a new key for the cryptosystem.
+     * This method generates a new key for the crypto.
      * @return the new key generated
      */
     @Override
@@ -211,7 +211,7 @@ public abstract class AbstractRSACryptor extends Cryptor {
     // ---------------------------------------------------------------private methods
     /**
      * When the BigInteger convert to byte array, if head more than two zero
-     * then was automatic trim remain one zreo, if head has not zreo then automatic 
+     * then was automatic trim remain one zero, if head has not zreo then automatic
      * add a zreo. So we should manual control handle it, recover the origin byte 
      * array of this BigInteger.
      * 

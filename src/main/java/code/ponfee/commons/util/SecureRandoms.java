@@ -1,17 +1,33 @@
 package code.ponfee.commons.util;
 
+import code.ponfee.commons.reflect.Fields;
+
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 
 /**
  * 安全随机数生成工具类
+ *
  * @author Ponfee
  */
 public final class SecureRandoms {
 
-    /** SHA1PRNG */
-    private static final SecureRandom SECURE_RANDOM =
-        new SecureRandom(new SecureRandom(ObjectUtils.uuid()).generateSeed(24));
+    /**
+     * SHA1PRNG
+     */
+    private static final SecureRandom SECURE_RANDOM;
+    static {
+        ByteBuffer buffer = ByteBuffer.allocate(56);
+        buffer.putLong(System.currentTimeMillis());
+        buffer.putLong(System.nanoTime());
+        buffer.putLong(Thread.currentThread().getId());
+        buffer.putLong(Fields.addressOf(SecureRandoms.class));
+        buffer.putLong(Fields.addressOf(buffer));
+        buffer.put(ObjectUtils.uuid());
+        buffer.flip();
+        SECURE_RANDOM = new SecureRandom(new SecureRandom(buffer.array()).generateSeed(32));
+    }
 
     /**
      * random byte[] array by SecureRandom

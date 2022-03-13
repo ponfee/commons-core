@@ -1,13 +1,12 @@
 package code.ponfee.commons.mybatis;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import code.ponfee.commons.resource.ResourceScanner;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import code.ponfee.commons.resource.ResourceScanner;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Mybatis typeAliasesPackage config

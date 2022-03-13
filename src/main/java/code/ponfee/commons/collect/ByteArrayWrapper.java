@@ -1,8 +1,8 @@
 package code.ponfee.commons.collect;
 
-import java.util.Arrays;
-
 import org.apache.commons.lang3.ArrayUtils;
+
+import java.util.Arrays;
 
 /**
  * The class use in byte array as hash map key
@@ -52,9 +52,7 @@ public final class ByteArrayWrapper implements
     @Override
     public int compareTo(ByteArrayWrapper o) {
         return ByteArrayComparator.compareTo(array, o.array);
-        /*return Bytes.toBigInteger(array).compareTo(
-            Bytes.toBigInteger(o.array)
-        );*/
+        //return Bytes.toBigInteger(array).compareTo(Bytes.toBigInteger(o.array));
     }
 
     /**
