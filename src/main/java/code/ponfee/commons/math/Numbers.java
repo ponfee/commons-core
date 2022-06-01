@@ -1,15 +1,20 @@
 package code.ponfee.commons.math;
 
+import code.ponfee.commons.base.tuple.Tuple2;
 import com.google.common.base.Strings;
 import com.google.common.primitives.Chars;
 import org.apache.commons.codec.binary.Hex;
+import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -241,8 +246,8 @@ public final class Numbers {
         }
 
         return BigDecimal.valueOf(val)
-                .setScale(scale, RoundingMode.HALF_UP)
-                .doubleValue();
+                         .setScale(scale, RoundingMode.HALF_UP)
+                         .doubleValue();
     }
 
     /**
@@ -258,7 +263,8 @@ public final class Numbers {
 
     public static double lower(double value, int pow, int scale) {
         return BigDecimal.valueOf(value / Math.pow(10, pow))
-            .setScale(scale, RoundingMode.HALF_UP).doubleValue();
+                         .setScale(scale, RoundingMode.HALF_UP)
+                         .doubleValue();
     }
 
     /**
@@ -274,7 +280,8 @@ public final class Numbers {
 
     public static double upper(double value, int pow, int scale) {
         return BigDecimal.valueOf(value * Math.pow(10, pow))
-            .setScale(scale, RoundingMode.HALF_UP).doubleValue();
+                         .setScale(scale, RoundingMode.HALF_UP)
+                         .doubleValue();
     }
 
     /**
@@ -392,11 +399,22 @@ public final class Numbers {
     /**
      * 分片
      *
+     * <pre>
+     *   slice(0 , 2)  ->  [0, 0]
+     *   slice(2 , 3)  ->  [1, 1, 0]
+     *   slice(3 , 1)  ->  [3]
+     *   slice(9 , 3)  ->  [3, 3, 3]
+     *   slice(10, 3)  ->  [4, 3, 3]
+     *   slice(11, 3)  ->  [4, 4, 3]
+     *   slice(12, 3)  ->  [4, 4, 4]
+     * </pre>
+     *
      * @param quantity
      * @param segment
      * @return
      */
     public static int[] slice(int quantity, int segment) {
+        Assert.isTrue(segment >= 0, "Segment must be greater than 0.");
         int[] result = new int[segment];
         int quotient = quantity / segment;
         int remainder = quantity % segment;
@@ -407,8 +425,45 @@ public final class Numbers {
     }
 
     /**
-     * Split the bill for coupon amount
+     * Partition the number
+     * <pre>
+     *   partition( 0, 2)  ->  [(0, 0)]
+     *   partition( 2, 3)  ->  [(0, 0), (1, 1)]
+     *   partition( 3, 1)  ->  [(0, 2)]
+     *   partition( 9, 3)  ->  [(0, 2), (3, 5), (6, 8)]
+     *   partition(10, 3)  ->  [(0, 3), (4, 6), (7, 9)]
+     *   partition(11, 3)  ->  [(0, 3), (4, 7), (8, 10)]
+     *   partition(12, 3)  ->  [(0, 3), (4, 7), (8, 11)]
+     * </pre>
      *
+     * @param number the number
+     * @param size   the size
+     * @return array
+     */
+    public static List<Tuple2<Integer, Integer>> partition(int number, int size) {
+        Assert.isTrue(number >= 0, "Number must be greater than 0.");
+        Assert.isTrue(size > 0, "Size must be greater than 0.");
+        if (number == 0) {
+            return Collections.singletonList(Tuple2.of(0, 0));
+        }
+
+        List<Tuple2<Integer, Integer>> result = new ArrayList<>(size);
+        int last = -1;
+        for (int a : slice(number, size)) {
+            if (a == 0) {
+                break;
+            }
+            result.add(Tuple2.of(last += 1, last += a - 1));
+        }
+
+        return result;
+    }
+
+    /**
+     * Split the bill for coupon amount<br/>
+     * 
+     * split(new int[]{249, 249, 249, 3}, 748)  -> [249, 249, 248, 2]
+     * 
      * @param bills the bills
      * @param value the coupon amount value
      * @return split result
@@ -416,7 +471,7 @@ public final class Numbers {
     public static int[] split(int[] bills, int value) {
         int total = IntStream.of(bills).sum();
         if (total < value) {
-            throw new IllegalArgumentException("the value cannot less than sum(bills)");
+            throw new IllegalArgumentException("Total bill amount[" + total + "] cannot less than coupon amount[" + value + "]");
         }
 
         int[] result = new int[bills.length];
@@ -425,13 +480,13 @@ public final class Numbers {
         }
 
         float rate;
-        int i = 0;
-        for (int n = bills.length - 1; i < n; i++) {
+        int i = 0, n = bills.length - 1;
+        for (; i < n; i++) {
             // rate <= 1.0
             rate = value / (float) total;
 
             // 不能用Math.round：面值为748分钱的券 去平摊账单 [249, 249, 249, 3]，最后金额为3分钱的账单项要平摊掉4分钱
-            //result[i] = Math.min((int) Math.round(bills[i] * rate), value);
+            //result[i] = Math.min(Math.round(bills[i] * rate), value);
             // 因为result[i]是ceil后的结果，所以按比率上来算value减得会更多，即rate只会递减，所以不会出现溢出(后面的费用项不够抵扣)的情况
             result[i] = Math.min((int) Math.ceil(bills[i] * rate), value);
             value -= result[i];
@@ -443,7 +498,9 @@ public final class Numbers {
         }
 
         // the last bill item
-        result[i] = value;
+        if (n == i) {
+            result[i] = value;
+        }
         return result;
     }
 

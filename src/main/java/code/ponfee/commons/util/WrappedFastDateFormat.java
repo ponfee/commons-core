@@ -48,24 +48,36 @@ public class WrappedFastDateFormat extends DateFormat {
      */
     public static final Pattern DATE_TIMESTAMP_PATTERN = Pattern.compile("^0|[1-9]\\d*$");
 
-    public static final FastDateFormat PATTERN01 = FastDateFormat.getInstance("yyyyMM");
-    public static final FastDateFormat PATTERN02 = FastDateFormat.getInstance("yyyyMMdd");
-    public static final FastDateFormat PATTERN03 = FastDateFormat.getInstance("yyyyMMddHHmmss");
-    public static final FastDateFormat PATTERN04 = FastDateFormat.getInstance("yyyyMMddHHmmssSSS");
+    public static final FastDateFormat PATTERN_11 = FastDateFormat.getInstance("yyyyMM");
+    public static final FastDateFormat PATTERN_12 = FastDateFormat.getInstance("yyyy-MM");
+    public static final FastDateFormat PATTERN_13 = FastDateFormat.getInstance("yyyy/MM");
 
-    public static final FastDateFormat PATTERN11 = FastDateFormat.getInstance("yyyy-MM");
-    public static final FastDateFormat PATTERN12 = FastDateFormat.getInstance("yyyy-MM-dd");
-    public static final FastDateFormat PATTERN13 = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
-    public static final FastDateFormat PATTERN14 = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss.SSS");
-    public static final FastDateFormat PATTERN15 = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+    public static final FastDateFormat PATTERN_21 = FastDateFormat.getInstance("yyyyMMdd");
+    public static final FastDateFormat PATTERN_22 = FastDateFormat.getInstance("yyyy-MM-dd");
+    public static final FastDateFormat PATTERN_23 = FastDateFormat.getInstance("yyyy/MM/dd");
 
-    public static final FastDateFormat PATTERN21 = FastDateFormat.getInstance("yyyy/MM");
-    public static final FastDateFormat PATTERN22 = FastDateFormat.getInstance("yyyy/MM/dd");
-    public static final FastDateFormat PATTERN23 = FastDateFormat.getInstance("yyyy/MM/dd HH:mm:ss");
-    public static final FastDateFormat PATTERN24 = FastDateFormat.getInstance("yyyy/MM/dd HH:mm:ss.SSS");
-    public static final FastDateFormat PATTERN25 = FastDateFormat.getInstance("yyyy/MM/dd'T'HH:mm:ss.SSSZ");
+    public static final FastDateFormat PATTERN_31 = FastDateFormat.getInstance("yyyyMMddHHmmss");
+    public static final FastDateFormat PATTERN_32 = FastDateFormat.getInstance("yyyyMMddHHmmssSSS");
 
-    public static final FastDateFormat PATTERN31 = FastDateFormat.getInstance("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+    public static final FastDateFormat PATTERN_41 = FastDateFormat.getInstance(Dates.DEFAULT_DATE_FORMAT);
+    public static final FastDateFormat PATTERN_42 = FastDateFormat.getInstance("yyyy/MM/dd HH:mm:ss");
+    public static final FastDateFormat PATTERN_43 = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss");
+    public static final FastDateFormat PATTERN_44 = FastDateFormat.getInstance("yyyy/MM/dd'T'HH:mm:ss");
+
+    public static final FastDateFormat PATTERN_51 = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss.SSS");
+    public static final FastDateFormat PATTERN_52 = FastDateFormat.getInstance("yyyy/MM/dd HH:mm:ss.SSS");
+    public static final FastDateFormat PATTERN_53 = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS");
+    public static final FastDateFormat PATTERN_54 = FastDateFormat.getInstance("yyyy/MM/dd'T'HH:mm:ss.SSS");
+
+    public static final FastDateFormat PATTERN_61 = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss.SSS'Z'");
+    public static final FastDateFormat PATTERN_62 = FastDateFormat.getInstance("yyyy/MM/dd HH:mm:ss.SSS'Z'");
+    public static final FastDateFormat PATTERN_63 = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    public static final FastDateFormat PATTERN_64 = FastDateFormat.getInstance("yyyy/MM/dd'T'HH:mm:ss.SSS'Z'");
+
+    public static final FastDateFormat PATTERN_71 = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+    public static final FastDateFormat PATTERN_72 = FastDateFormat.getInstance("yyyy/MM/dd'T'HH:mm:ss.SSSX");
+
+    public static final FastDateFormat PATTERN_81 = FastDateFormat.getInstance("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
 
     /**
      * The default date format with yyyy-MM-dd HH:mm:ss
@@ -73,39 +85,24 @@ public class WrappedFastDateFormat extends DateFormat {
     public static final WrappedFastDateFormat DEFAULT = new WrappedFastDateFormat(Dates.DEFAULT_DATE_FORMAT);
 
     /**
-     * 格式化器
+     * 兜底解析器
      */
-    private final FastDateFormat format;
-
-    /**
-     * 时间格式是否严格
-     */
-    private final boolean strict;
+    private final FastDateFormat backstopFormatter;
 
     private final int patternLength;
     private final Calendar calendar;
     private final NumberFormat numberFormat;
 
     public WrappedFastDateFormat(String pattern) {
-        this(FastDateFormat.getInstance(pattern), false);
-    }
-
-    public WrappedFastDateFormat(String pattern, boolean strict) {
-        this(pattern, null, null, strict);
+        this(pattern, null, null);
     }
 
     public WrappedFastDateFormat(String pattern, TimeZone timeZone, Locale locale) {
-        this(pattern, timeZone, locale, false);
+        this(FastDateFormat.getInstance(pattern, timeZone, locale));
     }
 
-    public WrappedFastDateFormat(String pattern, TimeZone timeZone, 
-                                 Locale locale, boolean strict) {
-        this(FastDateFormat.getInstance(pattern, timeZone, locale), strict);
-    }
-
-    public WrappedFastDateFormat(FastDateFormat format, boolean strict) {
-        this.format = format;
-        this.strict = strict;
+    public WrappedFastDateFormat(FastDateFormat format) {
+        this.backstopFormatter = format;
 
         this.patternLength = format.getPattern().length();
         this.calendar = Calendar.getInstance(format.getTimeZone(), format.getLocale());
@@ -114,9 +111,8 @@ public class WrappedFastDateFormat extends DateFormat {
     }
 
     @Override
-    public StringBuffer format(Date date, StringBuffer toAppendTo, 
-                               FieldPosition fieldPosition) {
-        return format.format(date, toAppendTo, fieldPosition);
+    public StringBuffer format(Date date, StringBuffer toAppendTo, FieldPosition fieldPosition) {
+        return backstopFormatter.format(date, toAppendTo, fieldPosition);
     }
 
     @Override
@@ -127,10 +123,6 @@ public class WrappedFastDateFormat extends DateFormat {
         }
         if (StringUtils.isEmpty(source) || source.length() <= pos.getIndex()) {
             return null;
-        }
-
-        if (strict) {
-            return format.parse(source, pos);
         }
 
         String date = source.substring(pos.getIndex());
@@ -149,41 +141,67 @@ public class WrappedFastDateFormat extends DateFormat {
             return null;
         }
 
-        if (strict) {
-            return format.parse(source);
+        int length = source.length();
+        if (length >= 20 && source.endsWith("Z")) {
+            if (length < 24) {
+                source = padding(source) + "Z";
+            }
+            if (hasTSeparator(source)) {
+                return (isCrossbar(source) ? PATTERN_63 : PATTERN_64).parse(source);
+            } else {
+                return (isCrossbar(source) ? PATTERN_61 : PATTERN_62).parse(source);
+            }
         }
 
-        int length = source.length();
         switch (length) {
-            case  6: return PATTERN01.parse(source);
-            case  7: return (isCrossbar(source) ? PATTERN11 : PATTERN21).parse(source);
-            case  8: return PATTERN02.parse(source);
+            case  6: return PATTERN_11.parse(source);
+            case  7: return (isCrossbar(source) ? PATTERN_12 : PATTERN_13).parse(source);
+            case  8: return PATTERN_21.parse(source);
             case 10:
-                char c = source.charAt(4);
-                if (c == '-') {
-                    return PATTERN12.parse(source);
-                } else if (c == '/') {
-                    return PATTERN22.parse(source);
+                char separator = source.charAt(4);
+                if (separator == '-') {
+                    return PATTERN_22.parse(source);
+                } else if (separator == '/') {
+                    return PATTERN_23.parse(source);
                 } else if (DATE_TIMESTAMP_PATTERN.matcher(source).matches()) {
-                    // a long string(length 10) of unix timestamp(1640966400)
+                    // long string(length 10) of unix timestamp(e.g. 1640966400)
                     return new Date(Long.parseLong(source) * 1000);
                 }
                 break;
             case 13:
-                // a long string(length 13) of mills unix timestamp(1640966400000)
+                // long string(length 13) of mills unix timestamp(e.g. 1640966400000)
                 if (DATE_TIMESTAMP_PATTERN.matcher(source).matches()) {
                     return new Date(Long.parseLong(source));
                 }
                 break;
-            case 14: return PATTERN03.parse(source);
-            case 19: return (isCrossbar(source) ? PATTERN13 : PATTERN23).parse(source);
-            case 17: return PATTERN04.parse(source);
-            case 23: return (isCrossbar(source) ? PATTERN14 : PATTERN24).parse(source);
-            case 28: return (isCST(source) ? PATTERN31 : isCrossbar(source) ? PATTERN15 : PATTERN25).parse(source);
+            case 14: return PATTERN_31.parse(source);
+            case 19:
+                if (hasTSeparator(source)) {
+                    return (isCrossbar(source) ? PATTERN_43 : PATTERN_44).parse(source);
+                } else {
+                    return (isCrossbar(source) ? PATTERN_41 : PATTERN_42).parse(source);
+                }
+            case 17: return PATTERN_32.parse(source);
+            case 23:
+                if (hasTSeparator(source)) {
+                    return (isCrossbar(source) ? PATTERN_53 : PATTERN_54).parse(source);
+                } else {
+                    return (isCrossbar(source) ? PATTERN_51 : PATTERN_52).parse(source);
+                }
+            case 26: 
+            case 29:
+                // 2021-12-31T17:01:01.000+08
+                // 2021-12-31T17:01:01.000+08:00
+                return (isCrossbar(source) ? PATTERN_71 : PATTERN_72).parse(source);
+            case 28:
+                if (isCST(source)) {
+                    return PATTERN_81.parse(source);
+                }
+                break;
             default: break;
         }
         if (patternLength == length) {
-            return format.parse(source);
+            return backstopFormatter.parse(source);
         } else {
             throw new IllegalArgumentException("Invalid date format: " + source);
         }
@@ -201,7 +219,7 @@ public class WrappedFastDateFormat extends DateFormat {
 
     @Override
     public int hashCode() {
-        return format.hashCode();
+        return backstopFormatter.hashCode();
     }
 
     @Override
@@ -215,17 +233,17 @@ public class WrappedFastDateFormat extends DateFormat {
         }
 
         WrappedFastDateFormat other = (WrappedFastDateFormat) obj;
-        return this.format.equals(other.format) && this.strict == other.strict;
+        return this.backstopFormatter.equals(other.backstopFormatter);
     }
 
     @Override
     public AttributedCharacterIterator formatToCharacterIterator(Object obj) {
-        return format.formatToCharacterIterator(obj);
+        return backstopFormatter.formatToCharacterIterator(obj);
     }
 
     @Override
     public TimeZone getTimeZone() {
-        return format.getTimeZone();
+        return backstopFormatter.getTimeZone();
     }
 
     @Override
@@ -245,7 +263,7 @@ public class WrappedFastDateFormat extends DateFormat {
 
     @Override
     public Object clone() {
-        return new WrappedFastDateFormat((FastDateFormat) format.clone(), strict);
+        return new WrappedFastDateFormat((FastDateFormat) backstopFormatter.clone());
     }
 
     // ------------------------------------------------------------------------unsupported
@@ -269,11 +287,24 @@ public class WrappedFastDateFormat extends DateFormat {
         throw new UnsupportedOperationException();
     }
 
-    private static boolean isCrossbar(String str) {
+    // ------------------------------------------------------------------------package methods
+    static boolean isCrossbar(String str) {
         return str.charAt(4) == '-';
     }
 
-    private static boolean isCST(String str) {
+    // 'T' literal is the date and time separator
+    static boolean hasTSeparator(String str) {
+        return str.charAt(10) == 'T';
+    }
+
+    static boolean isCST(String str) {
         return DATE_TO_STRING_PATTERN.matcher(str).matches();
     }
+
+    static String padding(String source) {
+        // example: 2022/07/18T15:11:11Z, 2022/07/18T15:11:11.Z, 2022/07/18T15:11:11.1Z, 2022/07/18T15:11:11.13Z
+        String[] array = source.split("[\\.Z]");
+        return array[0] + "." + (array.length == 1 ? "000" : String.format("%03d", Integer.parseInt(array[1])));
+    }
+
 }

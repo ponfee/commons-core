@@ -28,7 +28,8 @@ public final class Null implements Serializable {
             BROKEN_CONSTRUCTOR = Null.class.getDeclaredConstructor();
             BROKEN_METHOD = Null.class.getDeclaredMethod("broken");
         } catch (Exception e) {
-            throw new RuntimeException(e); // cannot happened
+            // cannot happen
+            throw new Error(e);
         }
     }
 

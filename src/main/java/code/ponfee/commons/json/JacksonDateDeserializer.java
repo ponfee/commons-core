@@ -17,14 +17,12 @@ import java.util.Date;
  */
 public class JacksonDateDeserializer extends JsonDeserializer<Date> {
 
+    public static final JacksonDateDeserializer INSTANCE = new JacksonDateDeserializer();
+
     private final WrappedFastDateFormat format;
 
-    public JacksonDateDeserializer(String pattern) {
-        this(pattern, false);
-    }
-
-    public JacksonDateDeserializer(String pattern, boolean strict) {
-        this(new WrappedFastDateFormat(pattern, strict));
+    public JacksonDateDeserializer() {
+        this(WrappedFastDateFormat.DEFAULT);
     }
 
     public JacksonDateDeserializer(WrappedFastDateFormat format) {
@@ -43,14 +41,6 @@ public class JacksonDateDeserializer extends JsonDeserializer<Date> {
         } catch (ParseException e) {
             throw new IllegalArgumentException("Invalid date format: " + text);
         }
-    }
-
-    public static JacksonDateDeserializer of(String pattern) {
-        return new JacksonDateDeserializer(pattern);
-    }
-
-    public static JacksonDateDeserializer of(String pattern, boolean strict) {
-        return new JacksonDateDeserializer(pattern, strict);
     }
 
     public static JacksonDateDeserializer of(WrappedFastDateFormat format) {

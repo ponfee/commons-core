@@ -24,6 +24,7 @@
       <!-- <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY" /> -->
 
       <PatternLayout pattern="[%-5p] %d{yyyy-MM-dd HH:mm:ss} %l%n%m%n" />
+      <!-- <PatternLayout pattern="###|||%d{yyyy-MM-dd HH:mm:ss.SSS}|||%level|||%X{TRACE_ID:--}|||%thread|||%logger{0}--->%msg%n" /> -->
       <Policies>
         <!-- 启动时就重新滚动日志 -->
         <!-- <OnStartupTriggeringPolicy /> -->

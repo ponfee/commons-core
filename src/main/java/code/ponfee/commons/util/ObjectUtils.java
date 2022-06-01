@@ -16,9 +16,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -106,19 +108,32 @@ public final class ObjectUtils {
     public static boolean isEmpty(Object o) {
         if (o == null) {
             return true;
-        } else if (o instanceof CharSequence) {
-            return ((CharSequence) o).length() == 0;
-        } else if (o instanceof Collection) {
-            return ((Collection<?>) o).isEmpty();
-        } else if (o.getClass().isArray()) {
-            return Array.getLength(o) == 0;
-        } else if (o instanceof Map) {
-            return ((Map<?, ?>) o).isEmpty();
-        } else if (o instanceof Dictionary) {
-            return ((Dictionary<?, ?>) o).isEmpty();
-        } else {
-            return false;
         }
+        if (o instanceof CharSequence) {
+            return ((CharSequence) o).length() == 0;
+        }
+        if (o instanceof Collection) {
+            return ((Collection<?>) o).isEmpty();
+        }
+        if (o.getClass().isArray()) {
+            return Array.getLength(o) == 0;
+        }
+        if (o instanceof Map) {
+            return ((Map<?, ?>) o).isEmpty();
+        }
+        if (o instanceof Dictionary) {
+            return ((Dictionary<?, ?>) o).isEmpty();
+        }
+        if (o instanceof Iterator<?>) {
+            return !((Iterator<?>) o).hasNext();
+        }
+        if (o instanceof Iterable<?>) {
+            return !((Iterable<?>) o).iterator().hasNext();
+        }
+        if (o instanceof Enumeration<?>) {
+            return !((Enumeration<?>) o).hasMoreElements();
+        }
+        return false;
     }
 
     /**
@@ -131,13 +146,14 @@ public final class ObjectUtils {
     public static Object getValue(Object obj, String name) {
         if (obj == null) {
             return null;
-        } else if (obj instanceof Map) {
-            return ((Map<?, ?>) obj).get(name);
-        } else if (obj instanceof Dictionary) {
-            return ((Dictionary<?, ?>) obj).get(name);
-        } else {
-            return Fields.get(obj, name);
         }
+        if (obj instanceof Map) {
+            return ((Map<?, ?>) obj).get(name);
+        }
+        if (obj instanceof Dictionary) {
+            return ((Dictionary<?, ?>) obj).get(name);
+        }
+        return Fields.get(obj, name);
     }
 
     /**
@@ -214,10 +230,9 @@ public final class ObjectUtils {
      * @return
      */
     public static String uuid32() {
-        //return Bytes.hexEncode(uuid());
         UUID uuid = UUID.randomUUID();
-        return Long.toHexString(uuid.getMostSignificantBits())
-             + Long.toHexString(uuid.getLeastSignificantBits());
+        return Bytes.toHex(uuid.getMostSignificantBits())
+             + Bytes.toHex(uuid.getLeastSignificantBits());
     }
 
     /**
@@ -229,51 +244,33 @@ public final class ObjectUtils {
     }
 
     /**
-     * short uuid
-     * @param len
-     * @return
-     */
-    public static String shortid(int len) {
-        return shortid(len, URL_SAFE_BASE64_CODES);
-    }
-
-    /**
-     * short uuid
-     * should between 3 (inclusive) and 32 (exclusive)
-     * 
-     * @param len
-     * @param chars
-     * @return
-     */
-    public static String shortid(int len, char[] chars) {
-        int size = chars.length;
-        StringBuilder builder = new StringBuilder(len);
-        for (String str : Strings.slice(uuid32(), len)) { // 分成len段
-            if (StringUtils.isNotEmpty(str)) {
-                builder.append(chars[(int) (Long.parseLong(str, 16) % size)]);
-            }
-        }
-        return builder.toString();
-    }
-
-    /**
      * 获取堆栈信息
-     * 
-     * @param deepPath
-     * @return
+     *
+     * @param deepPath the deep path
+     * @return stack trace
      */
     public static String getStackTrace(int deepPath) {
         StackTraceElement[] traces = Thread.currentThread().getStackTrace();
         if (traces.length <= deepPath) {
             return "warning: out of stack trace.";
         }
+        return traces[deepPath].toString();
+    }
 
-        StackTraceElement trace = traces[deepPath];
-        return new StringBuilder()
-                      .append(trace.getLineNumber()).append(":")
-                      .append(trace.getClassName())
-                      .append("#").append(trace.getMethodName())
-                      .toString();
+    public static String getStackTrace() {
+        return buildStackTrace(Thread.currentThread().getStackTrace());
+    }
+
+    public static String getStackTrace(Thread thread) {
+        return buildStackTrace(thread.getStackTrace());
+    }
+
+    private static String buildStackTrace(StackTraceElement[] traces) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 2, n = traces.length; i < n; i++) {
+            builder.append("--\t").append(traces[i].toString()).append("\n");
+        }
+        return builder.toString();
     }
 
     /**
@@ -313,22 +310,24 @@ public final class ObjectUtils {
      */
     @SuppressWarnings("unchecked")
     public static <T> T newInstance(Class<T> type) {
-        if (Map.class == type) { // interface
+        if (Map.class == type) {
             return (T) new HashMap<>();
-        } else if (Set.class == type) { // interface
-            return (T) new HashSet<>();
-        } else if (Collection.class == type || List.class == type) { // interface
-            return (T) new ArrayList<>();
-        } else if (Dictionary.class == type) { // abstract
-            return (T) new Hashtable<>();
-        } else if (type.isPrimitive()) {
-            Class<?> wrapper = PrimitiveTypes.ofPrimitive(type).wrapper();
-            return (T) ClassUtils.newInstance(wrapper, new Class<?>[]{String.class}, new Object[]{"0"}); // Boolean: false
-        } else if (PrimitiveTypes.isWrapperType(type)) {
-            return ClassUtils.newInstance(type, new Class<?>[]{String.class}, new Object[]{"0"});
-        } else {
-            return ClassUtils.newInstance(type);
         }
+        if (Set.class == type) {
+            return (T) new HashSet<>();
+        }
+        if (Collection.class == type || List.class == type) {
+            return (T) new ArrayList<>();
+        }
+        if (Dictionary.class == type) {
+            return (T) new Hashtable<>();
+        }
+        if (type.isPrimitive() || PrimitiveTypes.isWrapperType(type)) {
+            Class<?> wrapper = PrimitiveTypes.ofPrimitiveOrWrapper(type).wrapper();
+            // new Boolean("0") -> false
+            return (T) ClassUtils.newInstance(wrapper, new Class<?>[]{String.class}, new Object[]{"0"});
+        }
+        return ClassUtils.newInstance(type);
     }
 
     /**
@@ -340,11 +339,14 @@ public final class ObjectUtils {
     public static boolean isNotBeanType(Class<?> type) {
         return null == type
             || Object.class == type
+            || type.isArray()
             || PrimitiveTypes.ofPrimitiveOrWrapper(type) != null
             || CharSequence.class.isAssignableFrom(type)
             || Map.class.isAssignableFrom(type)
             || Dictionary.class.isAssignableFrom(type)
-            || Collection.class.isAssignableFrom(type);
+            || Enumeration.class.isAssignableFrom(type)
+            || Iterable.class.isAssignableFrom(type)
+            || Iterator.class.isAssignableFrom(type);
     }
 
     // -------------------------------------------------------------------------- private class

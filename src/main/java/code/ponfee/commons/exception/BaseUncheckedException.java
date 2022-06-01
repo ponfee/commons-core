@@ -5,14 +5,14 @@ package code.ponfee.commons.exception;
  * 
  * @author Ponfee
  */
-public abstract class BaseException extends RuntimeException {
+public class BaseUncheckedException extends RuntimeException {
 
     private static final long serialVersionUID = -5678901285130119481L;
 
     /** 错误编码 */
     private final int code;
 
-    public BaseException(int code) {
+    public BaseUncheckedException(int code) {
         this(code, null, null);
     }
 
@@ -20,7 +20,7 @@ public abstract class BaseException extends RuntimeException {
      * @param code 错误编码
      * @param message 错误消息
      */
-    public BaseException(int code, String message) {
+    public BaseUncheckedException(int code, String message) {
         this(code, message, null);
     }
 
@@ -28,7 +28,7 @@ public abstract class BaseException extends RuntimeException {
      * @param code 错误编码
      * @param cause 异常原因
      */
-    public BaseException(int code, Throwable cause) {
+    public BaseUncheckedException(int code, Throwable cause) {
         this(code, null, cause);
     }
 
@@ -37,7 +37,7 @@ public abstract class BaseException extends RuntimeException {
      * @param message 错误消息
      * @param cause 异常原因
      */
-    public BaseException(int code, String message, Throwable cause) {
+    public BaseUncheckedException(int code, String message, Throwable cause) {
         super(message, cause);
         this.code = code;
     }
@@ -49,8 +49,8 @@ public abstract class BaseException extends RuntimeException {
      * @param enableSuppression
      * @param writableStackTrace
      */
-    public BaseException(int code, String message, Throwable cause,
-                         boolean enableSuppression, boolean writableStackTrace) {
+    public BaseUncheckedException(int code, String message, Throwable cause,
+                                  boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
         this.code = code;
     }

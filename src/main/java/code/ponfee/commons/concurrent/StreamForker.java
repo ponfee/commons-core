@@ -1,6 +1,6 @@
 package code.ponfee.commons.concurrent;
 
-import code.ponfee.commons.exception.CheckedException;
+import code.ponfee.commons.exception.BaseCheckedException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -131,7 +131,7 @@ public class StreamForker<T> {
                     t = q.take();
                     break;
                 } catch (InterruptedException e) {
-                    throw new CheckedException(e);
+                    throw new BaseCheckedException(e);
                 }
             }
 

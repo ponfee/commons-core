@@ -2,14 +2,20 @@ package code.ponfee.commons.json;
 
 import code.ponfee.commons.collect.Maps;
 import code.ponfee.commons.model.Result;
+import code.ponfee.commons.util.Dates;
 import code.ponfee.commons.util.ObjectUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
 import com.fasterxml.jackson.core.type.TypeReference;
+import lombok.Data;
+import org.javamoney.moneta.Money;
+import org.junit.Assert;
 import org.junit.Test;
 
+import javax.money.Monetary;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")
@@ -75,6 +81,37 @@ public class JsonsTest {
         System.out.println(JSON.parse(JSON.toJSONString(Arrays.asList(1, 2, 3, 4))));
     }
 
+    @Test
+    public void test6() {
+        String datestring = "2022-01-01 01:01:01";
+        
+        Person person1 = new Person();
+        person1.setName("tom");
+        person1.setBirthday(Dates.toDate(datestring));
+        person1.setBalance(Money.ofMinor(Monetary.getCurrency("CNY"), 999));
+        String personString = Jsons.toJson(person1);
+        Assert.assertEquals("{\"name\":\"tom\",\"birthday\":\"2022-01-01 01:01:01\",\"balance\":{\"currency\":\"CNY\",\"number\":999}}", personString);
+
+        Person person2 = Jsons.fromJson("{\"name\":\"tom\",\"birthday\":\"2022-01-01 01:01:01\",\"balance\":{\"currency\":\"CNY\",\"number\":999},\"birthday2\":null,\"balance2\":null}", Person.class);
+        Assert.assertEquals(person1.getBirthday(), person2.getBirthday());
+        Assert.assertEquals(person1.getBalance(), person2.getBalance());
+
+
+        Person person3 = Jsons.fromJson("{\"name\":\"tom\",\"birthday\":\"2022-01-01T01:01:01.0Z\",\"balance\":{\"currency\":\"CNY\",\"number\":999}}", Person.class);
+        Assert.assertEquals(person1.getBirthday(), person3.getBirthday());
+        Assert.assertEquals(person1.getBalance(), person3.getBalance());
+    }
+
+    @Test
+    public void test7() {
+        Money money1 = Money.ofMinor(Monetary.getCurrency("CNY"), 999);
+        String moneyStr = Jsons.toJson(money1);
+        System.out.println(moneyStr);
+        Assert.assertEquals("{\"currency\":\"CNY\",\"number\":999}", moneyStr);
+        Money money2 = Jsons.fromJson(moneyStr, Money.class);
+        Assert.assertEquals(money1, money2);
+    }
+
     public static class StringPlain implements Serializable {
         private static final long serialVersionUID = 1L;
         private StringBuilder sb = new StringBuilder("xxxxxxxxxx");
@@ -92,4 +129,14 @@ public class JsonsTest {
             return ObjectUtils.toString(this);
         }
     }
+    
+    @Data
+    public static class Person implements java.io.Serializable {
+        private String name;
+        private Date birthday;
+        private Money balance;
+        private Date birthday2;
+        private Money balance2;
+    }
+    
 }

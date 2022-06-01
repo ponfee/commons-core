@@ -20,7 +20,7 @@ public final class ThreadPoolTestUtils {
         new DelegatedScheduledExecutorService("caller-run-scheduler", ThreadPoolExecutors.CALLER_RUNS);
 
     public static final ExecutorService INFINITY_QUEUE_EXECUTOR =
-        new DelegatedExecutorService("infinity-queue-executor", Integer.MAX_VALUE, ThreadPoolExecutors.BLOCK_CALLER);
+        new DelegatedExecutorService("infinity-queue-executor", Integer.MAX_VALUE, ThreadPoolExecutors.CALLER_BLOCKS);
 
     static {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

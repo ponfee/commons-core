@@ -1,6 +1,7 @@
 package code.ponfee.commons.concurrent;
 
 import code.ponfee.commons.model.ToJsonString;
+import lombok.Getter;
 
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -10,8 +11,8 @@ import java.util.concurrent.TimeUnit;
  * 
  * @author Ponfee
  */
+@Getter
 public class ThreadPoolMonitor extends ToJsonString implements java.io.Serializable {
-
     private static final long serialVersionUID = 3890678647435855868L;
 
     private final long keepAliveTime;
@@ -44,50 +45,6 @@ public class ThreadPoolMonitor extends ToJsonString implements java.io.Serializa
 
         this.shutdown = pool.isShutdown();
         this.terminated = pool.isTerminated();
-    }
-
-    public long getKeepAliveTime() {
-        return keepAliveTime;
-    }
-
-    public int getCorePoolSize() {
-        return corePoolSize;
-    }
-
-    public int getMaximumPoolSize() {
-        return maximumPoolSize;
-    }
-
-    public int getLargestPoolSize() {
-        return largestPoolSize;
-    }
-
-    public int getPoolSize() {
-        return poolSize;
-    }
-
-    public long getTaskCount() {
-        return taskCount;
-    }
-
-    public long getCompletedTaskCount() {
-        return completedTaskCount;
-    }
-
-    public int getQueueSize() {
-        return queueSize;
-    }
-
-    public int getActiveCount() {
-        return activeCount;
-    }
-
-    public boolean isShutdown() {
-        return shutdown;
-    }
-
-    public boolean isTerminated() {
-        return terminated;
     }
 
 }

@@ -16,7 +16,7 @@ import java.util.function.Function;
 public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializable {
 
     private static final long serialVersionUID = -2804195259517755050L;
-    public static final Result<Void> SUCCESS = new SuccessResult();
+    public static final Result<Void> SUCCESS = new Success();
 
     private Integer    code; // 状态码
     private boolean success; // 是否成功
@@ -24,7 +24,9 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
     private T          data; // 结果数据
 
     // -------------------------------------------constructor methods
-    public Result() { } // code is null
+    public Result() {
+        // code field is null, for help deserialized
+    }
 
     public Result(CodeMsg cm) {
         this(cm.getCode(), cm.isSuccess(), cm.getMsg(), null);
@@ -69,8 +71,8 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
      * 
      * @return Result success object
      */
-    public static Result<Void> success() {
-        return SUCCESS;
+    public static <T> Result<T> success() {
+        return (Result<T>) SUCCESS;
     }
 
     /**
@@ -81,7 +83,7 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
      * @return Result success object
      */
     public static <T> Result<T> success(T data) {
-        return success("OK", data);
+        return success(Success.MSG, data);
     }
 
     /**
@@ -93,7 +95,7 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
      * @return Result success object
      */
     public static <T> Result<T> success(String msg, T data) {
-        return new Result<>(SUCCESS.code, SUCCESS.success, msg, data);
+        return new Result<>(Success.CODE, Success.STATE, msg, data);
     }
 
     /**
@@ -105,7 +107,7 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
      * @return Result success object
      */
     public static <T> Result<T> success(int code, T data) {
-        return new Result<>(code, SUCCESS.success, SUCCESS.msg, data);
+        return new Result<>(code, Success.STATE, Success.MSG, data);
     }
 
     /**
@@ -118,7 +120,7 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
      * @return Result success object
      */
     public static <T> Result<T> success(int code, String msg, T data) {
-        return new Result<>(code, SUCCESS.success, msg, data);
+        return new Result<>(code, Success.STATE, msg, data);
     }
 
     /**
@@ -157,7 +159,7 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
     }
 
     // -----------------------------------------------of operations
-    public static Result<Void> of(CodeMsg cm) {
+    public static <T> Result<T> of(CodeMsg cm) {
         return new Result<>(cm);
     }
 
@@ -174,16 +176,16 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
     }
 
     // -----------------------------------------------database update or delete affected rows
-    public static Result<Void> assertAffectedOne(int actualAffectedRows) {
+    public static <T> Result<T> assertAffectedOne(int actualAffectedRows) {
         return assertAffectedRows(actualAffectedRows, 1);
     }
 
-    public static Result<Void> assertAffectedRows(int actualAffectedRows, int exceptAffectedRows) {
-        return actualAffectedRows == exceptAffectedRows ? SUCCESS : failure(ResultCode.OPS_CONFLICT);
+    public static <T> Result<T> assertAffectedRows(int actualAffectedRows, int exceptAffectedRows) {
+        return actualAffectedRows == exceptAffectedRows ? (Result<T>) SUCCESS : failure(ResultCode.OPS_CONFLICT);
     }
 
-    public static Result<Void> assertOperatedState(boolean condition) {
-        return condition ? SUCCESS : failure(ResultCode.OPS_CONFLICT);
+    public static <T> Result<T> assertOperatedState(boolean condition) {
+        return condition ? (Result<T>) SUCCESS : failure(ResultCode.OPS_CONFLICT);
     }
 
     // -------------------------------------------------getter/setter
@@ -194,7 +196,7 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
 
     @Override
     public boolean isSuccess() {
-        return this.success;
+        return success;
     }
 
     @Override
@@ -224,17 +226,20 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
 
     @Transient
     public boolean isFailure() {
-        return !this.success;
+        return !success;
     }
 
     /**
-     * SUCCESS RESULT
+     * Success result
      */
-    private static final class SuccessResult extends Result<Void> {
+    private static final class Success extends Result<Void> {
         private static final long serialVersionUID = 6740650053476768729L;
+        static final int CODE = 200;
+        static final boolean STATE = true;
+        static final String MSG = "OK";
 
-        SuccessResult() {
-            super(ResultCode.OK);
+        Success() {
+            super(CODE, STATE, MSG);
         }
 
         @Override
@@ -248,7 +253,7 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
         }
 
         @Override
-        public void setData(Void void0) {
+        public void setData(Void data) {
             throw new UnsupportedOperationException();
         }
 

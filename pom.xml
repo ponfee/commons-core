@@ -15,6 +15,7 @@
     >   2）编译但不会执行单元测试类：mvn package -DskipTests
     >   3）指定参数：mvn clean install -Dhadoop.version=2.7.7 -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true
     >   4）项目版本号批量修改：mvn versions:set -DnewVersion=2.2-SNAPSHOT（https://www.jianshu.com/p/88da01804d3c）
+    >   4）跳过检查：-Dcheckstyle.skip
 
     > maven wrapper：https://maven.apache.org/wrapper/index.html
     > 1）Install：会生成mvnw和mvnw.cmd脚本
@@ -61,11 +62,11 @@
    -->
 
   <properties>
-    <project.encoding>UTF-8</project.encoding>
-    <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
-    <java.version>1.8</java.version>
+    <file.encoding>UTF-8</file.encoding>
+    <project.build.sourceEncoding>${file.encoding}</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>${file.encoding}</project.reporting.outputEncoding>
     <!-- javac -source 1.8 -target 1.8 -->
+    <java.version>1.8</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <maven.compiler.compilerVersion>${java.version}</maven.compiler.compilerVersion>
@@ -547,6 +548,20 @@
     </dependency>
     <!-- ====================加解密==================== -->
 
+    <!-- money -->
+    <dependency>
+      <groupId>javax.money</groupId>
+      <artifactId>money-api</artifactId>
+      <version>1.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.javamoney</groupId>
+      <artifactId>moneta</artifactId>
+      <version>1.4.2</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
 
     <!-- ====================pdf相关 ==================== -->
     <!-- pdf itext -->
@@ -584,7 +599,7 @@
     <!-- 文件编码探测（若有jar包无法下载可手动安装：lib/README.md） -->
 
 
-    <!-- ====================only use in testing==================== -->
+    <!-- ====================test==================== -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -745,21 +760,6 @@
       <scope>test</scope>
     </dependency> -->
 
-    <!-- money -->
-    <dependency>
-      <groupId>javax.money</groupId>
-      <artifactId>money-api</artifactId>
-      <version>1.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.javamoney</groupId>
-      <artifactId>moneta</artifactId>
-      <version>1.4.2</version>
-      <type>pom</type>
-      <scope>test</scope>
-    </dependency>
-
     <dependency>
       <!-- https://nexus.nuiton.org/nexus/content/repositories/thirdparty/ -->
       <groupId>net.sourceforge.jargs</groupId>
@@ -860,11 +860,11 @@
     </servers> -->
     <snapshotRepository>
       <id>repos-snapshots</id>
-      <url>https://maven.aliyun.com/repository/snapshots</url>
+      <url>https://{{domain}}/repository/snapshots</url>
     </snapshotRepository>
     <repository>
       <id>repos-releases</id>
-      <url>https://maven.aliyun.com/repository/releases</url>
+      <url>https://{{domain}}/repository/releases</url>
     </repository>
   </distributionManagement>
 
@@ -894,30 +894,42 @@
 
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.2.0</version>
+        <configuration>
+          <encoding>${file.encoding}</encoding>
+        </configuration>
+      </plugin>
+      <plugin>
         <!-- http://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
+        <version>3.10.1</version>
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
-          <encoding>${project.encoding}</encoding>
+          <encoding>${file.encoding}</encoding>
           <showDeprecation>true</showDeprecation>
           <showWarnings>true</showWarnings>
           <!-- <fork>true</fork> 乱码 -->
+          <!--<compilerArgument>-Xlint:unchecked,deprecation</compilerArgument>-->
           <!-- <compilerArgument>-verbose -parameters -bootclasspath ${java.home}\lib\rt.jar</compilerArgument> -->
           <compilerArgs>
             <arg>-bootclasspath</arg>
             <!-- windows用“;”号分隔；linux用“:”号分隔；${JAVA_HOME}/lib/tools.jar； -->
             <arg>${java.home}/lib/rt.jar${system.separator}${java.home}/lib/jce.jar${system.separator}${java.home}/lib/jsse.jar</arg>
             <arg>-parameters</arg>
+            <arg>-Xlint:unchecked,deprecation</arg>
           </compilerArgs>
           <excludes>
             <exclude>node_modules/**</exclude>
           </excludes>
-          <!-- <debug>false</debug>
+          <!-- 
+          <debug>false</debug>
           <debuglevel>none</debuglevel>
-          <skipMain>true</skipMain> -->
+          <skipMain>true</skipMain>
+           -->
         </configuration>
       </plugin>
 
@@ -1128,7 +1140,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>3.2.1</version>
         <executions>
           <execution>
             <id>attach-source</id>

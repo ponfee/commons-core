@@ -27,6 +27,9 @@ import static com.google.common.base.CaseFormat.LOWER_UNDERSCORE;
  */
 public enum BeanMaps {
 
+    /**
+     * Based Cglib
+     */
     CGLIB() {
         @Override @SuppressWarnings("unchecked")
         public Map<String, Object> toMap(Object bean) {
@@ -42,6 +45,9 @@ public enum BeanMaps {
         }
     },
 
+    /**
+     * Based Unsafe class
+     */
     FIELDS() {
         private final Map<Class<?>, List<Field>> cachedFields = new HashMap<>();
 
@@ -69,13 +75,16 @@ public enum BeanMaps {
         }
 
         private List<Field> getFields(Class<?> beanType) {
-            return LazyLoader.get(beanType, cachedFields, bt -> {
-                List<Field> list = ClassUtils.listFields(bt);
+            return LazyLoader.get(beanType, cachedFields, type -> {
+                List<Field> list = ClassUtils.listFields(type);
                 return CollectionUtils.isEmpty(list) ? Collections.emptyList() : ImmutableList.copyOf(list);
             });
         }
     },
 
+    /**
+     * Based java.beans.Introspector
+     */
     PROPS() {
         @Override
         public Map<String, Object> toMap(Object bean) {

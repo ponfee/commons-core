@@ -9,7 +9,7 @@ import org.apache.commons.lang3.time.FastDateFormat;
 import org.joda.time.LocalDateTime;
 
 import code.ponfee.commons.util.DatePeriods;
-import code.ponfee.commons.util.DatePeriods.Interval;
+import code.ponfee.commons.util.DatePeriods.Segment;
 import code.ponfee.commons.util.Dates;
 
 /**
@@ -195,7 +195,7 @@ public class DatePeriodCalculator {
         Date target = Dates.random(Dates.ofMillis(0), STARTING_DATE);
         System.out.println(Dates.format(target));
         for (int i = 0; i < 100; i++) {
-            Interval interval = DatePeriods.HOURLY.next(STARTING_DATE, target, 2, 1);
+            Segment interval = DatePeriods.HOURLY.next(STARTING_DATE, target, 2, 1);
             System.out.println(interval.toString());
             target = interval.begin();
         }
@@ -205,7 +205,7 @@ public class DatePeriodCalculator {
         Date original = Dates.toDate("2018-03-01 15:00:00");
         Date target = Dates.toDate("2018-05-01 14:00:00");
         for (int i = 0; i < 10; i++) {
-            Interval in = DatePeriods.MONTHLY.next(original, target, 1, 1);
+            Segment in = DatePeriods.MONTHLY.next(original, target, 1, 1);
             target = in.begin();
             System.out.println(in.toString());
         }

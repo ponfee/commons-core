@@ -25,6 +25,11 @@ import java.util.stream.Stream;
 import code.ponfee.commons.base.tuple.Tuple2;
 import code.ponfee.commons.collect.ArrayHashKey;
 import code.ponfee.commons.concurrent.ThreadPoolTestUtils;
+import code.ponfee.commons.util.CurrencyEnum;
+import code.ponfee.commons.util.Money;
+import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
@@ -44,7 +49,18 @@ import io.netty.util.internal.ThreadLocalRandom;
  */
 public class Test1 {
     
-    public static void main(String[] args) throws InterruptedException, ExecutionException {
+    public static void main(String[] args) throws InterruptedException, ExecutionException, JsonProcessingException {
+        Money money = Money.of(CurrencyEnum.CNY.currency(), 100);
+        String json = JSON.toJSONString(money);
+        System.out.println(json);
+        System.out.println(new ObjectMapper().writeValueAsString(money));
+        Money money1 = JSON.parseObject(json, Money.class);
+        Money money2 = new ObjectMapper().readValue(json, Money.class);
+        System.out.println(money1.equals(money2));
+        System.out.println(new ObjectMapper().writeValueAsString(money1));
+        
+
+
         String nids = Arrays.stream(new Integer[]{1,2,3}).map(e -> String.valueOf(e)).collect(Collectors.joining(","));
         System.out.println(nids);
         String[] arr = {"a", "b"};

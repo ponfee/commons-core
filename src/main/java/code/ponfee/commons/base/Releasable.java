@@ -1,6 +1,6 @@
 package code.ponfee.commons.base;
 
-import code.ponfee.commons.exception.CheckedException;
+import code.ponfee.commons.exception.BaseCheckedException;
 
 import javax.security.auth.Destroyable;
 
@@ -43,7 +43,7 @@ public interface Releasable {
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
-            throw new CheckedException(e);
+            throw new BaseCheckedException(e);
         }
     }
 

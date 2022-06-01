@@ -15,16 +15,22 @@ public class NamedThreadFactory implements ThreadFactory {
     private static final AtomicInteger POOL_SEQ = new AtomicInteger(1);
 
     private final AtomicInteger threadNo = new AtomicInteger(1);
+
     private final String prefix;
+
+    /**
+     * User Thread(用户线程)、Daemon Thread(守护线程)
+     */
     private final boolean daemon;
+
     private final ThreadGroup group;
 
     public NamedThreadFactory() {
-        this(null, false);
+        this(null, Thread.currentThread().isDaemon());
     }
 
     public NamedThreadFactory(String prefix) {
-        this(prefix, false);
+        this(prefix, Thread.currentThread().isDaemon());
     }
 
     public NamedThreadFactory(String prefix, boolean daemon) {

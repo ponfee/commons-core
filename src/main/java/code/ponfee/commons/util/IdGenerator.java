@@ -29,7 +29,7 @@ import code.ponfee.commons.math.Maths;
  *
  * @author Ponfee
  */
-public final class IdWorker {
+public final class IdGenerator {
 
     // Long.toBinaryString(Long.MAX_VALUE).length()
     private static final int SIZE = Long.SIZE - 1; // 63位（除去最开头的一个符号位）
@@ -48,9 +48,9 @@ public final class IdWorker {
     private long lastTimestamp = -1L;
     private long sequence      = 0L;
 
-    public IdWorker(int workerId, int datacenterId,
-                    int sequenceBits, int workerIdBits, 
-                    int datacenterIdBits) {
+    public IdGenerator(int workerId, int datacenterId,
+                       int sequenceBits, int workerIdBits,
+                       int datacenterIdBits) {
         long maxWorkerId = Maths.bitsMask(workerIdBits);
         if (workerId > maxWorkerId || workerId < 0) {
             throw new IllegalArgumentException(
@@ -69,16 +69,16 @@ public final class IdWorker {
         this.datacenterIdShift = sequenceBits + workerIdBits;
         this.timestampShift    = sequenceBits + workerIdBits + datacenterIdBits;
 
-        this.sequenceMask  = Maths.bitsMask(sequenceBits);
-        this.timestampMask = Maths.bitsMask(SIZE - this.timestampShift);
+        this.sequenceMask      = Maths.bitsMask(sequenceBits);
+        this.timestampMask     = Maths.bitsMask(SIZE - this.timestampShift);
 
-        this.workerId     = workerId;
-        this.datacenterId = datacenterId;
+        this.workerId          = workerId;
+        this.datacenterId      = datacenterId;
     }
 
     /**
      * sequenceBits: 12 bit, value range of 0 ~ 4095(111111111111)
-     * workerIdBits: 5 bit, value range of 0 ~ 31(11111)
+     * workerIdBits:  5 bit, value range of 0 ~   31(11111)
      * datacenterIdBits: 5 bit, value range of 0 ~ 31(11111)
      * 
      * workerIdShift: sequenceBits，左移12位(seq12位)
@@ -90,7 +90,7 @@ public final class IdWorker {
      * @param workerId
      * @param datacenterId
      */
-    public IdWorker(int workerId, int datacenterId) {
+    public IdGenerator(int workerId, int datacenterId) {
         this(workerId, datacenterId, 12, 5, 5);
     }
 
@@ -102,7 +102,7 @@ public final class IdWorker {
      * 
      * @param workerId
      */
-    public IdWorker(int workerId) {
+    public IdGenerator(int workerId) {
         this(workerId, 0, 14, 5, 0);
     }
 

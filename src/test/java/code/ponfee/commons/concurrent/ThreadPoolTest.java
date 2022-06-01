@@ -29,7 +29,7 @@ public class ThreadPoolTest {
     }
 
     private static void BLOCK_PRODUCER() throws InterruptedException {
-        ThreadPoolExecutor executor = ThreadPoolExecutors.create(1, 2, 300, 10, "ThreadPoolTest", ThreadPoolExecutors.BLOCK_CALLER);
+        ThreadPoolExecutor executor = ThreadPoolExecutors.create(1, 2, 300, 10, "ThreadPoolTest", ThreadPoolExecutors.CALLER_BLOCKS);
 
         for (int i = 0; i < 100; i++) {
             Thread.sleep(1000 + ThreadLocalRandom.current().nextInt(6000));

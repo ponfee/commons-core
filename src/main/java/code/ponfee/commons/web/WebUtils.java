@@ -6,7 +6,7 @@ import code.ponfee.commons.io.Files;
 import code.ponfee.commons.io.GzipProcessor;
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.util.Networks;
-import code.ponfee.commons.util.UrlCoder;
+import code.ponfee.commons.util.URLCodes;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -502,7 +502,7 @@ public final class WebUtils {
     }
 
     public static String getContextPath(ServletContext context) {
-        String contextPath = normalize(UrlCoder.decodeURI(context.getContextPath()));
+        String contextPath = normalize(URLCodes.decodeURI(context.getContextPath()));
         if ("/".equals(contextPath)) {
             contextPath = "";
         }
@@ -529,8 +529,8 @@ public final class WebUtils {
 
         String encoding = request.getCharacterEncoding();
         contextPath = (encoding == null) 
-                    ? UrlCoder.decodeURI(contextPath) 
-                    : UrlCoder.decodeURI(contextPath, encoding);
+                    ? URLCodes.decodeURI(contextPath) 
+                    : URLCodes.decodeURI(contextPath, encoding);
 
         contextPath = normalize(contextPath);
         if ("/".equals(contextPath)) {
@@ -636,7 +636,7 @@ public final class WebUtils {
     }
 
     private static void addStreamHeader(HttpServletResponse resp, String filename, String charset) {
-        filename = UrlCoder.encodeURIComponent(filename, charset); // others web browse
+        filename = URLCodes.encodeURIComponent(filename, charset); // others web browse
         //filename = new String(filename.getBytes(charset), ISO_8859_1); // firefox web browse
 
         resp.setContentType(ContentType.APPLICATION_OCTET_STREAM.value());

@@ -1,5 +1,6 @@
 package code.ponfee.commons.time;
 
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,9 +11,13 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
+import java.util.Date;
 import java.util.Locale;
 
-import org.apache.commons.lang3.math.NumberUtils;
+import code.ponfee.commons.util.Dates;
+import code.ponfee.commons.util.WrappedFastDateFormat;
+import org.apache.commons.lang3.time.DateUtils;
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -65,5 +70,14 @@ public class DateFormatTest {
         System.out.println(Runtime.getRuntime().availableProcessors());
         System.out.println(Lists.newArrayList(1,2,3).stream().reduce(10, Integer::sum));
         System.out.println(Lists.newArrayList(1,2,3).stream().reduce(Integer::sum));
+    }
+
+    @Test
+    public void test4() throws ParseException {
+        Date zero = WrappedFastDateFormat.PATTERN_41.parse(Dates.ZERO_DATE_TIME);
+        Assert.assertEquals(-62170185600000L, zero.getTime());
+        Assert.assertEquals(zero, WrappedFastDateFormat.DEFAULT.parse(Dates.ZERO_DATE_TIME));
+        Assert.assertEquals(zero, DateUtils.parseDate(Dates.ZERO_DATE_TIME, Dates.DEFAULT_DATE_FORMAT));
+
     }
 }

@@ -36,6 +36,10 @@ public final class Files {
 
     public static final int BUFF_SIZE = 8192; // file buffer size
 
+    public static final String TOP_PATH                 = "..";
+
+    public static final String CURRENT_PATH             = ".";
+
     // ------------------------------------------------------------charset encoding
     public static final Charset DEFAULT_CHARSET = Charset.defaultCharset(); // default charset
 
@@ -44,11 +48,11 @@ public final class Files {
     public static final String UTF_8 = "UTF-8"; // UTF-8 encoding
 
     // ------------------------------------------------------------file separator
-    public static final String WINDOWS_FILE_SEPARATOR = "\\"; // windows file separator
+    public static final String WINDOWS_FOLDER_SEPARATOR = "\\";
 
-    public static final String UNIX_FILE_SEPARATOR = "/"; // unix file separator
+    public static final String UNIX_FOLDER_SEPARATOR = "/";
 
-    public static final String SYSTEM_FILE_SEPARATOR = File.separator; // system file separator
+    public static final String SYSTEM_FOLDER_SEPARATOR = File.separator;
 
     // ------------------------------------------------------------line separator
     public static final String UNIX_LINE_SEPARATOR = "\n"; // unix file line separator spec \n  LF

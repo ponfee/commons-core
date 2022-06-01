@@ -3,6 +3,12 @@ package code.ponfee.commons.model;
 /**
  * Representing a boolean status
  *
+ * <pre>
+ *  异或(XOR , ⊕) = A ^ B
+ *  同或(XNOR, ⊙) = 异或 ^ 1 = (A ^ B) ^ 1
+ *  (0, 1)间的切换可以使用异或：1 ^ n，其中n ∈ (0, 1)
+ * </pre>
+ *
  * @author Ponfee
  */
 public enum Predicates {

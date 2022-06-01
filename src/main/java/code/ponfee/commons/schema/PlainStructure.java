@@ -1,6 +1,6 @@
 package code.ponfee.commons.schema;
 
-import code.ponfee.commons.exception.CheckedException;
+import code.ponfee.commons.exception.BaseCheckedException;
 import com.alibaba.fastjson.annotation.JSONType;
 import com.alibaba.fastjson.parser.DefaultJSONParser;
 import com.alibaba.fastjson.parser.JSONToken;
@@ -43,7 +43,7 @@ public final class PlainStructure implements DataStructure, CharSequence {
         try {
             return (NormalStructure) DataStructures.NORMAL.parse(this.plain);
         } catch (Exception e) {
-            throw new CheckedException("Convert to normal structure fail: " + this.plain, e);
+            throw new BaseCheckedException("Convert to normal structure fail: " + this.plain, e);
         }
     }
 
@@ -52,7 +52,7 @@ public final class PlainStructure implements DataStructure, CharSequence {
         try {
             return (TableStructure) DataStructures.TABLE.parse(this.plain);
         } catch (Exception e) {
-            throw new CheckedException("Convert to table structure fail: " + this.plain, e);
+            throw new BaseCheckedException("Convert to table structure fail: " + this.plain, e);
         }
     }
 

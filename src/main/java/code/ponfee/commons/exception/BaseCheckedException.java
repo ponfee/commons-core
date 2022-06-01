@@ -7,29 +7,29 @@ import code.ponfee.commons.model.ResultCode;
  * 
  * @author Ponfee
  */
-public class CheckedException extends BaseException {
+public class BaseCheckedException extends BaseUncheckedException {
 
     private static final long serialVersionUID = -7059975701644684690L;
     private static final int CODE = ResultCode.SERVER_ERROR.getCode();
 
-    public CheckedException() {
+    public BaseCheckedException() {
         super(CODE);
     }
 
-    public CheckedException(String message) {
+    public BaseCheckedException(String message) {
         super(CODE, message);
     }
 
-    public CheckedException(Throwable cause) {
+    public BaseCheckedException(Throwable cause) {
         super(CODE, cause);
     }
 
-    public CheckedException(String message, Throwable cause) {
+    public BaseCheckedException(String message, Throwable cause) {
         super(CODE, message, cause);
     }
 
-    public CheckedException(String message, Throwable cause, 
-                            boolean enableSuppression, boolean writableStackTrace) {
+    public BaseCheckedException(String message, Throwable cause,
+                                boolean enableSuppression, boolean writableStackTrace) {
         super(CODE, message, cause, enableSuppression, writableStackTrace);
     }
 

@@ -1,6 +1,6 @@
 package code.ponfee.commons.web;
 
-import code.ponfee.commons.exception.BaseException;
+import code.ponfee.commons.exception.BaseUncheckedException;
 import code.ponfee.commons.exception.UnauthorizedException;
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.model.ResultCode;
@@ -183,9 +183,9 @@ public abstract class AbstractWebExceptionHandler {
     /**
      * 500 - Biz operate failure
      */
-    @ExceptionHandler(BaseException.class)
+    @ExceptionHandler(BaseUncheckedException.class)
     //@ResponseBody @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public void handle(HttpServletRequest req, HttpServletResponse resp, BaseException e) {
+    public void handle(HttpServletRequest req, HttpServletResponse resp, BaseUncheckedException e) {
         LOGGER.debug("Biz operate failure", e);
         handle(req, resp, e.getCode(), e.getMessage());
     }

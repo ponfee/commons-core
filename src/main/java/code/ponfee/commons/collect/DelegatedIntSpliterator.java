@@ -10,7 +10,7 @@ import java.util.stream.IntStream;
 /**
  * Delegated int spliterator
  *
- * @param <T>
+ * @param <T> elelement type
  * @author Ponfee
  */
 public class DelegatedIntSpliterator<T> implements Spliterator<T> {

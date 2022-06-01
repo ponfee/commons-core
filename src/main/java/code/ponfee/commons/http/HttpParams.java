@@ -3,7 +3,7 @@ package code.ponfee.commons.http;
 import code.ponfee.commons.collect.Maps;
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.util.ObjectUtils;
-import code.ponfee.commons.util.UrlCoder;
+import code.ponfee.commons.util.URLCodes;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,21 +19,22 @@ import java.util.TreeMap;
 
 /**
  * http参数工具类
+ *
  * @author Ponfee
  */
 public class HttpParams {
 
-    // ----------------------------获取url中的参数----------------------------
+    // --------------------------------------------------获取url中的参数
     public static Map<String, String[]> parseUrlParams(String url) {
         return parseUrlParams(url, Files.UTF_8);
     }
 
     public static Map<String, String[]> parseUrlParams(String url, String charset) {
         int idx = url.indexOf('?');
-        return idx == -1 ? null : parseParams(url.substring(idx + 1), charset);
+        return idx == -1 ? Collections.emptyMap() : parseParams(url.substring(idx + 1), charset);
     }
 
-    // ------------------------解析query string中的请求参数-------------------------
+    // --------------------------------------------------解析query string中的请求参数
     public static Map<String, String[]> parseParams(String queryString) {
         return parseParams(queryString, Files.UTF_8);
     }
@@ -45,24 +46,24 @@ public class HttpParams {
      * @return
      */
     public static Map<String, String[]> parseParams(String queryString, String encoding) {
-        Map<String, String[]> params = new LinkedHashMap<>();
         if (queryString == null || queryString.length() == 0) {
-            return params;
+            return Collections.emptyMap();
         }
 
         if (encoding == null) {
             encoding = Files.UTF_8;
         }
 
+        Map<String, String[]> params = new LinkedHashMap<>();
         String[] kv;
         for (String param : queryString.split("&")) {
             kv = param.split("=", 2);
-            putParam(params, kv[0], kv.length == 1 ? "" : UrlCoder.decodeURIComponent(kv[1], encoding));
+            putParam(params, kv[0], kv.length == 1 ? "" : URLCodes.decodeURIComponent(kv[1], encoding));
         }
         return params;
     }
 
-    // --------------------------------构建参数--------------------------------
+    // --------------------------------------------------构建参数
     /**
      * 键值对构建参数(默认UTF-8)
      * @param params
@@ -96,7 +97,7 @@ public class HttpParams {
             for (String val : values) {
                 builder.append(entry.getKey())
                        .append("=")
-                       .append(UrlCoder.encodeURIComponent(val, encoding))
+                       .append(URLCodes.encodeURIComponent(val, encoding))
                        .append("&");
             }
         }
@@ -107,7 +108,7 @@ public class HttpParams {
         return builder.toString();
     }
 
-    // ---------------------------------构建url地址---------------------------------
+    // --------------------------------------------------构建url地址
     /**
      * 构建url地址
      * @param url
@@ -129,7 +130,7 @@ public class HttpParams {
         return buildUrlPath(url, encoding, Maps.toMap(params));
     }
 
-    // ---------------------------------构建签名数据---------------------------------
+    // --------------------------------------------------构建签名数据
     /**
      * 构建待签名数据
      * @param params 请求参数
@@ -160,16 +161,19 @@ public class HttpParams {
         // 拼接待签名串，blank string to prevent if signingMap is empty
         StringBuilder signing = new StringBuilder();
         for (Map.Entry<String, String> entry : signingMap.entrySet()) {
-            signing.append(entry.getKey()).append('=').append(wrapChar)
-                   .append(entry.getValue()).append(wrapChar).append('&');
+            signing.append(entry.getKey())
+                   .append('=')
+                   .append(wrapChar).append(entry.getValue()).append(wrapChar)
+                   .append('&');
         }
         if (signing.length() > 0) {
-            signing.setLength(signing.length() - 1); // 删除未位的'&'
+            // 删除未位的'&'
+            signing.setLength(signing.length() - 1);
         }
         return signing.toString();
     }
 
-    // ---------------------------------构建Form表单---------------------------------
+    // --------------------------------------------------构建Form表单
     /**
      * 构建form表单
      * @param url
@@ -179,8 +183,11 @@ public class HttpParams {
     public static String buildForm(String url, Map<String, ?> params) {
         StringBuilder form = new StringBuilder(256);
         String formName = ObjectUtils.uuid32();
-        form.append("<form action=\"").append(url).append("\" name=\"")
-            .append(formName).append("\" method=\"post\">");
+        form.append("<form action=\"")
+            .append(url)
+            .append("\" name=\"")
+            .append(formName)
+            .append("\" method=\"post\">");
 
         Object value;
         for (Map.Entry<String, ?> param : params.entrySet()) {
@@ -195,7 +202,8 @@ public class HttpParams {
         }
 
         return form.append("</form><script>document.forms['")
-                   .append(formName).append("'].submit();</script>")
+                   .append(formName)
+                   .append("'].submit();</script>")
                    .toString();
     }
 
@@ -228,7 +236,7 @@ public class HttpParams {
         return sb.toString();
     }
 
-    // --------------------------------------private method-----------------------------------
+    // --------------------------------------------------private methods
     private static void putParam(Map<String, String[]> params, String name, String value) {
         String[] oldValues = params.get(name);
         if (oldValues == null) {
@@ -239,8 +247,10 @@ public class HttpParams {
     }
 
     private static void buildInputElement(StringBuilder form, String name, Object value) {
-        form.append("<input type=\"hidden\" name=\"").append(name)
-            .append("\" value=\"").append(Objects.toString(value, ""))
+        form.append("<input type=\"hidden\" name=\"")
+            .append(name)
+            .append("\" value=\"")
+            .append(Objects.toString(value, ""))
             .append("\" />");
     }
 

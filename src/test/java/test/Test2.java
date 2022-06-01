@@ -21,8 +21,7 @@ import code.ponfee.commons.model.Page;
 import code.ponfee.commons.reflect.BeanCopiers;
 import code.ponfee.commons.util.Bytes;
 import code.ponfee.commons.util.Dates;
-import code.ponfee.commons.util.IdWorker;
-import code.ponfee.commons.util.ObjectUtils;
+import code.ponfee.commons.util.IdGenerator;
 import code.ponfee.commons.util.SecureRandoms;
 import com.google.common.base.Stopwatch;
 import org.apache.commons.io.FileUtils;
@@ -34,7 +33,6 @@ import org.springframework.objenesis.ObjenesisHelper;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -53,8 +51,7 @@ public class Test2 {
         map.put(1, null);
         map.put("a", "");
         System.out.println(Jsons.toJson(map));
-        System.out.println(Jsons.NON_NULL.string(map));
-        System.out.println(Jsons.NON_EMPTY.string(map));
+        System.out.println(Jsons.ALL.string(map));
     }
 
     @Test
@@ -309,7 +306,7 @@ public class Test2 {
 
     @Test
     public void test26() throws IOException {
-        System.out.println(Bytes.toBinary(Bytes.toBytes(new IdWorker(10).nextId())));
+        System.out.println(Bytes.toBinary(Bytes.toBytes(new IdGenerator(10).nextId())));
 
         String format = "yyyy-MM-dd HH:mm:ss.SSS";
         System.out.println(Long.toBinaryString(Long.MAX_VALUE));
@@ -385,10 +382,23 @@ public class Test2 {
     public void tes31() {
         System.out.println(Character.toUpperCase('y'));
         System.out.println(Character.toUpperCase('Y'));
+        System.out.println(Arrays.toString(Numbers.slice(0, 2)));
+        System.out.println(Arrays.toString(Numbers.slice(2, 3)));
+        System.out.println(Arrays.toString(Numbers.slice(3, 1)));
         System.out.println(Arrays.toString(Numbers.slice(9, 3)));
         System.out.println(Arrays.toString(Numbers.slice(10, 3)));
         System.out.println(Arrays.toString(Numbers.slice(11, 3)));
         System.out.println(Arrays.toString(Numbers.slice(12, 3)));
+
+        System.out.println("-----\n\n");
+
+        System.out.println(Numbers.partition( 0, 2));
+        System.out.println(Numbers.partition( 2, 3));
+        System.out.println(Numbers.partition( 3, 1));
+        System.out.println(Numbers.partition( 9, 3));
+        System.out.println(Numbers.partition(10, 3));
+        System.out.println(Numbers.partition(11, 3));
+        System.out.println(Numbers.partition(12, 3));
     }
 
     @Test

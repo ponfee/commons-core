@@ -21,7 +21,7 @@ public class TestCache {
             threads[i] = new Thread(() -> {
                 while (flag.get()) {
                     if (cache.isDestroy()) break;
-                    cache.put(ObjectUtils.shortid(8), null, new Date().getTime() + random.nextInt(1000));
+                    cache.put(ObjectUtils.uuid32(), null, new Date().getTime() + random.nextInt(1000));
                 }
             });
         }

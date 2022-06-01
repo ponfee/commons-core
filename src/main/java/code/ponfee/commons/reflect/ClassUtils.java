@@ -11,7 +11,7 @@ import code.ponfee.commons.model.Predicates;
 import code.ponfee.commons.util.Asserts;
 import code.ponfee.commons.util.LazyLoader;
 import code.ponfee.commons.util.Strings;
-import code.ponfee.commons.util.UrlCoder;
+import code.ponfee.commons.util.URLCodes;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.asm.ClassReader;
 import org.springframework.asm.ClassVisitor;
@@ -45,6 +45,30 @@ public final class ClassUtils {
 
     private static final Map<Object, Constructor<?>> CONSTRUCTOR_CACHE = new HashMap<>();
     private static final Map<Object, Method> METHOD_CACHE = new HashMap<>();
+
+    /*
+    public static final Pattern QUALIFIED_CLASS_NAME_PATTERN = Pattern.compile("^([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]*$");
+    private static final GroovyClassLoader GROOVY_CLASS_LOADER = new GroovyClassLoader();
+    public static <T> Class<T> getClass(String text) {
+        String key = DigestUtils.md5Hex(text);
+        Class<?> clazz = LazyLoader.get(key, CLASS_CACHE, () -> {
+            if (QUALIFIED_CLASS_NAME_PATTERN.matcher(text).matches()) {
+                try {
+                    return Class.forName(text);
+                } catch (Exception ignored) {
+                    ignored.printStackTrace();
+                }
+            }
+            try {
+                return GROOVY_CLASS_LOADER.parseClass(text);
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
+                return Null.class;
+            }
+        });
+        return clazz == Null.class ? null : (Class<T>) clazz;
+    }
+    */
 
     /**
      * 获取方法的参数名（编译未清除）<p>
@@ -301,7 +325,7 @@ public final class ClassUtils {
      */
     public static String getClassFilePath(Class<?> clazz) {
         URL url = clazz.getProtectionDomain().getCodeSource().getLocation();
-        String path = new File(UrlCoder.decodeURI(url.getPath(), Files.UTF_8)).getAbsolutePath();
+        String path = new File(URLCodes.decodeURI(url.getPath(), Files.UTF_8)).getAbsolutePath();
 
         if (path.toLowerCase().endsWith(".jar")) {
             path += "!";
@@ -319,7 +343,7 @@ public final class ClassUtils {
      */
     public static String getClasspath(Class<?> clazz) {
         URL url = clazz.getProtectionDomain().getCodeSource().getLocation();
-        String path = UrlCoder.decodeURI(url.getPath(), Files.UTF_8);
+        String path = URLCodes.decodeURI(url.getPath(), Files.UTF_8);
         if (path.toLowerCase().endsWith(".jar")) {
             path = path.substring(0, path.lastIndexOf("/") + 1);
         }
@@ -334,7 +358,7 @@ public final class ClassUtils {
      */
     public static String getClasspath() {
         String path = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-        path = UrlCoder.decodeURI(new File(path).getAbsolutePath(), Files.UTF_8);
+        path = URLCodes.decodeURI(new File(path).getAbsolutePath(), Files.UTF_8);
         return path + File.separator;
     }
 
@@ -360,10 +384,24 @@ public final class ClassUtils {
 
     public static <T> T newInstance(Constructor<T> constructor, Object[] args) {
         checkObjectArray(args);
-        try {
-            return ArrayUtils.isEmpty(args) ? constructor.newInstance() : constructor.newInstance(args);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+
+        if (constructor.isAccessible()) {
+            try {
+                return ArrayUtils.isEmpty(args) ? constructor.newInstance() : constructor.newInstance(args);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            synchronized (constructor) {
+                try {
+                    constructor.setAccessible(true);
+                    return ArrayUtils.isEmpty(args) ? constructor.newInstance() : constructor.newInstance(args);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                } finally {
+                    constructor.setAccessible(false);
+                }
+            }
         }
     }
 
@@ -435,10 +473,24 @@ public final class ClassUtils {
 
     public static <T> T invoke(Object caller, Method method, Object[] args) {
         checkObjectArray(args);
-        try {
-            return (T) (ArrayUtils.isEmpty(args) ? method.invoke(caller) : method.invoke(caller, args));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        if (method.isAccessible()) {
+            try {
+                return (T) (ArrayUtils.isEmpty(args) ? method.invoke(caller) : method.invoke(caller, args));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            synchronized (method) {
+                try {
+                    method.setAccessible(true);
+                    return (T) (ArrayUtils.isEmpty(args) ? method.invoke(caller) : method.invoke(caller, args));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                } finally {
+                    // restore accessible
+                    method.setAccessible(false);
+                }
+            }
         }
     }
 
@@ -510,14 +562,20 @@ public final class ClassUtils {
         return parameterTypes;
     }
 
+    // -----------------------------------------------obtain constructor & method
     private static <T> Constructor<T> obtainConstructor(Class<T> type, Class<?>[] actualTypes) {
         Asserts.isTrue(ArrayUtils.isNotEmpty(actualTypes), "Should be always non empty.");
+        Constructor<T> constructor = obtainConstructor((Constructor<T>[]) type.getConstructors(), actualTypes);
+        if (constructor != null) {
+            return constructor;
+        }
+        return obtainConstructor((Constructor<T>[]) type.getDeclaredConstructors(), actualTypes);
+    }
 
-        Constructor<T>[] constructors = (Constructor<T>[]) type.getConstructors();
+    private static <T> Constructor<T> obtainConstructor(Constructor<T>[] constructors, Class<?>[] actualTypes) {
         if (ArrayUtils.isEmpty(constructors)) {
             return null;
         }
-
         for (Constructor<T> constructor : constructors) {
             if (matches(constructor.getParameterTypes(), actualTypes)) {
                 return constructor;
@@ -529,15 +587,22 @@ public final class ClassUtils {
     private static Method obtainMethod(Object caller, String methodName, Class<?>[] actualTypes) {
         Asserts.isTrue(ArrayUtils.isNotEmpty(actualTypes), "Should be always non empty.");
         Tuple2<Class<?>, Predicates> tuple = obtainClass(caller);
-        final Method[] methods = tuple.a.getMethods();
+        Method method = obtainMethod(tuple.a.getMethods(), methodName, tuple.b, actualTypes);
+        if (method != null) {
+            return method;
+        }
+        return obtainMethod(tuple.a.getDeclaredMethods(), methodName, tuple.b, actualTypes);
+    }
+
+    private static Method obtainMethod(Method[] methods, String methodName,
+                                       Predicates flag, Class<?>[] actualTypes) {
         if (ArrayUtils.isEmpty(methods)) {
             return null;
         }
-
         for (Method method : methods) {
             boolean matches = method.getName().equals(methodName)
                            && !method.isSynthetic()
-                           && tuple.b.equals(Modifier.isStatic(method.getModifiers()))
+                           && flag.equals(Modifier.isStatic(method.getModifiers()))
                            && matches(method.getParameterTypes(), actualTypes);
             if (matches) {
                 return method;

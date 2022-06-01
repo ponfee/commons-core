@@ -22,7 +22,7 @@ public final class JsonUtils {
         }
 
         return value instanceof Map        // Object
-            || value instanceof List       // Array
+            || value instanceof List       // List
             || value.getClass().isArray(); // Array
     }
 

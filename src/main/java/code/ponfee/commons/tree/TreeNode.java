@@ -49,8 +49,8 @@ import java.util.stream.Collectors;
  *   DFS前序遍历：0137849256
  *   DFS中序遍历：7381940526
  *   DFS后序遍历：7839415620
- *   BFS：0123456789
- *   CFS：0123478956
+ *   BFS广度优先：0123456789
+ *   CFS孩子优先：0123478956
  * </pre>
  *
  * @author Ponfee
@@ -195,7 +195,8 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     }
 
     // 递归方式dfs
-    /*public List<FlatNode<T, A>> flatDFS() {
+    /*
+    public List<FlatNode<T, A>> flatDFS() {
         List<FlatNode<T, A>> collect = Lists.newLinkedList();
         dfs(collect);
         return collect;
@@ -203,7 +204,8 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     private void dfs(List<FlatNode<T, A>> collect) {
         collect.add(new FlatNode<>(this));
         forEachChild(child -> child.dfs(collect));
-    }*/
+    }
+    */
 
     // -------------------------------------------------------------CFS
     /**
@@ -233,7 +235,8 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     }
 
     // 递归方式cfs
-    /*public List<FlatNode<T, A>> flatCFS() {
+    /*
+    public List<FlatNode<T, A>> flatCFS() {
         List<FlatNode<T, A>> collect = Collects.newLinkedList(new FlatNode<>(this));
         cfs(collect);
         return collect;
@@ -241,7 +244,8 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     private void cfs(List<FlatNode<T, A>> collect) {
         forEachChild(child -> collect.add(new FlatNode<>(child)));
         forEachChild(child -> child.cfs(collect));
-    }*/
+    }
+    */
 
     // -------------------------------------------------------------BFS
 
@@ -264,7 +268,8 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     }
 
     // 递归方式bfs
-    /*public List<FlatNode<T, A>> flatBFS() {
+    /*
+    public List<FlatNode<T, A>> flatBFS() {
         List<FlatNode<T, A>> collect = new LinkedList<>();
         Queue<TreeNode<T, A>> queue = Collects.newLinkedList(this);
         bfs(queue, collect);
@@ -281,7 +286,8 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
             node.forEachChild(queue::offer);
         }
         bfs(queue, collect);
-    }*/
+    }
+    */
 
     /**
      * 遍历树
@@ -341,7 +347,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
 
     private void forEachChild(Consumer<TreeNode<T, A>> action) {
         if (hasChildren()) {
-            children.forEach(action::accept);
+            children.forEach(action);
         }
     }
 
@@ -468,10 +474,12 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         }
 
         // already check duplicated, so cannot happened has circular dependencies state
-        /*if (IterableUtils.matchesAny(parentPath, nid::equals)) {
+        /*
+        if (IterableUtils.matchesAny(parentPath, nid::equals)) {
             // 节点路径中已经包含了此节点，则视为环状
             throw new RuntimeException("Node circular dependencies: " + parentPath + " -> " + nid);
-        }*/
+        }
+        */
 
         int size = parentPath == null ? 1 : parentPath.size() + 1;
         ImmutableList.Builder<T> builder = ImmutableList.builderWithExpectedSize(size);

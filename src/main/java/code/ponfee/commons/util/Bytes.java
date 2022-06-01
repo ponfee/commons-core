@@ -373,6 +373,38 @@ public final class Bytes {
         return toLong(bytes, 0);
     }
 
+    /**
+     * Long value to hex string
+     *
+     * @param value the long value
+     * @return String of long value hex string
+     */
+    public static String toHex(long value) {
+        return toHex(value, true);
+    }
+
+    /**
+     * Long value to hex string
+     *
+     * @param value     the long value
+     * @param lowercase {@code true} if lowercase hex string, else uppercase
+     * @return String of long value hex string
+     */
+    public static String toHex(long value, boolean lowercase) {
+        char[] a = lowercase ? HEX_LOWER_CODES : HEX_UPPER_CODES;
+        int mask = 0x0F;
+        return new String(new char[]{
+            a[       (int) (value >>> 60)], a[mask & (int) (value >>> 56)],
+            a[mask & (int) (value >>> 52)], a[mask & (int) (value >>> 48)],
+            a[mask & (int) (value >>> 44)], a[mask & (int) (value >>> 40)],
+            a[mask & (int) (value >>> 36)], a[mask & (int) (value >>> 32)],
+            a[mask & (int) (value >>> 28)], a[mask & (int) (value >>> 24)],
+            a[mask & (int) (value >>> 20)], a[mask & (int) (value >>> 16)],
+            a[mask & (int) (value >>> 12)], a[mask & (int) (value >>>  8)],
+            a[mask & (int) (value >>>  4)], a[mask & (int) (value       )]
+        });
+    }
+
     // -----------------------------------------------------------------float
     public static byte[] toBytes(float value) {
         return toBytes(Float.floatToIntBits(value));
@@ -504,14 +536,16 @@ public final class Bytes {
         }
         return result;
 
-        /*ByteArrayOutputStream baos = new ByteArrayOutputStream(totalLength);
+        /*
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(totalLength);
         baos.write(first, 0, first.length);
         for (byte[] array : rest) {
             if (array != null) {
                 baos.write(array, 0, array.length);
             }
         }
-        return baos.toByteArray();*/
+        return baos.toByteArray();
+        */
     }
 
     public static void tailCopy(byte[] src, int destLen) {
@@ -569,7 +603,7 @@ public final class Bytes {
      * 从首部开始拷贝src到dest：
      *   若src数据不足则在dest后面补tailing
      *   若src数据有多则舍去src后面的数据
-     *   
+     *
      * @param src
      * @param dest
      */

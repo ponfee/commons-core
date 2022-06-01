@@ -16,7 +16,6 @@ import org.springframework.util.Assert;
 import javax.annotation.Resource;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -159,55 +158,47 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
 
     // -----------------------------------------------------------------------
     /**
-     * Auto injects the field from spring container for object
+     * Injects the field from spring container for object
      * 
      * @param object the object
      * 
-     * @see #autowireBean(Object)
+     * @see #autowire(Object)
      */
-    public static void autoInject(Object object) {
+    public static void inject(Object object) {
         Assert.state(HOLDER.size() > 0, "Must be defined SpringContextHolder within spring config file.");
 
         for (Field field : ClassUtils.listFields(object.getClass())) {
-            if (Modifier.isStatic(field.getModifiers())) {
-                continue;
-            }
-
-            Object fieldBean = null;
+            Object fieldValue = null;
             Class<?> fieldType = GenericUtils.getFieldActualType(object.getClass(), field);
-            if (AnnotationUtils.getAnnotation(field, Resource.class) != null) {
-                Resource resource = AnnotationUtils.getAnnotation(field, Resource.class);
-                if (StringUtils.isNotBlank(resource.name())) {
-                    fieldBean = getBean(resource.name());
-                } else {
-                    fieldBean = getBean(field.getName());
+            Resource resource = AnnotationUtils.getAnnotation(field, Resource.class);
+            if (resource != null) {
+                fieldValue = getBean(StringUtils.isNotBlank(resource.name()) ? resource.name() : field.getName(), fieldType);
+                if (fieldValue == null) {
+                    fieldValue = getBean(fieldType);
                 }
-                if (fieldBean == null) {
-                    fieldBean = getBean(fieldType);
-                }
-            } else if (fieldType.isAnnotationPresent(Autowired.class)) {
+            } else if (field.isAnnotationPresent(Autowired.class)) {
                 Qualifier qualifier = AnnotationUtils.getAnnotation(field, Qualifier.class);
                 if (qualifier != null && StringUtils.isNotBlank(qualifier.value())) {
-                    fieldBean = getBean(qualifier.value());
+                    fieldValue = getBean(qualifier.value(), fieldType);
                 } else {
-                    fieldBean = getBean(fieldType);
+                    fieldValue = getBean(fieldType);
                 }
             }
 
-            if (fieldType.isInstance(fieldBean)) {
-                Fields.put(object, field, fieldBean);
+            if (fieldType.isInstance(fieldValue)) {
+                Fields.put(object, field, fieldValue);
             }
         }
     }
 
     /**
-     * Autowired bean the field from spring container for object
+     * Autowire annotated field from spring container for object
      * 
      * @param object the object instance
      * 
-     * @see #autoInject(Object)
+     * @see #inject(Object)
      */
-    public static void autowireBean(Object object) {
+    public static void autowire(Object object) {
         for (ApplicationContext context : HOLDER) {
             context.getAutowireCapableBeanFactory().autowireBean(object);
         }
@@ -215,9 +206,11 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
 
     @Override
     public void destroy() {
+        /*
         synchronized (SpringContextHolder.class) {
             HOLDER.clear();
         }
+        */
     }
 
     private static <T> T get(Function<ApplicationContext, T> finder) throws BeansException {

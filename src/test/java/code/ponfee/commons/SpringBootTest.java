@@ -19,6 +19,7 @@
 //@RunWith(SpringRunner.class)
 //@SpringBootTest
 //public abstract class SpringBootBaseTest<T> {
+//    private static final Class<?>[] EXCLUDE_CLASSES = {Void.class, Object.class};
 //
 //    private T bean;
 //    private final String beanName;
@@ -37,13 +38,11 @@
 //
 //    @Before
 //    public final void setUp() {
-//        Class<T> type = GenericUtils.getActualTypeArgument(this.getClass());
-//        if (Void.class != type) {
-//            if (beanName != null && beanName.length() > 0) {
-//                bean = SpringContextHolder.getBean(beanName, type);
-//            } else {
-//                bean = SpringContextHolder.getBean(type);
-//            }
+//        Class<T> type = GenericUtils.getActualTypeArgument(getClass(), 0);
+//        if (!ArrayUtils.contains(EXCLUDE_CLASSES, type)) {
+//            bean = StringUtils.isBlank(beanName)
+//                 ? SpringContextHolder.getBean(type)
+//                 : SpringContextHolder.getBean(beanName, type);
 //        }
 //        initiate();
 //    }

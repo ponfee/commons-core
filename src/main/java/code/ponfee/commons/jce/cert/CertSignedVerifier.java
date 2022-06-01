@@ -71,9 +71,9 @@ public abstract class CertSignedVerifier {
             subjectCN = X509CertUtils.getCertInfo(subject, X509CertInfo.SUBJECT_CN);
             subject.checkValidity(new Date());
         } catch (CertificateExpiredException e) {
-            throw new SecurityException("[" + subjectCN + "]已过期");
+            throw new SecurityException("[" + subjectCN + "]已过期", e);
         } catch (CertificateNotYetValidException e) {
-            throw new SecurityException("[" + subjectCN + "]尚未生效");
+            throw new SecurityException("[" + subjectCN + "]尚未生效", e);
         }
     }
 
@@ -88,7 +88,7 @@ public abstract class CertSignedVerifier {
             subjectCN = X509CertUtils.getCertInfo(subject, X509CertInfo.SUBJECT_CN);
             subject.verify(root.getPublicKey());
         } catch (SignatureException e) {
-            throw new SecurityException("[" + subjectCN + "]的根证未受信任");
+            throw new SecurityException("[" + subjectCN + "]的根证未受信任", e);
         } catch (Exception e) {
             throw new SecurityException("根证验签出错", e);
         }

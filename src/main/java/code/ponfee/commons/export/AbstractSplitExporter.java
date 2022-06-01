@@ -1,6 +1,6 @@
 package code.ponfee.commons.export;
 
-import code.ponfee.commons.concurrent.MultithreadExecutor;
+import code.ponfee.commons.concurrent.MultithreadExecutors;
 import code.ponfee.commons.util.Holder;
 import com.google.common.base.Preconditions;
 
@@ -55,7 +55,7 @@ public abstract class AbstractSplitExporter extends AbstractDataExporter<Void> {
 
         if (split.get() > 0) {
             super.nonEmpty();
-            MultithreadExecutor.joinDiscard(service, split.get());
+            MultithreadExecutors.joinDiscard(service, split.get());
         }
     }
 

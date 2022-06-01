@@ -3,6 +3,7 @@ package code.ponfee.commons.collect;
 import code.ponfee.commons.util.ObjectUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.util.Assert;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -188,7 +189,7 @@ public final class Collects {
         }
 
         return list.stream()
-                   .map(mapper::apply)
+                   .map(mapper)
                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                    .entrySet()
                    .stream()
@@ -299,6 +300,31 @@ public final class Collects {
             product.add(row);
         }
         return product;
+    }
+
+    /**
+     * Returns consecutive sub array of a array, 
+     * each of the same size (the final list may be smaller).
+     *
+     * @param array the array
+     * @param size  the size
+     * @return a list of consecutive sub sets
+     */
+    public static List<int[]> partition(int[] array, int size) {
+        if (array == null) {
+            return null;
+        }
+        Assert.isTrue(size > 0, "Size must be greater than 0.");
+        size = Math.min(size, array.length);
+        if (size <= 1) {
+            return Collections.singletonList(array);
+        }
+
+        List<int[]> result = new ArrayList<>(size);
+        for (int n = (array.length + size - 1) / size, i = 0; i < size; i++) {
+            result.add(Arrays.copyOfRange(array, i * n, Math.min(i * n + n, array.length)));
+        }
+        return result;
     }
 
     /**

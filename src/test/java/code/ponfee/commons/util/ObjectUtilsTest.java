@@ -7,7 +7,7 @@ import java.util.Map;
 import code.ponfee.commons.concurrent.ThreadPoolTestUtils;
 import org.junit.Test;
 
-import code.ponfee.commons.concurrent.MultithreadExecutor;
+import code.ponfee.commons.concurrent.MultithreadExecutors;
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.reflect.ClassUtils;
 
@@ -68,7 +68,7 @@ public class ObjectUtilsTest {
     @Test
     public void test6() {
         // XXX: if Executor is CALLER_RUN_EXECUTOR and threadNumber>=33 then will be dead loop
-        MultithreadExecutor.execAsync(32, () -> {
+        MultithreadExecutors.execute(32, () -> {
             get("123");
         }, 5, ThreadPoolTestUtils.CALLER_RUN_SCHEDULER);
     }
@@ -76,7 +76,7 @@ public class ObjectUtilsTest {
     @Test
     public void test7() {
         // XXX: if Executor is CALLER_RUN_EXECUTOR and threadNumber>=33 then will be dead loop
-        MultithreadExecutor.execAsync(32, () -> {
+        MultithreadExecutors.execute(32, () -> {
             Singleton.getInstance();
         }, 5, ThreadPoolTestUtils.CALLER_RUN_SCHEDULER);
     }

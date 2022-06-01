@@ -1,5 +1,7 @@
 package code.ponfee.commons;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -18,6 +20,7 @@ import code.ponfee.commons.util.SpringContextHolder;
 @RunWith(SpringRunner.class) // SpringJUnit4ClassRunner.class
 @ContextConfiguration(locations = { "classpath:spring-context.xml" })
 public abstract class SpringBaseTest<T> {
+    private static final Class<?>[] EXCLUDE_CLASSES = {Void.class, Object.class};
 
     private T bean;
     private final String beanName;
@@ -36,13 +39,11 @@ public abstract class SpringBaseTest<T> {
 
     @Before
     public final void setUp() {
-        Class<T> type = GenericUtils.getActualTypeArgument(this.getClass());
-        if (Void.class != type) {
-            if (beanName != null && beanName.length() > 0) {
-                bean = SpringContextHolder.getBean(beanName, type);
-            } else {
-                bean = SpringContextHolder.getBean(type);
-            }
+        Class<T> type = GenericUtils.getActualTypeArgument(getClass(), 0);
+        if (!ArrayUtils.contains(EXCLUDE_CLASSES, type)) {
+            bean = StringUtils.isBlank(beanName)
+                    ? SpringContextHolder.getBean(type)
+                    : SpringContextHolder.getBean(beanName, type);
         }
         initialize();
     }

@@ -14,18 +14,25 @@ import java.util.Date;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * 基于joda的日期工具类
- * 
+ * Date utility based joda
+ *
  * @author Ponfee
  */
 public class Dates {
 
+    /**
+     * Default date time format
+     */
     public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    /**
+     * Zero time: -62170185600000L
+     */
     public static final String ZERO_DATE_TIME = "0000-00-00 00:00:00";
 
     /**
      * 简单的日期格式校验(yyyy-MM-dd HH:mm:ss)
-     * 
+     *
      * @param date 输入日期
      * @return 有效返回true, 反之false
      */
@@ -35,8 +42,8 @@ public class Dates {
 
     /**
      * 简单的日期格式校验
-     * 
-     * @param date 输入日期，如(yyyy-MM-dd)
+     *
+     * @param date    输入日期，如(yyyy-MM-dd)
      * @param pattern 日期格式
      * @return 有效返回true, 反之false
      */
@@ -54,8 +61,18 @@ public class Dates {
     }
 
     /**
+     * Check the date is whether zero date
+     *
+     * @param date the date
+     * @return is zero if {@code true}
+     */
+    public static boolean isZeroDate(Date date) {
+        return date != null && date.getTime() == -62170185600000L;
+    }
+
+    /**
      * 获取当前日期对象
-     * 
+     *
      * @return 当前日期对象
      */
     public static Date now() {
@@ -64,7 +81,7 @@ public class Dates {
 
     /**
      * 获取当前日期字符串
-     * 
+     *
      * @param format 日期格式
      * @return 当前日期字符串
      */
@@ -74,7 +91,7 @@ public class Dates {
 
     /**
      * 转换日期字符串为日期对象(默认格式: yyyy-MM-dd HH:mm:ss)
-     * 
+     *
      * @param dateStr 日期字符串
      * @return 日期对象
      */
@@ -84,7 +101,7 @@ public class Dates {
 
     /**
      * 转换日期即字符串为Date对象
-     * 
+     *
      * @param dateStr 日期字符串
      * @param pattern 日期格式
      * @return 日期对象
@@ -95,7 +112,7 @@ public class Dates {
 
     /**
      * java（毫秒）时间戳
-     * 
+     *
      * @param millis 毫秒
      * @return 日期
      */
@@ -105,7 +122,7 @@ public class Dates {
 
     /**
      * unix时间戳
-     * 
+     *
      * @param seconds 秒
      * @return
      */
@@ -115,8 +132,8 @@ public class Dates {
 
     /**
      * 格式化日期对象
-     * 
-     * @param date 日期对象
+     *
+     * @param date   日期对象
      * @param format 日期格式
      * @return 当前日期字符串
      */
@@ -129,7 +146,7 @@ public class Dates {
 
     /**
      * 格式化日期对象，格式为yyyy-MM-dd HH:mm:ss
-     * 
+     *
      * @param date 日期对象
      * @return 日期字符串
      */
@@ -142,8 +159,8 @@ public class Dates {
 
     /**
      * 格式化日期对象
-     * 
-     * @param mills 毫秒
+     *
+     * @param mills   毫秒
      * @param pattern 格式
      * @return 日期字符串
      */
@@ -152,10 +169,11 @@ public class Dates {
     }
 
     // ----------------------------------------------------------------plus
+
     /**
      * 增加毫秒数
-     * 
-     * @param date 时间
+     *
+     * @param date        时间
      * @param numOfMillis 毫秒数
      * @return 时间
      */
@@ -165,8 +183,8 @@ public class Dates {
 
     /**
      * 增加秒数
-     * 
-     * @param date 时间
+     *
+     * @param date         时间
      * @param numOfSeconds 秒数
      * @return 时间
      */
@@ -176,8 +194,8 @@ public class Dates {
 
     /**
      * 增加分钟
-     * 
-     * @param date 时间
+     *
+     * @param date         时间
      * @param numOfMinutes 分钟数
      * @return 时间
      */
@@ -187,8 +205,8 @@ public class Dates {
 
     /**
      * 增加小时
-     * 
-     * @param date 时间
+     *
+     * @param date       时间
      * @param numOfHours 小时数
      * @return 时间
      */
@@ -198,8 +216,8 @@ public class Dates {
 
     /**
      * 增加天数
-     * 
-     * @param date 时间
+     *
+     * @param date    时间
      * @param numdays 天数
      * @return 时间
      */
@@ -209,8 +227,8 @@ public class Dates {
 
     /**
      * 增加周
-     * 
-     * @param date 时间
+     *
+     * @param date     时间
      * @param numWeeks 周数
      * @return 时间
      */
@@ -220,8 +238,8 @@ public class Dates {
 
     /**
      * 增加月份
-     * 
-     * @param date 时间
+     *
+     * @param date      时间
      * @param numMonths 月数
      * @return 时间
      */
@@ -231,8 +249,8 @@ public class Dates {
 
     /**
      * 增加年
-     * 
-     * @param date 时间
+     *
+     * @param date     时间
      * @param numYears 年数
      * @return 时间
      */
@@ -241,10 +259,11 @@ public class Dates {
     }
 
     // ----------------------------------------------------------------minus
+
     /**
      * 减少毫秒数
-     * 
-     * @param date 时间
+     *
+     * @param date        时间
      * @param numOfMillis 毫秒数
      * @return 时间
      */
@@ -254,8 +273,8 @@ public class Dates {
 
     /**
      * 减少秒数
-     * 
-     * @param date 时间
+     *
+     * @param date         时间
      * @param numOfSeconds 秒数
      * @return 时间
      */
@@ -265,8 +284,8 @@ public class Dates {
 
     /**
      * 减少分钟
-     * 
-     * @param date 时间
+     *
+     * @param date         时间
      * @param numOfMinutes 分钟数
      * @return 时间
      */
@@ -276,8 +295,8 @@ public class Dates {
 
     /**
      * 减少小时
-     * 
-     * @param date 时间
+     *
+     * @param date       时间
      * @param numOfHours 小时数
      * @return 时间
      */
@@ -287,8 +306,8 @@ public class Dates {
 
     /**
      * 减少天数
-     * 
-     * @param date 时间
+     *
+     * @param date    时间
      * @param numdays 天数
      * @return 时间
      */
@@ -298,8 +317,8 @@ public class Dates {
 
     /**
      * 减少周
-     * 
-     * @param date 时间
+     *
+     * @param date     时间
      * @param numWeeks 周数
      * @return 时间
      */
@@ -309,8 +328,8 @@ public class Dates {
 
     /**
      * 减少月份
-     * 
-     * @param date 时间
+     *
+     * @param date      时间
      * @param numMonths 月数
      * @return 时间
      */
@@ -319,9 +338,9 @@ public class Dates {
     }
 
     /**
-     * 减少年 
-     * 
-     * @param date 时间
+     * 减少年
+     *
+     * @param date     时间
      * @param numYears 年数
      * @return 时间
      */
@@ -330,9 +349,10 @@ public class Dates {
     }
 
     // ----------------------------------------------------------------start/end
+
     /**
      * 获取指定日期所在天的开始时间：yyyy-MM-dd 00:00:00
-     * 
+     *
      * @param date 时间
      * @return 时间
      */
@@ -342,7 +362,7 @@ public class Dates {
 
     /**
      * 获取指定日期所在天的结束时间：yyyy-MM-dd 23:59:59
-     * 
+     *
      * @param date 时间
      * @return 时间
      */
@@ -352,7 +372,7 @@ public class Dates {
 
     /**
      * 获取指定日期所在周的开始时间：yyyy-MM-周一 00:00:00
-     * 
+     *
      * @param date 日期
      * @return 当前周第一天
      */
@@ -362,7 +382,7 @@ public class Dates {
 
     /**
      * 获取指定日期所在周的结束时间：yyyy-MM-周日 23:59:59
-     * 
+     *
      * @param date 日期
      * @return 当前周最后一天
      */
@@ -372,7 +392,7 @@ public class Dates {
 
     /**
      * 获取指定日期所在月的开始时间：yyyy-MM-01 00:00:00
-     * 
+     *
      * @param date 日期
      * @return 当前月的第一天
      */
@@ -382,7 +402,7 @@ public class Dates {
 
     /**
      * 获取指定日期所在月的结束时间：yyyy-MM-月未 23:59:59
-     * 
+     *
      * @param date 日期
      * @return 当前月的最后一天
      */
@@ -392,7 +412,7 @@ public class Dates {
 
     /**
      * 获取指定日期所在月的开始时间：yyyy-01-01 00:00:00
-     * 
+     *
      * @param date 日期
      * @return 当前年的第一天
      */
@@ -402,7 +422,7 @@ public class Dates {
 
     /**
      * 获取指定日期所在月的结束时间：yyyy-12-31 23:59:59
-     * 
+     *
      * @param date 日期
      * @return 当前年的最后一天
      */
@@ -411,11 +431,12 @@ public class Dates {
     }
 
     // ----------------------------------------------------------------day of
+
     /**
      * 获取指定时间所在周的周n，1<=day<=7
-     * 
+     *
      * @param date 相对日期
-     * @param day 1:星期一，2:星期二，...
+     * @param day  1:星期一，2:星期二，...
      * @return 本周周几的日期对象
      */
     public static Date withDayOfWeek(@Nonnull Date date, int day) {
@@ -424,7 +445,7 @@ public class Dates {
 
     /**
      * 获取指定时间所在月的n号，1<=day<=31
-     * 
+     *
      * @param date
      * @param day
      * @return
@@ -435,7 +456,7 @@ public class Dates {
 
     /**
      * 获取指定时间所在年的n天，1<=day<=366
-     * 
+     *
      * @param date
      * @param day
      * @return
@@ -462,11 +483,12 @@ public class Dates {
     }
 
     // ----------------------------------------------------------------others
+
     /**
      * 计算两个日期的时间差（单位：秒）
-     * 
+     *
      * @param start 开始时间
-     * @param end 结束时间
+     * @param end   结束时间
      * @return 时间间隔
      */
     public static long clockDiff(@Nonnull Date start, @Nonnull Date end) {
@@ -475,7 +497,7 @@ public class Dates {
 
     /**
      * Returns a days between the two date(end-start)
-     * 
+     *
      * @param start the start date
      * @param end   the end date
      * @return a number of between start to end days
@@ -486,7 +508,7 @@ public class Dates {
 
     /**
      * 日期a是否大于日期b
-     * 
+     *
      * @param source 待比较日期
      * @param target 目标日期
      * @return 大于返回true，反之false
@@ -497,7 +519,7 @@ public class Dates {
 
     /**
      * 日期a是否小于日期b
-     * 
+     *
      * @param source 待比较日期
      * @param target 目标日期
      * @return 小于返回true，反之false
@@ -508,9 +530,9 @@ public class Dates {
 
     /**
      * 日期随机
-     * 
-     * @param begin  开发日期
-     * @param end    结束日期
+     *
+     * @param begin 开发日期
+     * @param end   结束日期
      * @return
      */
     public static Date random(Date begin, Date end) {
@@ -529,19 +551,33 @@ public class Dates {
         return new Date(beginMills + ThreadLocalRandom.current().nextLong(endMills - beginMills));
     }
 
+    /**
+     * Returns the smaller of two {@code Date} values.
+     *
+     * @param a the first Date
+     * @param b the second Date
+     * @return the smallest of {@code a} and {@code b}
+     */
     public static Date min(Date a, Date b) {
-        return a == null ? b : (b == null || a.after(b)) ? b : a;
+        return a == null ? b : (b == null || a.before(b)) ? a : b;
     }
 
+    /**
+     * Returns the greater of two {@code Date} values.
+     *
+     * @param a the first Date
+     * @param b the second Date
+     * @return the greatest of {@code a} and {@code b}
+     */
     public static Date max(Date a, Date b) {
-        return a == null ? b : (b == null || b.after(a)) ? b : a;
+        return a == null ? b : (b == null || a.after(b)) ? a : b;
     }
 
     // ----------------------------------------------------------------java 8 date
     public static LocalDateTime toLocalDateTime(Date date) {
         return date.toInstant()
-                   .atZone(ZoneId.systemDefault()) // .atOffset(ZoneOffset.of("+8"))
-                   .toLocalDateTime();
+                .atZone(ZoneId.systemDefault()) // .atOffset(ZoneOffset.of("+8"))
+                .toLocalDateTime();
     }
 
     public static Date toDate(LocalDateTime localDateTime) {
@@ -564,7 +600,7 @@ public class Dates {
         return localDate.atStartOfDay();
     }
 
-    public static LocalDateTime toLocalDateTime(LocalDate localDate, 
+    public static LocalDateTime toLocalDateTime(LocalDate localDate,
                                                 LocalTime localTime) {
         return localDate.atTime(localTime);
     }

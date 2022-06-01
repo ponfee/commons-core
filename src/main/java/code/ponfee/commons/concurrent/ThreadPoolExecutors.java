@@ -18,10 +18,8 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Thread pool executor utility
- * 
- * https://blog.csdn.net/Holmofy/article/details/73237153
- * https://blog.csdn.net/holmofy/article/details/77411854
- * 
+ * <a href="https://blog.csdn.net/Holmofy/article/details/73237153">Multiple Thread</a>
+ *
  * @author Ponfee
  */
 public final class ThreadPoolExecutors {
@@ -52,7 +50,7 @@ public final class ThreadPoolExecutors {
     /**
      * if not shutdown then put queue until enqueue
      */
-    public static final RejectedExecutionHandler BLOCK_CALLER = (task, executor) -> {
+    public static final RejectedExecutionHandler CALLER_BLOCKS = (task, executor) -> {
         if (!executor.isShutdown()) {
             try {
                 executor.getQueue().put(task);
@@ -63,61 +61,56 @@ public final class ThreadPoolExecutors {
     };
 
     /**
-     * anyway always run
+     * anyway always run task, even if thread pool is shutdown
      */
     public static final RejectedExecutionHandler ALWAYS_CALLER_RUNS = (task, executor) -> task.run();
 
-    /**
-     * anyway always discard oldest and execute the new
-     */
-    public static final RejectedExecutionHandler ALWAYS_DISCARD_OLDEST = (task, executor) -> {
-        executor.getQueue().poll();
-        executor.execute(task);
-    };
-
-    /**
-     * anyway always put queue until enqueue
-     */
-    public static final RejectedExecutionHandler ALWAYS_BLOCK_CALLER = (task, executor) -> {
-        try {
-            executor.getQueue().put(task);
-        } catch (InterruptedException e) {
-            throw new RuntimeException("Put a task to queue occur error: BLOCK_PRODUCER", e);
-        }
-    };
-
     // ----------------------------------------------------------
-    public static ThreadPoolExecutor create(int corePoolSize, int maximumPoolSize, long keepAliveTime) {
-        return create(corePoolSize, maximumPoolSize, keepAliveTime, 0, null, null);
+    public static ThreadPoolExecutor create(int corePoolSize,
+                                            int maximumPoolSize,
+                                            long keepAliveTimeSeconds) {
+        return create(corePoolSize, maximumPoolSize, keepAliveTimeSeconds, 0, null, null);
     }
 
-    public static ThreadPoolExecutor create(int corePoolSize, int maximumPoolSize, 
-                                            long keepAliveTime, int queueCapacity) {
-        return create(corePoolSize, maximumPoolSize, keepAliveTime, queueCapacity, null, null);
+    public static ThreadPoolExecutor create(int corePoolSize,
+                                            int maximumPoolSize,
+                                            long keepAliveTimeSeconds,
+                                            int queueCapacity) {
+        return create(corePoolSize, maximumPoolSize, keepAliveTimeSeconds, queueCapacity, null, null);
     }
 
-    public static ThreadPoolExecutor create(int corePoolSize, int maximumPoolSize, long keepAliveTime, 
-                                            int queueCapacity, RejectedExecutionHandler rejectedHandler) {
-        return create(corePoolSize, maximumPoolSize, keepAliveTime, queueCapacity, null, rejectedHandler);
+    public static ThreadPoolExecutor create(int corePoolSize,
+                                            int maximumPoolSize,
+                                            long keepAliveTimeSeconds,
+                                            int queueCapacity,
+                                            RejectedExecutionHandler rejectedHandler) {
+        return create(corePoolSize, maximumPoolSize, keepAliveTimeSeconds, queueCapacity, null, rejectedHandler);
     }
 
-    public static ThreadPoolExecutor create(int corePoolSize, int maximumPoolSize, 
-                                            long keepAliveTime, int queueCapacity, String threadName) {
-        return create(corePoolSize, maximumPoolSize, keepAliveTime, queueCapacity, threadName, null);
+    public static ThreadPoolExecutor create(int corePoolSize,
+                                            int maximumPoolSize,
+                                            long keepAliveTimeSeconds,
+                                            int queueCapacity,
+                                            String threadName) {
+        return create(corePoolSize, maximumPoolSize, keepAliveTimeSeconds, queueCapacity, threadName, null);
     }
 
     /**
      * 线程池创建器
-     * @param corePoolSize     核心线程数
-     * @param maximumPoolSize  最大线程数
-     * @param keepAliveTime    线程存活时间
-     * @param queueCapacity    队列长度
-     * @param threadName       线程名称
-     * @param rejectedHandler  拒绝策略
+     *
+     * @param corePoolSize         核心线程数
+     * @param maximumPoolSize      最大线程数
+     * @param keepAliveTimeSeconds 线程存活时间(秒)
+     * @param queueCapacity        队列长度
+     * @param threadName           线程名称
+     * @param rejectedHandler      拒绝策略
      * @return a ThreadPoolExecutor instance
      */
-    public static ThreadPoolExecutor create(int corePoolSize, int maximumPoolSize, long keepAliveTime, 
-                                            int queueCapacity, String threadName, 
+    public static ThreadPoolExecutor create(int corePoolSize,
+                                            int maximumPoolSize,
+                                            long keepAliveTimeSeconds,
+                                            int queueCapacity,
+                                            String threadName,
                                             RejectedExecutionHandler rejectedHandler) {
         // work queue
         BlockingQueue<Runnable> workQueue = queueCapacity > 0
@@ -137,7 +130,7 @@ public final class ThreadPoolExecutors {
 
         // create ThreadPoolExecutor instance
         ThreadPoolExecutor pool = new ThreadPoolExecutor(
-            corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.SECONDS, 
+            corePoolSize, maximumPoolSize, keepAliveTimeSeconds, TimeUnit.SECONDS,
             workQueue, threadFactory, rejectedHandler
         );
 
@@ -150,7 +143,7 @@ public final class ThreadPoolExecutors {
 
     /**
      * Shutdown the ExecutorService safe
-     * 
+     *
      * @param executorService the executorService
      * @return is safe shutdown
      */
@@ -160,8 +153,8 @@ public final class ThreadPoolExecutors {
         while (!executorService.isTerminated()) {
             try {
                 TimeUnit.SECONDS.sleep(1);
-            } catch (Throwable t) {
-                Throwables.console(t);
+            } catch (Exception e) {
+                Throwables.console(e);
             }
         }
         */
@@ -170,8 +163,8 @@ public final class ThreadPoolExecutors {
                 // noop loop
             }
             return true;
-        } catch (Throwable t) {
-            Throwables.console(t);
+        } catch (Exception e) {
+            Throwables.console(e);
             executorService.shutdownNow();
             return false;
         }
@@ -179,9 +172,9 @@ public final class ThreadPoolExecutors {
 
     /**
      * Shutdown the executorService max wait time
-     * 
+     *
      * @param executorService the executorService
-     * @param awaitSeconds the await seconds
+     * @param awaitSeconds    the await seconds
      * @return is safe shutdown
      */
     public static boolean shutdown(ExecutorService executorService, int awaitSeconds) {
@@ -193,8 +186,8 @@ public final class ThreadPoolExecutors {
                 hasCallShutdownNow = true;
                 executorService.shutdownNow();
             }
-        } catch (Throwable t) {
-            Throwables.console(t);
+        } catch (Exception e) {
+            Throwables.console(e);
             if (!hasCallShutdownNow) {
                 executorService.shutdownNow();
             }

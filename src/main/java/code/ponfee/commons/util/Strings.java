@@ -1,5 +1,6 @@
 package code.ponfee.commons.util;
 
+import code.ponfee.commons.io.Files;
 import code.ponfee.commons.math.Numbers;
 import com.google.common.base.CaseFormat;
 import org.apache.commons.lang3.ArrayUtils;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * 字符串工具类
@@ -23,10 +25,6 @@ import java.util.stream.Collectors;
 public class Strings {
 
     public static final char   BLANK_CHAR               = ' ';
-    public static final String UNIX_FOLDER_SEPARATOR    = "/";
-    public static final String WINDOWS_FOLDER_SEPARATOR = "\\";
-    public static final String TOP_PATH                 = "..";
-    public static final String CURRENT_PATH             = ".";
 
     private static final char[] REGEX_SPECIALS = { '\\', '$', '(', ')', '*', '+', '.', '[', ']', '?', '^', '{', '}', '|' };
 
@@ -36,6 +34,19 @@ public class Strings {
 
     public static String join(Collection<?> coll, String delimiter) {
         return join(coll, delimiter, String::valueOf, "", "");
+    }
+
+    /**
+     * Convert to hexadecimal string array
+     *
+     * @param text the text
+     * @return hexadecimal string array
+     */
+    public static String[] hexadecimal(String text) {
+        // Integer.toString(text.charAt(i), 16)
+        return IntStream.range(0, text.length())
+                        .mapToObj(i -> "0x" + Integer.toHexString(text.charAt(i)))
+                        .toArray(String[]::new);
     }
 
     /**
@@ -216,7 +227,7 @@ public class Strings {
             return null;
         }
 
-        String pathToUse = StringUtils.replace(path, WINDOWS_FOLDER_SEPARATOR, UNIX_FOLDER_SEPARATOR);
+        String pathToUse = StringUtils.replace(path, Files.WINDOWS_FOLDER_SEPARATOR, Files.UNIX_FOLDER_SEPARATOR);
 
         // Strip prefix from path to analyze, to not treat it as part of the
         // first path element. This is necessary to correctly parse paths like
@@ -232,20 +243,20 @@ public class Strings {
                 pathToUse = pathToUse.substring(prefixIndex + 1);
             }
         }
-        if (pathToUse.startsWith(UNIX_FOLDER_SEPARATOR)) {
-            prefix = prefix + UNIX_FOLDER_SEPARATOR;
+        if (pathToUse.startsWith(Files.UNIX_FOLDER_SEPARATOR)) {
+            prefix = prefix + Files.UNIX_FOLDER_SEPARATOR;
             pathToUse = pathToUse.substring(1);
         }
 
-        String[] pathArray = StringUtils.split(pathToUse, UNIX_FOLDER_SEPARATOR);
+        String[] pathArray = StringUtils.split(pathToUse, Files.UNIX_FOLDER_SEPARATOR);
         List<String> pathElements = new LinkedList<>();
         int tops = 0;
 
         for (int i = pathArray.length - 1; i >= 0; i--) {
             String element = pathArray[i];
-            if (CURRENT_PATH.equals(element)) {
+            if (Files.CURRENT_PATH.equals(element)) {
                 // Points to current directory - drop it.
-            } else if (TOP_PATH.equals(element)) {
+            } else if (Files.TOP_PATH.equals(element)) {
                 // Registering top path found.
                 tops++;
             } else {
@@ -261,10 +272,10 @@ public class Strings {
 
         // Remaining top paths need to be retained.
         for (int i = 0; i < tops; i++) {
-            pathElements.add(0, TOP_PATH);
+            pathElements.add(0, Files.TOP_PATH);
         }
 
-        return prefix + String.join(UNIX_FOLDER_SEPARATOR, pathElements);
+        return prefix + String.join(Files.UNIX_FOLDER_SEPARATOR, pathElements);
     }
 
     /** 

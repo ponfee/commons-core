@@ -15,7 +15,7 @@ import java.lang.reflect.Modifier;
 @SuppressWarnings("restriction")
 public final class Fields {
 
-    // sun.misc.Unsafe.getUnsafe() will be throw "java.lang.SecurityException: Unsafe"
+    // sun.misc.Unsafe.getUnsafe() will be throws "java.lang.SecurityException: Unsafe"
     // caller code must use in BootstrapClassLoader to load (JAVA_HOME/jre/lib)
     // but application code load by sun.misc.Launcher.AppClassLoader
     private static final Unsafe UNSAFE;
@@ -26,6 +26,8 @@ public final class Fields {
             UNSAFE = (Unsafe) f.get(null); // If the underlying field is a static field, 
                                            // the {@code obj} argument is ignored; it may be null.
                                            // Set static field's value {@code f.set(null, value)}
+
+            // restore the accessible value
             f.setAccessible(false);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException("failed to get unsafe instance", e);
@@ -107,7 +109,7 @@ public final class Fields {
      * @param value field value
      */
     public static void put(Object target, Field field, Object value) {
-        field.setAccessible(true);
+        //field.setAccessible(true); unnecessary set accessible to true
         long fieldOffset = getFieldOffset(field);
 
         Class<?> type = GenericUtils.getFieldActualType(target.getClass(), field);
@@ -184,7 +186,7 @@ public final class Fields {
      * @param value
      */
     public static void putVolatile(Object target, Field field, Object value) {
-        field.setAccessible(true);
+        //field.setAccessible(true); unnecessary set accessible to true
         long fieldOffset = getFieldOffset(field);
 
         Class<?> type = GenericUtils.getFieldActualType(target.getClass(), field);
