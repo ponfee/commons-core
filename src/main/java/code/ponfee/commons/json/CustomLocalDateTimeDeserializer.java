@@ -72,8 +72,9 @@ public class CustomLocalDateTimeDeserializer extends JSR310DateTimeDeserializerB
             if (t == JsonToken.END_ARRAY) {
                 return null;
             }
-            if ((t == JsonToken.VALUE_STRING || t == JsonToken.VALUE_EMBEDDED_OBJECT)
-                && context.isEnabled(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS)) {
+            if (   (t == JsonToken.VALUE_STRING || t == JsonToken.VALUE_EMBEDDED_OBJECT)
+                && context.isEnabled(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS)
+            ) {
                 final LocalDateTime parsed = deserialize(parser, context);
                 if (parser.nextToken() != JsonToken.END_ARRAY) {
                     handleMissingEndArrayForSingle(parser, context);

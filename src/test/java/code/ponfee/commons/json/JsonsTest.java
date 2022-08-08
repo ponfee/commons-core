@@ -100,6 +100,14 @@ public class JsonsTest {
         Person person3 = Jsons.fromJson("{\"name\":\"tom\",\"birthday\":\"2022-01-01T01:01:01.0Z\",\"balance\":{\"currency\":\"CNY\",\"number\":999}}", Person.class);
         Assert.assertEquals(person1.getBirthday(), person3.getBirthday());
         Assert.assertEquals(person1.getBalance(), person3.getBalance());
+
+        Person person4 = new Person();
+        person4.setName("person4");
+        String json4 = Jsons.toJson(person4);
+        Assert.assertEquals(json4, "{\"name\":\"person4\"}");
+        person4 = Jsons.fromJson(json4, Person.class);
+        Assert.assertEquals(person4.getName(), "person4");
+        Assert.assertNull(person4.getBalance());
     }
 
     @Test

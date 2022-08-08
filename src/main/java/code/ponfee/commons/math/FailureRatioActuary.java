@@ -40,14 +40,14 @@ public class FailureRatioActuary {
         }
     }
 
-    public <T> double ratio(T[] array, ToBooleanFunction mapper) {
+    public <T> double ratio(T[] array, ToBooleanFunction<T> mapper) {
         for (T val : array) {
             set(mapper.apply(val));
         }
         return ratio();
     }
 
-    public <T> double set(List<T> array, ToBooleanFunction mapper) {
+    public <T> double set(List<T> array, ToBooleanFunction<T> mapper) {
         for (T val : array) {
             set(mapper.apply(val));
         }

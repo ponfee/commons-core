@@ -13,8 +13,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 /**
- * <p>字符编码检测</p>
- * <p>依赖jar包：cpdetector-1.0.7.jar, jchardet-1.0.jar, antlr-2.7.7.jar</p>
+ * 字符编码检测
+ * <p>依赖jar包：cpdetector-1.0.7.jar, jchardet-1.0.jar, antlr-2.7.7.jar
  *
  * @author ponfee
  */

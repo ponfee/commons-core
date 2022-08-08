@@ -105,7 +105,7 @@ public class Maths {
     /**
      * Returns square root of specified double value<p>
      * Use binary search method
-     * 
+     *
      * @param value the value
      * @return square root
      */
@@ -117,33 +117,31 @@ public class Maths {
             return value;
         }
 
-        double start, end, square, r;
+        double lower, upper, root, square;
         if (value > 1.0D) {
-            start = 1.0D;
-            end = value;
+            lower = 1.0D;
+            upper = value;
         } else {
-            start = value;
-            end = 1.0D;
+            lower = value;
+            upper = 1.0D;
         }
-        while (!isBorderline(r = start + (end - start) / 2, start, end) && (square = r * r) != value) {
+
+        while ((root = lower + (upper - lower) / 2) != lower && root != upper && (square = root * root) != value) {
             if (square > value) {
-                end = r; // lower
+                upper = root;
             } else {
-                start = r; // upper
+                lower = root;
             }
         }
 
-        return r; // cannot find a more rounded value
-    }
-
-    public static boolean isBorderline(double value, double start, double end) {
-        return value == start || value == end;
+        // cannot find a more rounded value
+        return root;
     }
 
     /**
      * Returns square root of specified double value<p>
      * Use newton iteration method: X(n+1)=[X(n)+p/Xn]/2
-     * 
+     *
      * @param value the value
      * @return square root
      */
@@ -151,23 +149,16 @@ public class Maths {
         if (value < 0) {
             return Double.NaN;
         }
-        if (value == 0.0D || value == 1.0D) {
+        if (value == 0.0D) {
             return value;
         }
 
-        double r = 1.0D;
-        while (r != (r = (r + value / r) / 2)) {
-            // do nothing
-        }
+        double r = value / 2, t;
+        do {
+            t = r;
+            r = (t + value / t) / 2;
+        } while (t != r);
         return r;
-    }
-
-    public static boolean isBorderline(int value, int start, int end) {
-        return value == start || value == end;
-    }
-
-    public static boolean isBorderline(long value, long start, long end) {
-        return value == start || value == end;
     }
 
     // ------------------------------------------------------------------------int plus/minus

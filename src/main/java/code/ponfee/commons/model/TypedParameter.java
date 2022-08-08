@@ -7,7 +7,7 @@ import java.util.Map;
  * 
  * @author Ponfee
  */
-public class TypedParameter implements TypedDictionary<String, Object>, java.io.Serializable {
+public class TypedParameter implements TypedKeyValue<String, Object>, java.io.Serializable {
 
     private static final long serialVersionUID = 1898625104491344717L;
 

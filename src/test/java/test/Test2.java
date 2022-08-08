@@ -384,6 +384,7 @@ public class Test2 {
         System.out.println(Character.toUpperCase('Y'));
         System.out.println(Arrays.toString(Numbers.slice(0, 2)));
         System.out.println(Arrays.toString(Numbers.slice(2, 3)));
+        System.out.println(Arrays.toString(Numbers.slice(5, 100)));
         System.out.println(Arrays.toString(Numbers.slice(3, 1)));
         System.out.println(Arrays.toString(Numbers.slice(9, 3)));
         System.out.println(Arrays.toString(Numbers.slice(10, 3)));

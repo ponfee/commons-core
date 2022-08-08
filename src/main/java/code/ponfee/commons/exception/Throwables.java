@@ -1,6 +1,6 @@
 package code.ponfee.commons.exception;
 
-import code.ponfee.commons.io.StringPrintWriter;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 /**
  * 异常工具类
@@ -10,20 +10,14 @@ import code.ponfee.commons.io.StringPrintWriter;
 public final class Throwables {
 
     /**
-     * Gets the throwable stack trace
-     * 
-     * @param throwable the Throwable
+     * Gets the root cause throwable stack trace
+     *
+     * @param throwable the throwable
      * @return a string of throwable stack trace information
      */
-    public static String getStackTrace(Throwable throwable) {
-        if (throwable == null) {
-            return null;
-        }
-
-        try (StringPrintWriter writer = new StringPrintWriter()) {
-            throwable.printStackTrace(writer);
-            return writer.getString();
-        }
+    public static String getRootCauseStackTrace(Throwable throwable) {
+        //return ExceptionUtils.getStackTrace(ExceptionUtils.getRootCause(throwable));
+        return String.join("\n", ExceptionUtils.getRootCauseStackTrace(throwable));
     }
 
     /**

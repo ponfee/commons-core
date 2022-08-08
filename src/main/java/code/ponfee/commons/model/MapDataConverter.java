@@ -60,21 +60,21 @@ public class MapDataConverter<S> extends AbstractDataConverter<S, Map<String, Ob
         if (result == null) {
             return null;
         }
-        return result.copy(convert(result.getData(), fields));
+        return result.from(convert(result.getData(), fields));
     }
 
     public static <S> Result<List<Map<String, Object>>> convertResultList(Result<List<S>> result, String... fields) {
         if (result == null) {
             return null;
         }
-        return result.copy(convert(result.getData(), fields));
+        return result.from(convert(result.getData(), fields));
     }
 
     public static <S> Result<Page<Map<String, Object>>> convertResultPage(Result<Page<S>> result, String... fields) {
         if (result == null) {
             return null;
         }
-        return result.copy(convert(result.getData(), fields));
+        return result.from(convert(result.getData(), fields));
     }
 
 }

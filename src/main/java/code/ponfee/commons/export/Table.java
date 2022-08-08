@@ -132,6 +132,7 @@ public class Table<E> implements Serializable {
                 tbody.put(row);
             }
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new RuntimeException("Put an element to queue failed.", e);
         }
         empty = false;
@@ -149,6 +150,7 @@ public class Table<E> implements Serializable {
         try {
             tbody.put(row);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new RuntimeException("Put an element to queue failed.", e);
         }
         empty = false;

@@ -26,23 +26,23 @@ public abstract class ResultSetAdapter<T> extends XmlAdapter<Result<ArrayItem<T>
     @Override
     public Result<Set<T>> unmarshal(Result<ArrayItem<T>> v) {
         if (v.getData() == null) {
-            return v.copy(null);
+            return v.from(null);
         } else if (v.getData().getItem() == null) {
-            return v.copy(Sets.newHashSet());
+            return v.from(Sets.newHashSet());
         }
 
         Set<T> set = Sets.newHashSet(v.getData().getItem());
-        return v.copy(set);
+        return v.from(set);
     }
 
     @Override @SuppressWarnings("unchecked")
     public Result<ArrayItem<T>> marshal(Result<Set<T>> v) {
         if (v.getData() == null) {
-            return v.copy(null);
+            return v.from(null);
         }
 
         T[] array = v.getData().toArray((T[]) Array.newInstance(type, v.getData().size()));
-        return v.copy(new ArrayItem<>(array));
+        return v.from(new ArrayItem<>(array));
     }
 
 }

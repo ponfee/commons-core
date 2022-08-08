@@ -90,6 +90,7 @@ public abstract class AbstractDataExporter<T> implements DataExporter<T> {
                 }
             }
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
     }

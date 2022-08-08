@@ -24,14 +24,15 @@ import static code.ponfee.commons.jce.RSACipherPaddings.ECB_PKCS1PADDING;
 import static code.ponfee.commons.jce.RSACipherPaddings.NONE_NOPADDING;
 
 /**
+ * <pre>
  * 基于大整数因式分解的数学难题（费马小定理）
- * </p>
  * n=p*q, p,q互质
  *
  * RSA Cryptor
  * 加/解密
  * 签名/验签
- * 
+ * </pre>
+ *
  * @author Ponfee
  */
 public final class RSACryptor {

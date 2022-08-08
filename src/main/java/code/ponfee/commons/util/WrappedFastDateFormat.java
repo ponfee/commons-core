@@ -8,6 +8,7 @@
 
 package code.ponfee.commons.util;
 
+import com.google.common.base.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 
@@ -27,7 +28,7 @@ import java.util.regex.Pattern;
 
 /**
  * Wrapper the org.apache.commons.lang3.time.FastDateFormat
- * <p>unix timestamp只支持对10位(秒)和13位(毫秒)做解析</p>
+ * <p>unix timestamp只支持对10位(秒)和13位(毫秒)做解析
  * 
  * @ThreadSafe
  * 
@@ -108,6 +109,9 @@ public class WrappedFastDateFormat extends DateFormat {
         this.calendar = Calendar.getInstance(format.getTimeZone(), format.getLocale());
         this.numberFormat = NumberFormat.getIntegerInstance(format.getLocale());
         this.numberFormat.setGroupingUsed(false);
+        if (super.getCalendar() == null) {
+            super.setCalendar(Calendar.getInstance());
+        }
     }
 
     @Override
@@ -266,25 +270,25 @@ public class WrappedFastDateFormat extends DateFormat {
         return new WrappedFastDateFormat((FastDateFormat) backstopFormatter.clone());
     }
 
-    // ------------------------------------------------------------------------unsupported
+    // ------------------------------------------------------------------------overrides
     @Override
     public void setTimeZone(TimeZone zone) {
-        throw new UnsupportedOperationException();
+        super.setTimeZone(zone);
     }
 
     @Override
     public void setCalendar(Calendar newCalendar) {
-        throw new UnsupportedOperationException();
+        super.setCalendar(newCalendar);
     }
 
     @Override
     public void setNumberFormat(NumberFormat newNumberFormat) {
-        throw new UnsupportedOperationException();
+        super.setNumberFormat(numberFormat);
     }
 
     @Override
     public void setLenient(boolean lenient) {
-        throw new UnsupportedOperationException();
+        super.setLenient(lenient);
     }
 
     // ------------------------------------------------------------------------package methods
@@ -304,7 +308,7 @@ public class WrappedFastDateFormat extends DateFormat {
     static String padding(String source) {
         // example: 2022/07/18T15:11:11Z, 2022/07/18T15:11:11.Z, 2022/07/18T15:11:11.1Z, 2022/07/18T15:11:11.13Z
         String[] array = source.split("[\\.Z]");
-        return array[0] + "." + (array.length == 1 ? "000" : String.format("%03d", Integer.parseInt(array[1])));
+        return array[0] + "." + (array.length == 1 ? "000" : Strings.padEnd(array[1], 3, '0'));
     }
 
 }

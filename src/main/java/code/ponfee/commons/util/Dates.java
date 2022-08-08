@@ -26,7 +26,7 @@ public class Dates {
     public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     /**
-     * Zero time: -62170185600000L
+     * Zero time millis: -62170185600000L
      */
     public static final String ZERO_DATE_TIME = "0000-00-00 00:00:00";
 
@@ -113,21 +113,21 @@ public class Dates {
     /**
      * java（毫秒）时间戳
      *
-     * @param millis 毫秒
+     * @param timeMillis 毫秒
      * @return 日期
      */
-    public static Date ofMillis(long millis) {
-        return new Date(millis);
+    public static Date ofMillis(long timeMillis) {
+        return new Date(timeMillis);
     }
 
     /**
      * unix时间戳
      *
-     * @param seconds 秒
+     * @param unixTimeSeconds 秒
      * @return
      */
-    public static Date ofSeconds(long seconds) {
-        return new Date(seconds * 1000);
+    public static Date ofSeconds(long unixTimeSeconds) {
+        return new Date(unixTimeSeconds * 1000);
     }
 
     /**
@@ -607,7 +607,7 @@ public class Dates {
 
     // ----------------------------------------------------------------private methods
     private static Date endOfDay(DateTime date) {
-        // 当毫秒数大于499时，存入到Mysql的（datatime）字段数据会自动加1秒，所以此处毫秒为000
+        // 当毫秒数大于499时，如果Mysql的datatime字段没有毫秒位数，数据会自动加1秒，所以此处毫秒为000
         //date.secondOfDay().withMaximumValue().millisOfSecond().withMinimumValue().toDate();
         return date.withTime(23, 59, 59, 0).toDate();
     }

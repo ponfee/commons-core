@@ -372,20 +372,21 @@ public class Strings {
 
     // ---------------------------------------------------------------------------escape
     /**
-     * <p>Escapes the characters in a <code>String</code> to be suitable to pass to
-     * an SQL query.</p>
+     * <pre>
+     * Escapes the characters in a <code>String</code> to be suitable to pass to
+     * an SQL query.
      *
-     * <p>For example,
+     * For example,
      *  statement.executeQuery("SELECT * FROM MOVIES WHERE TITLE='" + 
      *  StringEscapeUtils.escapeSql("McHale's Navy") +  "'");
-     * </p>
      *
-     * <p>At present, this method only turns single-quotes into doubled single-quotes
+     * At present, this method only turns single-quotes into doubled single-quotes
      * (<code>"McHale's Navy"</code> => <code>"McHale''s Navy"</code>). It does not
-     * handle the cases of percent (%) or underscore (_) for use in LIKE clauses.</p>
+     * handle the cases of percent (%) or underscore (_) for use in LIKE clauses.
      *
      * see http://www.jguru.com/faq/view.jsp?EID=8881
-     * 
+     * </pre>
+     *
      * @param str  the string to escape, may be null
      * @return a new String, escaped for SQL, <code>null</code> if null string input
      */

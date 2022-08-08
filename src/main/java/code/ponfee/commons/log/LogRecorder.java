@@ -108,7 +108,7 @@ public abstract class LogRecorder {
         } catch (Throwable e) {
             logger.error("[exec-throw]-[{}]{}-{}", methodName, logs, ObjectUtils.toString(logInfo.getArgs()), e);
             logInfo.setCostTime((int) (System.currentTimeMillis() - start));
-            logInfo.setException(Throwables.getStackTrace(e));
+            logInfo.setException(Throwables.getRootCauseStackTrace(e));
             throw e; // 向外抛
         } finally {
             try {

@@ -28,23 +28,23 @@ public abstract class ResultListAdapter<T> extends XmlAdapter<Result<ArrayItem<T
     @Override
     public Result<List<T>> unmarshal(Result<ArrayItem<T>> v) {
         if (v.getData() == null) {
-            return v.copy(null);
+            return v.from(null);
         } else if (v.getData().getItem() == null) {
-            return v.copy(Lists.newArrayList());
+            return v.from(Lists.newArrayList());
         }
 
         List<T> list = Lists.newArrayList(v.getData().getItem());
-        return v.copy(list);
+        return v.from(list);
     }
 
     @Override @SuppressWarnings("unchecked")
     public Result<ArrayItem<T>> marshal(Result<List<T>> v) {
         if (v.getData() == null) {
-            return v.copy(null);
+            return v.from(null);
         }
 
         T[] array = v.getData().toArray((T[]) Array.newInstance(type, v.getData().size()));
-        return v.copy(new ArrayItem<>(array));
+        return v.from(new ArrayItem<>(array));
     }
 
 }

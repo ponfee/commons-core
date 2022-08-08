@@ -25,7 +25,7 @@ import java.util.stream.IntStream;
 
 /**
  * Multi Thread executor
- * 
+ *
  * <p> {@code Thread#stop()} will occur "java.lang.ThreadDeath: null" if try...catch wrapped in Throwable
  *
  * @author Ponfee
@@ -37,12 +37,12 @@ public class MultithreadExecutors {
     /**
      * Exec async, usual use in test case
      *
-     * @param parallel    the parallel
+     * @param parallelism the parallelism
      * @param command     the command
      * @param execSeconds the execSeconds
      * @param executor    the executor
      */
-    public static void execute(int parallel, Runnable command,
+    public static void execute(int parallelism, Runnable command,
                                int execSeconds, Executor executor) {
         Stopwatch watch = Stopwatch.createStarted();
         AtomicBoolean flag = new AtomicBoolean(true);
@@ -51,7 +51,7 @@ public class MultithreadExecutors {
         // caller thread will be loop exec command, can't to run the after code{flag.set(false)}
         // threadNumber > 32
         CompletableFuture<?>[] futures = IntStream
-            .range(0, parallel)
+            .range(0, parallelism)
             .mapToObj(i -> (Runnable) () -> {
                 while (flag.get() && !Thread.currentThread().isInterrupted()) {
                     command.run();
@@ -67,6 +67,7 @@ public class MultithreadExecutors {
             CompletableFuture.allOf(futures).join();
         } catch (InterruptedException e) {
             flag.set(false);
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         } finally {
             LOG.info("multi thread exec async duration: {}", watch.stop());
@@ -78,13 +79,13 @@ public class MultithreadExecutors {
     /**
      * Exec async
      *
-     * @param command  the command
-     * @param parallel the parallel
-     * @param executor thread executor service
+     * @param command     the command
+     * @param parallelism the parallelism
+     * @param executor    thread executor service
      */
-    public static void execute(Runnable command, int parallel, Executor executor) {
+    public static void execute(Runnable command, int parallelism, Executor executor) {
         Stopwatch watch = Stopwatch.createStarted();
-        CompletableFuture[] futures = IntStream.range(0, parallel)
+        CompletableFuture[] futures = IntStream.range(0, parallelism)
                                                .mapToObj(i -> CompletableFuture.runAsync(command, executor))
                                                .toArray(CompletableFuture[]::new);
 
@@ -93,9 +94,9 @@ public class MultithreadExecutors {
     }
 
     // -----------------------------------------------------------------callAsync
-    public static <U> List<U> execute(Supplier<U> supplier, int parallel) {
+    public static <U> List<U> execute(Supplier<U> supplier, int parallelism) {
         Stopwatch watch = Stopwatch.createStarted();
-        List<U> result = IntStream.range(0, parallel)
+        List<U> result = IntStream.range(0, parallelism)
                                   .mapToObj(i -> CompletableFuture.supplyAsync(supplier))
                                   .collect(Collectors.toList())
                                   .stream()
@@ -207,20 +208,22 @@ public class MultithreadExecutors {
 
     public static <T> void join(CompletionService<T> service, int count, Consumer<T> accept) {
         try {
-            while (count > 0) {
+            while (count-- > 0) {
                 // block until a task done
                 Future<T> future = service.take();
-                count--;
                 accept.accept(future.get());
             }
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
 
     /**
      * Returns the thread is whether stopped
-     * 
+     *
      * @param thread the thread
      * @return {@code true} if the thread is stopped
      */
@@ -249,12 +252,14 @@ public class MultithreadExecutors {
         }
 
         LOG.info("Thread stopping: {}", thread.getName());
-        while (sleepCount-- > 0 && !isStopped(thread)) {
+        while (sleepCount-- > 0 && sleepMillis > 0 && !isStopped(thread)) {
             try {
                 // Wait some time
                 Thread.sleep(sleepMillis);
             } catch (InterruptedException e) {
                 LOG.error("Waiting thread terminal interrupted: " + thread.getName(), e);
+                thread.interrupt();
+                Thread.currentThread().interrupt();
             }
         }
 
@@ -266,6 +271,8 @@ public class MultithreadExecutors {
                     thread.join(joinMillis);
                 } catch (InterruptedException e) {
                     LOG.error("Join thread terminal interrupted: " + thread.getName(), e);
+                    thread.interrupt();
+                    Thread.currentThread().interrupt();
                 }
             }
         }
@@ -276,7 +283,7 @@ public class MultithreadExecutors {
     /**
      * Stop the thread, and return boolean result of has called java.lang.Thread#stop()
      *
-     * @param thread      the thread
+     * @param thread the thread
      * @return {@code true} if called java.lang.Thread#stop()
      */
     private static boolean stopThread(Thread thread) {

@@ -38,7 +38,7 @@ public abstract class ResultPageMapAdapter<K, V>
             return (Result<Page<Map<K, V>>>) ((Result<?>) v);
         }
 
-        return v.copy(v.getData().map(items -> {
+        return v.from(v.getData().map(items -> {
             if (items == null) {
                 return null;
             }
@@ -53,7 +53,7 @@ public abstract class ResultPageMapAdapter<K, V>
             return (Result<Page<MapItem>>) ((Result<?>) v);
         }
 
-        return v.copy(v.getData().map(e -> {
+        return v.from(v.getData().map(e -> {
             if (e == null) {
                 return null;
             }

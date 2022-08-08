@@ -8,42 +8,47 @@ import java.util.function.Supplier;
 
 /**
  * Checked exception for use in lambda
- * 
+ *
  * @author Ponfee
  */
 public final class CheckedThrowing {
 
-    public static <R, T extends Throwable> Callable<R> callable(ThrowingCallable<R, T> c) {
-        return ThrowingCallable.checked(c);
+    public static <R, T extends Throwable> Callable<R> callable(ThrowingCallable<R, T> callable) {
+        return ThrowingCallable.checked(callable);
     }
 
-    public static <T, E extends Throwable> Consumer<T> consumer(ThrowingConsumer<T, E> c) {
-        return ThrowingConsumer.checked(c);
+    public static <E, T extends Throwable> Consumer<E> consumer(ThrowingConsumer<E, T> consumer) {
+        return ThrowingConsumer.checked(consumer);
     }
 
-    public static <T, R, E extends Throwable> Function<T, R> function(ThrowingFunction<T, R, E> f) {
-        return ThrowingFunction.checked(f);
+    public static <E, R, T extends Throwable> Function<E, R> function(ThrowingFunction<E, R, T> function) {
+        return ThrowingFunction.checked(function);
     }
 
-    public static <R, T extends Throwable> Supplier<R> supplier(ThrowingSupplier<R, T> s) {
-        return ThrowingSupplier.checked(s);
+    public static <R, T extends Throwable> Supplier<R> supplier(ThrowingSupplier<R, T> supplier) {
+        return ThrowingSupplier.checked(supplier);
     }
 
     /**
      * eg: new Thread(CheckedThrowing.runnable(printer::print))
      *
-     * @param r    the ThrowingRunnable
-     * @param <T>  the type of Throwable
+     * @param runnable the ThrowingRunnable
+     * @param <T>      the type of Throwable
      * @return Runnable instance
      */
-    public static <T extends Throwable> Runnable runnable(ThrowingRunnable<T> r) {
-        return ThrowingRunnable.checked(r);
+    public static <T extends Throwable> Runnable runnable(ThrowingRunnable<T> runnable) {
+        return ThrowingRunnable.checked(runnable);
+    }
+
+    public static <E, T extends Throwable> Comparator<? super E> comparator(ThrowingComparator<E, T> comparator) {
+        return ThrowingComparator.checked(comparator);
     }
 
     // -------------------------------------------------------------------------------definitions
+
     /**
      * Lambda function checked exception
-     * 
+     *
      * @param <R> the result type of method {@code call}
      * @param <T> the type of the call "call" method possible occur exception
      */
@@ -51,14 +56,12 @@ public final class CheckedThrowing {
     public interface ThrowingCallable<R, T extends Throwable> {
         R call() throws T;
 
-        static <R, T extends Throwable> Callable<R> checked(ThrowingCallable<R, T> c) {
+        static <R, T extends Throwable> Callable<R> checked(ThrowingCallable<R, T> callable) {
             return () -> {
                 try {
-                    return c.call();
-                } catch (RuntimeException t) {
-                    throw t;
+                    return callable.call();
                 } catch (Throwable t) {
-                    throw new RuntimeException(t);
+                    throw toRuntimeException(t);
                 }
             };
         }
@@ -66,21 +69,19 @@ public final class CheckedThrowing {
 
     /**
      * Lambda function checked exception
-     * 
+     *
      * @param <E> the type of the input to the operation
      * @param <T> the type of the call accept method possible occur exception
      */
     public interface ThrowingConsumer<E, T extends Throwable> {
         void accept(E e) throws T;
 
-        static <E, T extends Throwable> Consumer<E> checked(ThrowingConsumer<E, T> c) {
+        static <E, T extends Throwable> Consumer<E> checked(ThrowingConsumer<E, T> consumer) {
             return e -> {
                 try {
-                    c.accept(e);
-                } catch (RuntimeException t) {
-                    throw t;
+                    consumer.accept(e);
                 } catch (Throwable t) {
-                    throw new RuntimeException(t);
+                    throw toRuntimeException(t);
                 }
             };
         }
@@ -88,7 +89,7 @@ public final class CheckedThrowing {
 
     /**
      * Lambda function checked exception
-     * 
+     *
      * @param <E> the type of the input to the function
      * @param <R> the type of the result of the function
      * @param <T> the type of the call apply method possible occur exception
@@ -97,14 +98,12 @@ public final class CheckedThrowing {
     public interface ThrowingFunction<E, R, T extends Throwable> {
         R apply(E e) throws T;
 
-        static <E, R, T extends Throwable> Function<E, R> checked(ThrowingFunction<E, R, T> f) {
+        static <E, R, T extends Throwable> Function<E, R> checked(ThrowingFunction<E, R, T> function) {
             return e -> {
                 try {
-                    return f.apply(e);
-                } catch (RuntimeException t) {
-                    throw t;
+                    return function.apply(e);
                 } catch (Throwable t) {
-                    throw new RuntimeException(t);
+                    throw toRuntimeException(t);
                 }
             };
         }
@@ -112,7 +111,7 @@ public final class CheckedThrowing {
 
     /**
      * Lambda function checked exception
-     * 
+     *
      * @param <R> the type of results supplied by this supplier
      * @param <T> the type of the call get method possible occur exception
      */
@@ -120,14 +119,12 @@ public final class CheckedThrowing {
     public interface ThrowingSupplier<R, T extends Throwable> {
         R get() throws T;
 
-        static <R, T extends Throwable> Supplier<R> checked(ThrowingSupplier<R, T> s) {
+        static <R, T extends Throwable> Supplier<R> checked(ThrowingSupplier<R, T> supplier) {
             return () -> {
                 try {
-                    return s.get();
-                } catch (RuntimeException t) {
-                    throw t;
+                    return supplier.get();
                 } catch (Throwable t) {
-                    throw new RuntimeException(t);
+                    throw toRuntimeException(t);
                 }
             };
         }
@@ -137,14 +134,12 @@ public final class CheckedThrowing {
     public interface ThrowingRunnable<T extends Throwable> {
         void run() throws T;
 
-        static <T extends Throwable> Runnable checked(ThrowingRunnable<T> r) {
+        static <T extends Throwable> Runnable checked(ThrowingRunnable<T> runnable) {
             return () -> {
                 try {
-                    r.run();
-                } catch (RuntimeException t) {
-                    throw t;
+                    runnable.run();
                 } catch (Throwable t) {
-                    throw new RuntimeException(t);
+                    throw toRuntimeException(t);
                 }
             };
         }
@@ -154,17 +149,18 @@ public final class CheckedThrowing {
     public interface ThrowingComparator<E, T extends Throwable> {
         int compare(E e1, E e2) throws T;
 
-        static <E, T extends Throwable> Comparator<? super E> checked(ThrowingComparator<E, T> c) {
+        static <E, T extends Throwable> Comparator<? super E> checked(ThrowingComparator<E, T> comparator) {
             return (e1, e2) -> {
                 try {
-                    return c.compare(e1, e2);
-                } catch (RuntimeException t) {
-                    throw t;
+                    return comparator.compare(e1, e2);
                 } catch (Throwable t) {
-                    throw new RuntimeException(t);
+                    throw toRuntimeException(t);
                 }
             };
         }
     }
 
+    private static RuntimeException toRuntimeException(Throwable t) {
+        return (t instanceof RuntimeException) ? (RuntimeException) t : new RuntimeException(t);
+    }
 }

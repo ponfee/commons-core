@@ -11,7 +11,7 @@ import java.util.Objects;
  * @param <K>
  * @param <V>
  */
-public interface TypedDictionary<K, V> {
+public interface TypedKeyValue<K, V> {
 
     V getValue(K key);
 

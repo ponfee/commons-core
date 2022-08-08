@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Spliterator;
+import java.util.function.Function;
 
 /**
  * Abstract Tuple type.
@@ -132,14 +133,41 @@ public abstract class Tuple implements Comparable<Object>, Iterable<Object>, Ser
         return Comparators.EQ;
     }
 
+    public final String join() {
+        return join(", ", String::valueOf, "", "");
+    }
+
+    /**
+     * Returns string of joined the tuple elements.
+     *
+     * @param delimiter   the delimiter
+     * @param valueMapper the valueMapper for each element to string function
+     * @param prefix      the prefix
+     * @param suffix      the suffix
+     * @return string of joined the tuple elements
+     */
+    public final String join(CharSequence delimiter,
+                             Function<Object, String> valueMapper,
+                             CharSequence prefix,
+                             CharSequence suffix) {
+        StringBuilder builder = new StringBuilder(prefix);
+        for (int i = 0, n = length() - 1; i <= n; i++) {
+            builder.append(valueMapper.apply(get(i)));
+            if (i < n) {
+                builder.append(delimiter);
+            }
+        }
+        return builder.append(suffix).toString();
+    }
+
     /**
      * Tuple Iterator
      *
      * @param <T> element type
      */
     private class TupleIterator<T> implements Iterator<T> {
-        int position = 0;
-        final int size = length();
+        private int position = 0;
+        private final int size = length();
 
         @Override
         public boolean hasNext() {

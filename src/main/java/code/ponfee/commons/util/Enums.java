@@ -14,7 +14,7 @@ import java.util.function.Function;
 public class Enums {
 
     /**
-     * <p>Gets the {@code Map} of enums by name.</p>
+     * Gets the {@code Map} of enums by name.
      *
      * @param enumType the enum type
      * @param <E>      map key mapper
@@ -35,8 +35,9 @@ public class Enums {
      * @return the immutable map of enum to map enums, never null
      */
     public static <K, E extends Enum<E>> Map<K, E> toMap(Class<E> enumType, Function<E, K> keyMapper) {
-        ImmutableMap.Builder<K, E> mapping = ImmutableMap.builder();
-        for (final E e: enumType.getEnumConstants()) {
+        E[] enumConstants = enumType.getEnumConstants();
+        ImmutableMap.Builder<K, E> mapping = ImmutableMap.builderWithExpectedSize(enumConstants.length << 1);
+        for (final E e: enumConstants) {
             mapping.put(keyMapper.apply(e), e);
         }
         return mapping.build();

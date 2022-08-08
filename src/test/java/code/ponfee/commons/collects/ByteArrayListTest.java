@@ -80,12 +80,12 @@ public class ByteArrayListTest {
 
     @Test
     public void test3() throws Exception {
-        Method method1 = Result.class.getDeclaredMethod("copy", Object.class);
+        Method method1 = Result.class.getDeclaredMethod("from", Object.class);
         Field field1 = Result.class.getDeclaredField("code");
 
         Map<ArrayHashKey, Boolean> map = ImmutableMap.of(ArrayHashKey.of(method1, field1), true);
 
-        Method method2 = Result.class.getDeclaredMethod("copy", Object.class);
+        Method method2 = Result.class.getDeclaredMethod("from", Object.class);
         Field field2 = Result.class.getDeclaredField("code");
 
         System.out.println(method1 == method2);

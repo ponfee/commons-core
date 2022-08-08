@@ -1,6 +1,8 @@
 package code.ponfee.commons.collect;
 
+import code.ponfee.commons.math.Numbers;
 import code.ponfee.commons.util.ObjectUtils;
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.util.Assert;
@@ -224,6 +226,10 @@ public final class Collects {
         return list == null || list.isEmpty() ? null : list.get(0);
     }
 
+    public static <T> T get(T[] array, int index) {
+        return index < array.length ? array[index] : null;
+    }
+
     /**
      * Returns a new array for merged the generic array generator
      * 
@@ -303,26 +309,38 @@ public final class Collects {
     }
 
     /**
-     * Returns consecutive sub array of a array, 
+     * Returns consecutive sub array of an array, 
      * each of the same size (the final list may be smaller).
+     *
+     * <pre>
+     *  Collects.partition(new int[]{1,1,2,5,3}, 1)    ->  [1, 1, 2, 5, 3]
+     *  Collects.partition(new int[]{1,1,2,5,3}, 3)    ->  [1, 1]; [2, 5]; [3]
+     *  Collects.partition(new int[]{1,1,2,5,3}, 5)    ->  [1]; [1]; [2]; [5]; [3]
+     *  Collects.partition(new int[]{1,1,2,5,3}, 6)    ->  [1]; [1]; [2]; [5]; [3]
+     *  Collects.partition(new int[]{1,1,2,5,3}, 100)  ->  [1]; [1]; [2]; [5]; [3]
+     * </pre>
      *
      * @param array the array
      * @param size  the size
      * @return a list of consecutive sub sets
      */
     public static List<int[]> partition(int[] array, int size) {
-        if (array == null) {
+        Assert.isTrue(size > 0, "Size must be greater than 0.");
+        if (array == null || array.length == 0) {
             return null;
         }
-        Assert.isTrue(size > 0, "Size must be greater than 0.");
         size = Math.min(size, array.length);
-        if (size <= 1) {
+        if (size == 1) {
             return Collections.singletonList(array);
         }
 
         List<int[]> result = new ArrayList<>(size);
-        for (int n = (array.length + size - 1) / size, i = 0; i < size; i++) {
-            result.add(Arrays.copyOfRange(array, i * n, Math.min(i * n + n, array.length)));
+        int pos = 0;
+        for (int number : Numbers.slice(array.length, size)) {
+            if (number == 0) {
+                break;
+            }
+            result.add(Arrays.copyOfRange(array, pos, pos = pos + number));
         }
         return result;
     }
@@ -397,5 +415,23 @@ public final class Collects {
             throw new IllegalStateException("The list cannot be empty.");
         }
         return list;
+    }
+
+    public static <S, T> List<T> convert(List<S> source, Function<S, T> mapper) {
+        ImmutableList.Builder<T> builder = ImmutableList.builderWithExpectedSize(source.size());
+        source.stream().map(mapper::apply).forEach(builder::add);
+        return builder.build();
+    }
+
+    public static <T> List<T> concat(List<T> list, T... array) {
+        if (array == null || array.length == 0) {
+            return list;
+        }
+        List<T> result = new ArrayList<>(list.size() + array.length);
+        result.addAll(list);
+        for (T t : array) {
+            result.add(t);
+        }
+        return result;
     }
 }

@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 /**
- * <p>The bean copier utility based cglib</p>
+ * The bean copier utility based cglib
  * @see <a href="https://mapstruct.org/documentation/installation/">mapstruct官方文档</a>
  * 
  * @author Ponfee
@@ -32,8 +32,9 @@ public class BeanCopiers {
      * 2、注意：即使源类型是基本类型(int、short、char等)，目标类型是其包装类型(Integer、Short、Character等)，或反之，都不会被拷贝
      * 3、源类和目标类有相同的属性(两者的getter都存在)，但目标类的setter不存在：创建BeanCopier的时候抛异常
      * 4、当类型不一致是需要convert进行类型转换：org.springframework.cglib.core.Converter
+     * 
+     * BeanUtils/PropertyUtils -> commons-beanutils:commons-beanutils
      * </pre>
-     * <p>BeanUtils/PropertyUtils -> commons-beanutils:commons-beanutils</p>
      * 
      * @param source source object
      * @param target target object

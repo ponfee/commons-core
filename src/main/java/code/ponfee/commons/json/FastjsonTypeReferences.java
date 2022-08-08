@@ -8,8 +8,10 @@ import java.util.Set;
 
 /**
  * The Fastjson TypeReference holder
- *  
+ *
  * @author Ponfee
+ * @see sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
+ * @see org.springframework.core.ParameterizedTypeReference
  */
 public final class FastjsonTypeReferences {
 

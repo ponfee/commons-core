@@ -1,6 +1,6 @@
 package code.ponfee.commons.json;
 
-import code.ponfee.commons.util.Dates;
+import code.ponfee.commons.util.WrappedDateTimeFormatter;
 import code.ponfee.commons.util.WrappedFastDateFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.TimeZone;
 
 /**
  * The json utility based jackson
@@ -49,48 +50,10 @@ public final class Jsons {
     /**
      * Jackson ObjectMapper(thread safe)
      */
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper;
 
     private Jsons(JsonInclude.Include include) {
-        // 设置序列化时的特性
-        if (include != null) {
-            mapper.setSerializationInclusion(include);
-        }
-
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // 反序列化时忽略未知属性
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);    // Date不序列化为时间戳
-        mapper.configure(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN, true);    // BigDecimal禁用科学计数格式输出
-        mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, false);     // 禁止无双引号字段
-        mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, false);            // 禁止单引号字段
-        mapper.configure(JsonWriteFeature.QUOTE_FIELD_NAMES.mappedFeature(), true); // 字段加双引号
-
-        // java.util.Date(SimpleModule与setDateFormat的作用相同)
-        mapper.setDateFormat(WrappedFastDateFormat.DEFAULT);
-        mapper.setConfig(mapper.getDeserializationConfig().with(mapper.getDateFormat()));
-        //mapper.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai")); // "GMT+8"
-
-        /*
-        SimpleModule module = new SimpleModule();
-        module.addSerializer(Money.class, new JacksonMoneySerializer());
-        module.addDeserializer(Money.class, new JacksonMoneyDeserializer());
-        //module.addDeserializer(Date.class, JacksonDateDeserializer.INSTANCE);
-        mapper.registerModule(module);
-        */
-
-        // java.time.LocalDateTime
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(Dates.DEFAULT_DATE_FORMAT);
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-        JavaTimeModule javaTimeModule = new JavaTimeModule();
-        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(dateTimeFormatter));
-        javaTimeModule.addSerializer(LocalDate.class, new LocalDateSerializer(dateFormatter));
-        javaTimeModule.addSerializer(LocalTime.class, new LocalTimeSerializer(timeFormatter));
-        javaTimeModule.addDeserializer(LocalDateTime.class, CustomLocalDateTimeDeserializer.INSTANCE);
-        javaTimeModule.addDeserializer(LocalDate.class, new LocalDateDeserializer(dateFormatter));
-        javaTimeModule.addDeserializer(LocalTime.class, new LocalTimeDeserializer(timeFormatter));
-        mapper.registerModule(javaTimeModule);
-
-        //mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+        this.mapper = buildObjectMapper(include);
     }
 
     /**
@@ -305,6 +268,53 @@ public final class Jsons {
     public static <T> T fromJson(String json, Class<T> collectClass,
                                  Class<?>... elemClasses) {
         return NORMAL.parse(json, collectClass, elemClasses);
+    }
+
+    public static ObjectMapper buildObjectMapper(JsonInclude.Include include) {
+        ObjectMapper mapper = new ObjectMapper();
+
+        // 设置序列化时的特性
+        if (include != null) {
+            mapper.setSerializationInclusion(include);
+        }
+
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // 反序列化时忽略未知属性
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);    // Date不序列化为时间戳
+        mapper.configure(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN, true);    // BigDecimal禁用科学计数格式输出
+        mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, false);     // 禁止无双引号字段
+        mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, false);            // 禁止单引号字段
+        mapper.configure(JsonWriteFeature.QUOTE_FIELD_NAMES.mappedFeature(), true); // 字段加双引号
+        //objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);  // 禁止反序列化时，如果目标对象为空对象的报错问题
+        mapper.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));                  // "GMT+8"
+
+        // java.util.Date(SimpleModule与setDateFormat的作用相同)
+        mapper.setDateFormat(WrappedFastDateFormat.DEFAULT);
+        //mapper.setConfig(mapper.getDeserializationConfig().with(mapper.getDateFormat()));
+        //mapper.setConfig(mapper.getSerializationConfig().with(mapper.getDateFormat()));
+
+        /*
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(Money.class, new JacksonMoney.Serializer());
+        module.addDeserializer(Money.class, new JacksonMoney.Deserializer());
+        //module.addDeserializer(Date.class, JacksonDateDeserializer.INSTANCE);
+        mapper.registerModule(module);
+        */
+
+        // java.time.LocalDateTime
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        JavaTimeModule javaTimeModule = new JavaTimeModule();
+        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(WrappedDateTimeFormatter.PATTERN_11));
+        javaTimeModule.addSerializer(LocalDate.class, new LocalDateSerializer(dateFormatter));
+        javaTimeModule.addSerializer(LocalTime.class, new LocalTimeSerializer(timeFormatter));
+        javaTimeModule.addDeserializer(LocalDateTime.class, CustomLocalDateTimeDeserializer.INSTANCE);
+        javaTimeModule.addDeserializer(LocalDate.class, new LocalDateDeserializer(dateFormatter));
+        javaTimeModule.addDeserializer(LocalTime.class, new LocalTimeDeserializer(timeFormatter));
+        mapper.registerModule(javaTimeModule);
+
+        //mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+
+        return mapper;
     }
 
 }

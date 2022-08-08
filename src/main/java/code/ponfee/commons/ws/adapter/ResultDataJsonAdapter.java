@@ -24,19 +24,19 @@ public abstract class ResultDataJsonAdapter<T> extends XmlAdapter<Result<String>
     @Override
     public Result<T> unmarshal(Result<String> v) {
         if (StringUtils.isEmpty(v.getData())) {
-            return v.copy(null);
+            return v.from(null);
         }
 
-        return v.copy(Jsons.fromJson(v.getData(), type));
+        return v.from(Jsons.fromJson(v.getData(), type));
     }
 
     @Override
     public Result<String> marshal(Result<T> v) {
         if (v.getData() == null) {
-            return v.copy(null);
+            return v.from(null);
         }
 
-        return v.copy(Jsons.toJson(v.getData()));
+        return v.from(Jsons.toJson(v.getData()));
     }
 
 }

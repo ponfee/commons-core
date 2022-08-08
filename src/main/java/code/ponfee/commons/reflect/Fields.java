@@ -52,9 +52,9 @@ public final class Fields {
     public static long addressOf(Object[] array, int index) {
         switch (INDEX_SCALE) {
             case 4:
-                return (UNSAFE.getInt(array, BASE_OFFSET + index * INDEX_SCALE) & 0xFFFFFFFFL) * ADDRESS_SIZE;
+                return (UNSAFE.getInt(array, BASE_OFFSET + (long) index * INDEX_SCALE) & 0xFFFFFFFFL) * ADDRESS_SIZE;
             case 8:
-                return UNSAFE.getLong(array, BASE_OFFSET + index * INDEX_SCALE) * ADDRESS_SIZE;
+                return UNSAFE.getLong(array, BASE_OFFSET + (long) index * INDEX_SCALE) * ADDRESS_SIZE;
             default:
                 throw new Error("Unsupported address size: " + INDEX_SCALE);
         }

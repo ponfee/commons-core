@@ -38,6 +38,8 @@ public final class Numbers {
     public static final Integer INTEGER_ZERO = INT_ZERO;
     public static final byte    BYTE_ZERO    = 0x00;
     public static final char    CHAR_ZERO    = '\u0000'; // equals '\0'
+    public static final double  DOUBLE_ZERO  = 0.0D;
+    public static final double  DOUBLE_ONE   = 1.0D;
 
     // --------------------------------------------------------------character convert
     public static char toChar(Object obj) {
@@ -414,7 +416,6 @@ public final class Numbers {
      * @return
      */
     public static int[] slice(int quantity, int segment) {
-        Assert.isTrue(segment >= 0, "Segment must be greater than 0.");
         int[] result = new int[segment];
         int quotient = quantity / segment;
         int remainder = quantity % segment;
@@ -461,9 +462,8 @@ public final class Numbers {
 
     /**
      * Split the bill for coupon amount<br/>
-     * 
      * split(new int[]{249, 249, 249, 3}, 748)  -> [249, 249, 248, 2]
-     * 
+     *
      * @param bills the bills
      * @param value the coupon amount value
      * @return split result
@@ -498,7 +498,7 @@ public final class Numbers {
         }
 
         // the last bill item
-        if (n == i) {
+        if (i == n) {
             result[i] = value;
         }
         return result;

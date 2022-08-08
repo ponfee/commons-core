@@ -8,13 +8,12 @@
 
 package code.ponfee.commons.util;
 
-import java.util.Random;
-
+import code.ponfee.commons.math.Maths;
+import code.ponfee.commons.math.Numbers;
 import org.junit.Test;
 import org.testng.Assert;
 
-import code.ponfee.commons.math.Maths;
-import code.ponfee.commons.math.Numbers;
+import java.util.Random;
 
 /**
  * 
@@ -55,30 +54,24 @@ public class MathsTest {
         Random ran = new Random(SecureRandoms.nextLong());
         for (int i = 0; i < 6000; i++) {
             double num = Math.random() + ran.nextInt(Integer.MAX_VALUE);
-            double a = Math.sqrt(num), b = /*Maths.sqrtNewton(num)*/Maths.sqrtBinary(num);
+            double a = Math.sqrt(num), b = /*Maths.sqrtNewton(num)*/ Maths.sqrtBinary(num);
             //String s = "0011110100010000000000000000000000000000000000000000000000000000"; 
             // 0011110110010000000000000000000000000000000000000000000000000000
             if (a != b) {
                 //System.out.println(Bytes.toBinary(Bytes.toBytes(Math.abs(a - b))));
-                System.err.println(Numbers.format(a, 60) + ", " + Numbers.format(b, 60));
+                System.err.println(Numbers.format(a, 60) + ", " + Numbers.format(b, 60) + ", " + Numbers.format(Math.abs(a - b), 60));
             }
-
         }
     }
 
     @Test
     public void test3() {
-        double a = 0.00001;
-        /*System.out.println(Math.sqrt(0.0D));
-        System.out.println(Math.sqrt(1.0D));
-        System.out.println(Math.sqrt(a));
-        System.out.println(Maths.sqrt(a));*/
-        
-        a = 4D;
-        System.out.println(Math.sqrt(a));
-        System.out.println(Maths.sqrtBinary(a));
+        Assert.assertTrue(Maths.sqrtBinary(4) == Math.sqrt(4));
+        Assert.assertTrue(Maths.sqrtBinary(0.01) == Math.sqrt(0.01));
+        Assert.assertTrue(Maths.sqrtBinary(5) == Math.sqrt(5));
+        Assert.assertFalse(Maths.sqrtBinary(9997.9997D) == Math.sqrt(9997.9997D));
     }
-    
+
     private static final int ROUND = 9999999;
 
     @Test
@@ -104,6 +97,8 @@ public class MathsTest {
 
     @Test
     public void test34() {
+        System.out.println(Maths.sqrtNewton(0));
+        System.out.println(Maths.sqrtNewton(1));
         System.out.println(Maths.sqrtNewton(0.01));
         System.out.println(Maths.sqrtNewton(4.0));
     }
@@ -123,10 +118,13 @@ public class MathsTest {
     }
 
     // ------------------------------------------------------------------------------------------
+    public static boolean isBorderline(int value, int start, int end) {
+        return value == start || value == end;
+    }
     // 2-99
     public static int find(int value) {
         int start = 1, end = value, number, less = -1, grater = -1;
-        while (!Maths.isBorderline(number = (start + end) / 2, start, end)) {
+        while (!isBorderline(number = (start + end) / 2, start, end)) {
             //System.out.println("-------" + temp);
             int a = calculate(number);
             if (a == value) {
@@ -167,36 +165,6 @@ public class MathsTest {
             result += n;
         } while (--n > 0);
         return result;
-    }
-
-    // ------------------------------------------------------------------------------------------
-    public static double sqrt(double value) {
-        if (value < 0) {
-            return Double.NaN;
-        }
-        if (value == 0) {
-            return 0.0D;
-        }
-
-        double start = 0.0D, end = value, result;
-        for (double factor = value / 2;;) {
-            result = factor * factor;
-            if (result == value) {
-                return factor;
-            } else if (result > value) {
-                end = factor;
-                factor -= (end - start) / 2;
-                if (end == factor) { // cannot calculate a more rounded value
-                    return factor;
-                }
-            } else {
-                start = factor;
-                factor += (end - start) / 2;
-                if (start == factor) { // cannot calculate a more rounded value
-                    return factor;
-                }
-            }
-        }
     }
 
 }

@@ -49,7 +49,7 @@ public final class CRC16 {
 
     private CRC16() {}
 
-    public static int crc16(byte[] bytes) {
+    public static int digest(byte[] bytes) {
         int crc = 0x0000;
 
         for (byte b : bytes) {

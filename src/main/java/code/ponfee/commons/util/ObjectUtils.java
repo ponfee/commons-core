@@ -250,6 +250,8 @@ public final class ObjectUtils {
      * @return stack trace
      */
     public static String getStackTrace(int deepPath) {
+        // 获取当前方法
+        // Method currentMethod = new Object() {}.getClass().getEnclosingMethod();
         StackTraceElement[] traces = Thread.currentThread().getStackTrace();
         if (traces.length <= deepPath) {
             return "warning: out of stack trace.";

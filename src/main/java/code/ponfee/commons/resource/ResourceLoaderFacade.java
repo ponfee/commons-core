@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
  *   <li>webapp:</li>
  *   <li>file:</li>
  * </ul>
- * <p>default classpath:</p>
+ * <p>default classpath:
  *
  * <pre>
  *  ResourceLoaderFacade.getResource("StringUtils.class", StringUtils.class);

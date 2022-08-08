@@ -352,12 +352,14 @@ public final class Http {
         HttpRequest request = request0();
         try {
             if (HttpStatus.Series.valueOf(status) == HttpStatus.Series.SUCCESSFUL) {
-                /*// 获取文件名
+                /*
+                // 获取文件名
                 String disposition = UrlCoder.decodeURIComponent(request.header("content-Disposition"));
                 Matcher matcher = FILENAME_PATTERN.matcher(disposition);
                 if (matcher.matches()) {
                     String filename = matcher.group(1);
-                }*/
+                }
+                */
                 bos = new BufferedOutputStream(output);
                 request.receive(bos);
             } else {

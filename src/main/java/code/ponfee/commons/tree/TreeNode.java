@@ -173,8 +173,8 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
 
     // -------------------------------------------------------------DFS
     /**
-     * <p>深度优先搜索DFS(Depth-First Search)：使用前序遍历</p>
-     * <p>Should be invoking after {@link #mount(List)}</p>
+     * 深度优先搜索DFS(Depth-First Search)：使用前序遍历
+     * <p>Should be invoking after {@link #mount(List)}
      * 
      * @return a list nodes for DFS tree node
      */
@@ -209,9 +209,9 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
 
     // -------------------------------------------------------------CFS
     /**
-     * <p>按层级方式展开节点：兄弟节点相邻</p>
-     * <p>子节点优先搜索CFS(Children-First Search)</p>
-     * <p>Should be invoking after {@link #mount(List)}</p>
+     * 按层级方式展开节点：兄弟节点相邻
+     * <p>子节点优先搜索CFS(Children-First Search)
+     * <p>Should be invoking after {@link #mount(List)}
      *
      * Note：为了构建复杂表头，保证左侧的叶子节点必须排在右侧叶子节点前面，此处不能用广度优先搜索策略
      *
@@ -290,9 +290,9 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     */
 
     /**
-     * 遍历树
+     * Traverses the tree
      *
-     * @param action
+     * @param action the action function
      */
     public void forEach(Consumer<TreeNode<T, A>> action) {
         Deque<TreeNode<T, A>> stack = Collects.newLinkedList(this);
@@ -473,7 +473,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
             return null;
         }
 
-        // already check duplicated, so cannot happened has circular dependencies state
+        // already check duplicated, so cannot happen has circular dependencies state
         /*
         if (IterableUtils.matchesAny(parentPath, nid::equals)) {
             // 节点路径中已经包含了此节点，则视为环状

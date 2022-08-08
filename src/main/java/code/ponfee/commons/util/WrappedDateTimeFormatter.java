@@ -14,7 +14,7 @@ import static code.ponfee.commons.util.WrappedFastDateFormat.padding;
 /**
  * Convert to {@code java.time.LocalDateTime}
  *
- * <p>unix timestamp只支持对10位(秒)和13位(毫秒)做解析</p>
+ * <p>unix timestamp只支持对10位(秒)和13位(毫秒)做解析
  *
  * @author Ponfee
  * @ThreadSafe
@@ -33,7 +33,6 @@ public class WrappedDateTimeFormatter {
     public static final DateTimeFormatter PATTERN_22 = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSS");
     public static final DateTimeFormatter PATTERN_23 = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
     public static final DateTimeFormatter PATTERN_24 = DateTimeFormatter.ofPattern("yyyy/MM/dd'T'HH:mm:ss.SSS");
-
 
     /**
      * The default date format with yyyy-MM-dd HH:mm:ss

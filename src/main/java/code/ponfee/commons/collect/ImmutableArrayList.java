@@ -38,7 +38,7 @@ public class ImmutableArrayList<T> extends ToJsonString
     }
 
     public ImmutableArrayList(Object[] elements) {
-        // 为了时间及空间，此处认为外部环境不会修改数组，故不做拷贝操作
+        // 为了节省时间及空间，此处认为外部环境不会修改数组，故不做拷贝操作
         //this.elements = (T[]) Arrays.copyOf(elements, elements.length);
         this.elements = (T[]) Objects.requireNonNull(elements);
     }

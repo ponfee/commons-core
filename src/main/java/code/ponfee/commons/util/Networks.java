@@ -233,7 +233,7 @@ public final class Networks {
             LOG.warn("Failed to get network interface. cause: {}", e.getMessage());
         }
 
-        LOG.error("Could not get host ip address, will use 127.0.0.1 instead.");
+        LOG.warn("Could not get host ip address, will use 127.0.0.1 instead.");
         return localAddress;
     }
 

@@ -123,6 +123,7 @@ public class HSSFStreamingSheet implements Sheet {
                 }
                 return false;
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 throw new RuntimeException(e);
             }
         }

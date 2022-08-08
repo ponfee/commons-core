@@ -1,7 +1,8 @@
 package code.ponfee.commons.concurrent;
 
-import code.ponfee.commons.exception.Throwables;
 import code.ponfee.commons.math.Numbers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -23,6 +24,7 @@ import java.util.concurrent.TimeUnit;
  * @author Ponfee
  */
 public final class ThreadPoolExecutors {
+    private final static Logger LOG = LoggerFactory.getLogger(ThreadPoolExecutors.class);
 
     public static final int MAX_CAP = 0x7FFF; // max #workers - 1
 
@@ -55,6 +57,7 @@ public final class ThreadPoolExecutors {
             try {
                 executor.getQueue().put(task);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 throw new RuntimeException("Put a task to queue occur error: BLOCK_PRODUCER", e);
             }
         }
@@ -164,7 +167,7 @@ public final class ThreadPoolExecutors {
             }
             return true;
         } catch (Exception e) {
-            Throwables.console(e);
+            LOG.error("Shutdown ExecutorService occur error.", e);
             executorService.shutdownNow();
             return false;
         }
@@ -187,7 +190,7 @@ public final class ThreadPoolExecutors {
                 executorService.shutdownNow();
             }
         } catch (Exception e) {
-            Throwables.console(e);
+            LOG.error("Shutdown ExecutorService occur error.", e);
             if (!hasCallShutdownNow) {
                 executorService.shutdownNow();
             }

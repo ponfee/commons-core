@@ -131,6 +131,7 @@ public class StreamForker<T> {
                     t = q.take();
                     break;
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     throw new BaseCheckedException(e);
                 }
             }

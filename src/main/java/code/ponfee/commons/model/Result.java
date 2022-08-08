@@ -57,11 +57,11 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
         return (Result<E>) this;
     }
 
-    public <E> Result<E> copy(E data) {
+    public <E> Result<E> from(E data) {
         return new Result<>(code, success, msg, data);
     }
 
-    public <E> Result<E> map(Function<T, E> mapper) {
+    public <E> Result<E> convert(Function<T, E> mapper) {
         return new Result<>(code, success, msg, mapper.apply(data));
     }
 
@@ -234,9 +234,9 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
      */
     private static final class Success extends Result<Void> {
         private static final long serialVersionUID = 6740650053476768729L;
-        static final int CODE = 200;
-        static final boolean STATE = true;
-        static final String MSG = "OK";
+        private static final int CODE = 200;
+        private static final boolean STATE = true;
+        private static final String MSG = "OK";
 
         Success() {
             super(CODE, STATE, MSG);

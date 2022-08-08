@@ -39,7 +39,9 @@ public final class NodePath<T extends Serializable & Comparable<? super T>>
 
     private static final long serialVersionUID = 9090552044337950223L;
 
-    public NodePath() {}
+    public NodePath() {
+        // Noop: For help deserialization
+    }
 
     @SafeVarargs
     public NodePath(T... path) {
@@ -77,7 +79,6 @@ public final class NodePath<T extends Serializable & Comparable<? super T>>
         return super.size() - o.size();
     }
 
-    /*
     @Override
     public boolean equals(Object obj) {
         return (obj instanceof NodePath) && super.equals(obj);
@@ -87,7 +88,6 @@ public final class NodePath<T extends Serializable & Comparable<? super T>>
     public NodePath<T> clone() {
         return new NodePath<>(this);
     }
-    */
 
     // -----------------------------------------------------custom fastjson deserialize
     @JSONType(deserializer = FastjsonDeserializer.class)

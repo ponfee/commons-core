@@ -1,13 +1,13 @@
 package code.ponfee.commons.concurrent;
 
-import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -29,7 +29,7 @@ public final class AsyncBatchProcessor<T> {
 
     private final static Logger LOG = LoggerFactory.getLogger(AsyncBatchProcessor.class);
 
-    private final AsyncBatchThread async;
+    private final AsyncBatchThread<T> async;
 
     public AsyncBatchProcessor(BatchProcessor<T> processor) {
         this(processor, 100, 200, 2);
@@ -45,7 +45,7 @@ public final class AsyncBatchProcessor<T> {
                                int periodTimeMillis,
                                int batchSize,
                                int maximumPoolSize) {
-        this.async = new AsyncBatchThread(
+        this.async = new AsyncBatchThread<>(
             processor, periodTimeMillis, batchSize, maximumPoolSize
         );
     }
@@ -63,7 +63,6 @@ public final class AsyncBatchProcessor<T> {
      * Batch put elements to queue.
      *
      * @param elements the elements
-     * @throws InterruptedException if interrupted
      */
     public boolean put(T[] elements) {
         if (async.stopped.get() || elements == null || elements.length == 0) {
@@ -98,7 +97,7 @@ public final class AsyncBatchProcessor<T> {
 
     /**
      * Do stop
-     * 
+     *
      * @return {@code true} if stop success
      */
     public boolean stop() {
@@ -115,18 +114,21 @@ public final class AsyncBatchProcessor<T> {
     /**
      * Async batch consume into this alone thread
      */
-    private class AsyncBatchThread extends Thread {
+    private static class AsyncBatchThread<T> extends Thread {
+        private static final int MINIMUM_PERIOD_TIME_MILLIS = 9;
+
         // 单消费者用LinkedBlockingQueue，多消费者用ConcurrentLinkedQueue
-        final LinkedBlockingQueue<T> queue = new LinkedBlockingQueue<>();
-        final AtomicBoolean stopped = new AtomicBoolean(false);
+        private final LinkedBlockingQueue<T> queue = new LinkedBlockingQueue<>();
+        private final AtomicBoolean        stopped = new AtomicBoolean(false);
 
-        final BatchProcessor<T> processor;   // 处理器
-        final int sleepTimeMillis;           // 休眠时间
-        final int periodTimeMillis;          // 消费周期(毫秒)
-        final int batchSize;                 // 批量大小
-        final ExecutorService asyncExecutor; // 异步执行器
+        private final BatchProcessor<T> processor; // 处理器
+        private final int periodTimeMillis;        // 消费周期(毫秒)
+        private final int sleepTimeMillis;         // 休眠时间
+        private final int batchSize;               // 批量大小
+        private final int asyncExecuteThreshold;   // 启用异步执行器的阈值
+        private final int maximumPoolSize;         // 最大线程数
 
-        long nextRefreshTimeMillis = 0L;     // 下一次刷新时间
+        private long nextRefreshTimeMillis = 0L;   // 下一次刷新时间
 
         /**
          * @param processor        批处理器
@@ -134,25 +136,22 @@ public final class AsyncBatchProcessor<T> {
          * @param batchSize        批量大小
          * @param maximumPoolSize  最大线程数
          */
-        AsyncBatchThread(BatchProcessor<T> processor,
-                         int periodTimeMillis,
-                         int batchSize,
-                         int maximumPoolSize) {
-            Preconditions.checkArgument(periodTimeMillis > 0);
-            Preconditions.checkArgument(batchSize > 0);
-            Preconditions.checkArgument(maximumPoolSize > 0);
+        private AsyncBatchThread(BatchProcessor<T> processor,
+                                 int periodTimeMillis,
+                                 int batchSize,
+                                 int maximumPoolSize) {
+            Assert.isTrue(periodTimeMillis >= MINIMUM_PERIOD_TIME_MILLIS, "Period time millis must greater than " + MINIMUM_PERIOD_TIME_MILLIS + ", but actual " + periodTimeMillis);
+            Assert.isTrue(batchSize > 0, "Batch size cannot negative number.");
+            Assert.isTrue(maximumPoolSize > 0, "Maximum pool size cannot negative number.");
 
             this.processor = processor;
-            this.sleepTimeMillis = Math.max(9, periodTimeMillis >>> 1);
             this.periodTimeMillis = periodTimeMillis;
+            this.sleepTimeMillis = (periodTimeMillis >>> 1);
             this.batchSize = batchSize;
-            this.asyncExecutor = ThreadPoolExecutors.create(
-                maximumPoolSize, maximumPoolSize, 300, 20,
-                "async-batch-processor-worker-thread",
-                ThreadPoolExecutors.ALWAYS_CALLER_RUNS
-            );
+            this.asyncExecuteThreshold = batchSize + (batchSize >>> 1);
+            this.maximumPoolSize = maximumPoolSize;
 
-            super.setName("async-batch-processor-boss-thread-" + Integer.toHexString(hashCode()));
+            super.setName("async-batch-processor-thread-" + Integer.toHexString(hashCode()));
             super.setDaemon(false);
             super.start();
         }
@@ -163,19 +162,30 @@ public final class AsyncBatchProcessor<T> {
          */
         @Override
         public void run() {
-            List<T> list = new ArrayList<>(batchSize);
+            // async thread pool executor
+            ThreadPoolExecutor asyncExecutor = null;
+            ArrayList<T> list = new ArrayList<>(batchSize);
+
             for (int left = batchSize; ; ) {
-                if (stopped.get() && queue.isEmpty()) {
-                    try {
-                        Thread.sleep(periodTimeMillis);
-                    } catch (InterruptedException e) {
-                        LOG.error("Thread#sleep occur error.", e);
+                if (isEnd()) {
+                    if (asyncExecutor != null) {
+                        // wait a moment if async execute
+                        try {
+                            Thread.sleep(periodTimeMillis);
+                        } catch (InterruptedException e) {
+                            LOG.error("Thread#sleep occur error.", e);
+                            Thread.currentThread().interrupt();
+                        }
                     }
 
                     // double check
-                    if (stopped.get() && queue.isEmpty()) {
-                        ThreadPoolExecutors.shutdown(asyncExecutor);
-                        // exit for loop if stopped
+                    if (isEnd()) {
+                        if (asyncExecutor != null) {
+                            // destroy the async executor
+                            ThreadPoolExecutors.shutdown(asyncExecutor);
+                        }
+
+                        // exit for loop if end
                         break;
                     }
                 }
@@ -187,13 +197,31 @@ public final class AsyncBatchProcessor<T> {
 
                 long currentTimeMillis = System.currentTimeMillis();
                 if (left == 0 || (!list.isEmpty() && (stopped.get() || currentTimeMillis >= nextRefreshTimeMillis))) {
-                    // task抛异常后：
-                    //   execute输出错误信息，线程结束，后续任务会创建新线程执行，会抛出异常
-                    //   submit不输出错误信息，线程继续分配执行其它任务，不会抛出异常，除非你调用Future.get()
-                    final List<T> data = list;
-                    asyncExecutor.submit(() -> processor.process(data, stopped.get() && queue.isEmpty()));
+                    if (asyncExecutor == null && left == 0 && queue.size() > asyncExecuteThreshold) {
+                        asyncExecutor = ThreadPoolExecutors.create(
+                            1, maximumPoolSize, 300, 2,
+                            "async-batch-processor-worker",
+                            ThreadPoolExecutors.ALWAYS_CALLER_RUNS
+                        );
+                        LOG.info("Asnyc batch processor created thread pool executor: {}", new ThreadPoolMonitor(asyncExecutor));
+                    }
 
-                    list = new ArrayList<>(left = batchSize);
+                    if (asyncExecutor != null) {
+                        // async thread pool execute
+                        // task抛异常后：
+                        //   execute输出错误信息，线程结束，后续任务会创建新线程执行，会抛出异常
+                        //   submit不输出错误信息，线程继续分配执行其它任务，不会抛出异常，除非你调用Future.get()
+                        final List<T> data = list;
+                        asyncExecutor.submit(() -> processor.process(data, isEnd()));
+                        list = new ArrayList<>(left = batchSize);
+                    } else {
+                        // current thread execute
+                        processor.process(list, isEnd());
+                        // reuse the list object
+                        list.clear();
+                        left = batchSize;
+                    }
+
                     nextRefreshTimeMillis = currentTimeMillis + periodTimeMillis;
                 } else if (!stopped.get()) {
                     try {
@@ -201,9 +229,16 @@ public final class AsyncBatchProcessor<T> {
                         Thread.sleep(sleepTimeMillis);
                     } catch (InterruptedException e) {
                         LOG.error("Thread#sleep occur error.", e);
+                        stopped.compareAndSet(false, true);
+                        Thread.currentThread().interrupt();
+                        break;
                     }
                 }
             }
+        }
+
+        private boolean isEnd() {
+            return stopped.get() && queue.isEmpty();
         }
     }
 

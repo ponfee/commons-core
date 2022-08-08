@@ -14,8 +14,8 @@ public interface CodeMsg {
     String getMsg();
 
     /**
-     * <p>中止当前运行的Java虚拟机，返回值给调用方(如bash)</p>
-     * <p>0正常退出；非0异常退出；</p>
+     * 中止当前运行的Java虚拟机，返回值给调用方(如bash)
+     * <p>0正常退出；非0异常退出；
      * 
      * @see System#exit(int)
      */

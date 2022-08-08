@@ -9,12 +9,12 @@ import java.util.Properties;
  */
 public final class PropertiesUtils {
 
-    public static Properties filterProperties(Properties props, String prefixKey) {
+    public static Properties filterProperties(Properties props, String keyPrefix) {
         Properties properties = new Properties();
-        int prefixLen = prefixKey.length();
+        int prefixLen = keyPrefix.length();
         props.forEach((k, v) -> {
             String key = k.toString();
-            if (key.startsWith(prefixKey)) {
+            if (key.startsWith(keyPrefix)) {
                 properties.put(key.substring(prefixLen), v);
             }
         });

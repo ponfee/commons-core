@@ -17,7 +17,33 @@ import java.security.SecureRandom;
 import static java.math.BigInteger.ONE;
 
 /**
+ * <pre>
  * The RSA Key
+ *
+ * https://blog.csdn.net/seccloud/article/details/8188812
+ * https://blog.csdn.net/zntsbkhhh/article/details/109581852
+ * https://www.zhihu.com/question/54779059
+ * 
+ * (1)选择两个不同的大素数p和q
+ * (2)计算公共模数(n=pq)和欧拉数(eular=(p-1)(q-1))
+ * (3)选择公钥指数e
+ * (4)计算inverse(d)
+ * (5)生成公钥和私钥
+ * 
+ * 
+ * 公钥KU：
+ *   n：两素数p和q的乘积（p和q必须保密）（n为模值）
+ *   e：与(p-1)*(q-1)互质（e称为公钥指数）
+ *
+ * 私钥KR：
+ *   n：两素数p和q的乘积（p和q必须保密）（n为模值）
+ *   d：满足(d*e) mod ((p-1)*(q-1)) = 1（d称为私钥指数）
+ *
+ * 加密过程  C=M^e mod n  （C为密文）
+ * 解密过程  M=C^d mod n  （M为明文）
+ * </pre>
+ * 
+ * @see org.bouncycastle.crypto.generators.RSAKeyPairGenerator
  * @author Ponfee
  */
 @SuppressWarnings("restriction")
@@ -26,7 +52,9 @@ public class RSAKey implements Key {
     private static final SecureRandom SECURE_RANDOM =
         new SecureRandom(SecureRandoms.generateSeed(24));
 
-    // Should RSA public exponent be only in {3, 5, 17, 257 or 65537} 
+    // RSA公钥指数：Should RSA public exponent be only in (3, 5, 17, 257 or 65537)，最常用的是3,17,65537
+    // 学术界普遍认为绝对不能选用e=3作为RSA公钥指数
+    // 选取小公钥指数主要是为了提高加密或签名验证的性能
     public static final int RSA_F4 = 65537;
 
     public final BigInteger n;
@@ -182,7 +210,7 @@ public class RSAKey implements Key {
     public static KeyPair generateKey(int keySize, int e) {
         KeyPair keyPair = new KeyPair();
         keyPair.e = BigInteger.valueOf(e);
-        int i = keySize + 1 >> 1;
+        int i = (keySize + 1) >> 1;
         int j = keySize - i;
         do {
             keyPair.p = BigInteger.probablePrime(i, SECURE_RANDOM);

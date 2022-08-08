@@ -15,10 +15,10 @@ import java.util.Date;
 public abstract class BaseEntity implements java.io.Serializable {
     private static final long serialVersionUID = -3387171222355207376L;
 
-    private long id;         // database table primary key
-    private int version = 1; // data version
-    private Date createTime; // create time
-    private Date updateTime; // last update time
+    private Long id;             // database table primary key
+    private Integer version = 1; // data version
+    private Date createdAt;      // created time
+    private Date updatedAt;      // last updated time
 
     /**
      * Base entity with biz-no filed
@@ -43,7 +43,7 @@ public abstract class BaseEntity implements java.io.Serializable {
     public static abstract class Creator<U> extends BaseEntity {
         private static final long serialVersionUID = -812853678840369113L;
 
-        private U creator; // create user
+        private U createdBy; // created user
     }
 
     /**
@@ -56,7 +56,7 @@ public abstract class BaseEntity implements java.io.Serializable {
     public static abstract class Updater<U> extends Creator<U> {
         private static final long serialVersionUID = 5333847915253038118L;
 
-        private U updater; // last update user
+        private U updatedBy; // last updated user
     }
 
     /**
@@ -67,7 +67,7 @@ public abstract class BaseEntity implements java.io.Serializable {
      */
     @Getter
     @Setter
-    public static abstract class Normal<N, U> extends Updater<U> {
+    public static abstract class All<N, U> extends Updater<U> {
         private static final long serialVersionUID = -939331524501110803L;
 
         private N no; // biz-no

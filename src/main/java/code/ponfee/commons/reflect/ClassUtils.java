@@ -385,23 +385,13 @@ public final class ClassUtils {
     public static <T> T newInstance(Constructor<T> constructor, Object[] args) {
         checkObjectArray(args);
 
-        if (constructor.isAccessible()) {
-            try {
-                return ArrayUtils.isEmpty(args) ? constructor.newInstance() : constructor.newInstance(args);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            synchronized (constructor) {
-                try {
-                    constructor.setAccessible(true);
-                    return ArrayUtils.isEmpty(args) ? constructor.newInstance() : constructor.newInstance(args);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                } finally {
-                    constructor.setAccessible(false);
-                }
-            }
+        if (!constructor.isAccessible()) {
+            constructor.setAccessible(true);
+        }
+        try {
+            return ArrayUtils.isEmpty(args) ? constructor.newInstance() : constructor.newInstance(args);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -473,24 +463,13 @@ public final class ClassUtils {
 
     public static <T> T invoke(Object caller, Method method, Object[] args) {
         checkObjectArray(args);
-        if (method.isAccessible()) {
-            try {
-                return (T) (ArrayUtils.isEmpty(args) ? method.invoke(caller) : method.invoke(caller, args));
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            synchronized (method) {
-                try {
-                    method.setAccessible(true);
-                    return (T) (ArrayUtils.isEmpty(args) ? method.invoke(caller) : method.invoke(caller, args));
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                } finally {
-                    // restore accessible
-                    method.setAccessible(false);
-                }
-            }
+        if (!method.isAccessible()) {
+            method.setAccessible(true);
+        }
+        try {
+            return (T) (ArrayUtils.isEmpty(args) ? method.invoke(caller) : method.invoke(caller, args));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -619,7 +598,6 @@ public final class ClassUtils {
      * @return
      */
     private static boolean matches(Class<?>[] definedTypes, Class<?>[] actualTypes) {
-        Asserts.isTrue(ArrayUtils.isNotEmpty(definedTypes), "Should be always non empty.");
         if (definedTypes.length != actualTypes.length) {
             return false;
         }

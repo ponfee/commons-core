@@ -136,6 +136,7 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
                 Thread.sleep(AWAIT_MILLIS);
             }
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
     }
@@ -250,6 +251,7 @@ public class HSSFStreamingWorkbook implements Workbook, Closeable {
             try {
                 this.currentSheet.putRow(row);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 throw new RuntimeException(e);
             }
         }

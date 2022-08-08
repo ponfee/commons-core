@@ -29,17 +29,16 @@ public final class Maps {
     }
 
     // ----------------------------------------------------------------map to array
+
     /**
      * map转数组
-     * 
-     * @param map
-     * @param fields
-     * @return
+     *
+     * @param map    the map
+     * @param fields the string fields
+     * @return array of fields mapped values
      */
     public static Object[] toArray(Map<String, Object> map, String... fields) {
-        return Stream.of(fields)
-                     .map(field -> Optional.ofNullable(map.get(field)).orElse(""))
-                     .toArray();
+        return Stream.of(fields).map(map::get).toArray();
     }
 
     /**
@@ -59,6 +58,7 @@ public final class Maps {
 
     /**
      * LinkedHashMap<String, Object>转Object[]
+     * 
      * @param data
      * @return
      */
@@ -66,7 +66,7 @@ public final class Maps {
         if (data == null) {
             return null;
         }
-        return data.values().stream().map(e -> e != null ? e : "").toArray();
+        return data.values().stream().toArray();
     }
 
     /**
@@ -90,7 +90,7 @@ public final class Maps {
      * @return
      */
     public static Result<Page<Object[]>> toArray(Result<Page<LinkedHashMap<String, Object>>> source) {
-        return source.copy(source.getData().map(Maps::toArray));
+        return source.from(source.getData().map(Maps::toArray));
     }
 
     /**
@@ -100,7 +100,7 @@ public final class Maps {
      * @return
      */
     public static Result<Page<Object[]>> toArray(Result<Page<Map<String, Object>>> source, String... fields) {
-        return source.copy(source.getData().map(map -> toArray(map, fields)));
+        return source.from(source.getData().map(map -> toArray(map, fields)));
     }
 
     // ----------------------------------------------------------------to List, Map and Array
@@ -121,7 +121,6 @@ public final class Maps {
             throw new IllegalArgumentException("args must be pair.");
         }
 
-        // length>>>1
         Map<String, Object> map = new LinkedHashMap<>(length);
         for (int i = 0; i < length; i += 2) {
             map.put((String) kv[i], kv[i + 1]);

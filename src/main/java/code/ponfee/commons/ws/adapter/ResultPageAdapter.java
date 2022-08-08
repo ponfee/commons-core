@@ -26,24 +26,24 @@ public abstract class ResultPageAdapter<T> extends XmlAdapter<Result<TransitPage
     @Override
     public Result<Page<T>> unmarshal(Result<TransitPage<T>> v) {
         if (v.getData() == null) {
-            return v.copy(null);
+            return v.from(null);
         } else if (   v.getData().getRows() == null 
                    || v.getData().getRows().getItem() == null) {
-            return v.copy(new Page<>());
+            return v.from(new Page<>());
         }
 
-        return v.copy(TransitPage.recover(v.getData()));
+        return v.from(TransitPage.recover(v.getData()));
     }
 
     @Override
     public Result<TransitPage<T>> marshal(Result<Page<T>> v) {
         if (v.getData() == null) {
-            return v.copy(null);
+            return v.from(null);
         } else if (v.getData().getRows() == null) {
-            return v.copy(new TransitPage<>());
+            return v.from(new TransitPage<>());
         }
 
-        return v.copy(TransitPage.transform(v.getData(), type));
+        return v.from(TransitPage.transform(v.getData(), type));
     }
 
 }

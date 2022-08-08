@@ -73,21 +73,21 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
         if (result == null) {
             return null;
         }
-        return result.copy(convert(result.getData()));
+        return result.from(convert(result.getData()));
     }
 
     public final Result<List<T>> convertResultList(Result<List<S>> result) {
         if (result == null) {
             return null;
         }
-        return result.copy(convert(result.getData()));
+        return result.from(convert(result.getData()));
     }
 
     public final Result<Page<T>> convertResultPage(Result<Page<S>> result) {
         if (result == null) {
             return null;
         }
-        return result.copy(convert(result.getData()));
+        return result.from(convert(result.getData()));
     }
 
     // ----------------------------------------------other methods
@@ -174,21 +174,21 @@ public abstract class AbstractDataConverter<S, T> implements Function<S, T> {
         if (result == null) {
             return null;
         }
-        return result.copy(converter.apply(result.getData()));
+        return result.from(converter.apply(result.getData()));
     }
 
     public static <S, T> Result<List<T>> convertResultList(Result<List<S>> result, Function<S, T> converter) {
         if (result == null) {
             return null;
         }
-        return result.copy(convert(result.getData(), converter));
+        return result.from(convert(result.getData(), converter));
     }
 
     public static <S, T> Result<Page<T>> convertResultPage(Result<Page<S>> result, Function<S, T> converter) {
         if (result == null) {
             return null;
         }
-        return result.copy(convert(result.getData(), converter));
+        return result.from(convert(result.getData(), converter));
     }
 
     // -----------------------------------------------------------------------------------private methods

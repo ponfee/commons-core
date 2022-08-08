@@ -80,7 +80,7 @@ public abstract class ParamValidator extends FieldValidator {
             builder.append(e.getMessage());
         } catch (NoSuchMethodException e) {
             LOG.error("reflect exception", e);
-            builder.append(Throwables.getStackTrace(e));
+            builder.append(Throwables.getRootCauseStackTrace(e));
         }
 
         return builder.length() == 0 ? joinPoint.proceed() : processError(builder, method, args);

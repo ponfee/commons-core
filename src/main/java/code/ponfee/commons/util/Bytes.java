@@ -627,8 +627,4 @@ public final class Bytes {
         return crc32.getValue();
     }
 
-    public static int crc16(byte[] bytes) {
-        return CRC16.crc16(bytes);
-    }
-
 }
