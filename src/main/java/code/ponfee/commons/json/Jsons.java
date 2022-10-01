@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -53,8 +54,10 @@ public final class Jsons {
     private final ObjectMapper mapper;
 
     private Jsons(JsonInclude.Include include) {
-        this.mapper = buildObjectMapper(include);
+        this.mapper = createObjectMapper(include);
     }
+
+    // --------------------------------------------------------serialization
 
     /**
      * Converts object to json, and write to output stream
@@ -101,107 +104,7 @@ public final class Jsons {
         }
     }
 
-    /**
-     * Deserialize a json to target class object
-     * {@code mapper.readValue(json, new TypeReference<Map<String, Object>>() {})}
-     *
-     * @param json   json string
-     * @param target target class
-     * @return target object
-     * @throws JsonException the exception for json
-     */
-    public <T> T parse(String json, Class<T> target) throws JsonException {
-        if (StringUtils.isEmpty(json)) {
-            return null;
-        }
-
-        try {
-            return mapper.readValue(json, target);
-        } catch (IOException e) {
-            throw new JsonException(e);
-        }
-    }
-
-    /**
-     * Deserialize a json to target class object
-     * {@code mapper.readValue(json, new TypeReference<Map<String, Object>>() {})}
-     *
-     * @param json   the byte array
-     * @param target target class
-     * @return target object
-     * @throws JsonException the exception for json
-     */
-    public <T> T parse(byte[] json, Class<T> target) throws JsonException {
-        if (json == null || json.length == 0) {
-            return null;
-        }
-
-        try {
-            return mapper.readValue(json, target);
-        } catch (IOException e) {
-            throw new JsonException(e);
-        }
-    }
-
-    /**
-     * Deserialize the json string to java object
-     * {@code new TypeReference<Map<String, Object>>(){} }
-     *
-     * @param json the json string
-     * @param type the TypeReference specified java type
-     * @return a java object
-     * @throws JsonException
-     */
-    public <T> T parse(String json, TypeReference<T> type) throws JsonException {
-        if (StringUtils.isEmpty(json)) {
-            return null;
-        }
-
-        try {
-            return mapper.readValue(json, type);
-        } catch (Exception e) {
-            throw new JsonException(e);
-        }
-    }
-
-    /**
-     * Deserialize the json string to java object
-     * {@code new TypeReference<Map<String, Object>>(){} }
-     * <p>
-     * fast json: JSON.parseObject(json, new TypeReference<Map<String,String>>(){})
-     *
-     * @param json the json byte array
-     * @param type the TypeReference specified java type
-     * @return a java object
-     * @throws JsonException
-     */
-    public <T> T parse(byte[] json, TypeReference<T> type) throws JsonException {
-        if (json == null || json.length == 0) {
-            return null;
-        }
-
-        try {
-            return mapper.readValue(json, type);
-        } catch (Exception e) {
-            throw new JsonException(e);
-        }
-    }
-
-    /**
-     * Deserialize the json string, specified collections class and element class
-     * <p>
-     * eg: parse(json, Map.class, String.class, Object.class);
-     *
-     * @param json         the json string
-     * @param collectClass the collection class type
-     * @param elemClasses  the element class type
-     * @return the objects of collection
-     * @throws JsonException the exception for json
-     */
-    public <T> T parse(String json, Class<T> collectClass,
-                       Class<?>... elemClasses) throws JsonException {
-        return parse(json, createCollectionType(collectClass, elemClasses));
-    }
+    // --------------------------------------------------------deserialization
 
     /**
      * Deserialize the json string to java object
@@ -210,13 +113,14 @@ public final class Jsons {
      * @param javaType JavaType
      * @return the javaType's object
      * @throws JsonException the exception for json
-     * @see #createCollectionType(Class, Class...)
+     * @see ObjectMapper#getTypeFactory()
+     * @see ObjectMapper#constructType(Type)
+     * @see com.fasterxml.jackson.databind.type.TypeFactory#constructGeneralizedType(JavaType, Class)
      */
     public <T> T parse(String json, JavaType javaType) throws JsonException {
         if (StringUtils.isEmpty(json)) {
             return null;
         }
-
         try {
             return mapper.readValue(json, javaType);
         } catch (Exception e) {
@@ -225,15 +129,46 @@ public final class Jsons {
     }
 
     /**
-     * Constructs collection type
+     * Deserialize the json byte array to java object
      *
-     * @param collectClass collection class, such as ArrayList, HashMap, ...
-     * @param elemClasses  element class
-     * @return a JavaType instance
+     * @param json     json byte array
+     * @param javaType JavaType
+     * @return the javaType's object
+     * @throws JsonException the exception for json
      */
-    public <T> JavaType createCollectionType(Class<T> collectClass,
-                                             Class<?>... elemClasses) {
-        return mapper.getTypeFactory().constructParametricType(collectClass, elemClasses);
+    public <T> T parse(byte[] json, JavaType javaType) throws JsonException {
+        if (json == null || json.length == 0) {
+            return null;
+        }
+        try {
+            return mapper.readValue(json, javaType);
+        } catch (Exception e) {
+            throw new JsonException(e);
+        }
+    }
+
+    public <T> T parse(String json, Class<T> target) throws JsonException {
+        return parse(json, mapper.constructType(target));
+    }
+
+    public <T> T parse(byte[] json, Class<T> target) throws JsonException {
+        return parse(json, mapper.constructType(target));
+    }
+
+    public <T> T parse(String json, Type type) throws JsonException {
+        return parse(json, mapper.constructType(type));
+    }
+
+    public <T> T parse(byte[] json, Type type) throws JsonException {
+        return parse(json, mapper.constructType(type));
+    }
+
+    public <T> T parse(String json, TypeReference<T> type) throws JsonException {
+        return parse(json, mapper.constructType(type));
+    }
+
+    public <T> T parse(byte[] json, TypeReference<T> type) throws JsonException {
+        return parse(json, mapper.constructType(type));
     }
 
     // ----------------------------------------------------static methods
@@ -245,11 +180,27 @@ public final class Jsons {
         return NORMAL.bytes(target);
     }
 
+    public static <T> T fromJson(String json, JavaType javaType) {
+        return NORMAL.parse(json, javaType);
+    }
+
+    public static <T> T fromJson(byte[] json, JavaType javaType) {
+        return NORMAL.parse(json, javaType);
+    }
+
     public static <T> T fromJson(String json, Class<T> target) {
         return NORMAL.parse(json, target);
     }
 
     public static <T> T fromJson(byte[] json, Class<T> target) {
+        return NORMAL.parse(json, target);
+    }
+
+    public static <T> T fromJson(String json, Type target) {
+        return NORMAL.parse(json, target);
+    }
+
+    public static <T> T fromJson(byte[] json, Type target) {
         return NORMAL.parse(json, target);
     }
 
@@ -261,16 +212,7 @@ public final class Jsons {
         return NORMAL.parse(json, type);
     }
 
-    public static <T> T fromJson(String json, JavaType javaType) {
-        return NORMAL.parse(json, javaType);
-    }
-
-    public static <T> T fromJson(String json, Class<T> collectClass,
-                                 Class<?>... elemClasses) {
-        return NORMAL.parse(json, collectClass, elemClasses);
-    }
-
-    public static ObjectMapper buildObjectMapper(JsonInclude.Include include) {
+    public static ObjectMapper createObjectMapper(JsonInclude.Include include) {
         ObjectMapper mapper = new ObjectMapper();
 
         // 设置序列化时的特性

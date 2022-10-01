@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.reflect.GenericUtils;
-import code.ponfee.commons.util.SpringContextHolder;
+import code.ponfee.commons.spring.SpringContextHolder;
 
 /**
  * 测试基类

@@ -1,6 +1,6 @@
 package code.ponfee.commons.limit.current;
 
-import code.ponfee.commons.util.LazyLoader;
+import code.ponfee.commons.util.SynchronizedCaches;
 import com.google.common.util.concurrent.RateLimiter;
 
 import java.util.Date;
@@ -30,7 +30,7 @@ public class GuavaCurrentLimiter implements CurrentLimiter {
             return false; // 禁止访问
         }
 
-        RateLimiter limiter = LazyLoader.get(key, LIMITER_MAP, () -> RateLimiter.create(requestThreshold));
+        RateLimiter limiter = SynchronizedCaches.get(key, LIMITER_MAP, () -> RateLimiter.create(requestThreshold));
 
         if (((Double) limiter.getRate()).longValue() != requestThreshold) {
             synchronized (limiter) {
@@ -53,8 +53,7 @@ public class GuavaCurrentLimiter implements CurrentLimiter {
             LIMITER_MAP.remove(key);
         }
 
-        LazyLoader.get(key, LIMITER_MAP, () -> RateLimiter.create(threshold))
-                  .setRate(threshold);
+        SynchronizedCaches.get(key, LIMITER_MAP, () -> RateLimiter.create(threshold)).setRate(threshold);
     }
 
     @Override

@@ -6,8 +6,8 @@ import java.util.Map;
  * Get the value with typed for {@link Map}
  * 
  * @author Ponfee
- * @param <K>
- * @param <V>
+ * @param <K> the key type
+ * @param <V> the value type
  */
 public interface TypedMap<K, V> extends Map<K, V>, TypedKeyValue<K, V> {
 

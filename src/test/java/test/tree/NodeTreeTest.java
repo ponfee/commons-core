@@ -13,6 +13,7 @@ import code.ponfee.commons.tree.BaseNode;
 import code.ponfee.commons.tree.MapTreeTrait;
 import code.ponfee.commons.tree.TreeNode;
 import code.ponfee.commons.tree.TreeNodeBuilder;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -91,15 +92,15 @@ public class NodeTreeTest {
         list.add(new BaseNode<>("b", "a", true, ""));
 
         TreeNode<String, String> root = TreeNodeBuilder.<String, String> newBuilder(TreeNode.DEFAULT_ROOT_ID).build();
-        root.mount(list);
+        Assert.assertThrows(RuntimeException.class, ()->root.mount(list)) ;
         System.out.println(Jsons.toJson(root));
     }
 
     @Test
     public void test3() {
         List<BaseNode<String, String>> list = new ArrayList<>();
-        list.add(new BaseNode<>("100001", null, true, "nid100010")); // 节点编号不能为空
-        list.add(new BaseNode<>(null, "100001", true, "nid100010"));
+        list.add(new BaseNode<>("100001", null, true, "nid100010"));
+        Assert.assertThrows(IllegalArgumentException.class, () -> list.add(new BaseNode<>(null, "100001", true, "nid100010")));// 节点编号不能为空
         TreeNode<String, String> root = TreeNodeBuilder.<String, String> newBuilder(TreeNode.DEFAULT_ROOT_ID).build();
         root.mount(list);
         System.out.println(Jsons.toJson(root));
@@ -111,7 +112,7 @@ public class NodeTreeTest {
         list.add(new BaseNode<>("100000", "notfound", true, "nid100000")); // 无效的孤儿节点
         list.add(new BaseNode<>("200000", "notfound", true, "nid200000")); // 无效的孤儿节点
 
-        TreeNodeBuilder.<String, String> newBuilder(TreeNode.DEFAULT_ROOT_ID).build().mount(list);
+        Assert.assertThrows(RuntimeException.class, () -> TreeNodeBuilder.<String, String>newBuilder(TreeNode.DEFAULT_ROOT_ID).build().mount(list));
     }
 
     @Test

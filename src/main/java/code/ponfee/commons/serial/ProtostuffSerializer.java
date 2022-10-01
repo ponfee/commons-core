@@ -1,8 +1,8 @@
 package code.ponfee.commons.serial;
 
 import code.ponfee.commons.io.GzipProcessor;
-import code.ponfee.commons.util.LazyLoader;
 import code.ponfee.commons.util.ObjectUtils;
+import code.ponfee.commons.util.SynchronizedCaches;
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtostuffIOUtil;
 import io.protostuff.Schema;
@@ -48,7 +48,7 @@ public class ProtostuffSerializer extends Serializer {
     // ------------------------------------------------------------------------private methods
     @SuppressWarnings("unchecked")
     private static <T> Schema<T> getSchema(Class<T> type) {
-        return (Schema<T>) LazyLoader.get(type, SCHEMA_CACHE, RuntimeSchema::createFrom);
+        return (Schema<T>) SynchronizedCaches.get(type, SCHEMA_CACHE, RuntimeSchema::createFrom);
     }
 
 }

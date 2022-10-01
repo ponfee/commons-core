@@ -25,9 +25,9 @@ import java.util.Objects;
  * 
  * @author Ponfee
  */
-@JSONType(serializer = PlainStructure.FastjsonSerializer.class, deserializer = PlainStructure.FastjsonSerializer.class)
-@JsonSerialize(using = PlainStructure.JacksonSerializer.class)
-@JsonDeserialize(using = PlainStructure.JacksondDeserializer.class)
+@JSONType(serializer = PlainStructure.FastjsonSerializer.class, deserializer = PlainStructure.FastjsonSerializer.class) // fastjson
+@JsonSerialize(using = PlainStructure.JacksonSerializer.class)     // jackson
+@JsonDeserialize(using = PlainStructure.JacksonDeserializer.class) // jackson
 public final class PlainStructure implements DataStructure, CharSequence {
     private static final long serialVersionUID = 1L;
 
@@ -117,7 +117,7 @@ public final class PlainStructure implements DataStructure, CharSequence {
         }
     }
 
-    public static class JacksondDeserializer extends JsonDeserializer<PlainStructure> {
+    public static class JacksonDeserializer extends JsonDeserializer<PlainStructure> {
         @Override
         public PlainStructure deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             String value = p.getText();

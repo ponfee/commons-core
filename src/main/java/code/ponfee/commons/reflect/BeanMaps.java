@@ -1,8 +1,8 @@
 package code.ponfee.commons.reflect;
 
-import code.ponfee.commons.util.LazyLoader;
 import code.ponfee.commons.util.ObjectUtils;
 import code.ponfee.commons.util.Strings;
+import code.ponfee.commons.util.SynchronizedCaches;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.cglib.beans.BeanMap;
@@ -75,7 +75,7 @@ public enum BeanMaps {
         }
 
         private List<Field> getFields(Class<?> beanType) {
-            return LazyLoader.get(beanType, cachedFields, type -> {
+            return SynchronizedCaches.get(beanType, cachedFields, type -> {
                 List<Field> list = ClassUtils.listFields(type);
                 return CollectionUtils.isEmpty(list) ? Collections.emptyList() : ImmutableList.copyOf(list);
             });

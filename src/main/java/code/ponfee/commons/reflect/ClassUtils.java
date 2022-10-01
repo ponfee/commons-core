@@ -8,10 +8,7 @@ import code.ponfee.commons.collect.Collects;
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.model.Null;
 import code.ponfee.commons.model.Predicates;
-import code.ponfee.commons.util.Asserts;
-import code.ponfee.commons.util.LazyLoader;
-import code.ponfee.commons.util.Strings;
-import code.ponfee.commons.util.URLCodes;
+import code.ponfee.commons.util.*;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.asm.ClassReader;
 import org.springframework.asm.ClassVisitor;
@@ -51,7 +48,7 @@ public final class ClassUtils {
     private static final GroovyClassLoader GROOVY_CLASS_LOADER = new GroovyClassLoader();
     public static <T> Class<T> getClass(String text) {
         String key = DigestUtils.md5Hex(text);
-        Class<?> clazz = LazyLoader.get(key, CLASS_CACHE, () -> {
+        Class<?> clazz = SynchronizedCaches.get(key, CLASS_CACHE, () -> {
             if (QUALIFIED_CLASS_NAME_PATTERN.matcher(text).matches()) {
                 try {
                     return Class.forName(text);
@@ -367,7 +364,7 @@ public final class ClassUtils {
     public static <T> Constructor<T> getConstructor(Class<T> type, Class<?>... parameterTypes) {
         boolean noArgs = ArrayUtils.isEmpty(parameterTypes);
         Object key = noArgs ? type : Tuple2.of(type, ArrayHashKey.of((Object[]) parameterTypes));
-        Constructor<T> constructor = (Constructor<T>) LazyLoader.get(key, CONSTRUCTOR_CACHE, () -> {
+        Constructor<T> constructor = (Constructor<T>) SynchronizedCaches.get(key, CONSTRUCTOR_CACHE, () -> {
             try {
                 return noArgs ? type.getConstructor() : type.getConstructor(parameterTypes);
             } catch (Exception ignored) {
@@ -445,7 +442,7 @@ public final class ClassUtils {
         Class<?> type = tuple.a;
         boolean noArgs = ArrayUtils.isEmpty(parameterTypes);
         Object key = noArgs ? Tuple2.of(type, methodName) : Tuple3.of(type, methodName, ArrayHashKey.of((Object[]) parameterTypes));
-        Method method = LazyLoader.get(key, METHOD_CACHE, () -> {
+        Method method = SynchronizedCaches.get(key, METHOD_CACHE, () -> {
             try {
                 Method m = noArgs ? type.getMethod(methodName) : type.getMethod(methodName, parameterTypes);
                 return (tuple.b.equals(Modifier.isStatic(m.getModifiers())) && !m.isSynthetic()) ? m : null;
@@ -566,10 +563,12 @@ public final class ClassUtils {
     private static Method obtainMethod(Object caller, String methodName, Class<?>[] actualTypes) {
         Asserts.isTrue(ArrayUtils.isNotEmpty(actualTypes), "Should be always non empty.");
         Tuple2<Class<?>, Predicates> tuple = obtainClass(caller);
+        // getMethod：获取类的所有public方法，包括自身的和从父类、接口继承的
         Method method = obtainMethod(tuple.a.getMethods(), methodName, tuple.b, actualTypes);
         if (method != null) {
             return method;
         }
+        // getDeclaredMethods：获取类自身声明的方法，包含public、protected和private
         return obtainMethod(tuple.a.getDeclaredMethods(), methodName, tuple.b, actualTypes);
     }
 

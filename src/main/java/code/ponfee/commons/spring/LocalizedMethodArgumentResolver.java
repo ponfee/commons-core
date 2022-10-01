@@ -1,4 +1,4 @@
-package code.ponfee.commons.model;
+package code.ponfee.commons.spring;
 
 import code.ponfee.commons.collect.Collects;
 import code.ponfee.commons.util.ObjectUtils;
@@ -6,7 +6,9 @@ import com.alibaba.fastjson.JSON;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -28,6 +30,7 @@ import java.util.Map;
 public class LocalizedMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
     //private final WeakHashMap<NativeWebRequest, Map<String, Object>> resolvedCache = new WeakHashMap<>();
+    private static final String STORE_KEY_PREFIX = "LOCALIZED_METHOD_ARGUMENTS:";
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -35,9 +38,8 @@ public class LocalizedMethodArgumentResolver implements HandlerMethodArgumentRes
             return false;
         }
 
-        Method method = parameter.getMethod();
-        return method.getDeclaringClass().isAnnotationPresent(LocalizedMethodArguments.class)
-            || method.isAnnotationPresent(LocalizedMethodArguments.class);
+        return parameter.getMethodAnnotation(RequestMapping.class) != null
+            || AnnotationUtils.findAnnotation(parameter.getDeclaringClass(), LocalizedMethodArguments.class) != null;
     }
 
     @Override
@@ -48,18 +50,18 @@ public class LocalizedMethodArgumentResolver implements HandlerMethodArgumentRes
         Method method = parameter.getMethod();
         HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
         int parameterIndex = parameter.getParameterIndex();
-        // method.toGenericString()
-        String storeKey = "LOCALIZED_METHOD_ARGUMENTS:" + method.toString();
         Object[] arguments;
         if (parameterIndex == 0) {
             arguments = resolveMethodParameters(method, httpServletRequest);
-            httpServletRequest.setAttribute(storeKey, arguments);
+            if (method.getParameterCount() > 1) {
+                // method.toGenericString()
+                httpServletRequest.setAttribute(STORE_KEY_PREFIX + method, arguments);
+            }
         } else {
-            arguments = (Object[]) httpServletRequest.getAttribute(storeKey);
+            arguments = (Object[]) httpServletRequest.getAttribute(STORE_KEY_PREFIX + method);
         }
 
         return Collects.get(arguments, parameterIndex);
-
     }
 
     private Object[] resolveMethodParameters(Method method, HttpServletRequest request) throws IOException {
@@ -99,6 +101,19 @@ public class LocalizedMethodArgumentResolver implements HandlerMethodArgumentRes
 
     private Object[] resolveRequestBody(Method method, String body) {
         return JSON.parseArray(body, method.getGenericParameterTypes()).toArray();
+
+        /*
+        JsonNode jsonNode = Jsons.NORMAL.objectMapper().readTree(body);
+        Assert.isTrue(jsonNode.isArray(), "Request parameter must be json array.");
+        ArrayNode arrayNode = (ArrayNode) jsonNode;
+        Type[] genericParameterTypes = method.getGenericParameterTypes();
+        int length = genericParameterTypes.length;
+        Object[] arguments = new Object[length];
+        for (int i = 0; i < length; i++) {
+            arguments[i] = Jsons.NORMAL.parse(arrayNode.get(i).toString(), genericParameterTypes[i]);
+        }
+        return arguments;
+        */
     }
 
 }

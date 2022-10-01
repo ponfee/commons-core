@@ -5,11 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.ServerSocket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.Enumeration;
 
 /**
@@ -97,7 +93,7 @@ public final class Networks {
             if (i != 0) {
                 sb.append("-");
             }
-            sb.append(Bytes.hexEncode(mac[i], false));
+            sb.append(Bytes.toHex(mac[i], false));
         }
         return sb.toString();
     }
@@ -204,7 +200,7 @@ public final class Networks {
                 return localAddress;
             }
         } catch (Exception e) {
-            LOG.warn("Failed to get local host address. cause: {} ", e.getMessage());
+            LOG.warn("Failed to get local host address: {} ", e.getMessage());
         }
 
         try {
@@ -222,15 +218,15 @@ public final class Networks {
                                 return address;
                             }
                         } catch (Exception e) {
-                            LOG.warn("Failed to get host address. cause: {}", e.getMessage());
+                            LOG.warn("Failed to get host address: {}", e.getMessage());
                         }
                     }
                 } catch (Exception e) {
-                    LOG.warn("Failed to get network address. cause: {}", e.getMessage());
+                    LOG.warn("Failed to get network address: {}", e.getMessage());
                 }
             }
         } catch (Exception e) {
-            LOG.warn("Failed to get network interface. cause: {}", e.getMessage());
+            LOG.warn("Failed to get network interface: {}", e.getMessage());
         }
 
         LOG.warn("Could not get host ip address, will use 127.0.0.1 instead.");

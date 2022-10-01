@@ -8,8 +8,8 @@ import java.util.Objects;
  * Get the value with typed for dictionary key-value
  *
  * @author Ponfee
- * @param <K>
- * @param <V>
+ * @param <K> the key type
+ * @param <V> the value type
  */
 public interface TypedKeyValue<K, V> {
 

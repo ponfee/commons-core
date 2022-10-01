@@ -25,7 +25,7 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
 
     // -------------------------------------------constructor methods
     public Result() {
-        // code field is null, for help deserialized
+        // Note: code field is null, for help deserialized
     }
 
     public Result(CodeMsg cm) {

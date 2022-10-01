@@ -14,7 +14,7 @@ import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.reflect.GenericUtils;
 import code.ponfee.commons.util.Networks;
 import code.ponfee.commons.util.ObjectUtils;
-import code.ponfee.commons.util.SpringContextHolder;
+import code.ponfee.commons.spring.SpringContextHolder;
 import code.ponfee.commons.ws.JAXWS;
 
 /**

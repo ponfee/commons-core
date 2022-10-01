@@ -227,6 +227,9 @@ public final class Collects {
     }
 
     public static <T> T get(T[] array, int index) {
+        if (array == null) {
+            return null;
+        }
         return index < array.length ? array[index] : null;
     }
 
@@ -419,19 +422,21 @@ public final class Collects {
 
     public static <S, T> List<T> convert(List<S> source, Function<S, T> mapper) {
         ImmutableList.Builder<T> builder = ImmutableList.builderWithExpectedSize(source.size());
-        source.stream().map(mapper::apply).forEach(builder::add);
+        source.stream().map(mapper).forEach(builder::add);
         return builder.build();
     }
 
+    @SafeVarargs
     public static <T> List<T> concat(List<T> list, T... array) {
+        if (list == null) {
+            return array == null ? Collections.emptyList() : Arrays.asList(array);
+        }
         if (array == null || array.length == 0) {
             return list;
         }
         List<T> result = new ArrayList<>(list.size() + array.length);
         result.addAll(list);
-        for (T t : array) {
-            result.add(t);
-        }
+        Collections.addAll(result, array);
         return result;
     }
 }

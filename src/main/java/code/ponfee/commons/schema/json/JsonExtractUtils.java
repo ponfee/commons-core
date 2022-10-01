@@ -61,6 +61,7 @@ public final class JsonExtractUtils {
     private static final String ROOT = "Root";
 
     public static TreeNode<JsonId, Null> extractSchema(String text) throws ParseException {
+        // com.fasterxml.jackson.databind.ObjectMapper#readTree(String) 
         return extractSchema(JSON.parse(text));
     }
 

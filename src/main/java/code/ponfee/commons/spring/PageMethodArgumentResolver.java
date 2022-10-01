@@ -1,6 +1,8 @@
-package code.ponfee.commons.model;
+package code.ponfee.commons.spring;
 
 import code.ponfee.commons.math.Numbers;
+import code.ponfee.commons.model.PageHandler;
+import code.ponfee.commons.model.PageParameter;
 import code.ponfee.commons.reflect.Fields;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +22,7 @@ import static code.ponfee.commons.model.PageHandler.DEFAULT_PAGE_SIZE;
  * 分页查询方法参数解析，在spring-mvc配置文件中做如下配置
  *  <mvc:annotation-driven>
  *    <mvc:argument-resolvers>
- *      <bean class="code.ponfee.commons.model.PageMethodArgumentResolver" />
+ *      <bean class="code.ponfee.commons.spring.PageMethodArgumentResolver" />
  *    </mvc:argument-resolvers>
  *  </mvc:annotation-driven>
  * 

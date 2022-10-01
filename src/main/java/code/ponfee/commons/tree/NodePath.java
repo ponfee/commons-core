@@ -1,9 +1,7 @@
 package code.ponfee.commons.tree;
 
 import code.ponfee.commons.collect.ImmutableArrayList;
-import code.ponfee.commons.tree.NodePath.FastjsonDeserializeMarker;
-import code.ponfee.commons.tree.NodePath.JacksonDeserializer;
-import com.alibaba.fastjson.JSON;
+import code.ponfee.commons.reflect.GenericUtils;
 import com.alibaba.fastjson.annotation.JSONType;
 import com.alibaba.fastjson.parser.DefaultJSONParser;
 import com.alibaba.fastjson.parser.deserializer.ObjectDeserializer;
@@ -13,11 +11,9 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
@@ -32,15 +28,15 @@ import java.util.Objects;
 // NodePath is extends ArrayList, so must be use mappingTo in fastjson
 // if not do it then deserialized json as a collection type(java.util.ArrayList)
 // hashCode()/equals() extends ImmutableArrayList
-@JSONType(mappingTo = FastjsonDeserializeMarker.class)
-@JsonDeserialize(using = JacksonDeserializer.class)
+@JSONType(mappingTo = NodePath.FastjsonDeserializeMarker.class) // fastjson
+@JsonDeserialize(using = NodePath.JacksonDeserializer.class)    // jackson
 public final class NodePath<T extends Serializable & Comparable<? super T>>
     extends ImmutableArrayList<T> implements Comparable<NodePath<T>> {
 
     private static final long serialVersionUID = 9090552044337950223L;
 
     public NodePath() {
-        // Noop: For help deserialization
+        // Note: For help deserialization(jackson)
     }
 
     @SafeVarargs
@@ -90,9 +86,9 @@ public final class NodePath<T extends Serializable & Comparable<? super T>>
     }
 
     // -----------------------------------------------------custom fastjson deserialize
+
     @JSONType(deserializer = FastjsonDeserializer.class)
-    public static class FastjsonDeserializeMarker {
-    }
+    public static class FastjsonDeserializeMarker { }
 
     /**
      * <pre> {@code
@@ -106,18 +102,13 @@ public final class NodePath<T extends Serializable & Comparable<? super T>>
      * @param <T>
      */
     public static class FastjsonDeserializer<T extends Serializable & Comparable<? super T>> implements ObjectDeserializer {
-        @Override @SuppressWarnings("unchecked")
+        @Override
+        @SuppressWarnings("unchecked")
         public NodePath<T> deserialze(DefaultJSONParser parser, Type type, Object fieldName) {
-            if ((type = getActualType(type)) != NodePath.class) {
+            if (GenericUtils.getRawType(type) != NodePath.class) {
                 throw new UnsupportedOperationException("Only supported deserialize NodePath, cannot supported: " + type);
             }
-
-            String value = parser.parseObject(String.class);
-            if (StringUtils.isEmpty(value)) {
-                return null;
-            }
-
-            List<T> list = JSON.parseObject(value, List.class);
+            List<T> list = parser.parseArray(GenericUtils.getActualTypeArgument(type, 0));
             return list.isEmpty() ? null : new NodePath<>(list);
         }
 
@@ -125,22 +116,13 @@ public final class NodePath<T extends Serializable & Comparable<? super T>>
         public int getFastMatchToken() {
             return 0 /*JSONToken.RBRACKET*/;
         }
-
-        private static Class<?> getActualType(Type type) {
-            if (type instanceof Class<?>) {
-                return (Class<?>) type;
-            } else if (type instanceof ParameterizedType) {
-                // code.ponfee.commons.tree.NodePath<java.lang.Integer>
-                return (Class<?>) ((ParameterizedType) type).getRawType();
-            } else {
-                throw new UnsupportedOperationException("Unsupported type: " + type);
-            }
-        }
     }
 
     // -----------------------------------------------------custom jackson deserialize
+
     public static class JacksonDeserializer<T extends Serializable & Comparable<? super T>> extends JsonDeserializer<NodePath<T>> {
-        @Override @SuppressWarnings("unchecked")
+        @Override
+        @SuppressWarnings("unchecked")
         public NodePath<T> deserialize(JsonParser p, DeserializationContext ctx) throws IOException {
             List<T> list = p.readValueAs(List.class);
             return CollectionUtils.isEmpty(list) ? null : new NodePath<>(list);

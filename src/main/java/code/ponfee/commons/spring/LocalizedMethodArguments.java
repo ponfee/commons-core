@@ -1,4 +1,4 @@
-package code.ponfee.commons.model;
+package code.ponfee.commons.spring;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,7 +1,7 @@
 package code.ponfee.commons.reflect;
 
 import code.ponfee.commons.base.tuple.Tuple2;
-import code.ponfee.commons.util.LazyLoader;
+import code.ponfee.commons.util.SynchronizedCaches;
 import org.springframework.cglib.beans.BeanCopier;
 
 import java.util.HashMap;
@@ -21,7 +21,7 @@ public class BeanCopiers {
     public static BeanCopier get(Class<?> sourceType, Class<?> targetType) {
         //Long key = ((long) System.identityHashCode(sclass) << 32) | System.identityHashCode(tclass);
         Tuple2<Class<?>, Class<?>> key = Tuple2.of(sourceType, targetType);
-        return LazyLoader.get(key, COPIER_CACHES, () -> BeanCopier.create(sourceType, targetType, false));
+        return SynchronizedCaches.get(key, COPIER_CACHES, () -> BeanCopier.create(sourceType, targetType, false));
     }
 
     /**

@@ -1,6 +1,6 @@
 package code.ponfee.commons.reflect;
 
-import code.ponfee.commons.util.LazyLoader;
+import code.ponfee.commons.util.SynchronizedCaches;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -228,9 +228,19 @@ public final class GenericUtils {
         return result.isEmpty() ? Collections.emptyMap() : result;
     }
 
-    // -------------------------------------------------------------------private methods
+    public static Class<?> getRawType(Type type) {
+        if (type instanceof Class<?>) {
+            return (Class<?>) type;
+        } else if (type instanceof ParameterizedType) {
+            // code.ponfee.commons.tree.NodePath<java.lang.Integer>
+            return (Class<?>) ((ParameterizedType) type).getRawType();
+        } else {
+            throw new UnsupportedOperationException("Unsupported type: " + type);
+        }
+    }
+
     @SuppressWarnings("unchecked")
-    private static <T> Class<T> getActualTypeArgument(Type type, int genericArgsIndex) {
+    public static <T> Class<T> getActualTypeArgument(Type type, int genericArgsIndex) {
         Preconditions.checkArgument(genericArgsIndex >= 0, "Generic args index cannot be negative.");
         if (!(type instanceof ParameterizedType)) {
             return (Class<T>) Object.class;
@@ -241,6 +251,8 @@ public final class GenericUtils {
              ? (Class<T>) Object.class 
              : getActualType(null, types[genericArgsIndex]);
     }
+
+    // -------------------------------------------------------------------private methods
 
     @SuppressWarnings("unchecked")
     private static <T> Class<T> getActualType(Class<?> clazz, Type type) {
@@ -286,8 +298,8 @@ public final class GenericUtils {
             return (Class<T>) Object.class;
         }
 
-        return (Class<T>) LazyLoader.get(clazz, VARIABLE_TYPE_MAPPING, GenericUtils::getActualTypeVariableMapping)
-                                    .getOrDefault(getTypeVariableName(null, var).get(0), Object.class);
+        return (Class<T>) SynchronizedCaches.get(clazz, VARIABLE_TYPE_MAPPING, GenericUtils::getActualTypeVariableMapping)
+                                            .getOrDefault(getTypeVariableName(null, var).get(0), Object.class);
     }
 
     private static void resolveMapping(Map<String, Class<?>> result, Type type) {
