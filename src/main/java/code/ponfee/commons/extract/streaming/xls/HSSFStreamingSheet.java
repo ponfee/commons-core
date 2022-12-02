@@ -1,21 +1,6 @@
 package code.ponfee.commons.extract.streaming.xls;
 
-import org.apache.poi.ss.usermodel.AutoFilter;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellRange;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Comment;
-import org.apache.poi.ss.usermodel.DataValidation;
-import org.apache.poi.ss.usermodel.DataValidationHelper;
-import org.apache.poi.ss.usermodel.Drawing;
-import org.apache.poi.ss.usermodel.Footer;
-import org.apache.poi.ss.usermodel.Header;
-import org.apache.poi.ss.usermodel.Hyperlink;
-import org.apache.poi.ss.usermodel.PrintSetup;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.SheetConditionalFormatting;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.PaneInformation;
@@ -418,7 +403,17 @@ public class HSSFStreamingSheet implements Sheet {
     }
 
     @Override
+    public double getMargin(PageMargin margin) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void setMargin(short margin, double size) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setMargin(PageMargin margin, double size) {
         throw new UnsupportedOperationException();
     }
 
@@ -487,6 +482,11 @@ public class HSSFStreamingSheet implements Sheet {
     @Override
     public void createSplitPane(int xSplitPos, int ySplitPos,
         int leftmostColumn, int topRow, int activePane) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void createSplitPane(int xSplitPos, int ySplitPos, int leftmostColumn, int topRow, PaneType activePane) {
         throw new UnsupportedOperationException();
     }
 

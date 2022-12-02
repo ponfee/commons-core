@@ -29,7 +29,7 @@ import code.ponfee.commons.math.Maths;
  *
  * @author Ponfee
  */
-public final class IdGenerator {
+public final class Snowflake {
 
     // Long.toBinaryString(Long.MAX_VALUE).length()
     private static final int SIZE = Long.SIZE - 1; // 63位（除去最开头的一个符号位）
@@ -48,9 +48,9 @@ public final class IdGenerator {
     private long lastTimestamp = -1L;
     private long sequence      = 0L;
 
-    public IdGenerator(int workerId, int datacenterId,
-                       int sequenceBits, int workerIdBits,
-                       int datacenterIdBits) {
+    public Snowflake(int workerId, int datacenterId,
+                     int sequenceBits, int workerIdBits,
+                     int datacenterIdBits) {
         long maxWorkerId = Maths.bitsMask(workerIdBits);
         if (workerId > maxWorkerId || workerId < 0) {
             throw new IllegalArgumentException(
@@ -90,7 +90,7 @@ public final class IdGenerator {
      * @param workerId
      * @param datacenterId
      */
-    public IdGenerator(int workerId, int datacenterId) {
+    public Snowflake(int workerId, int datacenterId) {
         this(workerId, datacenterId, 12, 5, 5);
     }
 
@@ -102,7 +102,7 @@ public final class IdGenerator {
      * 
      * @param workerId
      */
-    public IdGenerator(int workerId) {
+    public Snowflake(int workerId) {
         this(workerId, 0, 14, 5, 0);
     }
 
@@ -118,13 +118,15 @@ public final class IdGenerator {
             // sequence递增
             this.sequence = (this.sequence + 1) & this.sequenceMask;
             if (this.sequence == 0) {
-                // 已经到最大，则获取下一个时间点的毫秒数
-                timestamp = tilNextMillis(this.lastTimestamp);
+                // 当前毫秒的sequence已用完，需要循环等待获取下一毫秒
+                timestamp = untilNextMillis(this.lastTimestamp);
+                this.lastTimestamp = timestamp;
             }
         } else {
+            // 上一毫秒的sequence未超用，当前毫秒第一次使用
             this.sequence = 0L;
+            this.lastTimestamp = timestamp;
         }
-        this.lastTimestamp = timestamp;
 
         return (((timestamp - TWEPOCH) << this.timestampShift) & this.timestampMask)
              | (this.datacenterId << this.datacenterIdShift)
@@ -138,7 +140,7 @@ public final class IdGenerator {
      * @param lastTimestamp the lastTimestamp
      * @return
      */
-    private long tilNextMillis(long lastTimestamp) {
+    private long untilNextMillis(long lastTimestamp) {
         long timestamp;
         do {
             timestamp = timeGen();

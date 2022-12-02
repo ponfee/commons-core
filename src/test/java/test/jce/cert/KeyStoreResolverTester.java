@@ -28,7 +28,7 @@ import code.ponfee.commons.jce.security.RSAPrivateKeys;
 import code.ponfee.commons.jce.security.RSAPublicKeys;
 import code.ponfee.commons.resource.ResourceLoaderFacade;
 import code.ponfee.commons.util.Bytes;
-import code.ponfee.commons.util.Dates;
+import code.ponfee.commons.date.Dates;
 
 public class KeyStoreResolverTester {
 

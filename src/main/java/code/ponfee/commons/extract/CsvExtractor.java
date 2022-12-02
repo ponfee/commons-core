@@ -42,7 +42,7 @@ public class CsvExtractor extends DataExtractor {
     @Override
     public void extract(BiConsumer<Integer, String[]> processor) throws IOException {
         PrereadInputStream bris = new PrereadInputStream(
-            super.dataSource.asInputStream(), CharsetDetector.DETECT_COUNT
+            super.dataSource.asInputStream(), CharsetDetector.DEFAULT_DETECT_LENGTH
         );
 
         // 检测文件编码

@@ -169,6 +169,7 @@ public final class ThreadPoolExecutors {
         } catch (Exception e) {
             LOG.error("Shutdown ExecutorService occur error.", e);
             executorService.shutdownNow();
+            Threads.interruptIfNecessary(e);
             return false;
         }
     }

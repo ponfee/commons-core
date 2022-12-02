@@ -106,7 +106,7 @@ public final class AsyncBatchProcessor<T> {
 
     public void stopAndAwait() throws InterruptedException {
         stop();
-        while (!MultithreadExecutors.isStopped(async)) {
+        while (!Threads.isStopped(async)) {
             Thread.sleep(async.periodTimeMillis);
         }
     }

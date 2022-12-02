@@ -8,7 +8,7 @@ package code.ponfee.commons.base;
 @FunctionalInterface
 public interface Initializable {
 
-    NoArgMethodInvoker INITIATOR = new NoArgMethodInvoker("init", "initialize");
+    NoArgMethodInvoker INITIATOR = new NoArgMethodInvoker("open", "init", "initialize");
 
     void init();
 

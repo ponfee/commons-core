@@ -8,6 +8,7 @@
 
 package test.tree;
 
+import code.ponfee.commons.collect.Collects;
 import code.ponfee.commons.export.Thead;
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.json.Jsons;
@@ -25,9 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
@@ -80,6 +79,7 @@ public class TreeNodePrinterTest {
         System.out.println("mounted: "+Jsons.toJson(root));
         System.out.println("dfs: "+Jsons.toJson(root.flatDFS()));
         System.out.println("cfs: "+Jsons.toJson(root.flatCFS()));
+        System.out.println("bfs: "+Jsons.toJson(root.flatBFS()));
         System.out.println("convert-true: "  + Jsons.toJson(root.convert(this::convert, true)));
         System.out.println("convert-false: " + Jsons.toJson(root.convert(this::convert, false)));
 
@@ -136,7 +136,7 @@ public class TreeNodePrinterTest {
         System.out.println("\n\n\n");
         System.out.println(
             Files.listFiles(MavenProjects.getProjectBaseDir())
-                 .print(e -> e.getChildrenCount() + ":" + e.getSiblingOrder() + ":" + e.getAttach().getName())
+                 .print(e -> e.getSiblingOrder() + ":" + e.getChildrenCount() + ":" + e.getAttach().getName())
         );
     }
 
@@ -144,17 +144,22 @@ public class TreeNodePrinterTest {
     public void test4() throws IOException {
         System.out.println("\n\n\n");
         TreeNode<Integer, File> files = Files.listFiles(MavenProjects.getProjectBaseDir());
-        BinaryTreePrinter build = new BinaryTreePrinterBuilder<TreeNode<Integer, File>>(
-                e -> e.getAttach().getName(),
-                e -> CollectionUtils.isEmpty(e.getChildren()) ? null : e.getChildren().get(ThreadLocalRandom.current().nextInt(e.getChildren().size())),
-                e -> CollectionUtils.isEmpty(e.getChildren()) ? null : e.getChildren().get(ThreadLocalRandom.current().nextInt(e.getChildren().size()))
-        ).build();
-        build.print(files);
+        BinaryTreePrinter printer = new BinaryTreePrinterBuilder<TreeNode<Integer, File>>(
+            e -> e.getAttach().getName(),
+            e -> CollectionUtils.isEmpty(e.getChildren()) ? null : Collects.getFirst(e.getChildren()),
+            e -> CollectionUtils.isEmpty(e.getChildren()) ? null :Collects.getLast(e.getChildren())
+        )
+        //.branch(BinaryTreePrinter.Branch.TRIANGLE)
+        .directed(false)
+        .build();
+
+        printer.print(files.getChildren(), 1000);
+        //printer.print(files.getChildren().get(5));
     }
 
     @Test
     public void test5() throws IOException {
-        System.out.println(Files.tree(MavenProjects.getProjectBaseDir()));
+        System.out.println(Files.tree(MavenProjects.getMainJavaPath("")));
     }
 
     private MapTreeTrait<String, String> convert(TreeNode<String, String> node) {

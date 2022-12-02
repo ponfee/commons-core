@@ -1,9 +1,10 @@
 package code.ponfee.commons.constrain;
 
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
 import org.hibernate.validator.HibernateValidator;
 import org.springframework.beans.factory.FactoryBean;
+
+import javax.validation.Validation;
+import javax.validation.Validator;
 
 /**
  * For fail fast validator factory bean

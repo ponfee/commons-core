@@ -20,8 +20,8 @@ import code.ponfee.commons.math.Numbers;
 import code.ponfee.commons.model.Page;
 import code.ponfee.commons.reflect.BeanCopiers;
 import code.ponfee.commons.util.Bytes;
-import code.ponfee.commons.util.Dates;
-import code.ponfee.commons.util.IdGenerator;
+import code.ponfee.commons.date.Dates;
+import code.ponfee.commons.util.Snowflake;
 import code.ponfee.commons.util.SecureRandoms;
 import com.google.common.base.Stopwatch;
 import org.apache.commons.io.FileUtils;
@@ -306,7 +306,7 @@ public class Test2 {
 
     @Test
     public void test26() throws IOException {
-        System.out.println(Bytes.toBinary(Bytes.toBytes(new IdGenerator(10).nextId())));
+        System.out.println(Bytes.toBinary(Bytes.toBytes(new Snowflake(10).nextId())));
 
         String format = "yyyy-MM-dd HH:mm:ss.SSS";
         System.out.println(Long.toBinaryString(Long.MAX_VALUE));

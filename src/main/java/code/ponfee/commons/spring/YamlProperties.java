@@ -1,9 +1,14 @@
-package code.ponfee.commons.model;
+package code.ponfee.commons.spring;
 
-import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
+import code.ponfee.commons.model.TypedMap;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
@@ -29,10 +34,8 @@ public class YamlProperties extends Properties implements TypedMap<Object, Objec
     }
 
     private void loadYaml(InputStream inputStream) {
-        YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
-        factory.setResources(new InputStreamResource(inputStream));
-        factory.afterPropertiesSet();
-        super.putAll(factory.getObject());
+        Resource resource = new InputStreamResource(inputStream);
+        super.putAll(YamlPropertySourceFactory.loadYml(resource));
     }
 
 }

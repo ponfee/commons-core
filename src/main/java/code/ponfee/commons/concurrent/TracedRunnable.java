@@ -5,7 +5,7 @@ import org.slf4j.MDC;
 import java.util.Map;
 
 /**
- * TracedRunnable
+ * Traced runnable
  * 
  * @author Ponfee
  */

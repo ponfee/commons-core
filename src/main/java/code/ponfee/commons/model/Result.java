@@ -1,7 +1,5 @@
 package code.ponfee.commons.model;
 
-import com.google.common.base.Preconditions;
-
 import java.beans.Transient;
 import java.util.function.Function;
 
@@ -23,25 +21,10 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
     private String      msg; // 返回信息
     private T          data; // 结果数据
 
-    // -------------------------------------------constructor methods
+    // -----------------------------------------------constructor methods
+
     public Result() {
-        // Note: code field is null, for help deserialized
-    }
-
-    public Result(CodeMsg cm) {
-        this(cm.getCode(), cm.isSuccess(), cm.getMsg(), null);
-    }
-
-    public Result(CodeMsg cm, T data) {
-        this(cm.getCode(), cm.isSuccess(), cm.getMsg(), data);
-    }
-
-    public Result(int code, boolean success) {
-        this(code, success, null, null);
-    }
-
-    public Result(int code, boolean success, String msg) {
-        this(code, success, msg, null);
+        // No operation: retain no-arg constructor for help deserialization
     }
 
     public Result(int code, boolean success, String msg, T data) {
@@ -51,7 +34,8 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
         this.data = data;
     }
 
-    // -------------------------------------------others methods
+    // -----------------------------------------------others methods
+
     @SuppressWarnings("unchecked")
     public <E> Result<E> cast() {
         return (Result<E>) this;
@@ -65,14 +49,15 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
         return new Result<>(code, success, msg, mapper.apply(data));
     }
 
-    // ---------------------------------static success methods
+    // -----------------------------------------------static success methods
+
     /**
      * Returns success 200 code
      * 
      * @return Result success object
      */
-    public static <T> Result<T> success() {
-        return (Result<T>) SUCCESS;
+    public static Result<Void> success() {
+        return SUCCESS;
     }
 
     /**
@@ -83,92 +68,38 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
      * @return Result success object
      */
     public static <T> Result<T> success(T data) {
-        return success(Success.MSG, data);
+        return new Result<>(Success.CODE, true, Success.MSG, data);
     }
 
-    /**
-     * Returns success 200 code
-     * 
-     * @param msg  the msg
-     * @param data the data
-     * @param <T>  the data type
-     * @return Result success object
-     */
-    public static <T> Result<T> success(String msg, T data) {
-        return new Result<>(Success.CODE, Success.STATE, msg, data);
-    }
+    // -----------------------------------------------static failure methods
 
-    /**
-     * Returns success specified code
-     * 
-     * @param code the code
-     * @param data the data
-     * @param <T>  the data type
-     * @return Result success object
-     */
-    public static <T> Result<T> success(int code, T data) {
-        return new Result<>(code, Success.STATE, Success.MSG, data);
-    }
-
-    /**
-     * Returns success specified code
-     * 
-     * @param code the code
-     * @param msg  the msg
-     * @param data the data
-     * @param <T>  the data type
-     * @return Result success object
-     */
-    public static <T> Result<T> success(int code, String msg, T data) {
-        return new Result<>(code, Success.STATE, msg, data);
-    }
-
-    /**
-     * Returns success specified CodeMsg
-     * 
-     * @param cm   the CodeMsg
-     * @param data the data
-     * @param <T>  the data type
-     * @return Result success object
-     */
-    public static <T> Result<T> success(CodeMsg cm, T data) {
-        Preconditions.checkState(cm.isSuccess(), "Invalid success state '" + cm.isSuccess() + "', code=" + cm.getCode());
-        return new Result<>(cm.getCode(), cm.isSuccess(), cm.getMsg(), data);
-    }
-
-    // ---------------------------------static failure methods
     public static <T> Result<T> failure(CodeMsg cm) {
-        return failure(cm, null);
-    }
-
-    public static <T> Result<T> failure(CodeMsg cm, T data) {
-        Preconditions.checkState(!cm.isSuccess(), "Invalid failure state '" + cm.isSuccess() + "', code=" + cm.getCode());
-        return new Result<>(cm.getCode(), cm.isSuccess(), cm.getMsg(), data);
+        if (cm.isSuccess()) {
+            throw new IllegalStateException("Failure state must be 'false'.");
+        }
+        return new Result<>(cm.getCode(), cm.isSuccess(), cm.getMsg(), null);
     }
 
     public static <T> Result<T> failure(int code) {
-        return failure(code, null, null);
+        return new Result<>(code, false, null, null);
     }
 
     public static <T> Result<T> failure(int code, String msg) {
-        return failure(code, msg, null);
-    }
-
-    public static <T> Result<T> failure(int code, String msg, T data) {
-        return new Result<>(code, false, msg, data);
+        return new Result<>(code, false, msg, null);
     }
 
     // -----------------------------------------------of operations
+
     public static <T> Result<T> of(CodeMsg cm) {
-        return new Result<>(cm);
+        return new Result<>(cm.getCode(), cm.isSuccess(), cm.getMsg(), null);
     }
 
     public static <T> Result<T> of(CodeMsg cm, T data) {
-        return new Result<>(cm, data);
+        return new Result<>(cm.getCode(), cm.isSuccess(), cm.getMsg(), data);
     }
 
     public static <T> Result<T> of(int code, boolean success, String msg) {
-        return new Result<>(code, success, msg);
+        return new Result<>(code, success, msg, null);
     }
 
     public static <T> Result<T> of(int code, boolean success, String msg, T data) {
@@ -176,6 +107,7 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
     }
 
     // -----------------------------------------------database update or delete affected rows
+
     public static <T> Result<T> assertAffectedOne(int actualAffectedRows) {
         return assertAffectedRows(actualAffectedRows, 1);
     }
@@ -184,11 +116,12 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
         return actualAffectedRows == exceptAffectedRows ? (Result<T>) SUCCESS : failure(ResultCode.OPS_CONFLICT);
     }
 
-    public static <T> Result<T> assertOperatedState(boolean condition) {
-        return condition ? (Result<T>) SUCCESS : failure(ResultCode.OPS_CONFLICT);
+    public static <T> Result<T> assertOperatedState(boolean state) {
+        return state ? (Result<T>) SUCCESS : failure(ResultCode.OPS_CONFLICT);
     }
 
-    // -------------------------------------------------getter/setter
+    // -----------------------------------------------getter/setter
+
     @Override
     public int getCode() {
         return code;
@@ -197,6 +130,11 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
     @Override
     public boolean isSuccess() {
         return success;
+    }
+
+    @Transient
+    public boolean isFailure() {
+        return !success;
     }
 
     @Override
@@ -224,22 +162,18 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
         this.data = data;
     }
 
-    @Transient
-    public boolean isFailure() {
-        return !success;
-    }
+    // -----------------------------------------------static class
 
     /**
      * Success result
      */
     private static final class Success extends Result<Void> {
         private static final long serialVersionUID = 6740650053476768729L;
-        private static final int CODE = 200;
-        private static final boolean STATE = true;
+        private static final int CODE = ResultCode.OK.getCode();
         private static final String MSG = "OK";
 
-        Success() {
-            super(CODE, STATE, MSG);
+        private Success() {
+            super(CODE, true, MSG, null);
         }
 
         @Override

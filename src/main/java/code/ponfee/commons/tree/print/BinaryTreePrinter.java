@@ -16,32 +16,56 @@ import java.util.function.Function;
  */
 public class BinaryTreePrinter<T> {
 
-    private final Appendable output;
-    private final Function<T, String> labelMapper;
-    private final Function<T, T> leftMapper;
-    private final Function<T, T> rightMapper;
-    private final boolean squareBranch;
-    private final boolean unrecognizedLR;
-    private final int nodesSpace;
-    private final int treesSpace;
+    public enum Branch {
+        RECTANGLE, TRIANGLE
+    }
 
-    BinaryTreePrinter(Appendable output, Function<T, String> labelMapper,
-                      Function<T, T> leftMapper, Function<T, T> rightMapper,
-                      boolean squareBranch, boolean unrecognizedLR,
-                      int nodesSpace, int treesSpace) {
+    private final Appendable output;
+    private final Function<T, String> nodeLabel;
+    private final Function<T, T> leftChild;
+    private final Function<T, T> rightChild;
+
+    /**
+     * 分支是方形还是三角形
+     */
+    private final Branch branch;
+
+    /**
+     * 只有一个子节点时，是否区分左右方向
+     */
+    private final boolean directed;
+
+    /**
+     * 单颗树节点间的空隙
+     */
+    private final int nodeSpace;
+
+    /**
+     * 多颗树时，树间的空隙
+     */
+    private final int treeSpace;
+
+    BinaryTreePrinter(Appendable output,
+                      Function<T, String> nodeLabel,
+                      Function<T, T> leftChild,
+                      Function<T, T> rightChild,
+                      Branch branch,
+                      boolean directed,
+                      int nodeSpace,
+                      int treeSpace) {
         this.output = output;
-        this.labelMapper = labelMapper;
-        this.leftMapper = leftMapper;
-        this.rightMapper = rightMapper;
-        this.squareBranch = squareBranch;
-        this.unrecognizedLR = unrecognizedLR;
-        this.nodesSpace = nodesSpace;
-        this.treesSpace = treesSpace;
+        this.nodeLabel = nodeLabel;
+        this.leftChild = leftChild;
+        this.rightChild = rightChild;
+        this.branch = branch;
+        this.directed = directed;
+        this.nodeSpace = nodeSpace;
+        this.treeSpace = Math.max((treeSpace / 2) * 2 + 1, 3);
     }
 
     /**
      * Prints ascii representation of binary tree.
-     * Parameter nodesSpace is minimum number of spaces between adjacent node labels.
+     * Parameter nodeSpace is minimum number of spaces between adjacent node labels.
      * Parameter squareBranches, when set to true, results in branches being printed with ASCII box
      * drawing characters.
      */
@@ -51,12 +75,15 @@ public class BinaryTreePrinter<T> {
 
     /**
      * Prints ascii representations of multiple trees across page.
-     * Parameter nodesSpace is minimum number of spaces between adjacent node labels in a tree.
-     * Parameter treesSpace is horizontal distance between trees, as well as number of blank lines
+     * Parameter nodeSpace is minimum number of spaces between adjacent node labels in a tree.
+     * Parameter treeSpace is horizontal distance between trees, as well as number of blank lines
      * between rows of trees.
      * Parameter lineWidth is maximum width of output
      * Parameter squareBranches, when set to true, results in branches being printed with ASCII box
      * drawing characters.
+     *
+     * @param trees     the multiple tree
+     * @param lineWidth 行的宽度：小于该宽度则多颗树水平排列，否则换行后再来打印下一颗树
      */
     public void print(List<T> trees, int lineWidth) throws IOException {
         List<List<TreeLine>> allTreeLines = new ArrayList<>(trees.size());
@@ -71,14 +98,15 @@ public class BinaryTreePrinter<T> {
             treeWidths[i] = maxRightOffsets[i] - minLeftOffsets[i] + 1;
         }
 
+        String halfTreeSpaceStr = spaces(treeSpace/2);
         int nextTreeIndex = 0;
         while (nextTreeIndex < trees.size()) {
             // print a row of trees starting at nextTreeIndex
             // first figure range of trees we can print for next row
             int sumOfWidths = treeWidths[nextTreeIndex];
             int endTreeIndex = nextTreeIndex + 1;
-            while (endTreeIndex < trees.size() && sumOfWidths + treesSpace + treeWidths[endTreeIndex] < lineWidth) {
-                sumOfWidths += (treesSpace + treeWidths[endTreeIndex]);
+            while (endTreeIndex < trees.size() && sumOfWidths + treeSpace + treeWidths[endTreeIndex] < lineWidth) {
+                sumOfWidths += (treeSpace + treeWidths[endTreeIndex]);
                 endTreeIndex++;
             }
             endTreeIndex--;
@@ -98,7 +126,7 @@ public class BinaryTreePrinter<T> {
                         output.append(spaces(leftSpaces)).append(treeLines.get(i).line).append(spaces(rightSpaces));
                     }
                     if (j < endTreeIndex) {
-                        output.append(spaces(treesSpace));
+                        output.append(halfTreeSpaceStr).append('|').append(halfTreeSpaceStr);
                     }
                 }
                 output.append(Files.UNIX_LINE_SEPARATOR);
@@ -127,9 +155,9 @@ public class BinaryTreePrinter<T> {
             return Collections.emptyList();
         }
 
-        String rootLabel = labelMapper.apply(root);
-        List<TreeLine> leftTreeLines = buildTreeLines(leftMapper.apply(root));
-        List<TreeLine> rightTreeLines = buildTreeLines(rightMapper.apply(root));
+        String rootLabel = nodeLabel.apply(root);
+        List<TreeLine> leftTreeLines = buildTreeLines(leftChild.apply(root));
+        List<TreeLine> rightTreeLines = buildTreeLines(rightChild.apply(root));
 
         int leftCount = leftTreeLines.size();
         int rightCount = rightTreeLines.size();
@@ -141,12 +169,9 @@ public class BinaryTreePrinter<T> {
         // some line.  Then we add hspace, and round up to next odd number.
         int maxRootSpacing = 0;
         for (int i = 0; i < minCount; i++) {
-            int spacing = leftTreeLines.get(i).rightOffset - rightTreeLines.get(i).leftOffset;
-            if (spacing > maxRootSpacing) {
-                maxRootSpacing = spacing;
-            }
+            maxRootSpacing = Math.max(maxRootSpacing, leftTreeLines.get(i).rightOffset - rightTreeLines.get(i).leftOffset);
         }
-        int rootSpacing = maxRootSpacing + nodesSpace;
+        int rootSpacing = maxRootSpacing + nodeSpace;
         if ((rootSpacing & 0x01) == 0) {
             rootSpacing++;
         }
@@ -164,40 +189,14 @@ public class BinaryTreePrinter<T> {
         int leftTreeAdjust = 0;
         int rightTreeAdjust = 0;
 
-        if (leftTreeLines.isEmpty()) {
-            if (!rightTreeLines.isEmpty()) {
-                // there's a right subtree only
-                if (squareBranch) {
-                    if (unrecognizedLR) {
-                        allTreeLines.add(new TreeLine("\u2502", 0, 0));
-                    } else {
-                        allTreeLines.add(new TreeLine("\u2514\u2510", 0, 1));
-                        rightTreeAdjust = 1;
-                    }
-                } else {
-                    allTreeLines.add(new TreeLine("\\", 1, 1));
-                    rightTreeAdjust = 2;
-                }
-            }
-        } else if (rightTreeLines.isEmpty()) {
-            // there's a left subtree only
-            if (squareBranch) {
-                if (unrecognizedLR) {
-                    allTreeLines.add(new TreeLine("\u2502", 0, 0));
-                } else {
-                    allTreeLines.add(new TreeLine("\u250C\u2518", -1, 0));
-                    leftTreeAdjust = -1;
-                }
-            } else {
-                allTreeLines.add(new TreeLine("/", -1, -1));
-                leftTreeAdjust = -2;
-            }
-        } else {
+        boolean hasLeftTreeLines = !leftTreeLines.isEmpty();
+        boolean hasRightTreeLines = !rightTreeLines.isEmpty();
+        if (hasLeftTreeLines && hasRightTreeLines) {
             // there's a left and right subtree
-            if (squareBranch) {
+            if (branch == Branch.RECTANGLE) {
                 int adjust = (rootSpacing / 2) + 1;
-                String horizontal = String.join("", Collections.nCopies(rootSpacing / 2, "\u2500"));
-                String branch = "\u250C" + horizontal + "\u2534" + horizontal + "\u2510";
+                String horizontal = String.join("", Collections.nCopies(rootSpacing / 2, "─"));
+                String branch = "┌" + horizontal + "┴" + horizontal + "┐";
                 allTreeLines.add(new TreeLine(branch, -adjust, adjust));
                 rightTreeAdjust = adjust;
                 leftTreeAdjust = -adjust;
@@ -214,6 +213,32 @@ public class BinaryTreePrinter<T> {
                     rightTreeAdjust = (rootSpacing / 2) + 1;
                     leftTreeAdjust = -((rootSpacing / 2) + 1);
                 }
+            }
+        } else if (hasLeftTreeLines) {
+            // there's a left subtree only
+            if (branch == Branch.RECTANGLE) {
+                if (directed) {
+                    allTreeLines.add(new TreeLine("│", 0, 0));
+                } else {
+                    allTreeLines.add(new TreeLine("┌┘", -1, 0));
+                    leftTreeAdjust = -1;
+                }
+            } else {
+                allTreeLines.add(new TreeLine("/", -1, -1));
+                leftTreeAdjust = -2;
+            }
+        } else if (hasRightTreeLines) {
+            // there's a right subtree only
+            if (branch == Branch.RECTANGLE) {
+                if (directed) {
+                    allTreeLines.add(new TreeLine("│", 0, 0));
+                } else {
+                    allTreeLines.add(new TreeLine("└┐", 0, 1));
+                    rightTreeAdjust = 1;
+                }
+            } else {
+                allTreeLines.add(new TreeLine("\\", 1, 1));
+                rightTreeAdjust = 2;
             }
         }
 
@@ -235,7 +260,7 @@ public class BinaryTreePrinter<T> {
             } else {
                 left = leftTreeLines.get(i);
                 right = rightTreeLines.get(i);
-                int adjustedRootSpacing = (rootSpacing == 1 ? (squareBranch ? 1 : 3) : rootSpacing);
+                int adjustedRootSpacing = (rootSpacing == 1 ? (branch == Branch.RECTANGLE ? 1 : 3) : rootSpacing);
                 TreeLine combined = new TreeLine(
                     left.line + spaces(adjustedRootSpacing - left.rightOffset + right.leftOffset) + right.line,
                     left.leftOffset + leftTreeAdjust,

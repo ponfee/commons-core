@@ -12,6 +12,7 @@ import java.nio.charset.Charset;
 
 /**
  * 包装文件/输入流缓冲写入（decorator）
+ *
  * @author Ponfee
  */
 public class WrappedBufferedWriter extends Writer {

@@ -8,7 +8,7 @@ import com.esotericsoftware.kryo.io.ByteBufferInput;
 import com.esotericsoftware.kryo.io.ByteBufferOutput;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryo.pool.KryoPool;
+import com.esotericsoftware.kryo.util.Pool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +30,21 @@ public class KryoSerializer extends Serializer {
     private static final Logger LOG = LoggerFactory.getLogger(KryoSerializer.class);
     public static final KryoSerializer INSTANCE = new KryoSerializer();
 
-    private final KryoPool kryoPool = new KryoPool.Builder(Kryo::new).softReferences().build();
+    //private static final ThreadLocal<Kryo> KRYO_HOLDER = ThreadLocal.withInitial(Kryo::new);
+
+    // Pool constructor arguments: thread safe, soft references, maximum capacity
+    private static final Pool<Kryo> KRYO_POOL = new Pool<Kryo>(true, false, 32) {
+        @Override
+        protected Kryo create () {
+            Kryo kryo = new Kryo();
+            // Configure the Kryo instance.
+            kryo.setRegistrationRequired(false);
+            //kryo.register(A.class, B.class);
+            //kryo.register(B.class, new com.esotericsoftware.kryo.serializers.JavaSerializer());
+            //kryo.addDefaultSerializer(A.class, ASerializer.class);
+            return kryo;
+        }
+    };
 
     @Override
     protected byte[] serialize0(Object obj, boolean compress) {
@@ -45,7 +59,7 @@ public class KryoSerializer extends Serializer {
             } else {
                 output = new ByteBufferOutput(baos, Files.BUFF_SIZE);
             }
-            (kryo = getKryo()).writeObject(output, obj);
+            (kryo = obtain()).writeObject(output, obj);
             output.close();
             output = null;
             if (gzout != null) {
@@ -56,7 +70,7 @@ public class KryoSerializer extends Serializer {
         } catch (IOException e) {
             throw new SerializationException(e);
         } finally {
-            this.releaseKryo(kryo);
+            free(kryo);
             Closeables.log(output, "close Output exception");
             Closeables.log(gzout, "close GZIPOutputStream exception");
         }
@@ -74,27 +88,29 @@ public class KryoSerializer extends Serializer {
             } else {
                 input = new ByteBufferInput(bytes);
             }
-            return (kryo = getKryo()).readObject(input, clazz);
+            return (kryo = obtain()).readObject(input, clazz);
         } catch (IOException e) {
             throw new SerializationException(e);
         } finally {
-            this.releaseKryo(kryo);
+            free(kryo);
             Closeables.log(input, "close Input exception");
             Closeables.log(gzin, "close GZIPInputStream exception");
         }
     }
 
-    private Kryo getKryo() {
-        return this.kryoPool.borrow();
+    private Kryo obtain() {
+        return KRYO_POOL.obtain();
     }
 
-    private void releaseKryo(Kryo kryo) {
-        if (kryo != null) {
-            try {
-                this.kryoPool.release(kryo);
-            } catch (Throwable t) {
-                LOG.error("release kryo occur error", t);
-            }
+    private void free(Kryo kryo) {
+        if (kryo == null) {
+            return;
+        }
+        try {
+            KRYO_POOL.free(kryo);
+        } catch (Throwable t) {
+            LOG.error("release kryo occur error", t);
         }
     }
+
 }

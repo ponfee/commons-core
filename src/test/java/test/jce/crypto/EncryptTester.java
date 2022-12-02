@@ -2,7 +2,9 @@ package test.jce.crypto;
 
 import static code.ponfee.commons.util.SecureRandoms.nextBytes;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Provider;
+import java.util.Base64;
 
 import code.ponfee.commons.jce.Providers;
 import code.ponfee.commons.jce.symmetric.Algorithm;
@@ -23,7 +25,7 @@ public class EncryptTester {
         test(newBuilder(Algorithm.AES, nextBytes(16)).build());
         test(newBuilder(Algorithm.AES, nextBytes(16), bc).mode(Mode.ECB).padding(Padding.PKCS5Padding).build());
         test(newBuilder(Algorithm.AES, nextBytes(16), bc).mode(Mode.OFB).padding(Padding.NoPadding).parameter(nextBytes(16)).build());
-        test(newBuilder(Algorithm.AES, nextBytes(16), bc).mode(Mode.CBC).padding(Padding.PKCS7Padding).parameter(nextBytes(16)).build());
+        test(newBuilder(Algorithm.AES, nextBytes(32), bc).mode(Mode.CBC).padding(Padding.PKCS7Padding).parameter(nextBytes(16)).build());
         test(newBuilder(Algorithm.DES, nextBytes(8), bc).mode(Mode.CBC).padding(Padding.NoPadding).parameter(nextBytes(8)).build());
         test(newBuilder(Algorithm.DES, nextBytes(8), bc).build());
         test(newBuilder(Algorithm.DES, nextBytes(8), bc).mode(Mode.CBC).padding(Padding.PKCS5Padding).parameter(nextBytes(8)).build());

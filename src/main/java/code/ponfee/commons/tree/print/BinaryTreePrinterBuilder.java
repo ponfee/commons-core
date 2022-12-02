@@ -10,52 +10,55 @@ import java.util.function.Function;
 public class BinaryTreePrinterBuilder<T> {
 
     private final Appendable output;
-    private final Function<T, String> labelMapper;
-    private final Function<T, T> leftMapper;
-    private final Function<T, T> rightMapper;
+    private final Function<T, String> nodeLabel;
+    private final Function<T, T> leftChild;
+    private final Function<T, T> rightChild;
 
-    private boolean squareBranch = true;
-    private boolean unrecognizedLR = false;
-    private int nodesSpace = 5;
-    private int treesSpace = 8;
+    private BinaryTreePrinter.Branch branch = BinaryTreePrinter.Branch.RECTANGLE;
+    private boolean directed = true;
+    private int nodeSpace = 2;
+    private int treeSpace = 5;
 
-    public BinaryTreePrinterBuilder(Function<T, String> labelMapper,
-                                    Function<T, T> leftMapper, Function<T, T> rightMapper) {
-        this(System.out, labelMapper, leftMapper, rightMapper);
+    public BinaryTreePrinterBuilder(Function<T, String> nodeLabel,
+                                    Function<T, T> leftChild,
+                                    Function<T, T> rightChild) {
+        this(System.out, nodeLabel, leftChild, rightChild);
     }
 
-    public BinaryTreePrinterBuilder(Appendable output, Function<T, String> labelMapper,
-                                    Function<T, T> leftMapper, Function<T, T> rightMapper) {
+    public BinaryTreePrinterBuilder(Appendable output,
+                                    Function<T, String> nodeLabel,
+                                    Function<T, T> leftChild,
+                                    Function<T, T> rightChild) {
         this.output = output;
-        this.labelMapper = labelMapper;
-        this.leftMapper = leftMapper;
-        this.rightMapper = rightMapper;
+        this.nodeLabel = nodeLabel;
+        this.leftChild = leftChild;
+        this.rightChild = rightChild;
     }
 
-    public BinaryTreePrinterBuilder<T> squareBranch(boolean squareBranch) {
-        this.squareBranch = squareBranch;
+    public BinaryTreePrinterBuilder<T> branch(BinaryTreePrinter.Branch branch) {
+        this.branch = branch;
         return this;
     }
 
-    public BinaryTreePrinterBuilder<T> unrecognizedLR(boolean unrecognizedLR) {
-        this.unrecognizedLR = unrecognizedLR;
+    public BinaryTreePrinterBuilder<T> directed(boolean directed) {
+        this.directed = directed;
         return this;
     }
 
-    public BinaryTreePrinterBuilder<T> nodesSpace(int nodesSpace) {
-        this.nodesSpace = nodesSpace;
+    public BinaryTreePrinterBuilder<T> nodeSpace(int nodeSpace) {
+        this.nodeSpace = nodeSpace;
         return this;
     }
 
-    public BinaryTreePrinterBuilder<T> treesSpace(int treesSpace) {
-        this.treesSpace = treesSpace;
+    public BinaryTreePrinterBuilder<T> treeSpace(int treeSpace) {
+        this.treeSpace = treeSpace;
         return this;
     }
 
     public BinaryTreePrinter<T> build() {
         return new BinaryTreePrinter<>(
-            output, labelMapper, leftMapper, rightMapper,
-            squareBranch, unrecognizedLR, nodesSpace, treesSpace
+            output, nodeLabel, leftChild, rightChild, 
+            branch, directed, nodeSpace, treeSpace
         );
     }
 

@@ -1,6 +1,7 @@
 package code.ponfee.commons.model;
 
 import code.ponfee.commons.math.Numbers;
+import code.ponfee.commons.util.ObjectUtils;
 
 import java.util.Objects;
 
@@ -16,6 +17,10 @@ public interface TypedKeyValue<K, V> {
     V getValue(K key);
 
     V removeKey(K key);
+
+    default boolean hasKey(K key) {
+        return !ObjectUtils.isEmpty(getValue(key));
+    }
 
     // --------------------------------------------------------object
     default V getRequired(K key) {
@@ -177,7 +182,7 @@ public interface TypedKeyValue<K, V> {
 
     // ---------------------------------------------------- static methods
     static void assertPresented(Object key, Object value) {
-        if (value == null) {
+        if (ObjectUtils.isEmpty(value)) {
             throw new IllegalArgumentException("Not presented value of '" + key + "'");
         }
     }

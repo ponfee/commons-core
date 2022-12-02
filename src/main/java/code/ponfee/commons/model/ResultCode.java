@@ -123,7 +123,7 @@ public final class ResultCode implements CodeMsg {
     public static final ResultCode REST_CONTENT       = of0(HTTP_RESET,             "重置内容");
     public static final ResultCode PARTIAL_CONTENT    = of0(HTTP_PARTIAL,           "部分内容");
 
-    public static final ResultCode REDIRECT           = of0(302, "重定向");
+    public static final ResultCode REDIRECT           = of0(300, "Multiple Choices");
 
     public static final ResultCode BAD_REQUEST        = of0(400, "参数错误");
     public static final ResultCode UNAUTHORIZED       = of0(401, "未授权");     // 

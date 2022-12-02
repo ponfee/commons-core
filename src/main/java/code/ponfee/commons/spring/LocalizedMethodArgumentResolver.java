@@ -1,14 +1,15 @@
 package code.ponfee.commons.spring;
 
 import code.ponfee.commons.collect.Collects;
+import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.util.ObjectUtils;
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.ImmutableSet;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -16,13 +17,20 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Set;
+
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
+import static org.springframework.web.bind.annotation.RequestMethod.OPTIONS;
 
 /**
- * Localized method parameter for spring mvc {@code org.springframework.stereotype.Controller} methods.
+ * Localized method parameter for spring web {@code org.springframework.stereotype.Controller} methods.
  * <p>Can defined multiple object arguments for {@code org.springframework.web.bind.annotation.RequestMapping} method.
  *
  * @author Ponfee
@@ -30,7 +38,13 @@ import java.util.Map;
 public class LocalizedMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
     //private final WeakHashMap<NativeWebRequest, Map<String, Object>> resolvedCache = new WeakHashMap<>();
-    private static final String STORE_KEY_PREFIX = "LOCALIZED_METHOD_ARGUMENTS:";
+
+    private static final Set<String> QUERY_PARAMS = ImmutableSet.of(
+        GET.name(), DELETE.name(), HEAD.name(), OPTIONS.name()
+    );
+
+    private static final String CACHE_ATTRIBUTE_KEY = "LOCALIZED_METHOD_ARGUMENTS";
+    private static final Class<? extends Annotation> MARKED_ANNOTATION_TYPE = LocalizedMethodArguments.class;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -38,8 +52,8 @@ public class LocalizedMethodArgumentResolver implements HandlerMethodArgumentRes
             return false;
         }
 
-        return parameter.getMethodAnnotation(RequestMapping.class) != null
-            || AnnotationUtils.findAnnotation(parameter.getDeclaringClass(), LocalizedMethodArguments.class) != null;
+        return isAnnotationPresent(parameter.getMethod(), MARKED_ANNOTATION_TYPE)
+            || isAnnotationPresent(parameter.getDeclaringClass(), MARKED_ANNOTATION_TYPE);
     }
 
     @Override
@@ -54,52 +68,52 @@ public class LocalizedMethodArgumentResolver implements HandlerMethodArgumentRes
         if (parameterIndex == 0) {
             arguments = resolveMethodParameters(method, httpServletRequest);
             if (method.getParameterCount() > 1) {
-                // method.toGenericString()
-                httpServletRequest.setAttribute(STORE_KEY_PREFIX + method, arguments);
+                // CACHE_KEY_PREFIX + method.toString()
+                httpServletRequest.setAttribute(CACHE_ATTRIBUTE_KEY, arguments);
             }
         } else {
-            arguments = (Object[]) httpServletRequest.getAttribute(STORE_KEY_PREFIX + method);
+            arguments = (Object[]) httpServletRequest.getAttribute(CACHE_ATTRIBUTE_KEY);
         }
 
         return Collects.get(arguments, parameterIndex);
     }
 
-    private Object[] resolveMethodParameters(Method method, HttpServletRequest request) throws IOException {
-        switch (request.getMethod()) {
-            case "GET":
-            case "DELETE":
+    private static Object[] resolveMethodParameters(Method method, HttpServletRequest request) throws IOException {
+        if (QUERY_PARAMS.contains(request.getMethod())) {
+            return resolveQueryString(method, request.getParameterMap());
+        } else {
+            String body = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
+            if (StringUtils.isEmpty(body)) {
                 return resolveQueryString(method, request.getParameterMap());
-            default:
-                String body = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
-                if (StringUtils.isEmpty(body)) {
-                    return resolveQueryString(method, request.getParameterMap());
-                } else {
-                    return resolveRequestBody(method, body);
-                }
+            } else {
+                return resolveRequestBody(method, body);
+            }
         }
     }
 
-    private Object[] resolveQueryString(Method method, Map<String, String[]> parameterMap) {
-        Object[] arguments = new Object[method.getParameterCount()];
-        for (int i = 0; i < method.getParameterCount(); i++) {
-            String argName = "arg[" + i + "]";
+    private static Object[] resolveQueryString(Method method, Map<String, String[]> parameterMap) {
+        int parameterCount = method.getParameterCount();
+        Object[] arguments = new Object[parameterCount];
+        for (int i = 0; i < parameterCount; i++) {
+            String argName = "args[" + i + "]";
             String[] array = parameterMap.get(argName);
             Assert.isTrue(
                 array == null || array.length <= 1,
-                "Argument cannot be multiple value, name: " + argName + ", value: " + JSON.toJSONString(array)
+                "Argument cannot be multiple value, name: " + argName + ", value: " + Jsons.toJson(array)
             );
             String argValue = Collects.get(array, 0);
             Type argType = method.getGenericParameterTypes()[i];
             if (argValue == null) {
+                // if basic type then set default value
                 arguments[i] = (argType instanceof Class<?>) ? ObjectUtils.cast(null, (Class<?>) argType) : null;
             } else {
-                arguments[i] = JSON.parseObject(argValue, argType);
+                arguments[i] = Jsons.fromJson(argValue, argType);
             }
         }
         return arguments;
     }
 
-    private Object[] resolveRequestBody(Method method, String body) {
+    private static Object[] resolveRequestBody(Method method, String body) {
         return JSON.parseArray(body, method.getGenericParameterTypes()).toArray();
 
         /*
@@ -107,6 +121,7 @@ public class LocalizedMethodArgumentResolver implements HandlerMethodArgumentRes
         Assert.isTrue(jsonNode.isArray(), "Request parameter must be json array.");
         ArrayNode arrayNode = (ArrayNode) jsonNode;
         Type[] genericParameterTypes = method.getGenericParameterTypes();
+        Assert.isTrue(arrayNode.size() == genericParameterTypes.length, "Request parameter size inconsistent.");
         int length = genericParameterTypes.length;
         Object[] arguments = new Object[length];
         for (int i = 0; i < length; i++) {
@@ -114,6 +129,14 @@ public class LocalizedMethodArgumentResolver implements HandlerMethodArgumentRes
         }
         return arguments;
         */
+    }
+
+    private static boolean isAnnotationPresent(Method method, Class<? extends Annotation> annotationType) {
+        return AnnotationUtils.findAnnotation(method, annotationType) != null;
+    }
+
+    private static boolean isAnnotationPresent(Class<?> clazz, Class<? extends Annotation> annotationType) {
+        return AnnotationUtils.findAnnotation(clazz, annotationType) != null;
     }
 
 }

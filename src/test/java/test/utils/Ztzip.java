@@ -15,7 +15,7 @@ public class Ztzip {
         //jodd.io.ZipUtil.gzip("D:\\demo.zip");
         
         
-        //ZipUtils.zip(MavenProjects.getProjectBaseDir(), MavenProjects.getProjectBaseDir() + "\\..\\commons-code.zip", true, "123456", "test123");
-        ZipUtils.unzip("E:\\commons-code\\commons-code.zip", "d:\\commons-code", "123456");
+        ZipUtils.zip(MavenProjects.getProjectBaseDir(), MavenProjects.getProjectBaseDir() + "\\..\\commons-code.zip", true, "123456", "test123");
+        //ZipUtils.unzip("E:\\common、s-code\\commons-code.zip", "d:\\commons-code", "123456");
     }
 }

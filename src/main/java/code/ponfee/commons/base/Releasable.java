@@ -1,8 +1,6 @@
 package code.ponfee.commons.base;
 
-import code.ponfee.commons.exception.BaseCheckedException;
-
-import javax.security.auth.Destroyable;
+import code.ponfee.commons.exception.ServerException;
 
 /**
  * Release resources
@@ -27,11 +25,6 @@ public interface Releasable {
         try {
             if (caller instanceof AutoCloseable) {
                 ((AutoCloseable) caller).close();
-            } else if (caller instanceof Destroyable) {
-                Destroyable destroyable = (Destroyable) caller;
-                if (!destroyable.isDestroyed()) {
-                    destroyable.destroy();
-                }
             } else if (caller instanceof Releasable) {
                 Releasable releasable = (Releasable) caller;
                 if (!releasable.isReleased()) {
@@ -43,7 +36,7 @@ public interface Releasable {
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
-            throw new BaseCheckedException(e);
+            throw new ServerException(e);
         }
     }
 

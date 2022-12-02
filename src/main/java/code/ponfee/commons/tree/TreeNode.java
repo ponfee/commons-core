@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
  *   DFS中序遍历：7381940526
  *   DFS后序遍历：7839415620
  *   BFS广度优先：0123456789
- *   CFS孩子优先：0123478956
+ *   CFS孩子优先：0123478956         (备注：教科书上没有CFS一说，是我为方便说明描述而取名的)
  * </pre>
  *
  * @author Ponfee
@@ -194,8 +194,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         return collect;
     }
 
-    // 递归方式dfs
-    /*
+    /*// 递归方式DFS
     public List<FlatNode<T, A>> flatDFS() {
         List<FlatNode<T, A>> collect = Lists.newLinkedList();
         dfs(collect);
@@ -234,8 +233,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         return collect;
     }
 
-    // 递归方式cfs
-    /*
+    /*// 递归方式CFS
     public List<FlatNode<T, A>> flatCFS() {
         List<FlatNode<T, A>> collect = Collects.newLinkedList(new FlatNode<>(this));
         cfs(collect);
@@ -267,8 +265,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         return collect;
     }
 
-    // 递归方式bfs
-    /*
+    /*// 递归方式BFS
     public List<FlatNode<T, A>> flatBFS() {
         List<FlatNode<T, A>> collect = new LinkedList<>();
         Queue<TreeNode<T, A>> queue = Collects.newLinkedList(this);
@@ -325,9 +322,9 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         return this.children;
     }
 
-    public String print(Function<TreeNode<T, A>, CharSequence> labelMapper) throws IOException {
+    public String print(Function<TreeNode<T, A>, CharSequence> nodeLabel) throws IOException {
         StringBuilder builder = new StringBuilder();
-        new MultiwayTreePrinter<>(builder, TreeNode::getChildren, labelMapper).print(this);
+        new MultiwayTreePrinter<>(builder, nodeLabel, TreeNode::getChildren).print(this);
         return builder.toString();
     }
 

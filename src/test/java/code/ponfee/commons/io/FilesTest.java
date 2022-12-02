@@ -1,18 +1,25 @@
 package code.ponfee.commons.io;
 
+import code.ponfee.commons.extract.DataExtractorBuilder;
+import code.ponfee.commons.io.charset.BytesDetector;
+import code.ponfee.commons.json.Jsons;
+import code.ponfee.commons.spring.SpringContextHolder;
+import code.ponfee.commons.util.MavenProjects;
+import com.google.common.collect.Lists;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Test;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.io.IOUtils;
-import org.junit.Test;
-
-import code.ponfee.commons.extract.DataExtractorBuilder;
-import code.ponfee.commons.json.Jsons;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class FilesTest {
 
@@ -167,11 +174,62 @@ public class FilesTest {
     }
 
     @Test
-    public void testRead() throws IOException {
-        FileInputStream input = new FileInputStream("/Users/ponfee/test/code/ponfee/commons/tree/TreeNode.java");
-        Charset charset = CharsetDetector.detect(input);
-        System.out.println(charset);
-        System.out.println("\n\n---------\n\n");
-        System.out.println(IOUtils.toString(input, charset));
+    public void testDetect() throws IOException {
+        File filePath = MavenProjects.getMainJavaFile(SpringContextHolder.class);
+        System.out.println("CharsetDetector.detect -->  " + CharsetDetector.detect(new FileInputStream(filePath)));
+        System.out.println("EncodingDetector.detect -->  " + BytesDetector.detect(Files.readByteArray(new FileInputStream(filePath), 12000)));
+    }
+
+    @Test
+    public void testDetectFile() {
+        //detectFile(MavenProjects.getMainJavaPath("code.ponfee.commons"));
+        detectFile(MavenProjects.getTestJavaPath("code.ponfee.commons.io.file"));
+    }
+
+    private static void detectFile(String filePath) {
+        Files.listFiles(filePath).forEach(tree -> {
+            if (CollectionUtils.isEmpty(tree.getChildren())) {
+                try {
+                    File f = tree.getAttach();
+                    System.out.println(f.getName() + ": CharsetDetector=" + CharsetDetector.detect(new FileInputStream(f)) + ", EncodingDetector=" + BytesDetector.detect(Files.readByteArray(new FileInputStream(f), 1200)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    @Test
+    public void testFormat() {
+        String text = "JPFreq[3][74] = 600;\n" +
+            "            JPFreq[3][45] = 599;\n" +
+            "            JPFreq[3][3] = 598;\n" +
+            "            JPFreq[3][24] = 597;\n" +
+            "            JPFreq[3][30] = 596;\n" +
+            "            JPFreq[4][76] = 485;\n" +
+            "            JPFreq[22][65] = 3;\n" +
+            "            JPFreq[42][29] = 2;\n" +
+            "            JPFreq[27][66] = 1;\n" +
+            "            JPFreq[26][89] = 0;";
+
+        List<String> collect = Arrays.stream(text.split(";"))
+            .map(String::trim)
+            .collect(Collectors.toList());
+
+        int maxLeft = collect.stream().mapToInt(s -> s.split("=")[0].trim().length()).max().orElse(0);
+        int maxRight = collect.stream().mapToInt(s -> s.split("=")[1].trim().length()).max().orElse(0);
+
+        for (List<String> line : Lists.partition(collect, 5)) {
+            String s = line.stream().map(e -> {
+                String[] array = e.split("=");
+                return StringUtils.rightPad(array[0].trim(), maxLeft, " ") + " = " + StringUtils.leftPad(array[1].trim(), maxRight, " ")+"; ";
+            }).collect(Collectors.joining());
+            System.out.println(s);
+        }
+    }
+
+    public static void main(String[] args) {
+        int[][] GBFreq = new int[94][94];
+        Arrays.stream(GBFreq).forEach(e -> System.out.println(Arrays.toString(e)));
     }
 }

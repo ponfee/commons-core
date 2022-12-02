@@ -1,7 +1,7 @@
 package code.ponfee.commons.json;
 
-import code.ponfee.commons.util.Dates;
-import code.ponfee.commons.util.WrappedDateTimeFormatter;
+import code.ponfee.commons.date.Dates;
+import code.ponfee.commons.date.LocalDateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
@@ -28,7 +28,7 @@ public class CustomLocalDateTimeDeserializer extends JSR310DateTimeDeserializerB
 
     public static final CustomLocalDateTimeDeserializer INSTANCE = new CustomLocalDateTimeDeserializer();
 
-    private final WrappedDateTimeFormatter wrappedFormatter;
+    private final LocalDateTimeFormat wrappedFormatter;
 
     protected CustomLocalDateTimeDeserializer() {
         this(Dates.DEFAULT_DATE_FORMAT);
@@ -40,7 +40,7 @@ public class CustomLocalDateTimeDeserializer extends JSR310DateTimeDeserializerB
 
     public CustomLocalDateTimeDeserializer(DateTimeFormatter formatter) {
         super(LocalDateTime.class, formatter);
-        this.wrappedFormatter = new WrappedDateTimeFormatter(formatter);
+        this.wrappedFormatter = new LocalDateTimeFormat(formatter);
     }
 
     @Override

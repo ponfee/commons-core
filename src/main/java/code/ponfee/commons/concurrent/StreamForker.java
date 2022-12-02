@@ -1,12 +1,8 @@
 package code.ponfee.commons.concurrent;
 
-import code.ponfee.commons.exception.BaseCheckedException;
+import code.ponfee.commons.exception.ServerException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
@@ -132,7 +128,7 @@ public class StreamForker<T> {
                     break;
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                    throw new BaseCheckedException(e);
+                    throw new ServerException(e);
                 }
             }
 

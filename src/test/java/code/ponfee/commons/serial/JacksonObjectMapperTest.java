@@ -18,8 +18,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import code.ponfee.commons.json.JacksonDateDeserializer;
-import code.ponfee.commons.util.WrappedFastDateFormat;
+import code.ponfee.commons.json.JacksonDate;
+import code.ponfee.commons.date.JavaUtilDateFormat;
 
 public class JacksonObjectMapperTest {
 
@@ -39,7 +39,7 @@ public class JacksonObjectMapperTest {
     @Test
     public void test2() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.setDateFormat(new WrappedFastDateFormat("yyyy-MM-dd HH:mm:ss"));
+        mapper.setDateFormat(new JavaUtilDateFormat("yyyy-MM-dd HH:mm:ss"));
         Date date = new Date();
         System.out.println(mapper.writeValueAsString(date));
         for (int i = 0; i < round; i++) {
@@ -53,9 +53,11 @@ public class JacksonObjectMapperTest {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 
-        WrappedFastDateFormat format = new WrappedFastDateFormat("yyyy-MM-dd HH:mm:ss");
+        JavaUtilDateFormat format = new JavaUtilDateFormat("yyyy-MM-dd HH:mm:ss");
         SimpleModule module = new SimpleModule();
-        module.addDeserializer(java.util.Date.class, new JacksonDateDeserializer(format));
+        JacksonDate jacksonDate = new JacksonDate(format);
+        module.addSerializer(java.util.Date.class, jacksonDate.serializer());
+        module.addDeserializer(java.util.Date.class, jacksonDate.deserializer());
         mapper.registerModule(module);
 
         //mapper.setConfig(mapper.getDeserializationConfig().with(format));

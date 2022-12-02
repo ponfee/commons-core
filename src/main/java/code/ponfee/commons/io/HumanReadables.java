@@ -54,10 +54,10 @@ public enum HumanReadables {
     }
 
     /**
-     * Returns a string of bytes count human readable size
+     * Returns a string of bytes count human-readable size
      * 
      * @param size the size
-     * @return human readable size
+     * @return string of human-readable data size
      */
     public strictfp String human(long size) {
         if (size == 0) {

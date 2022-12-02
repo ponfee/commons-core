@@ -90,28 +90,30 @@ public class BaseNode<T extends Serializable & Comparable<? super T>, A extends 
         return node;
     }
 
-    // -----------------------------------------------getter
-    public T getPid() {
-        return pid;
-    }
+    // -----------------------------------------------final field getter
 
     public T getNid() {
         return nid;
+    }
+
+    public T getPid() {
+        return pid;
     }
 
     public boolean isEnabled() {
         return enabled;
     }
 
-    public A getAttach() {
-        return attach;
-    }
-
     public boolean isAvailable() {
         return available;
     }
 
-    // ----------------------------------------------------
+    public A getAttach() {
+        return attach;
+    }
+
+    // ----------------------------------------------------others field getter
+
     public int getLevel() {
         return level;
     }
@@ -124,7 +126,6 @@ public class BaseNode<T extends Serializable & Comparable<? super T>, A extends 
         return degree;
     }
 
-    // ----------------------------------------------------
     public int getLeftLeafCount() {
         return leftLeafCount;
     }

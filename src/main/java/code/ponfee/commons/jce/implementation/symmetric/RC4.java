@@ -41,7 +41,7 @@ public class RC4 {
 
         // 置换s-box
         for (int i = 0, j = 0, k = 0, keyLen = keyBytes.length; i < STATE_LENGTH; i++) {
-            j = (j + sBox[i] + keyBytes[k++]) & 0xFF; // & 0xFF -> modulo sboxLen
+            j = (j + sBox[i] + keyBytes[k++]) & 0xFF; // & 0xFF -> modulo s-box len
 
             ArrayUtils.swap(this.sBox, i, j);
 
@@ -52,6 +52,7 @@ public class RC4 {
     }
 
     // -----------------------------------------------------------crypt one byte
+
     public byte encrypt(byte in) {
         byte[] sBox = Arrays.copyOf(this.sBox, this.sBox.length);
         int x = 1;
@@ -68,9 +69,10 @@ public class RC4 {
     }
 
     // -----------------------------------------------------------crypt byte array
+
     public byte[] encrypt(byte[] in) {
         byte[] out = new byte[in.length];
-        this.docrypt(in, 0, in.length, out, 0);
+        this.doCrypt(in, 0, in.length, out, 0);
         return out;
     }
 
@@ -79,7 +81,8 @@ public class RC4 {
     }
 
     // -----------------------------------------------------------private methods
-    private void docrypt(byte[] in, int inOff, int len, byte[] out, int outOff) {
+
+    private void doCrypt(byte[] in, int inOff, int len, byte[] out, int outOff) {
         byte[] sBox = Arrays.copyOf(this.sBox, this.sBox.length);
 
         // RPGA：伪随机生成算法，不断的重排S盒来产生任意长度的密钥流

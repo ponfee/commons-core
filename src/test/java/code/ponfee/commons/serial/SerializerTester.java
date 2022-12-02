@@ -10,14 +10,6 @@ import org.junit.Test;
 import bean.TestBean;
 import code.ponfee.commons.io.Files;
 import code.ponfee.commons.io.GzipProcessor;
-import code.ponfee.commons.serial.FstSerializer;
-import code.ponfee.commons.serial.HessianSerializer;
-import code.ponfee.commons.serial.JdkSerializer;
-import code.ponfee.commons.serial.JsonSerializer;
-import code.ponfee.commons.serial.KryoSerializer;
-import code.ponfee.commons.serial.ProtostuffSerializer;
-import code.ponfee.commons.serial.Serializer;
-import code.ponfee.commons.serial.StringSerializer;
 import code.ponfee.commons.util.Bytes;
 import code.ponfee.commons.util.MavenProjects;
 
@@ -40,7 +32,7 @@ public class SerializerTester {
 
         System.out.println("--------------------no gzip---------------------------------");
         isCompress = false;
-        serializer = new KryoSerializer();
+        serializer = KryoSerializer.INSTANCE;
         data = serializer.serialize(new TestBean(1312321111, 222243222L, text), isCompress);
         System.out.println("序例化后不压缩的数据大小：" + data.length);
         b = serializer.deserialize(data, TestBean.class, isCompress);
@@ -48,7 +40,7 @@ public class SerializerTester {
 
         System.out.println("--------------------use gzip---------------------------------");
         isCompress = true;
-        serializer = new KryoSerializer();
+        serializer = KryoSerializer.INSTANCE;
         data = serializer.serialize(new TestBean(1312321111, 222243222L, text), isCompress);
         System.out.println("序例化后压缩的数据大小：" + data.length);
         b = serializer.deserialize(data, TestBean.class, isCompress);

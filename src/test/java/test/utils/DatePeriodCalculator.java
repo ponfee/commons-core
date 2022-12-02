@@ -8,9 +8,9 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.joda.time.LocalDateTime;
 
-import code.ponfee.commons.util.DatePeriods;
-import code.ponfee.commons.util.DatePeriods.Segment;
-import code.ponfee.commons.util.Dates;
+import code.ponfee.commons.date.DatePeriods;
+import code.ponfee.commons.date.DatePeriods.Segment;
+import code.ponfee.commons.date.Dates;
 
 /**
  * 周期计算
@@ -192,7 +192,7 @@ public class DatePeriodCalculator {
     }
     
     private static void test2() {
-        Date target = Dates.random(Dates.ofMillis(0), STARTING_DATE);
+        Date target = Dates.random(STARTING_DATE, new Date());
         System.out.println(Dates.format(target));
         for (int i = 0; i < 100; i++) {
             Segment interval = DatePeriods.HOURLY.next(STARTING_DATE, target, 2, 1);

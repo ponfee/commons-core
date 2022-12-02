@@ -39,7 +39,7 @@ public abstract class Jsr303Validator {
                                        .map(ObjectError::getDefaultMessage)
                                        .collect(Collectors.joining(",", "[", "]"));
         if (returnType == Result.class) {
-            return Result.failure(BAD_REQUEST, BAD_REQUEST.getMsg() + ": " + errorMsg);
+            return Result.failure(BAD_REQUEST.getCode(), BAD_REQUEST.getMsg() + ": " + errorMsg);
         } else {
             throw new IllegalArgumentException(errorMsg);
         }

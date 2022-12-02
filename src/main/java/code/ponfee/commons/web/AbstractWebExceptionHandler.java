@@ -5,7 +5,6 @@ import code.ponfee.commons.exception.UnauthorizedException;
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.model.ResultCode;
 import com.google.common.base.Throwables;
-import org.apache.commons.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
@@ -173,12 +172,14 @@ public abstract class AbstractWebExceptionHandler {
         handle(req, resp, UNSUPPORT_MEDIA, e.getMessage());
     }
 
-    @ExceptionHandler(FileUploadException.class)
+    /*
+    @ExceptionHandler(org.apache.commons.fileupload.FileUploadException.class)
     //@ResponseBody @ResponseStatus(HttpStatus.PAYLOAD_TOO_LARGE)
-    public void handle(HttpServletRequest req, HttpServletResponse resp, FileUploadException e) {
+    public void handle(HttpServletRequest req, HttpServletResponse resp, org.apache.commons.fileupload.FileUploadException e) {
         LOGGER.debug("File upload fail.", e);
         handle(req, resp, HttpStatus.PAYLOAD_TOO_LARGE.value(), e.getMessage());
     }
+    */
 
     /**
      * 500 - Biz operate failure
@@ -208,7 +209,7 @@ public abstract class AbstractWebExceptionHandler {
                           String page, int code, String message) {
         if (page == null || LOGGER.isDebugEnabled() || WebUtils.isAjax(req)) {
             // resp.setStatus(code); HttpStatus.valueOf(code);
-            WebUtils.respJson(resp, new Result<>(code, false, message));
+            WebUtils.respJson(resp, Result.failure(code, message));
         } else {
             handErrorPage(req, resp, page);
         }

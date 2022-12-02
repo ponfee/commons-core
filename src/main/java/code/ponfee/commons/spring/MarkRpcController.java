@@ -3,7 +3,7 @@ package code.ponfee.commons.spring;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Mark this subclass is a spring mvc controller and with rpc({@code LocalizedMethodArguments}) trait
+ * Mark this subclass is a spring web controller and with rpc({@code LocalizedMethodArguments}) trait
  *
  * @author Ponfee
  */

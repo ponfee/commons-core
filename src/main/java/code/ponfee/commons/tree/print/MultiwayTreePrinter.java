@@ -8,63 +8,82 @@
 
 package code.ponfee.commons.tree.print;
 
-import code.ponfee.commons.io.Files;
-import org.apache.commons.collections4.CollectionUtils;
+import code.ponfee.commons.base.tuple.Tuple4;
+import code.ponfee.commons.collect.Collects;
+import com.google.common.collect.Lists;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.Deque;
+import java.util.List;
 import java.util.function.Function;
 
 /**
- * Print tree node
+ * Print multiway tree
  *
  * @author Ponfee
  */
 public final class MultiwayTreePrinter<T> {
 
     private final Appendable output;
-    private final Function<T, Collection<T>> childrenMapper;
-    private final Function<T, CharSequence> labelMapper;
+    private final Function<T, CharSequence> nodeLabel;
+    private final Function<T, List<T>> nodeChildren;
 
     public MultiwayTreePrinter(Appendable output,
-                               Function<T, Collection<T>> childrenMapper,
-                               Function<T, CharSequence> labelMapper) {
+                               Function<T, CharSequence> nodeLabel,
+                               Function<T, List<T>> nodeChildren) {
         this.output = output;
-        this.childrenMapper = childrenMapper;
-        this.labelMapper = labelMapper;
+        this.nodeLabel = nodeLabel;
+        this.nodeChildren = nodeChildren;
     }
 
+    /*// DFS递归方式
     public void print(T root) throws IOException {
-        print(root, "", false);
+        print("", "", "", root);
     }
 
-    private void print(T node, String indent, boolean isLastChild) throws IOException {
-        output.append(indent)
-              .append(labelMapper.apply(node))
-              .append(Files.UNIX_LINE_SEPARATOR);
+    private void print(String prefix, String middle, String suffix, T node) throws IOException {
+        output.append(prefix).append(suffix).append(nodeLabel.apply(node)).append('\n');
 
         // print children
-        Collection<T> children = childrenMapper.apply(node);
-        if (CollectionUtils.isEmpty(children)) {
+        List<T> children = nodeChildren.apply(node);
+        if (children == null || children.isEmpty()) {
             return;
         }
 
-        if (indent.length() > 0) {
-            // (char) 0xa0
-            indent = indent.substring(0, indent.length() - 4) + (isLastChild ? "    " : "│   ");
+        if (middle.length() > 0) {
+            prefix += middle;
         }
 
-        int count = children.size();
-        String nonLastIndent = null;
+        int index = children.size();
         for (T child : children) {
-            if (--count == 0) {
-                // last child of parent
-                print(child, indent + "└── ", true);
+            if (--index > 0) {
+                print(prefix, "│   ", "├── ", child);
             } else {
-                if (nonLastIndent == null) {
-                    nonLastIndent = indent + "├── ";
+                // last child of parent, space: (char) 0xa0
+                print(prefix, "    ", "└── ", child);
+            }
+        }
+    }
+    */
+
+    public void print(T root) throws IOException {
+        Deque<Tuple4<String, String, String, T>> stack = Collects.newLinkedList(Tuple4.of("", "", "", root));
+        while (!stack.isEmpty()) {
+            Tuple4<String, String, String, T> tuple = stack.pop();
+            output.append(tuple.a).append(tuple.c).append(nodeLabel.apply(tuple.d)).append('\n');
+
+            List<T> children = nodeChildren.apply(tuple.d);
+            if (children != null && !children.isEmpty()) {
+                String a = tuple.b.length() > 0 ? tuple.a + tuple.b : tuple.a;
+                int index = 0;
+                for (T child : Lists.reverse(children)) {
+                    if (index++ == 0) {
+                        // last child of parent, space: (char) 0xa0
+                        stack.push(Tuple4.of(a, "    ", "└── ", child));
+                    } else {
+                        stack.push(Tuple4.of(a, "│   ", "├── ", child));
+                    }
                 }
-                print(child, nonLastIndent, false);
             }
         }
     }

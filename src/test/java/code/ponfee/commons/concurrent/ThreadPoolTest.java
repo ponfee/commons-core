@@ -9,7 +9,7 @@ import java.util.stream.IntStream;
 
 import com.google.common.base.Stopwatch;
 
-import code.ponfee.commons.util.Dates;
+import code.ponfee.commons.date.Dates;
 
 public class ThreadPoolTest {
 

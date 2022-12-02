@@ -1,6 +1,7 @@
 package code.ponfee.commons.util;
 
 import code.ponfee.commons.base.PrimitiveTypes;
+import code.ponfee.commons.date.JavaUtilDateFormat;
 import code.ponfee.commons.math.Numbers;
 import code.ponfee.commons.reflect.ClassUtils;
 import code.ponfee.commons.reflect.Fields;
@@ -12,28 +13,15 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.lang.reflect.Array;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
-import static code.ponfee.commons.base.Comparators.EQ;
-import static code.ponfee.commons.base.Comparators.GT;
-import static code.ponfee.commons.base.Comparators.LT;
+import static code.ponfee.commons.base.Comparators.*;
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 
 /**
- * 公用对象工具类
+ * Object utilities
+ *
  * @author Ponfee
  */
 public final class ObjectUtils {
@@ -124,15 +112,6 @@ public final class ObjectUtils {
         if (o instanceof Dictionary) {
             return ((Dictionary<?, ?>) o).isEmpty();
         }
-        if (o instanceof Iterator<?>) {
-            return !((Iterator<?>) o).hasNext();
-        }
-        if (o instanceof Iterable<?>) {
-            return !((Iterable<?>) o).iterator().hasNext();
-        }
-        if (o instanceof Enumeration<?>) {
-            return !((Enumeration<?>) o).hasMoreElements();
-        }
         return false;
     }
 
@@ -163,7 +142,7 @@ public final class ObjectUtils {
      * @param type  target object type
      * @return target type object
      *
-     * @see com.alibaba.fastjson.util.TypeUtils
+     * @see com.alibaba.fastjson.util.TypeUtils#castToInt(Object)
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> T cast(Object value, Class<T> type) {
@@ -195,7 +174,7 @@ public final class ObjectUtils {
                 return (T) new Date(Numbers.toLong(text));
             }
             try {
-                return (T) WrappedFastDateFormat.DEFAULT.parse(text);
+                return (T) JavaUtilDateFormat.DEFAULT.parse(text);
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }

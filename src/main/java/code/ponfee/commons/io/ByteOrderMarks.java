@@ -20,7 +20,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import static code.ponfee.commons.io.CharsetDetector.DETECT_COUNT;
+import static code.ponfee.commons.io.CharsetDetector.DEFAULT_DETECT_LENGTH;
 import static code.ponfee.commons.io.CharsetDetector.detect;
 
 /**
@@ -73,15 +73,15 @@ public enum ByteOrderMarks {
     }
 
     public static ByteOrderMarks of(File file) throws IOException {
-        return of(Files.readByteArray(file, DETECT_COUNT));
+        return of(Files.readByteArray(file, DEFAULT_DETECT_LENGTH));
     }
 
     public static ByteOrderMarks of(InputStream input) throws IOException {
-        return of(Files.readByteArray(input, DETECT_COUNT));
+        return of(Files.readByteArray(input, DEFAULT_DETECT_LENGTH));
     }
 
     public static ByteOrderMarks of(byte[] bytes) {
-        return of(detect(bytes, DETECT_COUNT), bytes);
+        return of(detect(bytes, DEFAULT_DETECT_LENGTH), bytes);
     }
 
     // ------------------------------------------------------------------------of bom specified charset
@@ -120,15 +120,15 @@ public enum ByteOrderMarks {
     }
 
     public static boolean has(File file) throws IOException {
-        return has(Files.readByteArray(file, DETECT_COUNT));
+        return has(Files.readByteArray(file, DEFAULT_DETECT_LENGTH));
     }
 
     public static boolean has(InputStream input) throws IOException {
-        return has(Files.readByteArray(input, DETECT_COUNT));
+        return has(Files.readByteArray(input, DEFAULT_DETECT_LENGTH));
     }
 
     public static boolean has(byte[] bytes) {
-        return has(detect(bytes, DETECT_COUNT), bytes);
+        return has(detect(bytes, DEFAULT_DETECT_LENGTH), bytes);
     }
 
     // ------------------------------------------------------------------------has bom specified charset
@@ -167,7 +167,7 @@ public enum ByteOrderMarks {
             ByteOrderMarks bom;
             int count;
             if (charset == null) {
-                headBytes = new byte[(int) Math.min(file.length(), DETECT_COUNT)];
+                headBytes = new byte[(int) Math.min(file.length(), DEFAULT_DETECT_LENGTH)];
                 count = raf.read(headBytes);
                 charset = detect(headBytes, count);
                 if ((bom = MAPPING.get(charset)) == null) {
@@ -218,7 +218,7 @@ public enum ByteOrderMarks {
             ByteOrderMarks bom;
             int count;
             if (charset == null) {
-                headBytes = new byte[(int) Math.min(file.length(), DETECT_COUNT)];
+                headBytes = new byte[(int) Math.min(file.length(), DEFAULT_DETECT_LENGTH)];
                 count = raf.read(headBytes);
                 charset = detect(headBytes, count);
                 if ((bom = MAPPING.get(charset)) == null) {

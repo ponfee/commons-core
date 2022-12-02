@@ -53,26 +53,26 @@ public class JsonTree extends ToJsonString implements Serializable, Comparable<J
         }
 
         JsonTree other = (JsonTree) obj;
+        if (!this.path.equals(other.path)) {
+            return false;
+        }
+
+        if (   CollectionUtils.isEmpty(this.children)
+            && CollectionUtils.isEmpty(other.children)
+        ) {
+            return true;
+        }
+
+        if (   CollectionUtils.isEmpty(this.children)
+            || CollectionUtils.isEmpty(other.children)
+            || this.children.size() != other.children.size()
+        ) {
+            return false;
+        }
+
         try {
             this.sortByName();
             other.sortByName();
-
-            if (!this.path.equals(other.path)) {
-                return false;
-            }
-
-            if (   CollectionUtils.isEmpty(this.children)
-                && CollectionUtils.isEmpty(other.children)
-            ) {
-                return true;
-            }
-
-            if (   CollectionUtils.isEmpty(this.children)
-                || CollectionUtils.isEmpty(other.children)
-                || this.children.size() != other.children.size()
-            ) {
-                return false;
-            }
 
             for (int i = 0, n = this.children.size(); i < n; i++) {
                 if (!this.children.get(i).equals(other.children.get(i))) {
@@ -184,6 +184,7 @@ public class JsonTree extends ToJsonString implements Serializable, Comparable<J
         this.checked = checked;
     }
 
+    @Override
     public List<JsonTree> getChildren() {
         return children;
     }

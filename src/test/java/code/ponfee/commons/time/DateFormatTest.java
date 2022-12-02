@@ -14,8 +14,8 @@ import java.time.temporal.ChronoField;
 import java.util.Date;
 import java.util.Locale;
 
-import code.ponfee.commons.util.Dates;
-import code.ponfee.commons.util.WrappedFastDateFormat;
+import code.ponfee.commons.date.Dates;
+import code.ponfee.commons.date.JavaUtilDateFormat;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -74,9 +74,9 @@ public class DateFormatTest {
 
     @Test
     public void test4() throws ParseException {
-        Date zero = WrappedFastDateFormat.PATTERN_41.parse(Dates.ZERO_DATE_TIME);
+        Date zero = JavaUtilDateFormat.PATTERN_41.parse(Dates.ZERO_DATE_TIME);
         Assert.assertEquals(-62170185600000L, zero.getTime());
-        Assert.assertEquals(zero, WrappedFastDateFormat.DEFAULT.parse(Dates.ZERO_DATE_TIME));
+        Assert.assertEquals(zero, JavaUtilDateFormat.DEFAULT.parse(Dates.ZERO_DATE_TIME));
         Assert.assertEquals(zero, DateUtils.parseDate(Dates.ZERO_DATE_TIME, Dates.DEFAULT_DATE_FORMAT));
 
     }

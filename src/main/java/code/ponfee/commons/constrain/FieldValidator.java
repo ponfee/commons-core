@@ -5,7 +5,7 @@ import code.ponfee.commons.base.tuple.Tuple2;
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.reflect.Fields;
 import code.ponfee.commons.reflect.GenericUtils;
-import code.ponfee.commons.util.Dates;
+import code.ponfee.commons.date.Dates;
 import code.ponfee.commons.util.ObjectUtils;
 import code.ponfee.commons.util.RegexUtils;
 import code.ponfee.commons.util.Strings;
@@ -54,6 +54,7 @@ public class FieldValidator {
     private static final String CFG_ERR = "约束配置错误[";
     private static final String EMPTY = "";
 
+    // Method equals & same hashCode
     static final Cache<Method, String[]> METHOD_ARGSNAME = CacheBuilder.newBuilder().build();
 
     private static final Cache<Tuple2<?, ?>, Pair<Boolean, String>> META_CFG_CACHE = CacheBuilder.newBuilder().build();
@@ -113,7 +114,7 @@ public class FieldValidator {
 
     protected Object handleFailure(Class<?> returnType, String errMsg) {
         if (returnType == Result.class) {
-            return Result.failure(BAD_REQUEST, errMsg);
+            return Result.failure(BAD_REQUEST.getCode(), errMsg);
         } else {
             throw new IllegalArgumentException(errMsg);
         }

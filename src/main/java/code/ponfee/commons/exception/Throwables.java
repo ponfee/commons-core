@@ -1,13 +1,25 @@
 package code.ponfee.commons.exception;
 
+import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+
+import static code.ponfee.commons.exception.CheckedThrowing.*;
 
 /**
- * 异常工具类
- * 
+ * Throwable utilities.
+ *
  * @author Ponfee
  */
 public final class Throwables {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Throwables.class);
+
+    // -----------------------------------------------------------------exception message
 
     /**
      * Gets the root cause throwable stack trace
@@ -16,13 +28,37 @@ public final class Throwables {
      * @return a string of throwable stack trace information
      */
     public static String getRootCauseStackTrace(Throwable throwable) {
-        //return ExceptionUtils.getStackTrace(ExceptionUtils.getRootCause(throwable));
-        return String.join("\n", ExceptionUtils.getRootCauseStackTrace(throwable));
+        if (throwable == null) {
+            return null;
+        }
+
+        while (throwable.getCause() != null) {
+            throwable = throwable.getCause();
+        }
+        return ExceptionUtils.getStackTrace(throwable);
     }
+
+    public static String getRootCauseMessage(Throwable throwable) {
+        if (throwable == null) {
+            return null;
+        }
+
+        List<Throwable> list = ExceptionUtils.getThrowableList(throwable);
+        for (int i = list.size() - 1; i >= 0; i--) {
+            String message = list.get(i).getMessage();
+            if (StringUtils.isNotBlank(message)) {
+                return "error: " + message;
+            }
+        }
+
+        return "error: <" + ClassUtils.getName(throwable.getClass()) + ">";
+    }
+
+    // -----------------------------------------------------------------ignore
 
     /**
      * Ignore the throwable
-     * 
+     *
      * @param ignored the Throwable
      */
     public static void ignore(Throwable ignored) {
@@ -30,9 +66,9 @@ public final class Throwables {
     }
 
     /**
-     * Ignore the throwable, if {@code console} is true then will be 
+     * Ignore the throwable, if {@code console} is true then will be
      * print the throwable stack trace to console
-     * 
+     *
      * @param ignored the Throwable
      * @param console whether print console, {@code true} is print
      */
@@ -44,12 +80,14 @@ public final class Throwables {
 
     /**
      * Prints the throwable stack trace to console
-     * 
+     *
      * @param throwable the Throwable
      */
     public static void console(Throwable throwable) {
         throwable.printStackTrace();
     }
+
+    // -----------------------------------------------------------------checked
 
     public static void checked(Throwable throwable) {
         checked(throwable, null);
@@ -57,9 +95,9 @@ public final class Throwables {
 
     /**
      * Checked the throwable
-     * 
+     *
      * @param throwable the throwable
-     * @param msg the msg
+     * @param msg       the msg
      */
     public static void checked(Throwable throwable, String msg) {
         if (throwable instanceof RuntimeException) {
@@ -70,6 +108,58 @@ public final class Throwables {
             } else {
                 throw new RuntimeException(throwable);
             }
+        }
+    }
+
+    // -----------------------------------------------------------------caught
+
+    public static void caught(ThrowingRunnable<?> runnable) {
+        try {
+            runnable.run();
+        } catch (Throwable t) {
+            LOG.error(t.getMessage(), t);
+            if (t instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    public static <R> R caught(ThrowingSupplier<R, ?> supplier) {
+        try {
+            return supplier.get();
+        } catch (Throwable t) {
+            LOG.error(t.getMessage(), t);
+            if (t instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            return null;
+        }
+    }
+
+    public static <E> void caught(ThrowingConsumer<E, ?> consumer, E arg) {
+        try {
+            consumer.accept(arg);
+        } catch (Throwable t) {
+            LOG.error(t.getMessage(), t);
+            if (t instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    public static <E, R> R caught(ThrowingFunction<E, R, ?> function, E arg) {
+        return caught(function, arg, null);
+    }
+
+    public static <E, R> R caught(ThrowingFunction<E, R, ?> function, E arg, R defaultValue) {
+        try {
+            return function.apply(arg);
+        } catch (Throwable t) {
+            LOG.error(t.getMessage(), t);
+            if (t instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            return defaultValue;
         }
     }
 

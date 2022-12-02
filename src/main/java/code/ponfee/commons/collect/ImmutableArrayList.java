@@ -21,26 +21,26 @@ import java.util.function.UnaryOperator;
 /**
  * Representing immutable List
  *
- * @param <T> the element type
+ * @param <E> the element type
  * @author Ponfee
  */
-public class ImmutableArrayList<T> extends ToJsonString
-    implements List<T>, RandomAccess, Cloneable, java.io.Serializable {
+public class ImmutableArrayList<E> extends ToJsonString
+    implements List<E>, RandomAccess, Cloneable, java.io.Serializable {
 
     private static final long serialVersionUID = 7013120001220709229L;
 
     public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
-    private final T[] elements;
+    private final E[] elements;
 
     public ImmutableArrayList() {
-        this.elements = (T[]) EMPTY_OBJECT_ARRAY;
+        this.elements = (E[]) EMPTY_OBJECT_ARRAY;
     }
 
     public ImmutableArrayList(Object[] elements) {
         // 为了节省时间及空间，此处认为外部环境不会修改数组，故不做拷贝操作
         //this.elements = (T[]) Arrays.copyOf(elements, elements.length);
-        this.elements = (T[]) Objects.requireNonNull(elements);
+        this.elements = (E[]) Objects.requireNonNull(elements);
     }
 
     /**
@@ -111,7 +111,7 @@ public class ImmutableArrayList<T> extends ToJsonString
     }
 
     @Override
-    public final T get(int index) {
+    public final E get(int index) {
         if (index >= size()) {
             throw new IndexOutOfBoundsException("Index: " + index + ", size: " + size());
         }
@@ -170,42 +170,42 @@ public class ImmutableArrayList<T> extends ToJsonString
     }
 
     @Override
-    public final Iterator<T> iterator() {
+    public final Iterator<E> iterator() {
         return new UnmodifiableIterator(offset(), offset() + size());
     }
 
     @Override
-    public final ListIterator<T> listIterator() {
+    public final ListIterator<E> listIterator() {
         return new UnmodifiableListIterator(offset(), offset() + size());
     }
 
     @Override
-    public final ListIterator<T> listIterator(int index) {
+    public final ListIterator<E> listIterator(int index) {
         return new UnmodifiableListIterator(offset() + index, offset() + size());
     }
 
     @Override
-    public final ImmutableArrayList<T> subList(int fromIndex, int toIndex) {
+    public final ImmutableArrayList<E> subList(int fromIndex, int toIndex) {
         Preconditions.checkPositionIndexes(fromIndex, toIndex, size());
         int length = toIndex - fromIndex;
         if (length == size()) {
             return this;
         } else if (length == 0) {
-            return of((T[]) EMPTY_OBJECT_ARRAY);
+            return of((E[]) EMPTY_OBJECT_ARRAY);
         } else {
             return new SubList(offset() + fromIndex, offset() + toIndex);
         }
     }
 
     @Override
-    public final Spliterator<T> spliterator() {
+    public final Spliterator<E> spliterator() {
         return new DelegatedIntSpliterator<>(offset(), offset() + size(), i -> elements[i]);
     }
 
     @Override
     public final int hashCode() {
         int hashCode = 1;
-        for (T e : this) {
+        for (E e : this) {
             hashCode = 31 * hashCode + (e == null ? 0 : e.hashCode());
         }
         return hashCode;
@@ -220,7 +220,7 @@ public class ImmutableArrayList<T> extends ToJsonString
             return false;
         }
 
-        ListIterator<T> a = listIterator();
+        ListIterator<E> a = listIterator();
         ListIterator<?> b = ((List<?>) o).listIterator();
         while (a.hasNext() && b.hasNext()) {
             if (!Objects.equals(a.next(), b.next())) {
@@ -231,32 +231,37 @@ public class ImmutableArrayList<T> extends ToJsonString
     }
 
     @Override
+    public String toString() {
+        return Arrays.toString(elements);
+    }
+
+    @Override
     public Object clone() {
         return this;
     }
 
-    public final T[] join(T last) {
+    public final E[] join(E last) {
         if (isEmpty()) {
             // t.getClass().getComponentType()
-            return last == null ? (T[]) new Object[]{null} : Collects.toArray(last);
+            return last == null ? (E[]) new Object[]{null} : Collects.toArray(last);
         }
 
-        Class<? extends T[]> arrayType = (Class<? extends T[]>) elements.getClass();
-        T[] array = arrayType.equals(Object[].class)
-                  ? (T[]) new Object[size() + 1]
-                  : (T[]) Array.newInstance(arrayType.getComponentType(), size() + 1);
+        Class<? extends E[]> arrayType = (Class<? extends E[]>) elements.getClass();
+        E[] array = arrayType.equals(Object[].class)
+                  ? (E[]) new Object[size() + 1]
+                  : (E[]) Array.newInstance(arrayType.getComponentType(), size() + 1);
         System.arraycopy(elements, offset(), array, 0, size());
         array[size()] = last;
         return array;
     }
 
-    public final ImmutableArrayList<T> concat(T last) {
+    public final ImmutableArrayList<E> concat(E last) {
         return of(join(last));
     }
 
     // ---------------------------------------------------- unsupported operation
     @Override
-    public final boolean add(T t) {
+    public final boolean add(E e) {
         throw new UnsupportedOperationException();
     }
 
@@ -266,12 +271,12 @@ public class ImmutableArrayList<T> extends ToJsonString
     }
 
     @Override
-    public final boolean addAll(Collection<? extends T> c) {
+    public final boolean addAll(Collection<? extends E> c) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final boolean addAll(int index, Collection<? extends T> c) {
+    public final boolean addAll(int index, Collection<? extends E> c) {
         throw new UnsupportedOperationException();
     }
 
@@ -281,7 +286,7 @@ public class ImmutableArrayList<T> extends ToJsonString
     }
 
     @Override
-    public final boolean removeIf(Predicate<? super T> filter) {
+    public final boolean removeIf(Predicate<? super E> filter) {
         throw new UnsupportedOperationException();
     }
 
@@ -291,12 +296,12 @@ public class ImmutableArrayList<T> extends ToJsonString
     }
 
     @Override
-    public final void replaceAll(UnaryOperator<T> operator) {
+    public final void replaceAll(UnaryOperator<E> operator) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final void sort(Comparator<? super T> c) {
+    public final void sort(Comparator<? super E> c) {
         throw new UnsupportedOperationException();
     }
 
@@ -306,21 +311,21 @@ public class ImmutableArrayList<T> extends ToJsonString
     }
 
     @Override
-    public final T set(int index, T element) {
+    public final E set(int index, E element) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final void add(int index, T element) {
+    public final void add(int index, E element) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final T remove(int index) {
+    public final E remove(int index) {
         throw new UnsupportedOperationException();
     }
 
-    private class UnmodifiableIterator implements Iterator<T> {
+    private class UnmodifiableIterator implements Iterator<E> {
         protected int position;
         protected final int end;
 
@@ -335,7 +340,7 @@ public class ImmutableArrayList<T> extends ToJsonString
         }
 
         @Override
-        public T next() {
+        public E next() {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
@@ -348,7 +353,7 @@ public class ImmutableArrayList<T> extends ToJsonString
         }
     }
 
-    private class UnmodifiableListIterator extends UnmodifiableIterator implements ListIterator<T> {
+    private class UnmodifiableListIterator extends UnmodifiableIterator implements ListIterator<E> {
 
         UnmodifiableListIterator(int position, int end) {
             super(position, end);
@@ -360,7 +365,7 @@ public class ImmutableArrayList<T> extends ToJsonString
         }
 
         @Override
-        public T previous() {
+        public E previous() {
             if (!hasPrevious()) {
                 throw new NoSuchElementException();
             }
@@ -378,17 +383,17 @@ public class ImmutableArrayList<T> extends ToJsonString
         }
 
         @Override
-        public void set(T t) {
+        public void set(E e) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public void add(T t) {
+        public void add(E e) {
             throw new UnsupportedOperationException();
         }
     }
 
-    private class SubList extends ImmutableArrayList<T> {
+    private class SubList extends ImmutableArrayList<E> {
         private static final long serialVersionUID = 8017446305586649188L;
 
         final int offset;

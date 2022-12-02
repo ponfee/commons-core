@@ -1,11 +1,20 @@
 package code.ponfee.commons.io;
 
+import code.ponfee.commons.util.MavenProjects;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.tika.Tika;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.parser.ParseContext;
+import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 public class FileTypeDetector {
@@ -69,11 +78,34 @@ public class FileTypeDetector {
                 return entry.getKey();
             }
         }
-
-        try {
-            return net.sf.jmimemagic.Magic.getMagicMatch(array).getExtension();
-        } catch (Exception e) {
-            return null; // contentType = "text/plain";
-        }
+       return null;
     }
+
+    public static void main(String[] args) throws IOException {
+        File file = MavenProjects.getTestJavaFile(FileTypeDetector.class);
+
+        // 1
+        Tika tika1 = new Tika();
+        String fileType = tika1.detect(file);
+        System.out.println(fileType);
+
+        // 2
+        AutoDetectParser parser1 = new AutoDetectParser();
+        parser1.setParsers(new HashMap<>());
+        Metadata metadata1 = new Metadata();
+        //metadata.add(TikaMetadataKeys.RESOURCE_NAME_KEY, file.getName());
+        try (InputStream stream = new FileInputStream(file)) {
+            parser1.parse(stream, new DefaultHandler(), metadata1, new ParseContext());
+            System.out.println(metadata1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // 3
+        Tika tika2 = new Tika();
+        Metadata metadata2 = new Metadata();
+        tika2.parse(new FileInputStream(file), metadata2);
+        System.out.println(metadata2);
+    }
+
 }

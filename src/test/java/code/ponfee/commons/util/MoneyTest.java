@@ -1,6 +1,7 @@
 package code.ponfee.commons.util;
 
 import code.ponfee.commons.serial.JdkSerializer;
+import code.ponfee.commons.serial.KryoSerializer;
 import code.ponfee.commons.serial.Serializer;
 import org.junit.Assert;
 import org.junit.Test;
@@ -104,7 +105,7 @@ public class MoneyTest {
     public void test3() {
         Money money = new Money(CurrencyEnum.USD.currency(), 53243234);
 
-        //Serializer ser = new KryoSerializer();
+        //Serializer ser = KryoSerializer.INSTANCE;
         Serializer ser = new JdkSerializer();
         byte[] data = ser.serialize(money);
         System.out.println(ser.deserialize(data, Money.class));

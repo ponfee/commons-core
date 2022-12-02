@@ -13,6 +13,7 @@ import java.nio.charset.Charset;
 
 /**
  * 包装文件/输入流缓冲读取（decorator）
+ *
  * @author Ponfee
  */
 public class WrappedBufferedReader extends Reader {

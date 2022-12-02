@@ -14,10 +14,10 @@ import java.util.List;
 
 /**
  * The map for Tree node
- * 
- * @author Ponfee
+ *
  * @param <T> the node id type
  * @param <A> the attachment biz object type
+ * @author Ponfee
  */
 public class MapTreeTrait<T extends Serializable & Comparable<? super T>, A extends Serializable>
     extends LinkedHashMap<String, Object> implements TreeTrait<T, A, MapTreeTrait<T, A>> {
@@ -38,7 +38,12 @@ public class MapTreeTrait<T extends Serializable & Comparable<? super T>, A exte
 
     @Override
     public void setChildren(List<MapTreeTrait<T, A>> children) {
-        this.put(this.childrenKey, children);
+        super.put(childrenKey, children);
+    }
+
+    @Override
+    public List<MapTreeTrait<T, A>> getChildren() {
+        return (List<MapTreeTrait<T, A>>) super.get(childrenKey);
     }
 
 }

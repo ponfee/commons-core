@@ -21,10 +21,28 @@ import java.io.IOException;
  */
 public class JacksonMoney {
 
+    public static final JacksonMoney INSTANCE = new JacksonMoney();
+
     private static final String CURRENCY = "currency";
     private static final String NUMBER = "number";
 
-    public static class Serializer extends JsonSerializer<Money> {
+    private final JsonSerializer<Money> serializer;
+    private final JsonDeserializer<Money> deserializer;
+
+    private JacksonMoney() {
+        this.serializer = new Serializer();
+        this.deserializer = new Deserializer();
+    }
+
+    public JsonSerializer<Money> serializer() {
+        return this.serializer;
+    }
+
+    public JsonDeserializer<Money> deserializer() {
+        return this.deserializer;
+    }
+
+    private static class Serializer extends JsonSerializer<Money> {
         @Override
         public void serialize(Money money, JsonGenerator generator, SerializerProvider provider) throws IOException {
             if (money == null) {
@@ -39,7 +57,7 @@ public class JacksonMoney {
         }
     }
 
-    public static class Deserializer extends JsonDeserializer<Money> {
+    private static class Deserializer extends JsonDeserializer<Money> {
         @Override
         public Money deserialize(JsonParser parser, DeserializationContext context) throws IOException {
             //MoneyDTO dto = parser.readValueAs(MoneyDTO.class);

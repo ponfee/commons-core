@@ -24,4 +24,5 @@ public interface TreeTrait<T extends Serializable & Comparable<? super T>, A ext
 
     void setChildren(List<E> children);
 
+    List<E> getChildren();
 }

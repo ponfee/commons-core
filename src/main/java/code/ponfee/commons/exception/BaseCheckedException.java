@@ -1,36 +1,73 @@
 package code.ponfee.commons.exception;
 
-import code.ponfee.commons.model.ResultCode;
+import code.ponfee.commons.model.CodeMsg;
 
 /**
- * Checked exception definition
- * 
+ * Base checked exception definition
+ *
  * @author Ponfee
  */
-public class BaseCheckedException extends BaseUncheckedException {
+public abstract class BaseCheckedException extends Exception {
+    private static final long serialVersionUID = -1199930172272040396L;
 
-    private static final long serialVersionUID = -7059975701644684690L;
-    private static final int CODE = ResultCode.SERVER_ERROR.getCode();
+    /**
+     * Error code
+     */
+    private final int code;
 
-    public BaseCheckedException() {
-        super(CODE);
+    public BaseCheckedException(int code) {
+        this(code, null, null);
     }
 
-    public BaseCheckedException(String message) {
-        super(CODE, message);
+    public BaseCheckedException(CodeMsg codeMsg) {
+        this(codeMsg.getCode(), codeMsg.getMsg(), null);
     }
 
-    public BaseCheckedException(Throwable cause) {
-        super(CODE, cause);
+    /**
+     * @param code    error code
+     * @param message error message
+     */
+    public BaseCheckedException(int code, String message) {
+        this(code, message, null);
     }
 
-    public BaseCheckedException(String message, Throwable cause) {
-        super(CODE, message, cause);
+    public BaseCheckedException(CodeMsg codeMsg, Throwable cause) {
+        this(codeMsg.getCode(), codeMsg.getMsg(), cause);
     }
 
-    public BaseCheckedException(String message, Throwable cause,
-                                boolean enableSuppression, boolean writableStackTrace) {
-        super(CODE, message, cause, enableSuppression, writableStackTrace);
+    /**
+     * @param code    error code
+     * @param message error message
+     * @param cause   root cause
+     */
+    public BaseCheckedException(int code, String message, Throwable cause) {
+        super(message, cause);
+        this.code = code;
+    }
+
+    /**
+     * @param code               error code
+     * @param message            error message
+     * @param cause              root cause
+     * @param enableSuppression  the enableSuppression
+     * @param writableStackTrace then writableStackTrace
+     */
+    public BaseCheckedException(int code,
+                                String message,
+                                Throwable cause,
+                                boolean enableSuppression,
+                                boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+        this.code = code;
+    }
+
+    /**
+     * Returns the error code
+     *
+     * @return int value of error code
+     */
+    public int getCode() {
+        return code;
     }
 
 }

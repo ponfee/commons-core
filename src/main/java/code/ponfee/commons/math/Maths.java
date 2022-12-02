@@ -1,9 +1,7 @@
 package code.ponfee.commons.math;
 
 import code.ponfee.commons.util.Asserts;
-
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
+import org.springframework.util.Assert;
 
 /**
  * 数学算术
@@ -44,7 +42,8 @@ public class Maths {
      * @param n shift bit len
      * @return a number of rotate left result
      */
-    public static int rotateLeft(int x, @Min(0) @Max(32) int n) {
+    public static int rotateLeft(int x, int n) {
+        Assert.isTrue(n >= 0 && n <= 32, "N must be range [0, 32].");
         return (x << n) | (x >>> (32 - n));
     }
 
@@ -81,7 +80,9 @@ public class Maths {
      * @param exponent  the exponent
      * @return a long value for {@code base}<sup>{@code exponent}</sup>.
      */
-    public static long pow(@Min(1) long base, @Min(0) int exponent) {
+    public static long pow(long base, int exponent) {
+        Assert.isTrue(base >= 1, "Base number cannot  less than 1.");
+        Assert.isTrue(exponent >= 0, "Exponent number cannot  less than 1.");
         if (exponent == 0) {
             return 1;
         }

@@ -1,6 +1,6 @@
 package code.ponfee.commons.schema;
 
-import code.ponfee.commons.exception.BaseCheckedException;
+import code.ponfee.commons.exception.ServerException;
 import code.ponfee.commons.exception.Throwables;
 import code.ponfee.commons.json.Jsons;
 import com.google.common.base.CaseFormat;
@@ -162,9 +162,7 @@ public enum DataStructures {
             if (StringUtils.isBlank(structure)) {
                 return (T) source.toPlain();
             }
-            throw new BaseCheckedException(
-                "Structure type convert failed, expect: " + structure + ", actual: " + sourceType.name(), e
-            );
+            throw new ServerException("Structure type convert failed, expect: " + structure + ", actual: " + sourceType.name(), e);
         }
     }
 

@@ -13,12 +13,12 @@ import java.util.concurrent.TimeUnit;
  */
 public class DelayedData<E> implements Delayed {
 
-    private final long startTime;
+    private final long fireTime;
     private final E data;
 
     public DelayedData(E data, long delayInMilliseconds) {
         this.data = Objects.requireNonNull(data);
-        this.startTime = System.currentTimeMillis() + delayInMilliseconds;
+        this.fireTime = System.currentTimeMillis() + delayInMilliseconds;
     }
 
     public static <E> DelayedData<E> of(E data, long delayInMilliseconds) {
@@ -27,13 +27,13 @@ public class DelayedData<E> implements Delayed {
 
     @Override
     public long getDelay(TimeUnit unit) {
-        long diff = startTime - System.currentTimeMillis();
+        long diff = fireTime - System.currentTimeMillis();
         return unit.convert(diff, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public int compareTo(Delayed o) {
-        return Ints.saturatedCast(this.startTime - ((DelayedData<E>) o).startTime);
+        return Ints.saturatedCast(this.fireTime - ((DelayedData<E>) o).fireTime);
     }
 
     public E getData() {

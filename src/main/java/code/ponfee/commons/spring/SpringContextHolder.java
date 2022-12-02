@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
@@ -19,24 +18,24 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 /**
  * <pre>
- * ContextLoaderListener的beanfactory是DispatcherServlet的parent
- * spring上下文无法访问spring mvc上下文，但spring mvc上下文却能访问spring上下文
- *   解决方案1：在DispatcherServlet配置bean aware，如<bean id="beanId" class="xx.BeanImpl"/>
- *   解决方案2：Set<ApplicationContext>
+ * ContextLoaderListener的bean factory是DispatcherServlet的parent
+ * spring上下文无法访问spring mvc上下文，但spring mvc上下文却能访问spring上下文，使用List<ApplicationContext>解决
  * </pre>
- * 
+ *
  * spring上下文持有类
- * 
+ *
  * @author Ponfee
  */
-public class SpringContextHolder implements ApplicationContextAware/*, BeanFactoryAware*/, DisposableBean {
+public class SpringContextHolder implements ApplicationContextAware, DisposableBean {
 
     private static final List<ApplicationContext> HOLDER = new ArrayList<>();
-    //private static final List<BeanFactory> BEAN_FACTORY_HOLDER = new ArrayList<>();
+
+    private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
 
     @Override
     public void setApplicationContext(ApplicationContext cxt) throws BeansException {
@@ -44,21 +43,17 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
             if (!HOLDER.contains(cxt)) {
                 HOLDER.add(cxt);
             }
+            INITIALIZED.set(true);
         }
     }
 
-    /*@Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        synchronized (SpringContextHolder.class) {
-            if (!BEAN_FACTORY_HOLDER.contains(beanFactory)) {
-                BEAN_FACTORY_HOLDER.add(beanFactory);
-            }
-        }
-    }*/
+    public static boolean isInitialized() {
+        return INITIALIZED.get();
+    }
 
     /**
      * 通过名称获取bean
-     * 
+     *
      * @param name
      * @return
      */
@@ -68,7 +63,7 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
 
     /**
      * 通过类获取bean
-     * 
+     *
      * @param clazz
      * @return
      */
@@ -87,7 +82,7 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
 
     /**
      * 判断是否含有该名称的Bean
-     * 
+     *
      * @param name
      * @return
      */
@@ -102,7 +97,7 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
 
     /**
      * 判断Bean是否单例
-     * 
+     *
      * @param name
      * @return
      */
@@ -128,7 +123,7 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
 
     /**
      * 获取Bean的类型
-     * 
+     *
      * @param name
      * @return
      */
@@ -138,7 +133,7 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
 
     /**
      * 获取bean的别名
-     * 
+     *
      * @param name
      * @return
      */
@@ -148,7 +143,7 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
 
     /**
      * Returns a map that conatain spec annotation beans
-     * 
+     *
      * @param annotationType the Annotation type
      * @return a map
      */
@@ -159,9 +154,9 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
     // -----------------------------------------------------------------------
     /**
      * Injects the field from spring container for object
-     * 
+     *
      * @param object the object
-     * 
+     *
      * @see #autowire(Object)
      */
     public static void inject(Object object) {
@@ -170,14 +165,14 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
         for (Field field : ClassUtils.listFields(object.getClass())) {
             Object fieldValue = null;
             Class<?> fieldType = GenericUtils.getFieldActualType(object.getClass(), field);
-            Resource resource = AnnotationUtils.getAnnotation(field, Resource.class);
+            Resource resource = field.getAnnotation(Resource.class);
             if (resource != null) {
                 fieldValue = getBean(StringUtils.isNotBlank(resource.name()) ? resource.name() : field.getName(), fieldType);
                 if (fieldValue == null) {
                     fieldValue = getBean(fieldType);
                 }
             } else if (field.isAnnotationPresent(Autowired.class)) {
-                Qualifier qualifier = AnnotationUtils.getAnnotation(field, Qualifier.class);
+                Qualifier qualifier = field.getAnnotation(Qualifier.class);
                 if (qualifier != null && StringUtils.isNotBlank(qualifier.value())) {
                     fieldValue = getBean(qualifier.value(), fieldType);
                 } else {
@@ -192,13 +187,15 @@ public class SpringContextHolder implements ApplicationContextAware/*, BeanFacto
     }
 
     /**
-     * Autowire annotated field from spring container for object
-     * 
-     * @param object the object instance
-     * 
+     * Autowire annotated from spring container for object
+     *
+     * @param object the object
+     *
      * @see #inject(Object)
      */
     public static void autowire(Object object) {
+        Assert.state(HOLDER.size() > 0, "Must be defined SpringContextHolder within spring config file.");
+
         for (ApplicationContext context : HOLDER) {
             context.getAutowireCapableBeanFactory().autowireBean(object);
         }

@@ -1,9 +1,9 @@
-package code.ponfee.commons.util;
+package code.ponfee.commons.date;
 
-import com.google.common.base.Preconditions;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
+import org.springframework.util.Assert;
 
 import java.util.Date;
 import java.util.function.ToIntFunction;
@@ -76,7 +76,6 @@ public enum DatePeriods {
     public static final String ORIGINAL_DATE_TIME = "2018-01-01 00:00:00.000";
     //private static final LocalDateTime ORIGINAL = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS").parseLocalDateTime(ORIGINAL_DATE_TIME);
 
-
     private final PeriodType type;
     private final ToIntFunction<Period> unit;
     private final PlusFunction plus;
@@ -99,8 +98,8 @@ public enum DatePeriods {
      * @return {@code Segment(begin, end)}
      */
     public final Segment next(LocalDateTime original, LocalDateTime target, int step, int next) {
-        Preconditions.checkArgument(step > 0, "Step must be positive number.");
-        Preconditions.checkArgument(!original.isAfter(target), "Original cannot after target date.");
+        Assert.isTrue(step > 0, "Step must be positive number.");
+        Assert.isTrue(!original.isAfter(target), "Original date cannot be after target date.");
         // original.withTime(original.getHourOfDay(), 0, 0, 0)
         // original.withMillisOfDay(0)
         // target.withMillisOfDay(0)
@@ -152,7 +151,7 @@ public enum DatePeriods {
 
         @Override
         public String toString() {
-            return WrappedFastDateFormat.PATTERN_51.format(begin) + " ~ " + WrappedFastDateFormat.PATTERN_51.format(end);
+            return JavaUtilDateFormat.PATTERN_51.format(begin) + " ~ " + JavaUtilDateFormat.PATTERN_51.format(end);
         }
     }
 

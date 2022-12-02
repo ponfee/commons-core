@@ -1,0 +1,4 @@
+ASCII (American Standard Code for information exchange) is a computer coding system based on Latin alphabet, which is mainly used to display modern English and other Western European languages.
+
+Powered by gzu-liyujiang
+2020/8/7

@@ -1,7 +1,7 @@
 package code.ponfee.commons.schema;
 
 import code.ponfee.commons.math.Numbers;
-import code.ponfee.commons.util.WrappedFastDateFormat;
+import code.ponfee.commons.date.JavaUtilDateFormat;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -62,7 +62,7 @@ public enum DataType {
         }
     },
     DATE("日期") {
-        private final WrappedFastDateFormat format = new WrappedFastDateFormat("yyyy-MM-dd");
+        private final JavaUtilDateFormat format = new JavaUtilDateFormat("yyyy-MM-dd");
 
         @Override
         protected <T> T parseObject0(Object value) {
@@ -83,7 +83,7 @@ public enum DataType {
 
         @Override
         protected <T> T parseObject0(Object value) {
-            return (T) parseToDate(WrappedFastDateFormat.DEFAULT, value);
+            return (T) parseToDate(JavaUtilDateFormat.DEFAULT, value);
         }
 
         @Override
@@ -93,7 +93,7 @@ public enum DataType {
 
         @Override
         protected String toString0(Object value) {
-            return dateToString(WrappedFastDateFormat.DEFAULT, value);
+            return dateToString(JavaUtilDateFormat.DEFAULT, value);
         }
     },
     TIMESTAMP("时间戳（毫秒）") {

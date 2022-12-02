@@ -8,7 +8,7 @@ import java.util.Map;
  *
  * <ul>
  *   <li><a href="http://en.wikipedia.org/wiki/ISO_4217">币种代码(维基百科，需要翻墙)</a></li>
- *   <li><a href="http://www.xe.com/symbols.php">币种符号</a></li>
+ *   <li><a href="https://www.xe.com/symbols/">币种符号</a></li>
  *   <li><a href="https://baike.baidu.com/item/%E4%B8%96%E7%95%8C%E5%90%84%E5%9B%BD%E5%92%8C%E5%9C%B0%E5%8C%BA%E5%90%8D%E7%A7%B0%E4%BB%A3%E7%A0%81/6560023">世界各国和地区名称代码(GB/T 2659-2000，百度百科)</a></li>
  * </ul>
  *
@@ -634,7 +634,7 @@ public enum CurrencyEnum {
     VEB(new char[]{0x56, 0x45, 0x42}),
 
     /** Venezuelan Bolívar Soberano [VED] */
-    VED(new char[]{0x56, 0x45, 0x44}),
+    //VED(new char[]{0x56, 0x45, 0x44}), // Already invalided
 
     /** Venezuelan Bolívar Soberano [VES] */
     VES(new char[]{0x56, 0x45, 0x53}),

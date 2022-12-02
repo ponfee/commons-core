@@ -8,19 +8,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -73,6 +62,49 @@ public final class Collects {
         LinkedList<E> list = new LinkedList<>();
         list.add(element);
         return list;
+    }
+
+    /**
+     * Gets the first element for list
+     *
+     * @param list the list
+     * @param <T>  the list element type
+     * @return first element of list
+     */
+    public static <T> T getFirst(List<T> list) {
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+        return (list instanceof Deque) ? ((Deque<T>) list).getFirst() : list.get(0);
+    }
+
+    /**
+     * Gets the last element for list
+     *
+     * @param list the list
+     * @param <T>  the list element type
+     * @return last element of list
+     */
+    public static <T> T getLast(List<T> list) {
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+        //return list.stream().reduce((a, b) -> b).orElse(null);
+        return (list instanceof Deque) ? ((Deque<T>) list).getLast() : list.get(list.size() - 1);
+    }
+
+    public static <T> T get(T[] array, int index) {
+        if (array == null) {
+            return null;
+        }
+        return index < array.length ? array[index] : null;
+    }
+
+    public static <T> T get(List<T> list, int index) {
+        if (list == null) {
+            return null;
+        }
+        return index < list.size() ? list.get(index) : null;
     }
 
     // -----------------------------the collection of intersect, union and different operations
@@ -201,39 +233,6 @@ public final class Collects {
     }
 
     /**
-     * Gets the last element for list
-     *
-     * @param list the list
-     * @param <T>  the list element type
-     * @return last element of list
-     */
-    public static <T> T getLast(List<T> list) {
-        if (list == null || list.isEmpty()) {
-            return null;
-        }
-        //return list.stream().reduce((a, b) -> b).orElse(null);
-        return list instanceof Deque ? ((Deque<T>) list).getLast() : list.get(list.size() - 1);
-    }
-
-    /**
-     * Gets the first element for list
-     *
-     * @param list the list
-     * @param <T>  the list element type
-     * @return first element of list
-     */
-    public static <T> T getFirst(List<T> list) {
-        return list == null || list.isEmpty() ? null : list.get(0);
-    }
-
-    public static <T> T get(T[] array, int index) {
-        if (array == null) {
-            return null;
-        }
-        return index < array.length ? array[index] : null;
-    }
-
-    /**
      * Returns a new array for merged the generic array generator
      * 
      * @see org.apache.commons.lang3.ArrayUtils#addAll(T[] array1, T... array2)
@@ -275,18 +274,17 @@ public final class Collects {
     }
 
     /**
-     * Gets the index element from list, if not arrival index pos then auto imcrement
-     * 
+     * Expand the list size
+     *
      * @param list     the list
-     * @param index    the index
-     * @param supplier the element generator
-     * @return an element
+     * @param size     the target size
+     * @param supplier element provider
+     * @param <T>      the element type
      */
-    public static <T> T get(List<T> list, int index, Supplier<T> supplier) {
-        for (int i = list.size(); i <= index; i++) {
+    public static <T> void expand(List<T> list, int size, Supplier<T> supplier) {
+        for (int i = list.size(); i <= size; i++) {
             list.add(supplier.get());
         }
-        return list.get(index);
     }
 
     /**
@@ -439,4 +437,11 @@ public final class Collects {
         Collections.addAll(result, array);
         return result;
     }
+
+    public static <T> T[] newArray(Class<? extends T[]> newType, int length) {
+        return ((Object) newType == (Object) Object[].class)
+            ? (T[]) new Object[length]
+            : (T[]) Array.newInstance(newType.getComponentType(), length);
+    }
+
 }
