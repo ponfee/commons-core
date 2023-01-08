@@ -5,10 +5,10 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import code.ponfee.commons.http.ContentType;
-import code.ponfee.commons.http.Http;
-import code.ponfee.commons.http.HttpParams;
-import code.ponfee.commons.util.ObjectUtils;
+import cn.ponfee.commons.http.ContentType;
+import cn.ponfee.commons.http.Http;
+import cn.ponfee.commons.http.HttpParams;
+import cn.ponfee.commons.util.ObjectUtils;
 
 public class HttpParamsTest {
 

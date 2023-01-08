@@ -1,6 +1,6 @@
 package test.concurrent;
 
-import code.ponfee.commons.concurrent.AsyncBatchProcessor;
+import cn.ponfee.commons.concurrent.AsyncBatchProcessor;
 import org.junit.Assert;
 import org.junit.Test;
 

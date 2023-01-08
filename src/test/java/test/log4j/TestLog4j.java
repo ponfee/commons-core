@@ -3,7 +3,7 @@ package test.log4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import code.ponfee.commons.util.MavenProjects;
+import cn.ponfee.commons.util.MavenProjects;
 
 public class TestLog4j {
 

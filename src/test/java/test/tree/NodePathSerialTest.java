@@ -1,17 +1,9 @@
-/* __________              _____                                          *\
-** \______   \____   _____/ ____\____   ____        Ponfee's code         **
-**  |     ___/  _ \ /    \   __\/ __ \_/ __ \       (c) 2017-2019, MIT    **
-**  |    |  (  <_> )   |  \  | \  ___/\  ___/       http://www.ponfee.cn  **
-**  |____|   \____/|___|  /__|  \___  >\___  >                            **
-**                      \/          \/     \/                             **
-\*                                                                        */
-
 package test.tree;
 
-import code.ponfee.commons.collect.ImmutableArrayList;
-import code.ponfee.commons.serial.JdkSerializer;
-import code.ponfee.commons.serial.KryoSerializer;
-import code.ponfee.commons.tree.NodePath;
+import cn.ponfee.commons.collect.ImmutableArrayList;
+import cn.ponfee.commons.serial.JdkSerializer;
+import cn.ponfee.commons.serial.KryoSerializer;
+import cn.ponfee.commons.tree.NodePath;
 import com.google.common.collect.ImmutableList;
 import org.junit.Ignore;
 import org.junit.Test;

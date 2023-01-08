@@ -7,12 +7,12 @@ import org.apache.commons.io.IOUtils;
 
 import com.google.common.io.Files;
 
-import code.ponfee.commons.jce.security.KeyStoreResolver;
-import code.ponfee.commons.jce.security.KeyStoreResolver.KeyStoreType;
-import code.ponfee.commons.pdf.sign.PdfSignature;
-import code.ponfee.commons.pdf.sign.Signer;
-import code.ponfee.commons.pdf.sign.Stamp;
-import code.ponfee.commons.resource.ResourceLoaderFacade;
+import cn.ponfee.commons.jce.security.KeyStoreResolver;
+import cn.ponfee.commons.jce.security.KeyStoreResolver.KeyStoreType;
+import cn.ponfee.commons.pdf.sign.PdfSignature;
+import cn.ponfee.commons.pdf.sign.Signer;
+import cn.ponfee.commons.pdf.sign.Stamp;
+import cn.ponfee.commons.resource.ResourceLoaderFacade;
 
 public class TestPdfSign {
 

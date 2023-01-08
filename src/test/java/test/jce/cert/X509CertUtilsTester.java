@@ -5,9 +5,9 @@ import java.security.cert.X509Certificate;
 
 import org.apache.commons.lang3.StringUtils;
 
-import code.ponfee.commons.jce.cert.X509CertInfo;
-import code.ponfee.commons.jce.cert.X509CertUtils;
-import code.ponfee.commons.resource.ResourceLoaderFacade;
+import cn.ponfee.commons.jce.cert.X509CertInfo;
+import cn.ponfee.commons.jce.cert.X509CertUtils;
+import cn.ponfee.commons.resource.ResourceLoaderFacade;
 
 public class X509CertUtilsTester {
 

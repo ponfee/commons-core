@@ -4,9 +4,9 @@ import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import code.ponfee.commons.cache.Cache;
-import code.ponfee.commons.cache.CacheBuilder;
-import code.ponfee.commons.util.ObjectUtils;
+import cn.ponfee.commons.cache.Cache;
+import cn.ponfee.commons.cache.CacheBuilder;
+import cn.ponfee.commons.util.ObjectUtils;
 
 public class TestCache {
 

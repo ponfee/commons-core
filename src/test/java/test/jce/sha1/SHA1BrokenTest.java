@@ -5,15 +5,15 @@ import java.io.File;
 import org.apache.commons.codec.binary.Hex;
 import org.junit.Test;
 
-import code.ponfee.commons.io.Files;
-import code.ponfee.commons.jce.DigestAlgorithms;
-import code.ponfee.commons.jce.HmacAlgorithms;
-import code.ponfee.commons.jce.Providers;
-import code.ponfee.commons.jce.digest.DigestUtils;
-import code.ponfee.commons.jce.digest.HmacUtils;
-import code.ponfee.commons.jce.implementation.digest.SHA1Digest;
-import code.ponfee.commons.jce.sm.SM3Digest;
-import code.ponfee.commons.util.MavenProjects;
+import cn.ponfee.commons.io.Files;
+import cn.ponfee.commons.jce.DigestAlgorithms;
+import cn.ponfee.commons.jce.HmacAlgorithms;
+import cn.ponfee.commons.jce.Providers;
+import cn.ponfee.commons.jce.digest.DigestUtils;
+import cn.ponfee.commons.jce.digest.HmacUtils;
+import cn.ponfee.commons.jce.implementation.digest.SHA1Digest;
+import cn.ponfee.commons.jce.sm.SM3Digest;
+import cn.ponfee.commons.util.MavenProjects;
 
 public class SHA1BrokenTest {
 

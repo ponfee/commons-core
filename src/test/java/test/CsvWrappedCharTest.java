@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
 
-import code.ponfee.commons.io.WrappedBufferedWriter;
+import cn.ponfee.commons.io.WrappedBufferedWriter;
 
 public class CsvWrappedCharTest {
 
@@ -41,7 +41,7 @@ public class CsvWrappedCharTest {
                 System.out.println(str);
 
                 writer.write(str);
-                writer.write(code.ponfee.commons.io.Files.UNIX_LINE_SEPARATOR);
+                writer.write(cn.ponfee.commons.io.Files.UNIX_LINE_SEPARATOR);
 
                 return StringUtils.isNotBlank(line);
             }

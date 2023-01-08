@@ -5,8 +5,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.apache.commons.codec.binary.Hex;
 import org.junit.Assert;
 
-import code.ponfee.commons.jce.sm.SM3Digest;
-import code.ponfee.commons.util.SecureRandoms;
+import cn.ponfee.commons.jce.sm.SM3Digest;
+import cn.ponfee.commons.util.SecureRandoms;
 
 public class SM3DigestTest {
 

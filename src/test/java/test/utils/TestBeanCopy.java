@@ -1,10 +1,10 @@
 package test.utils;
 
-import code.ponfee.commons.json.Jsons;
-import code.ponfee.commons.model.Result;
-import code.ponfee.commons.reflect.BeanMaps;
-import code.ponfee.commons.reflect.BeanCopiers;
-import code.ponfee.commons.reflect.Fields;
+import cn.ponfee.commons.json.Jsons;
+import cn.ponfee.commons.model.Result;
+import cn.ponfee.commons.reflect.BeanMaps;
+import cn.ponfee.commons.reflect.BeanCopiers;
+import cn.ponfee.commons.reflect.Fields;
 import org.junit.Test;
 import org.springframework.cglib.beans.BeanCopier;
 

@@ -22,11 +22,11 @@ import com.itextpdf.text.pdf.security.MakeSignature.CryptoStandard;
 import com.itextpdf.text.pdf.security.PdfPKCS7;
 import com.itextpdf.text.pdf.security.TSAClient;
 
-import code.ponfee.commons.jce.digest.DigestUtils;
-import code.ponfee.commons.jce.pkcs.PKCS1Signature;
-import code.ponfee.commons.jce.security.KeyStoreResolver;
-import code.ponfee.commons.jce.security.KeyStoreResolver.KeyStoreType;
-import code.ponfee.commons.resource.ResourceLoaderFacade;
+import cn.ponfee.commons.jce.digest.DigestUtils;
+import cn.ponfee.commons.jce.pkcs.PKCS1Signature;
+import cn.ponfee.commons.jce.security.KeyStoreResolver;
+import cn.ponfee.commons.jce.security.KeyStoreResolver.KeyStoreType;
+import cn.ponfee.commons.resource.ResourceLoaderFacade;
 
 public class PdfP7Sign {
     

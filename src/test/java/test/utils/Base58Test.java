@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import code.ponfee.commons.util.Base58;
+import cn.ponfee.commons.util.Base58;
 import junit.framework.TestCase;
 
 /**

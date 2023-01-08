@@ -7,12 +7,9 @@
   <groupId>cn.ponfee</groupId>
   <artifactId>commons-core</artifactId>
   <version>${revision}</version>
-  <packaging>jar</packaging>
 
   <!-- Maven:
-    > 1）不编译也不执行单元测试类：mvn package -Dmaven.test.skip=true
-    > 2）编译但不会执行单元测试类：mvn package -DskipTests
-    > 3）deploy: mvn -Drevision=_ versions:set -DnewVersion=1.0-SNAPSHOT && mvn clean deploy -DskipTests -Dcheckstyle.skip -U
+    > deploy: mvn -Drevision=_ versions:set -DnewVersion=1.3-SNAPSHOT && mvn clean deploy -DskipTests -Dcheckstyle.skip -U
 
     > maven wrapper：https://maven.apache.org/wrapper/index.html
     > 1）Install：会生成mvnw和mvnw.cmd脚本
@@ -23,6 +20,9 @@
     >   2.2）Windows：mvnw.cmd clean install -Dmaven.test.skip=true
 
     > javac: 不加“-g”则默认为“-g:source,lines”
+    >   lines：字节码文件中对应源码的行号(Line number debugging information)
+    >   vars：字节码文件中对应源码的局部变量的符号表(Local variable debugging information)
+    >   source：将该类文件对应的源文件名称写进字节码中(Source file debugging information，针对非public修饰类场景)
     >   -g                     生成所有调试信息
     >   -g:none                不生成任何调试信息
     >   -g:{lines,vars,source} 只生成某些调试信息
@@ -59,12 +59,12 @@
    -->
 
   <name>Commons core</name>
-  <description>Commons utility</description>
+  <description>A commons tool java lib</description>
   <url>https://github.com/ponfee/commons-core</url>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
     </license>
   </licenses>
   <developers>
@@ -102,7 +102,7 @@
   </distributionManagement>
 
   <properties>
-    <revision>1.0-SNAPSHOT</revision>
+    <revision>1.3-SNAPSHOT</revision>
     <file.encoding>UTF-8</file.encoding>
     <project.build.sourceEncoding>${file.encoding}</project.build.sourceEncoding>
     <project.reporting.outputEncoding>${file.encoding}</project.reporting.outputEncoding>
@@ -111,10 +111,10 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <maven.compiler.compilerVersion>${java.version}</maven.compiler.compilerVersion>
 
-    <spring.version>5.3.24</spring.version>
+    <spring-framework.version>5.3.24</spring-framework.version>
     <slf4j.version>1.7.36</slf4j.version>
     <log4j2.version>2.19.0</log4j2.version>
-    <bouncycastle.version>1.70</bouncycastle.version>
+    <bouncycastle.version>1.72</bouncycastle.version>
     <jackson.version>2.14.1</jackson.version>
   </properties>
 
@@ -176,6 +176,7 @@
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>1.18.24</version>
+      <optional>true</optional>
       <scope>provided</scope>
     </dependency>
 
@@ -232,17 +233,6 @@
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
-      <version>${log4j2.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-api</artifactId>
-      <version>${log4j2.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
       <version>${log4j2.version}</version>
       <scope>runtime</scope>
     </dependency>
@@ -365,8 +355,8 @@
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>
       <version>4.0.4</version>
-      <scope>provided</scope>
       <optional>true</optional>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>jakarta.annotation</groupId>
@@ -388,7 +378,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
-      <version>${spring.version}</version>
+      <version>${spring-framework.version}</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -399,28 +389,22 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context-support</artifactId>
-      <version>${spring.version}</version>
+      <version>${spring-framework.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
-      <version>${spring.version}</version>
+      <version>${spring-framework.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-aspects</artifactId>
-      <version>${spring.version}</version>
+      <version>${spring-framework.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-jdbc</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-      <version>${spring.version}</version>
-      <scope>test</scope>
+      <version>${spring-framework.version}</version>
     </dependency>
 
     <!-- ====================excel poi==================== -->
@@ -533,24 +517,24 @@
     <!-- ====================加解密==================== -->
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcmail-jdk15on</artifactId>
+      <artifactId>bcmail-jdk18on</artifactId>
       <version>${bouncycastle.version}</version>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcpg-jdk15on</artifactId>
+      <artifactId>bcpg-jdk18on</artifactId>
       <version>${bouncycastle.version}</version>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bctls-jdk15on</artifactId>
+      <artifactId>bctls-jdk18on</artifactId>
       <version>${bouncycastle.version}</version>
     </dependency>
-    <!-- <dependency>
+     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-ext-jdk15on</artifactId>
+      <artifactId>bcprov-ext-jdk18on</artifactId>
       <version>${bouncycastle.version}</version>
-    </dependency> -->
+    </dependency>
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
@@ -562,6 +546,12 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.13.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <version>${spring-framework.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -716,8 +706,9 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.10.1</version>
         <configuration>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
+          <compilerVersion>${maven.compiler.compilerVersion}</compilerVersion>
           <encoding>${file.encoding}</encoding>
           <showDeprecation>true</showDeprecation>
           <showWarnings>true</showWarnings>
@@ -991,5 +982,4 @@
     </plugins>
 
   </build>
-
 </project>

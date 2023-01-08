@@ -25,8 +25,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import code.ponfee.commons.jce.implementation.Cryptor;
-import code.ponfee.commons.jce.implementation.Key;
+import cn.ponfee.commons.jce.implementation.Cryptor;
+import cn.ponfee.commons.jce.implementation.Key;
 
 public class View extends JFrame implements ActionListener {
     private static final long serialVersionUID = 1L;

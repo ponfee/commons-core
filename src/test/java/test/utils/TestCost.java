@@ -4,7 +4,7 @@ import java.security.SecureRandom;
 
 import org.junit.Test;
 
-import code.ponfee.commons.util.SecureRandoms;
+import cn.ponfee.commons.util.SecureRandoms;
 
 public class TestCost {
 

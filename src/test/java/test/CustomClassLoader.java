@@ -34,6 +34,6 @@ public class CustomClassLoader extends ClassLoader {
         objClass.getDeclaredMethod("say").invoke(objClass.newInstance());
         
         
-        code.ponfee.commons.io.Files.touch(new File("D:\\test\\a\\b\\ToolProvider1.class"));
+        cn.ponfee.commons.io.Files.touch(new File("D:\\test\\a\\b\\ToolProvider1.class"));
     }
 }

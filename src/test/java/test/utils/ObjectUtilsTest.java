@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.junit.Assert;
 import org.junit.Test;
 
-import code.ponfee.commons.util.Bytes;
+import cn.ponfee.commons.util.Bytes;
 
 public class ObjectUtilsTest {
 

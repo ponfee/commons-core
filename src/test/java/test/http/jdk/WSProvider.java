@@ -6,7 +6,7 @@ import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 
-import code.ponfee.commons.ws.JAXWS;
+import cn.ponfee.commons.ws.JAXWS;
 
 @WebService(targetNamespace = "http://jdk6.webservice/demo", serviceName = "HelloService")
 public class WSProvider {

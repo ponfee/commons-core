@@ -15,14 +15,14 @@ import org.junit.Assert;
 
 import com.google.common.base.Stopwatch;
 
-import code.ponfee.commons.jce.digest.DigestUtils;
-import code.ponfee.commons.reflect.ClassUtils;
-import code.ponfee.commons.reflect.Fields;
-import code.ponfee.commons.reflect.GenericUtils;
-import code.ponfee.commons.resource.ResourceScanner;
-import code.ponfee.commons.util.Bytes;
-import code.ponfee.commons.util.ObjectUtils;
-import code.ponfee.commons.util.SecureRandoms;
+import cn.ponfee.commons.jce.digest.DigestUtils;
+import cn.ponfee.commons.reflect.ClassUtils;
+import cn.ponfee.commons.reflect.Fields;
+import cn.ponfee.commons.reflect.GenericUtils;
+import cn.ponfee.commons.resource.ResourceScanner;
+import cn.ponfee.commons.util.Bytes;
+import cn.ponfee.commons.util.ObjectUtils;
+import cn.ponfee.commons.util.SecureRandoms;
 
 public class TempTest {
 
@@ -38,7 +38,7 @@ public class TempTest {
     
     @org.junit.Test
     public void test2() {
-        System.out.println(DigestUtils.sha256Hex(DigestUtils.sha256("code.ponfee.commons.jce.hash.HashUtils".getBytes())));
+        System.out.println(DigestUtils.sha256Hex(DigestUtils.sha256("cn.ponfee.commons.jce.hash.HashUtils".getBytes())));
     }
 
     @org.junit.Test

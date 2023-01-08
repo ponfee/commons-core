@@ -11,7 +11,7 @@ import java.util.Scanner;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
 
-import code.ponfee.commons.util.MavenProjects;
+import cn.ponfee.commons.util.MavenProjects;
 
 public class ProjectFileUtilsTester {
 

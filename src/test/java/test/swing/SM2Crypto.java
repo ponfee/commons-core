@@ -24,8 +24,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
-import code.ponfee.commons.jce.ECParameters;
-import code.ponfee.commons.jce.sm.SM2;
+import cn.ponfee.commons.jce.ECParameters;
+import cn.ponfee.commons.jce.sm.SM2;
 
 public class SM2Crypto extends JFrame{
     private static final long serialVersionUID = 1L;

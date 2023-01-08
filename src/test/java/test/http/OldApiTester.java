@@ -13,9 +13,9 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 
-import code.ponfee.commons.http.Http;
-import code.ponfee.commons.http.HttpParams;
-import code.ponfee.commons.jce.digest.DigestUtils;
+import cn.ponfee.commons.http.Http;
+import cn.ponfee.commons.http.HttpParams;
+import cn.ponfee.commons.jce.digest.DigestUtils;
 
 public class OldApiTester {
     private static final String URL = "http://192.168.1.49:8080/service-webapp";

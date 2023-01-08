@@ -25,7 +25,7 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import code.ponfee.commons.json.Jsons;
+import cn.ponfee.commons.json.Jsons;
 
 public class HttpClientUtils {
     private static Logger logger = LoggerFactory.getLogger(HttpClientUtils.class);

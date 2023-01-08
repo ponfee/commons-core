@@ -1,28 +1,20 @@
-/* __________              _____                                          *\
-** \______   \____   _____/ ____\____   ____        Ponfee's code         **
-**  |     ___/  _ \ /    \   __\/ __ \_/ __ \       (c) 2017-2018, MIT    **
-**  |    |  (  <_> )   |  \  | \  ___/\  ___/       http://www.ponfee.cn  **
-**  |____|   \____/|___|  /__|  \___  >\___  >                            **
-**                      \/          \/     \/                             **
-\*                                                                        */
-
 package test;
 
-import code.ponfee.commons.base.tuple.Tuple;
-import code.ponfee.commons.base.tuple.Tuple1;
-import code.ponfee.commons.base.tuple.Tuple2;
-import code.ponfee.commons.collect.Collects;
-import code.ponfee.commons.collect.ValueSortedMap;
-import code.ponfee.commons.io.HumanReadables;
-import code.ponfee.commons.json.Jsons;
-import code.ponfee.commons.math.Maths;
-import code.ponfee.commons.math.Numbers;
-import code.ponfee.commons.model.Page;
-import code.ponfee.commons.reflect.BeanCopiers;
-import code.ponfee.commons.util.Bytes;
-import code.ponfee.commons.date.Dates;
-import code.ponfee.commons.util.Snowflake;
-import code.ponfee.commons.util.SecureRandoms;
+import cn.ponfee.commons.base.tuple.Tuple;
+import cn.ponfee.commons.base.tuple.Tuple1;
+import cn.ponfee.commons.base.tuple.Tuple2;
+import cn.ponfee.commons.collect.Collects;
+import cn.ponfee.commons.collect.ValueSortedMap;
+import cn.ponfee.commons.io.HumanReadables;
+import cn.ponfee.commons.json.Jsons;
+import cn.ponfee.commons.math.Maths;
+import cn.ponfee.commons.math.Numbers;
+import cn.ponfee.commons.model.Page;
+import cn.ponfee.commons.reflect.BeanCopiers;
+import cn.ponfee.commons.util.Bytes;
+import cn.ponfee.commons.date.Dates;
+import cn.ponfee.commons.util.Snowflake;
+import cn.ponfee.commons.util.SecureRandoms;
 import com.google.common.base.Stopwatch;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;

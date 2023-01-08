@@ -1,19 +1,11 @@
-/* __________              _____                                          *\
-** \______   \____   _____/ ____\____   ____        Ponfee's code         **
-**  |     ___/  _ \ /    \   __\/ __ \_/ __ \       (c) 2017-2019, MIT    **
-**  |    |  (  <_> )   |  \  | \  ___/\  ___/       http://www.ponfee.cn  **
-**  |____|   \____/|___|  /__|  \___  >\___  >                            **
-**                      \/          \/     \/                             **
-\*                                                                        */
-
 package test.tree;
 
-import code.ponfee.commons.base.tuple.Tuple2;
-import code.ponfee.commons.collect.ImmutableArrayList;
-import code.ponfee.commons.json.Jsons;
-import code.ponfee.commons.tree.NodePath;
-import code.ponfee.commons.tree.NodePath.FastjsonDeserializer;
-import code.ponfee.commons.util.Asserts;
+import cn.ponfee.commons.base.tuple.Tuple2;
+import cn.ponfee.commons.collect.ImmutableArrayList;
+import cn.ponfee.commons.json.Jsons;
+import cn.ponfee.commons.tree.NodePath;
+import cn.ponfee.commons.tree.NodePath.FastjsonDeserializer;
+import cn.ponfee.commons.util.Asserts;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.google.common.collect.ImmutableList;

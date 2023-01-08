@@ -6,9 +6,9 @@ import java.util.Map;
 import org.apache.commons.codec.binary.Hex;
 import org.junit.Test;
 
-import code.ponfee.commons.jce.ECParameters;
-import code.ponfee.commons.jce.sm.SM2;
-import code.ponfee.commons.util.MavenProjects;
+import cn.ponfee.commons.jce.ECParameters;
+import cn.ponfee.commons.jce.sm.SM2;
+import cn.ponfee.commons.util.MavenProjects;
 
 public class SM2Test {
     static ECParameters ecParameter = ECParameters.SM2_BEST;

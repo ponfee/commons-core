@@ -1,11 +1,3 @@
-/* __________              _____                                          *\
-** \______   \____   _____/ ____\____   ____        Ponfee's code         **
-**  |     ___/  _ \ /    \   __\/ __ \_/ __ \       (c) 2017-2018, MIT    **
-**  |    |  (  <_> )   |  \  | \  ___/\  ___/       http://www.ponfee.cn  **
-**  |____|   \____/|___|  /__|  \___  >\___  >                            **
-**                      \/          \/     \/                             **
-\*                                                                        */
-
 package test;
 
 import java.io.ByteArrayOutputStream;
@@ -23,11 +15,11 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import code.ponfee.commons.base.tuple.Tuple2;
-import code.ponfee.commons.collect.ArrayHashKey;
-import code.ponfee.commons.concurrent.ThreadPoolTestUtils;
-import code.ponfee.commons.util.CurrencyEnum;
-import code.ponfee.commons.util.Money;
+import cn.ponfee.commons.base.tuple.Tuple2;
+import cn.ponfee.commons.collect.ArrayHashKey;
+import cn.ponfee.commons.concurrent.ThreadPoolTestUtils;
+import cn.ponfee.commons.util.CurrencyEnum;
+import cn.ponfee.commons.util.Money;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,11 +29,11 @@ import org.junit.Test;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 
-import code.ponfee.commons.jce.CryptoProvider;
-import code.ponfee.commons.resource.ResourceLoaderFacade;
-import code.ponfee.commons.util.Bytes;
-import code.ponfee.commons.date.Dates;
-import code.ponfee.commons.util.MavenProjects;
+import cn.ponfee.commons.jce.CryptoProvider;
+import cn.ponfee.commons.resource.ResourceLoaderFacade;
+import cn.ponfee.commons.util.Bytes;
+import cn.ponfee.commons.date.Dates;
+import cn.ponfee.commons.util.MavenProjects;
 
 /**
  * 

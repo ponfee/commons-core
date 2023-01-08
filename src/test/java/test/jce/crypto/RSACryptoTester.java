@@ -1,6 +1,6 @@
 package test.jce.crypto;
 
-import static code.ponfee.commons.jce.security.RSACryptor.generateKeyPair;
+import static cn.ponfee.commons.jce.security.RSACryptor.generateKeyPair;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -18,14 +18,14 @@ import org.junit.Test;
 
 import com.google.common.io.Files;
 
-import code.ponfee.commons.jce.Providers;
-import code.ponfee.commons.jce.digest.DigestUtils;
-import code.ponfee.commons.jce.security.RSACryptor;
-import code.ponfee.commons.jce.security.RSACryptor.RSAKeyPair;
-import code.ponfee.commons.jce.security.RSAPrivateKeys;
-import code.ponfee.commons.jce.security.RSAPublicKeys;
-import code.ponfee.commons.util.Bytes;
-import code.ponfee.commons.util.MavenProjects;
+import cn.ponfee.commons.jce.Providers;
+import cn.ponfee.commons.jce.digest.DigestUtils;
+import cn.ponfee.commons.jce.security.RSACryptor;
+import cn.ponfee.commons.jce.security.RSACryptor.RSAKeyPair;
+import cn.ponfee.commons.jce.security.RSAPrivateKeys;
+import cn.ponfee.commons.jce.security.RSAPublicKeys;
+import cn.ponfee.commons.util.Bytes;
+import cn.ponfee.commons.util.MavenProjects;
 
 public class RSACryptoTester {
 

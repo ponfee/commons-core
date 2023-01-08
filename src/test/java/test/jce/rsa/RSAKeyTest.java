@@ -1,9 +1,9 @@
 package test.jce.rsa;
 
-import code.ponfee.commons.jce.security.RSACryptor;
-import code.ponfee.commons.jce.security.RSACryptor.RSAKeyPair;
-import code.ponfee.commons.jce.security.RSAPrivateKeys;
-import code.ponfee.commons.jce.security.RSAPublicKeys;
+import cn.ponfee.commons.jce.security.RSACryptor;
+import cn.ponfee.commons.jce.security.RSACryptor.RSAKeyPair;
+import cn.ponfee.commons.jce.security.RSAPrivateKeys;
+import cn.ponfee.commons.jce.security.RSAPublicKeys;
 
 public class RSAKeyTest {
 

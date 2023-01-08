@@ -16,7 +16,7 @@ import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.junit.Test;
 
-import code.ponfee.commons.jce.Providers;
+import cn.ponfee.commons.jce.Providers;
 
 public class TestPem {
 

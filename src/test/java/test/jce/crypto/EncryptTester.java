@@ -1,17 +1,17 @@
 package test.jce.crypto;
 
-import static code.ponfee.commons.util.SecureRandoms.nextBytes;
+import static cn.ponfee.commons.util.SecureRandoms.nextBytes;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Provider;
 import java.util.Base64;
 
-import code.ponfee.commons.jce.Providers;
-import code.ponfee.commons.jce.symmetric.Algorithm;
-import code.ponfee.commons.jce.symmetric.Mode;
-import code.ponfee.commons.jce.symmetric.Padding;
-import code.ponfee.commons.jce.symmetric.SymmetricCryptor;
-import static code.ponfee.commons.jce.symmetric.SymmetricCryptorBuilder.newBuilder;
+import cn.ponfee.commons.jce.Providers;
+import cn.ponfee.commons.jce.symmetric.Algorithm;
+import cn.ponfee.commons.jce.symmetric.Mode;
+import cn.ponfee.commons.jce.symmetric.Padding;
+import cn.ponfee.commons.jce.symmetric.SymmetricCryptor;
+import static cn.ponfee.commons.jce.symmetric.SymmetricCryptorBuilder.newBuilder;
 
 public class EncryptTester {
 

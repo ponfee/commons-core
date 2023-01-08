@@ -1,24 +1,24 @@
 package test.jce;
 
-import static code.ponfee.commons.util.SecureRandoms.nextBytes;
+import static cn.ponfee.commons.util.SecureRandoms.nextBytes;
 
 import java.security.Provider;
 
 import org.apache.commons.codec.binary.Hex;
 
-import code.ponfee.commons.jce.DigestAlgorithms;
-import code.ponfee.commons.jce.HmacAlgorithms;
-import code.ponfee.commons.jce.Providers;
-import code.ponfee.commons.jce.digest.DigestUtils;
-import code.ponfee.commons.jce.digest.HmacUtils;
-import code.ponfee.commons.jce.sm.SM3Digest;
-import code.ponfee.commons.jce.sm.SM4;
-import code.ponfee.commons.jce.symmetric.Algorithm;
-import code.ponfee.commons.jce.symmetric.Mode;
-import code.ponfee.commons.jce.symmetric.Padding;
-import code.ponfee.commons.jce.symmetric.SymmetricCryptor;
-import code.ponfee.commons.jce.symmetric.SymmetricCryptorBuilder;
-import code.ponfee.commons.util.SecureRandoms;
+import cn.ponfee.commons.jce.DigestAlgorithms;
+import cn.ponfee.commons.jce.HmacAlgorithms;
+import cn.ponfee.commons.jce.Providers;
+import cn.ponfee.commons.jce.digest.DigestUtils;
+import cn.ponfee.commons.jce.digest.HmacUtils;
+import cn.ponfee.commons.jce.sm.SM3Digest;
+import cn.ponfee.commons.jce.sm.SM4;
+import cn.ponfee.commons.jce.symmetric.Algorithm;
+import cn.ponfee.commons.jce.symmetric.Mode;
+import cn.ponfee.commons.jce.symmetric.Padding;
+import cn.ponfee.commons.jce.symmetric.SymmetricCryptor;
+import cn.ponfee.commons.jce.symmetric.SymmetricCryptorBuilder;
+import cn.ponfee.commons.util.SecureRandoms;
 
 public class DigestTest {
 

@@ -31,7 +31,7 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
-import code.ponfee.commons.reflect.Fields;
+import cn.ponfee.commons.reflect.Fields;
 
 /**
  * <?xml version="1.0" encoding="UTF-8" ?>

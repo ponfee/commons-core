@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import code.ponfee.commons.http.Http;
+import cn.ponfee.commons.http.Http;
 
 public class NewApiTester {
     private static final String TOKEN = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtVU9SMk5XVzJsUXVNd1VxUlRuWjR3PT0iLCJleHAiOjE0OTEwMTY1NTUsInJmaCI6MTQ4ODUxMDk1NX0.mjeVWE3vEfI89r65DtoqRGFkUSx-KeQL0SE5liUrwSIG3mh7ptovcDkpjq6oqJNnMrul3vOHNWhMjBbwt0lFAQ";

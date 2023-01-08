@@ -5,8 +5,8 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import code.ponfee.commons.jce.implementation.Cryptor;
-import code.ponfee.commons.jce.implementation.Key;
+import cn.ponfee.commons.jce.implementation.Cryptor;
+import cn.ponfee.commons.jce.implementation.Key;
 
 public class CryptoInputStream extends InputStream {
 

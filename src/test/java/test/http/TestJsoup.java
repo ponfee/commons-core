@@ -1,11 +1,3 @@
-/* __________              _____                                          *\
-** \______   \____   _____/ ____\____   ____        Ponfee's code         **
-**  |     ___/  _ \ /    \   __\/ __ \_/ __ \       (c) 2017-2018, MIT    **
-**  |    |  (  <_> )   |  \  | \  ___/\  ___/       http://www.ponfee.cn  **
-**  |____|   \____/|___|  /__|  \___  >\___  >                            **
-**                      \/          \/     \/                             **
-\*                                                                        */
-
 package test.http;
 
 import java.util.List;
@@ -17,7 +9,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.Test;
 
-import code.ponfee.commons.http.Http;
+import cn.ponfee.commons.http.Http;
 
 /**
  * 

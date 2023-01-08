@@ -2,9 +2,9 @@ package test.constraint;
 
 import java.util.Date;
 
-import code.ponfee.commons.constrain.Constraint;
-import code.ponfee.commons.constrain.Constraint.Tense;
-import code.ponfee.commons.constrain.FieldValidator;
+import cn.ponfee.commons.constrain.Constraint;
+import cn.ponfee.commons.constrain.Constraint.Tense;
+import cn.ponfee.commons.constrain.FieldValidator;
 
 public class TestConstraint {
 

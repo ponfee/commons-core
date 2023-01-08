@@ -3,8 +3,8 @@ package test.jce.sm;
 import java.io.IOException;
 import java.util.Base64;
 
-import code.ponfee.commons.jce.sm.SM4;
-import code.ponfee.commons.util.MavenProjects;
+import cn.ponfee.commons.jce.sm.SM4;
+import cn.ponfee.commons.util.MavenProjects;
 
 public class SM4Test {
 

@@ -75,7 +75,7 @@
     </Logger>
 
     <!-- additivity指定是否同时输出日志到父类的appender，缺省为true -->
-    <Logger name="code.ponfee.commons" level="WARN" additivity="false">
+    <Logger name="cn.ponfee.commons" level="WARN" additivity="false">
       <AppenderRef ref="Console" />
       <AppenderRef ref="RollingFile" />
     </Logger>

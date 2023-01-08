@@ -9,7 +9,7 @@ import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.EventHandlerGroup;
 import com.lmax.disruptor.dsl.ProducerType;
 
-import code.ponfee.commons.concurrent.NamedThreadFactory;
+import cn.ponfee.commons.concurrent.NamedThreadFactory;
 
 /**
  * 测试 P1生产消息，C1，C2消费消息，C1和C2会共享所有的event元素! C3依赖C1，C2处理结果

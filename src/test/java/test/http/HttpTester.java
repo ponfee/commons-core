@@ -13,13 +13,13 @@ import javax.net.ssl.SSLSocketFactory;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
-import code.ponfee.commons.http.ContentType;
-import code.ponfee.commons.http.Http;
-import code.ponfee.commons.jce.security.KeyStoreResolver;
-import code.ponfee.commons.jce.security.KeyStoreResolver.KeyStoreType;
-import code.ponfee.commons.resource.Resource;
-import code.ponfee.commons.resource.ResourceLoaderFacade;
-import code.ponfee.commons.util.Bytes;
+import cn.ponfee.commons.http.ContentType;
+import cn.ponfee.commons.http.Http;
+import cn.ponfee.commons.jce.security.KeyStoreResolver;
+import cn.ponfee.commons.jce.security.KeyStoreResolver.KeyStoreType;
+import cn.ponfee.commons.resource.Resource;
+import cn.ponfee.commons.resource.ResourceLoaderFacade;
+import cn.ponfee.commons.util.Bytes;
 
 public class HttpTester {
     //private static final String URL = "http://192.168.1.49:8080/web/";

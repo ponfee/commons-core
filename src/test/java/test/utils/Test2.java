@@ -12,10 +12,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.util.Base64Utils;
 
-import code.ponfee.commons.collect.Collects;
-import code.ponfee.commons.io.Files;
-import code.ponfee.commons.util.Base64UrlSafe;
-import code.ponfee.commons.util.SecureRandoms;
+import cn.ponfee.commons.collect.Collects;
+import cn.ponfee.commons.io.Files;
+import cn.ponfee.commons.util.Base64UrlSafe;
+import cn.ponfee.commons.util.SecureRandoms;
 
 /**
  * @author Ponfee

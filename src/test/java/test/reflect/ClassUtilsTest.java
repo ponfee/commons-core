@@ -1,28 +1,20 @@
-/* __________              _____                                          *\
-** \______   \____   _____/ ____\____   ____        Ponfee's code         **
-**  |     ___/  _ \ /    \   __\/ __ \_/ __ \       (c) 2017-2019, MIT    **
-**  |    |  (  <_> )   |  \  | \  ___/\  ___/       http://www.ponfee.cn  **
-**  |____|   \____/|___|  /__|  \___  >\___  >                            **
-**                      \/          \/     \/                             **
-\*                                                                        */
-
 package test.reflect;
 
-import code.ponfee.commons.base.PrimitiveTypes;
-import code.ponfee.commons.base.tuple.Tuple;
-import code.ponfee.commons.base.tuple.Tuple0;
-import code.ponfee.commons.base.tuple.Tuple1;
-import code.ponfee.commons.base.tuple.Tuple2;
-import code.ponfee.commons.base.tuple.Tuple3;
-import code.ponfee.commons.cache.Cache;
-import code.ponfee.commons.cache.CacheBuilder;
-import code.ponfee.commons.collect.ByteArrayWrapper;
-import code.ponfee.commons.collect.Collects;
-import code.ponfee.commons.model.Predicates;
-import code.ponfee.commons.model.Result;
-import code.ponfee.commons.reflect.ClassUtils;
-import code.ponfee.commons.reflect.Fields;
-import code.ponfee.commons.reflect.GenericUtils;
+import cn.ponfee.commons.base.PrimitiveTypes;
+import cn.ponfee.commons.base.tuple.Tuple;
+import cn.ponfee.commons.base.tuple.Tuple0;
+import cn.ponfee.commons.base.tuple.Tuple1;
+import cn.ponfee.commons.base.tuple.Tuple2;
+import cn.ponfee.commons.base.tuple.Tuple3;
+import cn.ponfee.commons.cache.Cache;
+import cn.ponfee.commons.cache.CacheBuilder;
+import cn.ponfee.commons.collect.ByteArrayWrapper;
+import cn.ponfee.commons.collect.Collects;
+import cn.ponfee.commons.model.Predicates;
+import cn.ponfee.commons.model.Result;
+import cn.ponfee.commons.reflect.ClassUtils;
+import cn.ponfee.commons.reflect.Fields;
+import cn.ponfee.commons.reflect.GenericUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openjdk.jol.vm.VM;
@@ -154,7 +146,7 @@ public class ClassUtilsTest {
         Assert.assertEquals(ClassUtils.invoke(String.class, "join", new Object[]{"|", new String[]{"a", "b"}}), "a|b");
         Assert.assertNull(ClassUtils.getMethod(String.class, "getName"));
 
-        // Class.class对象：只处理Class类中的实例方法，如Class.class.getName()。不支持Class类中的静态方法，如Class.forName("code.ponfee.commons.base.tuple.Tuple0");
+        // Class.class对象：只处理Class类中的实例方法，如Class.class.getName()。不支持Class类中的静态方法，如Class.forName("cn.ponfee.commons.base.tuple.Tuple0");
         Assert.assertEquals(ClassUtils.invoke(Class.class, "getName"), "java.lang.Class");
         Assert.assertNull(ClassUtils.getMethod(Class.class, "forName", String.class));
         //double a = 1;

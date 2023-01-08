@@ -9,7 +9,7 @@ import java.lang.reflect.Proxy;
 
 import org.apache.commons.io.IOUtils;
 
-import code.ponfee.commons.util.Bytes;
+import cn.ponfee.commons.util.Bytes;
 
 public class ProxyTest {
 

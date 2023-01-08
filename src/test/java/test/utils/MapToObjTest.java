@@ -3,8 +3,8 @@ package test.utils;
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.ImmutableMap;
 
-import code.ponfee.commons.jce.DigestAlgorithms;
-import code.ponfee.commons.reflect.BeanMaps;
+import cn.ponfee.commons.jce.DigestAlgorithms;
+import cn.ponfee.commons.reflect.BeanMaps;
 
 public class MapToObjTest {
 

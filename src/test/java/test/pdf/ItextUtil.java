@@ -24,9 +24,9 @@ import com.itextpdf.text.pdf.security.ExternalSignature;
 import com.itextpdf.text.pdf.security.MakeSignature;
 import com.itextpdf.text.pdf.security.PrivateKeySignature;
 
-import code.ponfee.commons.jce.security.KeyStoreResolver;
-import code.ponfee.commons.jce.security.KeyStoreResolver.KeyStoreType;
-import code.ponfee.commons.resource.ResourceLoaderFacade;
+import cn.ponfee.commons.jce.security.KeyStoreResolver;
+import cn.ponfee.commons.jce.security.KeyStoreResolver.KeyStoreType;
+import cn.ponfee.commons.resource.ResourceLoaderFacade;
 
 public class ItextUtil {
 

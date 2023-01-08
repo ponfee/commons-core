@@ -1,7 +1,7 @@
 package test.utils;
 
-import code.ponfee.commons.util.MavenProjects;
-import code.ponfee.commons.util.ZipUtils;
+import cn.ponfee.commons.util.MavenProjects;
+import cn.ponfee.commons.util.ZipUtils;
 
 public class Ztzip {
 

@@ -1,8 +1,8 @@
 package test.utils;
 
-import code.ponfee.commons.resource.ResourceLoaderFacade;
-import code.ponfee.commons.util.MavenProjects;
-import code.ponfee.commons.xml.SimpleXmlHandler;
+import cn.ponfee.commons.resource.ResourceLoaderFacade;
+import cn.ponfee.commons.util.MavenProjects;
+import cn.ponfee.commons.xml.SimpleXmlHandler;
 import org.apache.commons.io.IOUtils;
 
 import java.io.FileReader;

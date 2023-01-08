@@ -5,10 +5,10 @@ import java.util.Map;
 
 import org.apache.commons.codec.binary.Hex;
 
-import code.ponfee.commons.jce.ECParameters;
-import code.ponfee.commons.jce.sm.SM2;
-import code.ponfee.commons.jce.sm.SM2KeyExchanger;
-import code.ponfee.commons.jce.sm.SM2KeyExchanger.TransportEntity;
+import cn.ponfee.commons.jce.ECParameters;
+import cn.ponfee.commons.jce.sm.SM2;
+import cn.ponfee.commons.jce.sm.SM2KeyExchanger;
+import cn.ponfee.commons.jce.sm.SM2KeyExchanger.TransportEntity;
 
 public class SM2KeyExchangeTest {
 

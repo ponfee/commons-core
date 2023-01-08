@@ -8,7 +8,7 @@ import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.jce.PrincipalUtil;
 import org.bouncycastle.jce.X509Principal;
 
-import code.ponfee.commons.jce.cert.X509CertUtils;
+import cn.ponfee.commons.jce.cert.X509CertUtils;
 
 
 public class X500NameTest {

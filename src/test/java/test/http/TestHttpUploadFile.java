@@ -14,9 +14,9 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import code.ponfee.commons.http.ContentType;
-import code.ponfee.commons.http.Http;
-import code.ponfee.commons.io.Files;
+import cn.ponfee.commons.http.ContentType;
+import cn.ponfee.commons.http.Http;
+import cn.ponfee.commons.io.Files;
 
 @SuppressWarnings("unchecked")
 public class TestHttpUploadFile {

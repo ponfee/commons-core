@@ -18,9 +18,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import code.ponfee.commons.jce.ECParameters;
-import code.ponfee.commons.jce.implementation.ecc.ECCryptor;
-import code.ponfee.commons.jce.implementation.ecc.EllipticCurve;
+import cn.ponfee.commons.jce.ECParameters;
+import cn.ponfee.commons.jce.implementation.ecc.ECCryptor;
+import cn.ponfee.commons.jce.implementation.ecc.EllipticCurve;
 
 public class Screen extends JFrame implements ActionListener {
     private static final long serialVersionUID = 1L;

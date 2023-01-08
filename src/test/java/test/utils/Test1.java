@@ -1,6 +1,6 @@
 package test.utils;
 
-import code.ponfee.commons.util.SecureRandoms;
+import cn.ponfee.commons.util.SecureRandoms;
 import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.codec.binary.Hex;
 

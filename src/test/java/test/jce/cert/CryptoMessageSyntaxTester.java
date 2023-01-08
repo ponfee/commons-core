@@ -9,12 +9,12 @@ import org.junit.Test;
 
 import com.google.common.io.Files;
 
-import code.ponfee.commons.http.Http;
-import code.ponfee.commons.jce.pkcs.CryptoMessageSyntax;
-import code.ponfee.commons.jce.pkcs.PKCS7Signature;
-import code.ponfee.commons.jce.security.KeyStoreResolver;
-import code.ponfee.commons.jce.security.KeyStoreResolver.KeyStoreType;
-import code.ponfee.commons.util.MavenProjects;
+import cn.ponfee.commons.http.Http;
+import cn.ponfee.commons.jce.pkcs.CryptoMessageSyntax;
+import cn.ponfee.commons.jce.pkcs.PKCS7Signature;
+import cn.ponfee.commons.jce.security.KeyStoreResolver;
+import cn.ponfee.commons.jce.security.KeyStoreResolver.KeyStoreType;
+import cn.ponfee.commons.util.MavenProjects;
 
 public class CryptoMessageSyntaxTester {
 

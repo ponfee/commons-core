@@ -4,14 +4,14 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import code.ponfee.commons.jce.ECParameters;
-import code.ponfee.commons.jce.implementation.Cryptor;
-import code.ponfee.commons.jce.implementation.Key;
-import code.ponfee.commons.jce.implementation.NoopCryptor;
-import code.ponfee.commons.jce.implementation.ecc.ECCryptor;
-import code.ponfee.commons.jce.implementation.ecc.EllipticCurve;
-import code.ponfee.commons.util.IdcardResolver;
-import code.ponfee.commons.util.MavenProjects;
+import cn.ponfee.commons.jce.ECParameters;
+import cn.ponfee.commons.jce.implementation.Cryptor;
+import cn.ponfee.commons.jce.implementation.Key;
+import cn.ponfee.commons.jce.implementation.NoopCryptor;
+import cn.ponfee.commons.jce.implementation.ecc.ECCryptor;
+import cn.ponfee.commons.jce.implementation.ecc.EllipticCurve;
+import cn.ponfee.commons.util.IdcardResolver;
+import cn.ponfee.commons.util.MavenProjects;
 
 public class ECCryptorTest {
 

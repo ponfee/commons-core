@@ -7,11 +7,11 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
 
-import code.ponfee.commons.http.ContentType;
-import code.ponfee.commons.http.Http;
-import code.ponfee.commons.json.Jsons;
-import code.ponfee.commons.util.Bytes;
-import code.ponfee.commons.util.ObjectUtils;
+import cn.ponfee.commons.http.ContentType;
+import cn.ponfee.commons.http.Http;
+import cn.ponfee.commons.json.Jsons;
+import cn.ponfee.commons.util.Bytes;
+import cn.ponfee.commons.util.ObjectUtils;
 
 @SuppressWarnings("unchecked")
 public class TestOpenApi {
