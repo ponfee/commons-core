@@ -6,15 +6,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>cn.ponfee</groupId>
   <artifactId>commons-core</artifactId>
-  <version>${revision}</version>
+  <version>1.3-SNAPSHOT</version>
 
   <!-- Maven:
-    > deploy: mvn -Drevision=_ versions:set -DnewVersion=1.3-SNAPSHOT && mvn clean deploy -DskipTests -Dcheckstyle.skip -U
+    > deploy: mvn -Drevision=_ versions:set -DnewVersion=1.3-SNAPSHOT && mvn clean deploy -DskipTests -Dcheckstyle.skip=true -U
 
     > maven wrapper：https://maven.apache.org/wrapper/index.html
-    > 1）Install：会生成mvnw和mvnw.cmd脚本
-    >   1.1）Apache maven wrapper：mvn wrapper:wrapper [-Dmaven=3.8.4]
-    >   1.2）Takari maven wrapper(建议用apache的)：mvn -N io.takari:maven:wrapper -Dmaven=3.8.4
+    > 解决maven-wrapper的版本问题：生成时需要删除掉“$MAVEN_HOME/conf/settings.xml”文件中配置的mirror
+    > 1）Install(会生成.mvn文件夹、mvnw和mvnw.cmd脚本)：mvn wrapper:wrapper -Dmaven=3.6.3
     > 2）Usage：
     >   2.1）Linux：./mvnw clean install -Dmaven.test.skip=true
     >   2.2）Windows：mvnw.cmd clean install -Dmaven.test.skip=true
@@ -102,7 +101,6 @@
   </distributionManagement>
 
   <properties>
-    <revision>1.3-SNAPSHOT</revision>
     <file.encoding>UTF-8</file.encoding>
     <project.build.sourceEncoding>${file.encoding}</project.build.sourceEncoding>
     <project.reporting.outputEncoding>${file.encoding}</project.reporting.outputEncoding>
@@ -152,7 +150,7 @@
       </properties>
     </profile>
     <profile>
-      <!-- clean deploy -Dmaven.test.skip=true -P prod -->
+      <!-- clean deploy -Dmaven.test.skip=true -P prd -->
       <id>prd</id>
       <properties>
       </properties>
