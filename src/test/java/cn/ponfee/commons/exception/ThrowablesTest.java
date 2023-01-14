@@ -14,25 +14,25 @@ public class ThrowablesTest {
     public void test() {
         Throwables.caught(ThrowablesTest::get0);
         System.out.println("---------------\n");
-        
-        Throwables.caught(ThrowablesTest::get1);
+
+        CheckedThrowing.caught(ThrowablesTest::get1);
         System.out.println("---------------\n");
 
-        String caught = Throwables.caught(ThrowablesTest::get2);
+        String caught = CheckedThrowing.caught(ThrowablesTest::get2);
+        System.out.println("---------------" + caught + "\n");
+
+        CheckedThrowing.caught(ThrowablesTest::get3, "xxx");
         System.out.println("---------------\n");
 
-        Throwables.caught(ThrowablesTest::get3, "xxx");
-        System.out.println("---------------\n");
-
-        String yyy = Throwables.caught(ThrowablesTest::get4, "yyy");
-        System.out.println("---------------\n");
+        String yyy = CheckedThrowing.caught(ThrowablesTest::get4, "yyy");
+        System.out.println("---------------" + yyy + "\n");
     }
 
     public static void get0() {
         System.out.println("get0");
-        int i = 1/0;
+        int i = 1 / 0;
     }
-    
+
     public static void get1() throws Throwable {
         System.out.println("get1");
         ImageUtils.getImageType(new FileInputStream(""));

@@ -520,10 +520,10 @@ public class BytesDetector {
      */
     private static int ascii_probability(byte[] rawtext) {
         int score = 75;
-        for (int i = 0; i < rawtext.length; i++) {
-            if (rawtext[i] < 0) {
+        for (byte b : rawtext) {
+            if (b < 0) {
                 score = score - 5;
-            } else if (rawtext[i] == (byte) 0x1B) { // ESC (used by ISO 2022)
+            } else if (b == (byte) 0x1B) { // ESC (used by ISO 2022)
                 score = score - 5;
             }
             if (score <= 0) {

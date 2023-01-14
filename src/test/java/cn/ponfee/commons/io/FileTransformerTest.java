@@ -1,7 +1,6 @@
 package cn.ponfee.commons.io;
 
 import cn.ponfee.commons.resource.ResourceLoaderFacade;
-import cn.ponfee.commons.util.MavenProjects;
 import cn.ponfee.commons.util.Strings;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -12,6 +11,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 
 public class FileTransformerTest {
 
@@ -70,14 +71,20 @@ public class FileTransformerTest {
 
     @Test
     public void testCheck() throws IOException {
+        //List<String> EXCLUDES = Arrays.asList("StreamForker.java","BCrypt.java","PBKDF2.java","SCrypt.java","CRC16.java","SqlHelper.java","SqlMapper.java","DeviceType.java","LiteDevice.java","DevicePlatform.java","LiteDeviceResolver.java","CustomLocalDateTimeDeserializer.java","HttpStatus.java","HttpRequest.java");
+        List<String> EXCLUDES = Arrays.asList("CRC16.java", "CustomLocalDateTimeDeserializer.java", "CronExpression.java");
+
         String banner = IOUtils.toString(ResourceLoaderFacade.getResource("test.txt").getStream(), StandardCharsets.UTF_8);
-        System.out.println(banner);
+
         FileUtils.listFiles(new File("/Users/ponfee/scm/gitee/distributed-scheduler"), new String[]{"java"}, true)
+            .stream()
+            .filter(e -> !EXCLUDES.contains(e.getName()))
             .forEach(e -> {
                 try {
                     String text = IOUtils.toString(e.toURI(), StandardCharsets.UTF_8);
                     if (!text.contains("@author Ponfee") || Strings.count(text, "@author") > 1) {
-                        System.out.println(e.getAbsolutePath());
+                        //System.out.println(e.getAbsolutePath());
+                        System.out.println(e.getName());
                     }
                 } catch (IOException ex) {
                     ex.printStackTrace();

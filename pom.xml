@@ -647,14 +647,14 @@
       <id>jcenter</id>
       <url>https://jcenter.bintray.com</url>
     </repository>-->
-    <repository>
+    <!--<repository>
       <id>nexus.nuiton.org-central</id>
       <url>https://nexus.nuiton.org/nexus/content/repositories/central</url>
     </repository>
     <repository>
       <id>nexus.nuiton.org-thirdparty</id>
       <url>https://nexus.nuiton.org/nexus/content/repositories/thirdparty</url>
-    </repository>
+    </repository>-->
   </repositories>
 
   <build>

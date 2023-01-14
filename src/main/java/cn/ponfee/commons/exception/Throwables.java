@@ -15,8 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-
-import static cn.ponfee.commons.exception.CheckedThrowing.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Throwable utilities.
@@ -121,7 +122,7 @@ public final class Throwables {
 
     // -----------------------------------------------------------------caught
 
-    public static void caught(ThrowingRunnable<?> runnable) {
+    public static void caught(Runnable runnable) {
         try {
             runnable.run();
         } catch (Throwable t) {
@@ -132,7 +133,7 @@ public final class Throwables {
         }
     }
 
-    public static <R> R caught(ThrowingSupplier<R, ?> supplier) {
+    public static <R> R caught(Supplier<R> supplier) {
         try {
             return supplier.get();
         } catch (Throwable t) {
@@ -144,7 +145,7 @@ public final class Throwables {
         }
     }
 
-    public static <E> void caught(ThrowingConsumer<E, ?> consumer, E arg) {
+    public static <E> void caught(Consumer<E> consumer, E arg) {
         try {
             consumer.accept(arg);
         } catch (Throwable t) {
@@ -155,11 +156,11 @@ public final class Throwables {
         }
     }
 
-    public static <E, R> R caught(ThrowingFunction<E, R, ?> function, E arg) {
+    public static <E, R> R caught(Function<E, R> function, E arg) {
         return caught(function, arg, null);
     }
 
-    public static <E, R> R caught(ThrowingFunction<E, R, ?> function, E arg, R defaultValue) {
+    public static <E, R> R caught(Function<E, R> function, E arg, R defaultValue) {
         try {
             return function.apply(arg);
         } catch (Throwable t) {

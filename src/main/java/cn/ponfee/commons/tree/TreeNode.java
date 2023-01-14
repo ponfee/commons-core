@@ -145,8 +145,8 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         }
 
         // 3、以此节点为根构建节点树
-        super.level = 1; // root node level is 1
-        super.path = null; // reset with null
+        super.level = 1;         // root node level is 1
+        super.path = null;       // reset with null
         super.leftLeafCount = 0; // root node left leaf count is 1
         super.siblingOrder = 1;
         this.mount0(null, nodes, ignoreOrphan, super.nid);

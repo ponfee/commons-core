@@ -70,7 +70,7 @@ public abstract class BaseEntity implements java.io.Serializable {
     /**
      * Base entity with biz-no, creator and updater filed
      *
-     * @param <U> biz-no field type
+     * @param <N> biz-no field type
      * @param <U> creator and updater field type(userid or username)
      */
     @Getter

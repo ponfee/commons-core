@@ -19,7 +19,7 @@ import java.util.function.Function;
  *
  * @author Ponfee
  */
-public class SiblingNodeComparator {
+public final class SiblingNodeComparator {
 
     // -----------------------------------------------------------comparing by Attach
 

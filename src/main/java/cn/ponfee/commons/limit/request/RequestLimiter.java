@@ -234,7 +234,7 @@ public abstract class RequestLimiter {
     }
 
     static long expire(int ttl) {
-        return System.currentTimeMillis() + ttl * 1000;
+        return System.currentTimeMillis() + ttl * 1000L;
     }
 
     static class CacheValue<T> implements Serializable {

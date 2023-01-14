@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public enum CurrencyEnum {
 
-    /** 人民币 [¥], previous: {0xffe5} */
+    /** 人民币 [¥], previous: {0xffe5}, Same symbol as JPY Japan Yen. */
     CNY(new char[]{0xa5}),
 
     /** 美元 [US$] */
@@ -43,7 +43,7 @@ public enum CurrencyEnum {
     /** 英镑 [£], previous: {0xffe1} */
     GBP(new char[]{0xa3}),
 
-    /** 日元 [¥] */
+    /** 日元 [¥], Same symbol as CNY China Yuan Renminbi. */
     JPY(new char[]{0xa5}),
 
     /** 巴西雷亚尔 [R$] */

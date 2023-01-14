@@ -8,6 +8,9 @@
 
 package cn.ponfee.commons.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Comparator;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
@@ -20,6 +23,8 @@ import java.util.function.Supplier;
  * @author Ponfee
  */
 public final class CheckedThrowing {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CheckedThrowing.class);
 
     /**
      * eg: new Thread(CheckedThrowing.runnable(printer::print))
@@ -50,6 +55,58 @@ public final class CheckedThrowing {
 
     public static <E, T extends Throwable> Comparator<? super E> comparator(ThrowingComparator<E, T> comparator) {
         return ThrowingComparator.checked(comparator);
+    }
+
+    // -------------------------------------------------------------------------------caught
+
+    public static void caught(ThrowingRunnable runnable) {
+        try {
+            runnable.run();
+        } catch (Throwable t) {
+            LOG.error(t.getMessage(), t);
+            if (t instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    public static <R> R caught(ThrowingSupplier<R, ?> supplier) {
+        try {
+            return supplier.get();
+        } catch (Throwable t) {
+            LOG.error(t.getMessage(), t);
+            if (t instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            return null;
+        }
+    }
+
+    public static <E> void caught(ThrowingConsumer<E, ?> consumer, E arg) {
+        try {
+            consumer.accept(arg);
+        } catch (Throwable t) {
+            LOG.error(t.getMessage(), t);
+            if (t instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    public static <E, R> R caught(ThrowingFunction<E, R, ?> function, E arg) {
+        return caught(function, arg, null);
+    }
+
+    public static <E, R> R caught(ThrowingFunction<E, R, ?> function, E arg, R defaultValue) {
+        try {
+            return function.apply(arg);
+        } catch (Throwable t) {
+            LOG.error(t.getMessage(), t);
+            if (t instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            return defaultValue;
+        }
     }
 
     // -------------------------------------------------------------------------------interface definitions

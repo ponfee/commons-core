@@ -190,7 +190,7 @@ public final class AsyncBatchProcessor<T> {
                     if (isEnd()) {
                         if (asyncExecutor != null) {
                             // destroy the async executor
-                            ThreadPoolExecutors.shutdown(asyncExecutor);
+                            ThreadPoolExecutors.shutdown(asyncExecutor, 3);
                         }
 
                         // exit for loop if end

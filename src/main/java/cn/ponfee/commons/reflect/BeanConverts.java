@@ -25,9 +25,10 @@ public final class BeanConverts {
 
     /**
      * 将对象指定字段转为map
-     * 
+     *
      * @param bean
      * @param fields
+     * @param <E>
      * @return
      */
     public static <E> Object[] toArray(E bean, String... fields) {
@@ -39,9 +40,11 @@ public final class BeanConverts {
 
     /**
      * 获取对象指定字段的值
-     * 
+     *
      * @param beans
      * @param field
+     * @param <T>
+     * @param <E>
      * @return
      */
     @SuppressWarnings({ "unchecked" })

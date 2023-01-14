@@ -97,8 +97,8 @@ public class DoubleListViewer<E> implements List<E>, RandomAccess {
                 if (sub == null || sub.isEmpty()) {
                     continue;
                 }
-                for (int i = 0; i < sub.size(); i++) {
-                    if (sub.get(i) == null) {
+                for (E e : sub) {
+                    if (e == null) {
                         return index;
                     }
                     index++;
@@ -109,8 +109,8 @@ public class DoubleListViewer<E> implements List<E>, RandomAccess {
                 if (sub == null || sub.isEmpty()) {
                     continue;
                 }
-                for (int i = 0; i < sub.size(); i++) {
-                    if (o.equals(sub.get(i))) {
+                for (E e : sub) {
+                    if (o.equals(e)) {
                         return index;
                     }
                     index++;
