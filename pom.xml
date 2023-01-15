@@ -9,7 +9,7 @@
   <version>1.3-SNAPSHOT</version>
 
   <!-- Maven:
-    > deploy: mvn -Drevision=_ versions:set -DnewVersion=1.3-SNAPSHOT && mvn clean deploy -DskipTests -Dcheckstyle.skip=true -U
+    > deploy: mvn -Drevision=_ versions:set -DnewVersion=1.3-SNAPSHOT && mvn clean deploy -Prelease -DskipTests -Dcheckstyle.skip=true -U
 
     > maven wrapper：https://maven.apache.org/wrapper/index.html
     > 解决maven-wrapper的版本问题：生成时需要删除掉“$MAVEN_HOME/conf/settings.xml”文件中配置的mirror
@@ -139,10 +139,9 @@
         <system.separator>;</system.separator>
       </properties>
     </profile>
-
     <profile>
-      <!-- clean deploy -Dmaven.test.skip=true -P dev -->
-      <id>dev</id>
+      <!-- mvn clean package -Pdevelop -->
+      <id>develop</id>
       <!--<activation>前面加了OS的profile后，此处的默认设置无效
         <activeByDefault>true</activeByDefault>
       </activation>-->
@@ -150,10 +149,26 @@
       </properties>
     </profile>
     <profile>
-      <!-- clean deploy -Dmaven.test.skip=true -P prd -->
-      <id>prd</id>
-      <properties>
-      </properties>
+      <!-- mvn clean deploy -Prelease -->
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.0.1</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 
@@ -638,6 +653,7 @@
            4、central仓和jcenter仓的聚合镜像仓：https://maven.aliyun.com/repository/public
            5、搜索地址：https://search.maven.org/
            6、文档：https://developer.aliyun.com/mvn/guide
+           7、中央仓库搜索：https://central.sonatype.dev/
       -->
       <id>central</id>
       <url>https://repo.maven.apache.org/maven2</url>
@@ -757,20 +773,6 @@
         <configuration>
           <doclint>none</doclint>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
-        <version>3.0.1</version>
-        <executions>
-          <execution>
-            <id>sign-artifacts</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
 
       <!-- 
