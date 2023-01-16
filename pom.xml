@@ -6,10 +6,10 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>cn.ponfee</groupId>
   <artifactId>commons-core</artifactId>
-  <version>1.3-SNAPSHOT</version>
+  <version>1.4-SNAPSHOT</version>
 
   <!-- Maven:
-    > deploy: mvn -Drevision=_ versions:set -DnewVersion=1.3-SNAPSHOT && mvn clean deploy -Prelease -DskipTests -Dcheckstyle.skip=true -U
+    > deploy: mvn -Drevision=_ versions:set -DnewVersion=1.4-SNAPSHOT && mvn clean deploy -Prelease -DskipTests -Dcheckstyle.skip=true -U
 
     > maven wrapper：https://maven.apache.org/wrapper/index.html
     > 解决maven-wrapper的版本问题：生成时需要删除掉“$MAVEN_HOME/conf/settings.xml”文件中配置的mirror

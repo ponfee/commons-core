@@ -8,7 +8,6 @@
 
 package cn.ponfee.commons.io;
 
-import cn.ponfee.commons.exception.Throwables;
 import cn.ponfee.commons.tree.PlainNode;
 import cn.ponfee.commons.tree.TreeNode;
 import cn.ponfee.commons.tree.TreeNodeBuilder;
@@ -22,7 +21,6 @@ import java.nio.channels.FileChannel.MapMode;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 
 /**
  * 文件工具类
@@ -73,17 +71,18 @@ public final class Files {
         StringBuilderWriter buffer = new StringBuilderWriter(4);
         PrintWriter out = new PrintWriter(buffer);
         out.println();
+        out.flush();
         SYSTEM_LINE_SEPARATOR = buffer.toString();
         out.close();
     }
 
     /**
      * 创建目录
-     * @param path
+     * @param filePath
      * @return
      */
-    public static File mkdir(String path) {
-        File file = new File(path);
+    public static File mkdir(String filePath) {
+        File file = new File(filePath);
         mkdir(file);
         return file;
     }
@@ -106,17 +105,6 @@ public final class Files {
         if (file.mkdirs()) {
             file.setLastModified(System.currentTimeMillis());
         }
-    }
-
-    /**
-     * 创建文件
-     * @param path
-     * @return
-     */
-    public static File touch(String path) {
-        File file = new File(path);
-        touch(file);
-        return file;
     }
 
     /**
@@ -146,31 +134,12 @@ public final class Files {
         }
     }
 
-    public static void deleteQuietly(File file) {
-        if (file == null) {
-            return;
-        }
-
-        try {
-            //org.apache.commons.io.FileUtils.deleteQuietly(file);
-            java.nio.file.Files.deleteIfExists(file.toPath());
-        } catch (IOException e) {
-            Throwables.ignore(e);
-        }
-    }
-
     // --------------------------------------------------------------------------file to string
-    public static String toString(String file) throws IOException {
-        return toString(new File(file));
-    }
 
     public static String toString(File file) throws IOException {
         return toString(file, CharsetDetector.detect(file));
     }
 
-    public static String toString(File file, String charsetName) throws IOException {
-        return toString(file, Charset.forName(charsetName));
-    }
 
     public static String toString(File file, Charset charset) throws IOException {
         ByteOrderMarks bom = ByteOrderMarks.of(charset, file);
@@ -211,45 +180,10 @@ public final class Files {
         }
     }
 
-    // ---------------------------------------------------------------read line
-    public static List<String> readLines(File file, String charset)
-        throws FileNotFoundException {
-        return readLines(new FileInputStream(file), charset);
-    }
-
-    public static List<String> readLines(InputStream input, String charset) {
-        List<String> list = new LinkedList<>();
-        readLines(input, charset, list::add);
-        return list;
-    }
-
-    /**
-     * Read input-stream as text line
-     * 
-     * @param input
-     * @param charset
-     * @param consumer
-     */
-    public static void readLines(InputStream input, String charset, 
-                                 Consumer<String> consumer) {
-        try (Scanner scanner = (charset == null)
-                               ? new Scanner(input)
-                               : new Scanner(input, charset)) {
-            while (scanner.hasNextLine()) {
-                consumer.accept(scanner.nextLine());
-            }
-        }
-    }
-
     // -----------------------------------------------------------------readByteArray
-    public static byte[] readByteArray(InputStream input, int count) throws IOException {
-        byte[] bytes = new byte[count];
-        int n, index = 0;
-        while (index < count && (n = input.read(bytes, index, count - index)) != EOF) {
-            index += n;
-        }
- 
-        return (index == count) ? bytes : Arrays.copyOf(bytes, index);
+
+    public static byte[] readByteArray(String filePath, int count) throws IOException {
+        return readByteArray(new File(filePath), count);
     }
 
     public static byte[] readByteArray(File file, int count) throws IOException {
@@ -258,8 +192,14 @@ public final class Files {
         }
     }
 
-    public static byte[] readByteArray(String filePath, int count) throws IOException {
-        return readByteArray(new File(filePath), count);
+    public static byte[] readByteArray(InputStream input, int count) throws IOException {
+        byte[] bytes = new byte[count];
+        int n, index = 0;
+        while (index < count && (n = input.read(bytes, index, count - index)) != EOF) {
+            index += n;
+        }
+ 
+        return (index == count) ? bytes : Arrays.copyOf(bytes, index);
     }
 
     public static TreeNode<Integer, File> listFiles(String filePath) {
