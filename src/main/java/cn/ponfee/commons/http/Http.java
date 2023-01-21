@@ -33,21 +33,15 @@ import java.util.Map;
  *     请求方的http报头结构：通用报头|请求报头|实体报头 
  *     响应方的http报头结构：通用报头|响应报头|实体报头
  *
- *  <p>
- *  请求报头有：Accept、Accept-Charset、Accept-Encoding、Accept-Language、Referer、
- *          Authorization、From、Host、If-Match、User-Agent、If-Modified-Since等
+ *  请求报头有：Accept、Accept-Charset、Accept-Encoding、Accept-Language、Referer、Authorization、From、Host、If-Match、User-Agent、If-Modified-Since等
  *  Accept：告诉WEB服务器自己接受什么介质类型，*∕*表示任何类型，type∕*表示该类型下的所有子类型，type∕sub-type，如Accept(text/html)
  *
- *  <p>
  *  响应报头有：Age、Server、Accept-Ranges、Vary等
  *
- *  <p>
- *  实体报头有：Allow、Location、Content-Base、Content-Encoding、Content-Length、
- *          Content-Range、Content-MD5、Content-Type、Expires、Last-Modified等
+ *  实体报头有：Allow、Location、Content-Base、Content-Encoding、Content-Length、Content-Range、Content-MD5、Content-Type、Expires、Last-Modified等
  *  Content-Type：
- *     请求实体报头：浏览器告诉Web服务器自己发送的数据格式，如Content-Type(application/json，multipart/form-data，
- *                                                        application/x-www-form-urlencoded)
- *     响应实体报头：Web服务器告诉浏览器自己响应的消息格式，例如Content-Type(application/xml，application/json)
+ *     请求实体报头：浏览器告诉Web服务器自己发送的数据格式，如Content-Type(application/json, multipart/form-data, application/x-www-form-urlencoded)
+ *     响应实体报头：Web服务器告诉浏览器自己响应的消息格式，例如Content-Type(application/xml, application/json)
  * </pre>
  * http://www.atool.org/httptest.php<p>
  * 
@@ -56,8 +50,8 @@ import java.util.Map;
  * http工具类<p>
  *   Spring RestTemplate<p>
  *   org.apache.httpcomponents:fluent-hc<p>
- *   org.apache.httpcomponents:httpclient<p>
- *   OK Http<p>
+ *   org.apache.httpcomponents.client5:httpclient5<p>
+ *   com.squareup.okhttp3:okhttp<p>
  * 
  * @author Ponfee
  */
@@ -419,8 +413,11 @@ public final class Http {
             default: throw new UnsupportedOperationException("unsupported http method " + method.name());
         }
 
-        request.connectTimeout(connectTimeout).readTimeout(readTimeout)
-               .decompress(true).acceptGzipEncoding().headers(headers);
+        request.connectTimeout(connectTimeout)
+            .readTimeout(readTimeout)
+            .decompress(true)
+            .acceptGzipEncoding()
+            .headers(headers);
 
         if (!StringUtils.isEmpty(contentType)) {
             request.contentType(contentType, contentCharset);

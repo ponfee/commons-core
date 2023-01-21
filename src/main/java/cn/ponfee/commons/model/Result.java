@@ -53,7 +53,7 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
         return new Result<>(code, success, msg, data);
     }
 
-    public <E> Result<E> convert(Function<T, E> mapper) {
+    public <E> Result<E> map(Function<T, E> mapper) {
         return new Result<>(code, success, msg, mapper.apply(data));
     }
 
