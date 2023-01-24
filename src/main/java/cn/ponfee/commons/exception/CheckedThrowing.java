@@ -8,6 +8,8 @@
 
 package cn.ponfee.commons.exception;
 
+import cn.ponfee.commons.concurrent.Threads;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,9 +66,7 @@ public final class CheckedThrowing {
             runnable.run();
         } catch (Throwable t) {
             LOG.error(t.getMessage(), t);
-            if (t instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+            Threads.interruptIfNecessary(t);
         }
     }
 
@@ -75,9 +75,7 @@ public final class CheckedThrowing {
             return supplier.get();
         } catch (Throwable t) {
             LOG.error(t.getMessage(), t);
-            if (t instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+            Threads.interruptIfNecessary(t);
             return null;
         }
     }
@@ -87,9 +85,7 @@ public final class CheckedThrowing {
             consumer.accept(arg);
         } catch (Throwable t) {
             LOG.error(t.getMessage(), t);
-            if (t instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+            Threads.interruptIfNecessary(t);
         }
     }
 
@@ -102,10 +98,46 @@ public final class CheckedThrowing {
             return function.apply(arg);
         } catch (Throwable t) {
             LOG.error(t.getMessage(), t);
-            if (t instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+            Threads.interruptIfNecessary(t);
             return defaultValue;
+        }
+    }
+
+    // -------------------------------------------------------------------------------checked
+
+    public static void checked(ThrowingRunnable runnable) {
+        try {
+            runnable.run();
+        } catch (Throwable t) {
+            ExceptionUtils.rethrow(t);
+        }
+    }
+
+    public static <R> R checked(ThrowingSupplier<R, ?> supplier) {
+        try {
+            return supplier.get();
+        } catch (Throwable t) {
+            return ExceptionUtils.rethrow(t);
+        }
+    }
+
+    public static <E> void checked(ThrowingConsumer<E, ?> consumer, E arg) {
+        try {
+            consumer.accept(arg);
+        } catch (Throwable t) {
+            ExceptionUtils.rethrow(t);
+        }
+    }
+
+    public static <E, R> R checked(ThrowingFunction<E, R, ?> function, E arg) {
+        return caught(function, arg, null);
+    }
+
+    public static <E, R> R checked(ThrowingFunction<E, R, ?> function, E arg, R defaultValue) {
+        try {
+            return function.apply(arg);
+        } catch (Throwable t) {
+            return ExceptionUtils.rethrow(t);
         }
     }
 
@@ -120,7 +152,7 @@ public final class CheckedThrowing {
                 try {
                     runnable.run();
                 } catch (Throwable t) {
-                    throw toRuntimeException(t);
+                    ExceptionUtils.rethrow(t);
                 }
             };
         }
@@ -141,7 +173,7 @@ public final class CheckedThrowing {
                 try {
                     return callable.call();
                 } catch (Throwable t) {
-                    throw toRuntimeException(t);
+                    return ExceptionUtils.rethrow(t);
                 }
             };
         }
@@ -161,7 +193,7 @@ public final class CheckedThrowing {
                 try {
                     consumer.accept(e);
                 } catch (Throwable t) {
-                    throw toRuntimeException(t);
+                    ExceptionUtils.rethrow(t);
                 }
             };
         }
@@ -183,7 +215,7 @@ public final class CheckedThrowing {
                 try {
                     return function.apply(e);
                 } catch (Throwable t) {
-                    throw toRuntimeException(t);
+                    return ExceptionUtils.rethrow(t);
                 }
             };
         }
@@ -204,7 +236,7 @@ public final class CheckedThrowing {
                 try {
                     return supplier.get();
                 } catch (Throwable t) {
-                    throw toRuntimeException(t);
+                    return ExceptionUtils.rethrow(t);
                 }
             };
         }
@@ -219,14 +251,10 @@ public final class CheckedThrowing {
                 try {
                     return comparator.compare(e1, e2);
                 } catch (Throwable t) {
-                    throw toRuntimeException(t);
+                    return ExceptionUtils.rethrow(t);
                 }
             };
         }
-    }
-
-    private static RuntimeException toRuntimeException(Throwable t) {
-        return (t instanceof RuntimeException) ? (RuntimeException) t : new RuntimeException(t);
     }
 
 }

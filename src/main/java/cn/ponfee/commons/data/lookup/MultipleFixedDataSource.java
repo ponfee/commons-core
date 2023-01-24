@@ -11,7 +11,6 @@ package cn.ponfee.commons.data.lookup;
 import cn.ponfee.commons.base.Initializable;
 import cn.ponfee.commons.base.Releasable;
 import cn.ponfee.commons.data.NamedDataSource;
-import cn.ponfee.commons.exception.Throwables;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
@@ -85,8 +84,8 @@ public class MultipleFixedDataSource extends AbstractRoutingDataSource
         dataSources.forEach((name, ds) -> {
             try {
                 Releasable.release(ds);
-            } catch (Exception e) {
-                Throwables.console(e);
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
             }
         });
     }

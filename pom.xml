@@ -648,11 +648,13 @@
       <groupId>com.beust</groupId>
       <artifactId>jcommander</artifactId>
       <version>1.82</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>info.picocli</groupId>
       <artifactId>picocli</artifactId>
       <version>4.7.0</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

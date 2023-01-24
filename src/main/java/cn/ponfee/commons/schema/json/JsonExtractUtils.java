@@ -10,7 +10,6 @@ package cn.ponfee.commons.schema.json;
 
 import cn.ponfee.commons.collect.Collects;
 import cn.ponfee.commons.collect.Maps;
-import cn.ponfee.commons.exception.Throwables;
 import cn.ponfee.commons.json.JsonUtils;
 import cn.ponfee.commons.json.Jsons;
 import cn.ponfee.commons.model.Null;
@@ -84,7 +83,7 @@ public final class JsonExtractUtils {
         try {
             obj = JSON.parse(original);
         } catch (Exception ignored) {
-            Throwables.ignore(ignored);
+            ignored.printStackTrace();
             return new PlainStructure(original);
         }
 

@@ -8,6 +8,7 @@
 
 package cn.ponfee.commons.exception;
 
+import cn.ponfee.commons.concurrent.Threads;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -63,63 +64,6 @@ public final class Throwables {
         return "error: <" + ClassUtils.getName(throwable.getClass()) + ">";
     }
 
-    // -----------------------------------------------------------------ignore
-
-    /**
-     * Ignore the throwable
-     *
-     * @param ignored the Throwable
-     */
-    public static void ignore(Throwable ignored) {
-        ignore(ignored, true);
-    }
-
-    /**
-     * Ignore the throwable, if {@code console} is true then will be
-     * print the throwable stack trace to console
-     *
-     * @param ignored the Throwable
-     * @param console whether print console, {@code true} is print
-     */
-    public static void ignore(Throwable ignored, boolean console) {
-        if (console) {
-            console(ignored);
-        }
-    }
-
-    /**
-     * Prints the throwable stack trace to console
-     *
-     * @param throwable the Throwable
-     */
-    public static void console(Throwable throwable) {
-        throwable.printStackTrace();
-    }
-
-    // -----------------------------------------------------------------checked
-
-    public static void checked(Throwable throwable) {
-        checked(throwable, null);
-    }
-
-    /**
-     * Checked the throwable
-     *
-     * @param throwable the throwable
-     * @param msg       the msg
-     */
-    public static void checked(Throwable throwable, String msg) {
-        if (throwable instanceof RuntimeException) {
-            throw (RuntimeException) throwable;
-        } else {
-            if (msg != null) {
-                throw new RuntimeException(msg, throwable);
-            } else {
-                throw new RuntimeException(throwable);
-            }
-        }
-    }
-
     // -----------------------------------------------------------------caught
 
     public static void caught(Runnable runnable) {
@@ -127,9 +71,7 @@ public final class Throwables {
             runnable.run();
         } catch (Throwable t) {
             LOG.error(t.getMessage(), t);
-            if (t instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+            Threads.interruptIfNecessary(t);
         }
     }
 
@@ -138,9 +80,7 @@ public final class Throwables {
             return supplier.get();
         } catch (Throwable t) {
             LOG.error(t.getMessage(), t);
-            if (t instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+            Threads.interruptIfNecessary(t);
             return null;
         }
     }
@@ -150,9 +90,7 @@ public final class Throwables {
             consumer.accept(arg);
         } catch (Throwable t) {
             LOG.error(t.getMessage(), t);
-            if (t instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+            Threads.interruptIfNecessary(t);
         }
     }
 
@@ -165,9 +103,7 @@ public final class Throwables {
             return function.apply(arg);
         } catch (Throwable t) {
             LOG.error(t.getMessage(), t);
-            if (t instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+            Threads.interruptIfNecessary(t);
             return defaultValue;
         }
     }

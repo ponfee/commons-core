@@ -1,27 +1,21 @@
 package cn.ponfee.commons.cache;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map;
+import cn.ponfee.commons.base.Releasable;
+import cn.ponfee.commons.base.TimestampProvider;
+import cn.ponfee.commons.cache.RemovalNotification.RemovalReason;
+import cn.ponfee.commons.concurrent.ThreadPoolExecutors;
+import cn.ponfee.commons.concurrent.ThreadPoolTestUtils;
+import cn.ponfee.commons.jce.digest.DigestUtils;
+import cn.ponfee.commons.util.Base64UrlSafe;
+import com.google.common.base.Preconditions;
+
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import cn.ponfee.commons.concurrent.ThreadPoolTestUtils;
-import cn.ponfee.commons.concurrent.ThreadPoolExecutors;
-import com.google.common.base.Preconditions;
-
-import cn.ponfee.commons.base.Releasable;
-import cn.ponfee.commons.base.TimestampProvider;
-import cn.ponfee.commons.cache.RemovalNotification.RemovalReason;
-import cn.ponfee.commons.exception.Throwables;
-import cn.ponfee.commons.jce.digest.DigestUtils;
-import cn.ponfee.commons.util.Base64UrlSafe;
 
 /**
  * 缓存类
@@ -357,8 +351,8 @@ public class Cache<K, V> {
 
         try {
             Releasable.release(value);
-        } catch (Exception e) {
-            Throwables.console(e); // ignored
+        } catch (Exception ignored) {
+            ignored.printStackTrace();
         }
 
         if (this.removalListener != null) {

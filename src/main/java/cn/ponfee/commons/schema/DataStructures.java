@@ -9,7 +9,6 @@
 package cn.ponfee.commons.schema;
 
 import cn.ponfee.commons.exception.ServerException;
-import cn.ponfee.commons.exception.Throwables;
 import cn.ponfee.commons.json.Jsons;
 import com.google.common.base.CaseFormat;
 import org.apache.commons.lang3.StringUtils;
@@ -116,12 +115,13 @@ public enum DataStructures {
     }
 
     // ---------------------------------------------------------------------------detect text to data structure
+
     public static DataStructure detect(String text, boolean strict) throws ParseException {
         for (DataStructures ds : DataStructures.values()) {
             try {
                 return ds.parse(text);
             } catch (Exception ignored) {
-                Throwables.ignore(ignored);
+                ignored.printStackTrace();
             }
         }
 
@@ -133,6 +133,7 @@ public enum DataStructures {
     }
 
     // ---------------------------------------------------------------------------convert source structure to target structure
+
     public static <S extends DataStructure, T extends DataStructure> T convert(S source, Class<T> targetType) {
         return convert(source, ofType(targetType).name());
     }

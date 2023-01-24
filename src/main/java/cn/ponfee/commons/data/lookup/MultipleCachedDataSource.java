@@ -11,7 +11,6 @@ package cn.ponfee.commons.data.lookup;
 import cn.ponfee.commons.base.Initializable;
 import cn.ponfee.commons.base.Releasable;
 import cn.ponfee.commons.data.NamedDataSource;
-import cn.ponfee.commons.exception.Throwables;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
@@ -70,8 +69,8 @@ public class MultipleCachedDataSource extends AbstractDataSource
             .removalListener(notification -> {
                 try {
                     Releasable.release(notification.getValue());
-                } catch (Exception e) {
-                    Throwables.console(e); // ignored
+                } catch (Exception ignored) {
+                    ignored.printStackTrace();
                 }
             })
             .build();
@@ -163,15 +162,15 @@ public class MultipleCachedDataSource extends AbstractDataSource
         naturalDataSources.forEach((name, ds) -> {
             try {
                 Releasable.release(ds);
-            } catch (Exception e) {
-                Throwables.console(e);
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
             }
         });
         adoptedDataSources.asMap().forEach((name, ds) -> {
             try {
                 Releasable.release(ds);
-            } catch (Exception e) {
-                Throwables.console(e);
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
             }
         });
     }

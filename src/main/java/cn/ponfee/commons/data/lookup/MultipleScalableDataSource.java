@@ -11,7 +11,6 @@ package cn.ponfee.commons.data.lookup;
 import cn.ponfee.commons.base.Initializable;
 import cn.ponfee.commons.base.Releasable;
 import cn.ponfee.commons.data.NamedDataSource;
-import cn.ponfee.commons.exception.Throwables;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.jdbc.datasource.AbstractDataSource;
 
@@ -131,8 +130,8 @@ public class MultipleScalableDataSource extends AbstractDataSource
         dataSources.forEach((name, ds) -> {
             try {
                 Releasable.release(ds);
-            } catch (Exception e) {
-                Throwables.console(e);
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
             }
         });
     }
