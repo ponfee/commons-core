@@ -56,7 +56,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     public static final String DEFAULT_ROOT_ID = "__ROOT__";
 
     // 用于比较兄弟节点次序
-    private final Comparator<? super TreeNode<T, A>> siblingNodeSort;
+    private final Comparator<? super TreeNode<T, A>> siblingNodesComparator;
 
     // 子节点列表（空列表则表示为叶子节点）
     private final LinkedList<TreeNode<T, A>> children = new LinkedList<>();
@@ -66,57 +66,33 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
 
     /**
      * Constructs a tree node
-     * 
-     * @param nid             the node id
-     * @param pid             the parent node id(withhold this pid field value,
-     *                        when use if the other root node mount this node as child)
-     * @param enabled         the node is enabled
-     * @param available       the current node is available(parent.available & this.enabled)
-     * @param attach          the attachment for biz object
-     * @param siblingNodeSort the comparator for sibling nodes(has the same parent node) by sort
-     * @param buildPath       the if whether build path
-     * @param doMount         the if whether do mount, if is inner new TreeNode then false else true
+     *
+     * @param nid                    the node id
+     * @param pid                    the parent node id(withhold this pid field value,when use if the other root node mount this node as child)
+     * @param enabled                the node is enabled
+     * @param available              the current node is available(parent.available & this.enabled)
+     * @param attach                 the attachment for biz object
+     * @param siblingNodesComparator the comparator for sort sibling nodes(has the same parent node)
+     * @param buildPath              the if whether build path
+     * @param doMount                the if whether do mount, if is inner new TreeNode then false else true
      */
     TreeNode(T nid, T pid, boolean enabled, boolean available, A attach, 
-             Comparator<? super TreeNode<T, A>> siblingNodeSort,
+             Comparator<? super TreeNode<T, A>> siblingNodesComparator,
              boolean buildPath, boolean doMount) {
         super(nid, pid, enabled, available, attach);
 
-        this.siblingNodeSort = Objects.requireNonNull(siblingNodeSort);
+        this.siblingNodesComparator = Objects.requireNonNull(siblingNodesComparator);
 
         this.buildPath = buildPath;
 
         if (doMount) {
-            this.mount(null); // as root node if new instance at external(TreeNodeBuilder) or of(TreeNode)
+            // as root node if new instance at external(TreeNodeBuilder) or of(TreeNode)
+            mount(null);
         }
     }
 
-    // ------------------------------------------------------creates tree node by a base node
-    /**
-     * Returns a tree node
-     *  
-     * @param node   the base node
-     * @return a tree node
-     */
-    public static <T extends Serializable & Comparable<? super T>, A extends Serializable> TreeNode<T, A> 
-        of(BaseNode<T, A> node) {
-        return of(node, Comparator.comparing(TreeNode::getNid));
-    }
-
-    public static <T extends Serializable & Comparable<? super T>, A extends Serializable> TreeNode<T, A> 
-        of(BaseNode<T, A> node, Comparator<? super TreeNode<T, A>> siblingNodeSort) {
-        return of(node, siblingNodeSort, true);
-    }
-
-    public static <T extends Serializable & Comparable<? super T>, A extends Serializable> TreeNode<T, A> 
-        of(BaseNode<T, A> node, Comparator<? super TreeNode<T, A>> siblingNodeSort, boolean buildPath) {
-        return new TreeNode<>(
-            node.nid, node.pid, node.enabled, node.available, 
-            node.attach, siblingNodeSort, buildPath, true
-        );
-    }
-
     // ------------------------------------------------------mount children nodes
+
     public <E extends BaseNode<T, A>> TreeNode<T, A> mount(List<E> nodes) {
         mount(nodes, false);
         return this;
@@ -126,7 +102,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
      * Mount a tree
      * 
      * @param list         子节点列表
-     * @param ignoreOrphan {@code true}忽略孤儿节点
+     * @param ignoreOrphan {@code true}忽略孤儿节点，{@code false}如果有孤儿节点则会抛异常
      */
     public <E extends BaseNode<T, A>> TreeNode<T, A> mount(List<E> list, boolean ignoreOrphan) {
         if (list == null) {
@@ -141,20 +117,20 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         nodes.forEach(n -> checkDuplicateList.add(n.nid));
         List<T> duplicated = Collects.duplicate(checkDuplicateList);
         if (CollectionUtils.isNotEmpty(duplicated)) {
-            throw new RuntimeException("Duplicated nodes: " + duplicated);
+            throw new IllegalStateException("Duplicated nodes: " + duplicated);
         }
 
         // 3、以此节点为根构建节点树
         super.level = 1;         // root node level is 1
         super.path = null;       // reset with null
         super.leftLeafCount = 0; // root node left leaf count is 1
-        super.siblingOrder = 1;
-        this.mount0(null, nodes, ignoreOrphan, super.nid);
+        super.siblingOrdinal = 1;
+        mount0(null, nodes, ignoreOrphan, super.nid);
 
         // 4、检查是否存在孤儿节点
         if (!ignoreOrphan && CollectionUtils.isNotEmpty(nodes)) {
             String nids = nodes.stream().map(e -> String.valueOf(e.getNid())).collect(Collectors.joining(","));
-            throw new RuntimeException("Invalid orphan nodes: [" + nids + "]");
+            throw new IllegalStateException("Invalid orphan nodes: [" + nids + "]");
         }
 
         // 5、统计
@@ -164,6 +140,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     }
 
     // -------------------------------------------------------------DFS
+
     /**
      * 深度优先搜索DFS(Depth-First Search)：使用前序遍历
      * <p>Should be invoking after {@link #mount(List)}
@@ -176,12 +153,12 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         while (!stack.isEmpty()) {
             TreeNode<T, A> node = stack.pop();
             collect.add(new FlatNode<>(node));
-            if (node.hasChildren()) {
+            node.ifChildrenPresent(cs -> {
                 // 反向遍历子节点
-                for (Iterator<TreeNode<T, A>> iter = node.children.descendingIterator(); iter.hasNext(); ) {
+                for (Iterator<TreeNode<T, A>> iter = cs.descendingIterator(); iter.hasNext(); ) {
                     stack.push(iter.next());
                 }
-            }
+            });
         }
         return collect;
     }
@@ -199,6 +176,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     */
 
     // -------------------------------------------------------------CFS
+
     /**
      * 按层级方式展开节点：兄弟节点相邻
      * <p>子节点优先搜索CFS(Children-First Search)
@@ -213,14 +191,14 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         Deque<TreeNode<T, A>> stack = Collects.newLinkedList(this);
         while (!stack.isEmpty()) {
             TreeNode<T, A> node = stack.pop();
-            if (node.hasChildren()) {
-                node.forEachChild(child -> collect.add(new FlatNode<>(child)));
+            node.ifChildrenPresent(cs -> {
+                cs.forEach(child -> collect.add(new FlatNode<>(child)));
 
                 // 反向遍历子节点
-                for (Iterator<TreeNode<T, A>> iter = node.children.descendingIterator(); iter.hasNext(); ) {
+                for (Iterator<TreeNode<T, A>> iter = cs.descendingIterator(); iter.hasNext(); ) {
                     stack.push(iter.next());
                 }
-            }
+            });
         }
         return collect;
     }
@@ -251,7 +229,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
             for (int i = queue.size(); i > 0; i--) {
                 TreeNode<T, A> node = queue.poll();
                 collect.add(new FlatNode<>(node));
-                node.forEachChild(queue::offer);
+                node.ifChildrenPresent(cs -> cs.forEach(queue::offer));
             }
         }
         return collect;
@@ -278,40 +256,46 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     }
     */
 
+    // -----------------------------------------------------------children
+
+    public void ifChildrenPresent(Consumer<LinkedList<TreeNode<T, A>>> childrenProcessor) {
+        if (!children.isEmpty()) {
+            childrenProcessor.accept(children);
+        }
+    }
+
+    // -----------------------------------------------------------tree traverse
+
     /**
      * Traverses the tree
      *
      * @param action the action function
      */
-    public void forEach(Consumer<TreeNode<T, A>> action) {
+    public void traverse(Consumer<TreeNode<T, A>> action) {
         Deque<TreeNode<T, A>> stack = Collects.newLinkedList(this);
         while (!stack.isEmpty()) {
             TreeNode<T, A> node = stack.pop();
             action.accept(node);
-            node.forEachChild(stack::push);
+            node.ifChildrenPresent(cs -> cs.forEach(stack::push));
         }
     }
 
     // -----------------------------------------------------------convert to TreeTrait
+
     public <E extends TreeTrait<T, A, E>> E convert(Function<TreeNode<T, A>, E> convert) {
         return convert(convert, true);
     }
 
     public <E extends TreeTrait<T, A, E>> E convert(Function<TreeNode<T, A>, E> convert, 
                                                     boolean containsUnavailable) {
-        if (!this.available && !containsUnavailable) {
+        if (!available && !containsUnavailable) {
             // not contains unavailable node
             return null;
         }
 
         E root = convert.apply(this);
-        this.convert(convert, root, containsUnavailable);
+        convert(convert, root, containsUnavailable);
         return root;
-    }
-
-    // -----------------------------------------------------------getter/setter
-    public LinkedList<TreeNode<T, A>> getChildren() {
-        return this.children;
     }
 
     public String print(Function<TreeNode<T, A>, CharSequence> nodeLabel) throws IOException {
@@ -329,16 +313,11 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         }
     }
 
-    // -----------------------------------------------------------private methods
-    private boolean hasChildren() {
-        return children != null && !children.isEmpty();
+    public LinkedList<TreeNode<T, A>> getChildren() {
+        return children;
     }
 
-    private void forEachChild(Consumer<TreeNode<T, A>> action) {
-        if (hasChildren()) {
-            children.forEach(action);
-        }
-    }
+    // -----------------------------------------------------------private methods
 
     private <E extends BaseNode<T, A>> List<BaseNode<T, A>> prepare(List<E> nodes) {
         List<BaseNode<T, A>> list = Lists.newLinkedList();
@@ -347,17 +326,17 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         for (BaseNode<T, A> node : nodes) {
             if (node instanceof TreeNode) {
                 // if tree node, then add all the tree nodes that includes the node's children(recursive)
-                ((TreeNode<T, A>) node).forEach(list::add);
+                ((TreeNode<T, A>) node).traverse(list::add);
             } else {
-                list.add(node); // node.copy(), node.clone()
+                list.add(node); // node.clone()
             }
         }
 
         // the root node children
-        if (hasChildren()) {
-            forEachChild(child -> child.forEach(list::add));
-            this.children.clear(); // reset before mount
-        }
+        ifChildrenPresent(cs -> {
+            cs.forEach(child -> child.traverse(list::add));
+            cs.clear(); // clear the root node children before mount
+        });
         return list;
     }
 
@@ -381,31 +360,35 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
             if (super.nid.equals(node.pid)) {
                 // found a child node
                 TreeNode<T, A> child = new TreeNode<>(
-                    node.nid, node.pid, node.enabled, 
+                    node.nid, 
+                    node.pid, 
+                    node.enabled, 
                     super.available && node.enabled, // recompute the child node is available
-                    node.attach, this.siblingNodeSort,
-                    this.buildPath, false
+                    node.attach, 
+                    this.siblingNodesComparator,
+                    this.buildPath, 
+                    false
                 );
 
                 child.level = super.level + 1;
-                this.children.add(child); // 挂载子节点
+                children.add(child); // 挂载子节点
 
                 iter.remove(); // remove the found child node
             }
         }
 
-        if (hasChildren()) {
-            // sort the children list(sibling nodes sort)
-            this.children.sort(this.siblingNodeSort);
-
+        ifChildrenPresent(cs -> {
             // recursion to mount child tree
-            forEachChild(child -> child.mount0(path, nodes, ignoreOrphan, mountPidIfNull));
-        }
-        super.degree = (this.children == null) ? 0 : this.children.size();
+            cs.forEach(child -> child.mount0(path, nodes, ignoreOrphan, mountPidIfNull));
+
+            // sort the children list(sibling nodes sort)
+            cs.sort(siblingNodesComparator);
+        });
+        super.degree = children.size();
     }
 
     private void count() {
-        if (CollectionUtils.isEmpty(this.children)) {
+        if (children.isEmpty()) {
             // 叶子节点
             super.treeDepth     = 1;
             super.treeMaxDegree = 0;
@@ -419,9 +402,9 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         int maxChildTreeDepth        = 0, maxChildTreeMaxDegree    = 0,
             sumChildrenTreeLeafCount = 0, sumChildrenTreeNodeCount = 0;
         TreeNode<T, A> child;
-        for (int i = 0; i < this.children.size(); i++) {
-            child = this.children.get(i);
-            child.siblingOrder = i + 1;
+        for (int i = 0; i < children.size(); i++) {
+            child = children.get(i);
+            child.siblingOrdinal = i + 1;
 
             // 1、统计左叶子节点数量
             if (i == 0) {
@@ -429,7 +412,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
                 child.leftLeafCount = super.leftLeafCount;
             } else {
                 // 非最左子节点：左叶子节点个数=相邻左兄弟节点的左叶子节点个数+该兄弟节点的子节点个数
-                TreeNode<T, A> prevSibling = this.children.get(i - 1);
+                TreeNode<T, A> prevSibling = children.get(i - 1);
                 child.leftLeafCount = prevSibling.leftLeafCount + prevSibling.treeLeafCount;
             }
 
@@ -447,7 +430,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         super.treeMaxDegree = Math.max(maxChildTreeMaxDegree, super.degree); // 树中的最大度数
         super.treeLeafCount = sumChildrenTreeLeafCount;                      // 子节点的叶子节点之和
         super.treeNodeCount = sumChildrenTreeNodeCount + 1;                  // 要包含节点本身
-        super.childrenCount = this.children.size();                          // 子节点数量
+        super.childrenCount = children.size();                               // 子节点数量
     }
 
     /**
@@ -458,7 +441,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
      * @return a immutable list appended current node id
      */
     private List<T> buildPath(List<T> parentPath, T nid) {
-        if (!this.buildPath) {
+        if (!buildPath) {
             return null;
         }
 
@@ -466,7 +449,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         /*
         if (IterableUtils.matchesAny(parentPath, nid::equals)) {
             // 节点路径中已经包含了此节点，则视为环状
-            throw new RuntimeException("Node circular dependencies: " + parentPath + " -> " + nid);
+            throw new IllegalStateException("Node circular dependencies: " + parentPath + " -> " + nid);
         }
         */
 
@@ -481,13 +464,13 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
 
     private <E extends TreeTrait<T, A, E>> void convert(Function<TreeNode<T, A>, E> convert, 
                                                         E parent, boolean containsUnavailable) {
-        if (CollectionUtils.isEmpty(this.children)) {
+        if (children.isEmpty()) {
             parent.setChildren(null);
             return;
         }
 
         List<E> list = new LinkedList<>();
-        for (TreeNode<T, A> child : this.children) {
+        for (TreeNode<T, A> child : children) {
             if (child.available || containsUnavailable) { // filter unavailable
                 E node = convert.apply(child);
                 child.convert(convert, node, containsUnavailable);

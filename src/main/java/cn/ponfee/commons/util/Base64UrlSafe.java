@@ -18,8 +18,7 @@ import java.util.Base64;
 public class Base64UrlSafe {
 
     public static String encode(byte[] data) {
-        return Base64.getUrlEncoder().withoutPadding()
-                                     .encodeToString(data);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(data);
     }
 
     public static byte[] decode(String b64) {

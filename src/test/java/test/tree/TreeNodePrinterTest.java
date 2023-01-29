@@ -125,7 +125,7 @@ public class TreeNodePrinterTest {
         System.out.println("\n\n\n");
         System.out.println(
             Files.listFiles(MavenProjects.getProjectBaseDir())
-                 .print(e -> e.getSiblingOrder() + ":" + e.getChildrenCount() + ":" + e.getAttach().getName())
+                 .print(e -> e.getSiblingOrdinal() + ":" + e.getChildrenCount() + ":" + e.getAttach().getName())
         );
     }
 

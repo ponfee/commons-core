@@ -51,15 +51,19 @@ public class NodeTreeTest {
         list.add(new PlainNode<>("500011", "500010", true, "nid500011"));
 
         // do mount third
-        TreeNode<String, String> root = TreeNodeBuilder.<String, String> newBuilder(TreeNode.DEFAULT_ROOT_ID).build();
-        System.out.println(Jsons.toJson(root));
+        SiblingNodesComparator.comparing(e -> e.getChildren().size(), false, true).thenComparing(TreeNode::getNid, false, true).get();
 
-        // do mount fouth
+        TreeNode<String, String> root = TreeNodeBuilder.<String, String>newBuilder(
+            TreeNode.DEFAULT_ROOT_ID, 
+            SiblingNodesComparator.comparing(e -> e.getChildren().size(),false, false).thenComparing(TreeNode::getNid, false, false).get()
+        ).build();
+
+        // do mount fourth
         root.mount(list); // mount
-        System.out.println(Jsons.toJson(root));
-        System.out.println(Jsons.toJson(root.flatDFS()));
-        System.out.println(Jsons.toJson(root.flatCFS()));
-        System.out.println("convert-true: "  + Jsons.toJson(root.convert(this::convert, true)));
+        System.out.println("sorted: " + Jsons.toJson(root));
+        System.out.println("dfs: " + Jsons.toJson(root.flatDFS()));
+        System.out.println("cfs: " + Jsons.toJson(root.flatCFS()));
+        System.out.println("convert-true: " + Jsons.toJson(root.convert(this::convert, true)));
         System.out.println("convert-false: " + Jsons.toJson(root.convert(this::convert, false)));
     }
 
@@ -136,8 +140,6 @@ public class NodeTreeTest {
         list.add(new PlainNode<>("500011", "500010", true, random()));
 
         // do mount third
-        //Comparator< ? super TreeNode<String, String>> c = SiblingNodeComparator.compareAttachThenNid(Function.identity());
-        //TreeNode<String, String> root = TreeNodeBuilder.newBuilder(TreeNode.DEFAULT_ROOT_ID, c).build();
         TreeNode<String, String> root = TreeNodeBuilder.<String, String>newBuilder(TreeNode.DEFAULT_ROOT_ID).build();
         System.out.println(Jsons.toJson(root));
 

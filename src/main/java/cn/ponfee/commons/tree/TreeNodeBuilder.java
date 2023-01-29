@@ -22,7 +22,7 @@ import java.util.Objects;
 public final class TreeNodeBuilder<T extends Serializable & Comparable<? super T>, A extends Serializable> {
 
     private final T nid;
-    private final Comparator<? super TreeNode<T, A>> siblingNodeSort;
+    private final Comparator<? super TreeNode<T, A>> siblingNodesComparator;
 
     private T       pid       = null;
     private boolean enabled   = true;
@@ -30,17 +30,17 @@ public final class TreeNodeBuilder<T extends Serializable & Comparable<? super T
     private A       attach    = null;
     private boolean buildPath = true;
 
-    private TreeNodeBuilder(T nid,Comparator<? super TreeNode<T, A>> siblingNodeSort) {
+    private TreeNodeBuilder(T nid,Comparator<? super TreeNode<T, A>> siblingNodesComparator) {
         this.nid = Objects.requireNonNull(nid);
-        this.siblingNodeSort = Objects.requireNonNull(siblingNodeSort);
+        this.siblingNodesComparator = Objects.requireNonNull(siblingNodesComparator);
     }
 
     public static <T extends Serializable & Comparable<? super T>, A extends Serializable> TreeNodeBuilder<T, A> newBuilder(T nid) {
         return newBuilder(nid, Comparator.comparing(TreeNode::getNid));
     }
 
-    public static <T extends Serializable & Comparable<? super T>, A extends Serializable> TreeNodeBuilder<T, A> newBuilder(T nid, Comparator<? super TreeNode<T, A>> siblingNodeSort) {
-        return new TreeNodeBuilder<>(nid, siblingNodeSort);
+    public static <T extends Serializable & Comparable<? super T>, A extends Serializable> TreeNodeBuilder<T, A> newBuilder(T nid, Comparator<? super TreeNode<T, A>> siblingNodesComparator) {
+        return new TreeNodeBuilder<>(nid, siblingNodesComparator);
     }
 
     public TreeNodeBuilder<T, A> pid(T pid) {
@@ -69,10 +69,7 @@ public final class TreeNodeBuilder<T extends Serializable & Comparable<? super T
     }
 
     public TreeNode<T, A> build() {
-        return new TreeNode<>(
-            nid, pid, enabled, available, attach, 
-            siblingNodeSort, buildPath, true
-        );
+        return new TreeNode<>(nid, pid, enabled, available, attach, siblingNodesComparator, buildPath, true);
     }
 
 }

@@ -4,12 +4,14 @@ import cn.ponfee.commons.extract.DataExtractorBuilder;
 import cn.ponfee.commons.io.charset.BytesDetector;
 import cn.ponfee.commons.json.Jsons;
 import cn.ponfee.commons.spring.SpringContextHolder;
+import cn.ponfee.commons.tree.TreeNode;
 import cn.ponfee.commons.util.MavenProjects;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+import org.openjdk.jol.info.ClassLayout;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,9 +27,14 @@ public class FilesTest {
 
     @Test
     public void testx() {
-        System.out.println(CharsetDetector.detect("/Users/ponfee/scm/github/commons-core/src/main/java/code/ponfee/commons/tree/TreeNode.java"));
-        System.out.println(CharsetDetector.detect("/Users/ponfee/test/code/ponfee/commons/tree/TreeNode.java"));
-        //System.out.println(CharsetDetector.Encoding.JAVA_CHARSET[new CharsetDetector.BytesEncodingDetect().detectEncoding(FileUtils.readFileToByteArray(new File("/Users/ponfee/test/code/ponfee/commons/tree/TreeNode.java")))]);
+        System.out.println(ClassLayout.parseInstance(new Object()).toPrintable());
+        System.out.println("\n-----------------------");
+        System.out.println(ClassLayout.parseInstance(new Object[10]).toPrintable());
+        System.out.println("\n-----------------------");
+        System.out.println(ClassLayout.parseInstance(new long[10]).toPrintable());
+        System.out.println("\n-----------------------");
+
+        System.out.println(CharsetDetector.detect(MavenProjects.getMainJavaFile(TreeNode.class)));
     }
 
     @Test
@@ -187,7 +194,7 @@ public class FilesTest {
     }
 
     private static void detectFile(String filePath) {
-        Files.listFiles(filePath).forEach(tree -> {
+        Files.listFiles(filePath).traverse(tree -> {
             if (CollectionUtils.isEmpty(tree.getChildren())) {
                 try {
                     File f = tree.getAttach();

@@ -48,7 +48,7 @@ public abstract class BaseNode<T extends Serializable & Comparable<? super T>, A
     protected int       treeMaxDegree; // 树中最大的度数（树中所有节点数目=所有节点度数之和+1）
     protected int       treeLeafCount; // 树的叶子节点数量（叶子节点为1）
     protected int       childrenCount; // 子节点个数
-    protected int        siblingOrder; // 兄弟节点按顺序排行（从1开始）
+    protected int      siblingOrdinal; // 兄弟节点按顺序排行（从1开始）
 
     public BaseNode(T nid, T pid, A attach) {
         this(nid, pid, true, attach);
@@ -137,7 +137,7 @@ public abstract class BaseNode<T extends Serializable & Comparable<? super T>, A
         return childrenCount;
     }
 
-    public int getSiblingOrder() {
-        return siblingOrder;
+    public int getSiblingOrdinal() {
+        return siblingOrdinal;
     }
 }

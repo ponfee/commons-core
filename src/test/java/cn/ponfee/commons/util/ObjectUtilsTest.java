@@ -10,6 +10,7 @@ import org.junit.Test;
 import cn.ponfee.commons.concurrent.MultithreadExecutors;
 import cn.ponfee.commons.model.Result;
 import cn.ponfee.commons.reflect.ClassUtils;
+import org.openjdk.jol.info.ClassLayout;
 
 public class ObjectUtilsTest {
 
@@ -24,6 +25,13 @@ public class ObjectUtilsTest {
         System.out.println(ObjectUtils.newInstance(String.class));
         System.out.println(ObjectUtils.newInstance(Map.class));
         System.out.println(ObjectUtils.newInstance(List.class));
+
+        System.out.println("\n-----------------------");
+        System.out.println(ClassLayout.parseInstance(new Object()).toPrintable());
+        System.out.println("\n-----------------------");
+        System.out.println(ClassLayout.parseInstance(new Object[10]).toPrintable());
+        System.out.println("\n-----------------------");
+        System.out.println(ClassLayout.parseInstance(new long[10]).toPrintable());
     }
 
     @Test

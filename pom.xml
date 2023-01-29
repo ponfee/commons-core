@@ -17,6 +17,8 @@
     > 2）Usage：
     >   2.1）Linux：./mvnw clean install -Dmaven.test.skip=true
     >   2.2）Windows：mvnw.cmd clean install -Dmaven.test.skip=true
+    > 依赖处理：1、最短路径原则；2、最先声明原则；
+    > 查看有效的pom：mvn help:effective-pom
 
     > javac: 不加“-g”则默认为“-g:source,lines”
     >   lines：字节码文件中对应源码的行号(Line number debugging information)

@@ -50,7 +50,7 @@ public class ExportTester2 {
         watch.reset().start();
         excel.setName("21321");
         excel.build(table);
-        IOUtils.write((byte[]) excel.export(), new FileOutputStream("d:/test11.xlsx"));
+        IOUtils.write((byte[]) excel.export(), new FileOutputStream(ExportTester.baseDir+"test11.xlsx"));
         excel.close();
         System.out.println(watch.stop());
     }
@@ -79,14 +79,14 @@ public class ExportTester2 {
         watch.reset().start();
         excel.setName("21321");
         excel.build(table);
-        IOUtils.write((byte[]) excel.export(), new FileOutputStream("d:/test22.xlsx"));
+        IOUtils.write((byte[]) excel.export(), new FileOutputStream(ExportTester.baseDir+"test22.xlsx"));
         excel.close();
         System.out.println(watch.stop());
     }
 
     @Test // 11
     public void testCsv1() throws IOException {
-        CsvFileExporter excel = new CsvFileExporter("E:/test.csv", true);
+        CsvFileExporter excel = new CsvFileExporter(ExportTester.baseDir+"test.csv", true);
 
         Table table = new Table("中,文,b,o,m".split(","));
         table.setCaption("title");
@@ -129,7 +129,7 @@ public class ExportTester2 {
             });
         }
         
-        SplitExcelExporter excel = new SplitExcelExporter(65537,"d:/test/test_excel_", EXECUTOR);
+        SplitExcelExporter excel = new SplitExcelExporter(65537,ExportTester.baseDir+"test_excel_", EXECUTOR);
         excel.setName("21321");
         System.out.println("================"+watch.stop());
         watch.reset().start();
@@ -156,7 +156,7 @@ public class ExportTester2 {
             });
         }
         
-        SplitCsvFileExporter csv = new SplitCsvFileExporter(65537,"d:/test/test_csv_", true, EXECUTOR);
+        SplitCsvFileExporter csv = new SplitCsvFileExporter(65537,ExportTester.baseDir+"test_csv_", true, EXECUTOR);
         System.out.println("================"+watch.stop());
         watch.reset().start();
         csv.build(table);

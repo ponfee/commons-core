@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import cn.ponfee.commons.tree.PlainNode;
+import cn.ponfee.commons.util.MavenProjects;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -34,6 +36,15 @@ import cn.ponfee.commons.tree.BaseNode;
 import cn.ponfee.commons.util.Captchas;
 
 public class ExportTester {
+    
+    public static final String baseDir = MavenProjects.getProjectBaseDir()+"/test/";
+    static {
+        try {
+            FileUtils.forceMkdir(new File(baseDir));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     private int multiple = 20;
 
@@ -125,10 +136,10 @@ public class ExportTester {
         table.setCaption("bnm");
         html.build(table);
 
-        IOUtils.write((String) html.setName("报表").export(), new FileOutputStream("d://testHtml1.html"), "UTF-8");
-        ByteOrderMarks.add("d:/testHtml1.html");
-        IOUtils.write((String) csv.export(), new FileOutputStream("d://testHtml1.csv"), "UTF-8");
-        ByteOrderMarks.add("d:/testHtml1.csv");
+        IOUtils.write((String) html.setName("报表").export(), new FileOutputStream(baseDir+"testHtml1.html"), "UTF-8");
+        ByteOrderMarks.add(baseDir+"testHtml1.html");
+        IOUtils.write((String) csv.export(), new FileOutputStream(baseDir+"testHtml1.csv"), "UTF-8");
+        ByteOrderMarks.add(baseDir+"testHtml1.csv");
 
         html.close();
         csv.close();
@@ -138,8 +149,8 @@ public class ExportTester {
     public void testHtml2() throws FileNotFoundException, IOException {
         AbstractDataExporter html = new HtmlExporter();
         html.build(new Table("a,b,c,d,e".split(",")).toEnd());
-        IOUtils.write((String) html.export(), new FileOutputStream("d://testHtml2.html"), "UTF-8");
-        ByteOrderMarks.add("d:/testHtml2.html");
+        IOUtils.write((String) html.export(), new FileOutputStream(baseDir+"testHtml2.html"), "UTF-8");
+        ByteOrderMarks.add(baseDir+"testHtml2.html");
         html.close();
     }
 
@@ -243,7 +254,7 @@ public class ExportTester {
         Captchas.generate(200, baos, RandomStringUtils.randomAlphanumeric(10));
         excel.insertImage(baos.toByteArray());
 
-        OutputStream out = new FileOutputStream("d:/abc1.xlsx");
+        OutputStream out = new FileOutputStream(baseDir+"abc1.xlsx");
         excel.write(out);
         out.close();
         excel.close();
@@ -258,8 +269,8 @@ public class ExportTester {
         table1.setTfoot(tfoot);
         table1.setOptions(options);
         csv.build(table1);
-        IOUtils.write(csv.export().toString(), new FileOutputStream("d://testExcel.csv"), "UTF-8");
-        ByteOrderMarks.add(new File("d://testExcel.csv"));
+        IOUtils.write(csv.export().toString(), new FileOutputStream(baseDir+"testExcel.csv"), "UTF-8");
+        ByteOrderMarks.add(new File(baseDir+"testExcel.csv"));
         csv.close();
         System.out.println("========================================csv: " + (System.currentTimeMillis() - start));
         
@@ -272,8 +283,8 @@ public class ExportTester {
         table1.setOptions(options);
         html.build(table1);
         html.setName("test");
-        IOUtils.write((String) html.export(), new FileOutputStream("d://testExcel.html"), "UTF-8");
-        ByteOrderMarks.add("d:/testExcel.html");
+        IOUtils.write((String) html.export(), new FileOutputStream(baseDir+"testExcel.html"), "UTF-8");
+        ByteOrderMarks.add(baseDir+"testExcel.html");
         html.close();
         System.out.println("========================================html: " + (System.currentTimeMillis() - start));
     }
@@ -289,7 +300,7 @@ public class ExportTester {
         table.addRowsAndEnd(data);
         excel.setName("21321");
         excel.build(table);
-        IOUtils.write((byte[]) excel.export(), new FileOutputStream("d:/testExcel2.xlsx"));
+        IOUtils.write((byte[]) excel.export(), new FileOutputStream(baseDir+"testExcel2.xlsx"));
         excel.close();
     }
     
@@ -308,7 +319,7 @@ public class ExportTester {
 
         excel.setName("21321");
         excel.build(table);
-        IOUtils.write((byte[]) excel.export(), new FileOutputStream("d:/11111xxxx.xlsx"));
+        IOUtils.write((byte[]) excel.export(), new FileOutputStream(baseDir+"11111xxxx.xlsx"));
         excel.close();
     }
     
@@ -316,7 +327,7 @@ public class ExportTester {
     @Test
     public void testExcel3() throws IOException {
         XSSFWorkbook wb = new XSSFWorkbook();
-        FileOutputStream out = new FileOutputStream("d:/test_empty.xlsx");
+        FileOutputStream out = new FileOutputStream(baseDir+"test_empty.xlsx");
         wb.createSheet();
         wb.write(out);
         wb.close();
