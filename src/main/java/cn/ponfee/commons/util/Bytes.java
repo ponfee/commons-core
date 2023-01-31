@@ -180,8 +180,8 @@ public final class Bytes {
 
         // two char -> one byte
         for (int i = 0, j = 0; j < len; i++, j += 2) {
-            out[i] = (byte) (Character.digit(data[j], 16) << 4 
-                           | Character.digit(data[j + 1], 16));
+            out[i] = (byte) (  Character.digit(data[j    ], 16) << 4
+                             | Character.digit(data[j + 1], 16)     );
         }
         return out;
     }

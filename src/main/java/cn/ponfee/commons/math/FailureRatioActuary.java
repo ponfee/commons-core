@@ -30,7 +30,7 @@ public class FailureRatioActuary {
     }
 
     public int size() {
-        //Assert.state(size == bitset.size(), "Illegal size, except: " + size + ", actual: " + bitset.size());
+        //Assert.state(size == bitset.size(), () -> "Illegal size, except: " + size + ", actual: " + bitset.size());
         return size;
     }
 

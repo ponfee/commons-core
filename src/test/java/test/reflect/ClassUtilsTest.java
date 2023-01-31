@@ -10,7 +10,7 @@ import cn.ponfee.commons.cache.Cache;
 import cn.ponfee.commons.cache.CacheBuilder;
 import cn.ponfee.commons.collect.ByteArrayWrapper;
 import cn.ponfee.commons.collect.Collects;
-import cn.ponfee.commons.model.Predicates;
+import cn.ponfee.commons.base.Predicates;
 import cn.ponfee.commons.model.Result;
 import cn.ponfee.commons.reflect.ClassUtils;
 import cn.ponfee.commons.reflect.Fields;

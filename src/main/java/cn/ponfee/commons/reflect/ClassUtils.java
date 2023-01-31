@@ -15,7 +15,7 @@ import cn.ponfee.commons.collect.ArrayHashKey;
 import cn.ponfee.commons.collect.Collects;
 import cn.ponfee.commons.io.Files;
 import cn.ponfee.commons.model.Null;
-import cn.ponfee.commons.model.Predicates;
+import cn.ponfee.commons.base.Predicates;
 import cn.ponfee.commons.util.Asserts;
 import cn.ponfee.commons.util.Strings;
 import cn.ponfee.commons.util.SynchronizedCaches;

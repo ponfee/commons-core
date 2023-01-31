@@ -9,7 +9,7 @@
 package cn.ponfee.commons.reflect;
 
 import cn.ponfee.commons.base.tuple.Tuple2;
-import cn.ponfee.commons.model.Predicates;
+import cn.ponfee.commons.base.Predicates;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;

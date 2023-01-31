@@ -10,7 +10,6 @@ package cn.ponfee.commons.collect;
 
 import cn.ponfee.commons.math.Numbers;
 import cn.ponfee.commons.util.ObjectUtils;
-import com.google.common.collect.ImmutableList;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.util.Assert;
@@ -18,10 +17,7 @@ import org.springframework.util.Assert;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.IntFunction;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -297,28 +293,6 @@ public final class Collects {
     }
 
     /**
-     * Compute cartesian product
-     *
-     * [1, 2, 3] x [4, 5, 6] = [[4, 5, 6], [8, 10, 12], [12, 15, 18]]
-     * 
-     * @param x the list of type A
-     * @param y the list of type B
-     * @param fun convert A and B to T
-     * @return a list of type T
-     */
-    public static <A, B, T> List<List<T>> cartesian(List<A> x, List<B> y, BiFunction<A, B, T> fun) {
-        List<List<T>> product = new ArrayList<>(x.size());
-        for (A a : x) {
-            List<T> row = new ArrayList<>(y.size());
-            for (B b : y) {
-                row.add(fun.apply(a, b));
-            }
-            product.add(row);
-        }
-        return product;
-    }
-
-    /**
      * Returns consecutive sub array of an array, 
      * each of the same size (the final list may be smaller).
      *
@@ -353,6 +327,28 @@ public final class Collects {
             result.add(Arrays.copyOfRange(array, pos, pos = pos + number));
         }
         return result;
+    }
+
+    /**
+     * Compute cartesian product
+     *
+     * [1, 2, 3] x [4, 5, 6] = [[4, 5, 6], [8, 10, 12], [12, 15, 18]]
+     *
+     * @param x the list of type A
+     * @param y the list of type B
+     * @param fun convert A and B to T
+     * @return a list of type T
+     */
+    public static <A, B, T> List<List<T>> cartesian(List<A> x, List<B> y, BiFunction<A, B, T> fun) {
+        List<List<T>> product = new ArrayList<>(x.size());
+        for (A a : x) {
+            List<T> row = new ArrayList<>(y.size());
+            for (B b : y) {
+                row.add(fun.apply(a, b));
+            }
+            product.add(row);
+        }
+        return product;
     }
 
     /**
@@ -427,10 +423,26 @@ public final class Collects {
         return list;
     }
 
-    public static <S, T> List<T> convert(List<S> source, Function<S, T> mapper) {
-        ImmutableList.Builder<T> builder = ImmutableList.builderWithExpectedSize(source.size());
-        source.stream().map(mapper).forEach(builder::add);
-        return builder.build();
+    public static <E, R> List<R> convert(Collection<E> collection, Function<E, R> mapper) {
+        return convert(collection, null, mapper);
+    }
+
+    public static <E, R> List<R> convert(Collection<E> collection, Predicate<? super E> predicate, Function<E, R> mapper) {
+        if (collection == null) {
+            return null;
+        }
+        if (collection.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<R> result = new ArrayList<>(collection.size());
+        Stream<E> stream = collection.stream();
+        if (predicate != null) {
+            stream = stream.filter(predicate);
+        }
+        stream.map(mapper).forEach(result::add);
+
+        return result;
     }
 
     @SafeVarargs
@@ -451,6 +463,10 @@ public final class Collects {
         return ((Object) newType == (Object) Object[].class)
             ? (T[]) new Object[length]
             : (T[]) Array.newInstance(newType.getComponentType(), length);
+    }
+
+    public static <E> Stream<E> stream(Collection<E> collection) {
+        return CollectionUtils.isEmpty(collection) ? Stream.empty() : collection.stream();
     }
 
 }

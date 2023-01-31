@@ -660,33 +660,22 @@
     </dependency>
   </dependencies>
 
+  <!--
+    1、“https://repo1.maven.org/maven2”与“https://repo.maven.apache.org/maven2”是同一个仓库(central，即mavenCentral)
+    2、central是在“$MAVEN_HOME/lib/maven-model-builder.jar!/org/apache/maven/model/pom-4.0.0.xml”中配置的
+    3、aliyun central+jcenter的聚合镜像仓(jcenter 2022-02-01开始停用不再支持下载)：https://maven.aliyun.com/repository/public
+    4、aliyun maven文档：https://developer.aliyun.com/mvn/guide
+    5、mvn repository地址：https://mvnrepository.com/
+    6、中央仓库搜索地址：https://central.sonatype.com/
+  -->
+  <!--
   <repositories>
     <repository>
-      <!-- 1、“https://repo1.maven.org/maven2”与“https://repo.maven.apache.org/maven2”是同一个仓库(central，即mavenCentral)
-           2、central是在“$MAVEN_HOME/lib/maven-model-builder.jar!/org/apache/maven/model/pom-4.0.0.xml”中配置的
-           3、central仓的镜像：https://maven.aliyun.com/repository/central
-           4、central仓和jcenter仓的聚合镜像仓：https://maven.aliyun.com/repository/public
-           5、搜索地址：https://search.maven.org/
-           6、文档：https://developer.aliyun.com/mvn/guide
-           7、中央仓库搜索：https://central.sonatype.dev/
-      -->
       <id>central</id>
       <url>https://repo.maven.apache.org/maven2</url>
     </repository>
-    <!--<repository>
-      2022-02-01后jcenter不再支持下载(已停用)
-      <id>jcenter</id>
-      <url>https://jcenter.bintray.com</url>
-    </repository>-->
-    <!--<repository>
-      <id>nexus.nuiton.org-central</id>
-      <url>https://nexus.nuiton.org/nexus/content/repositories/central</url>
-    </repository>
-    <repository>
-      <id>nexus.nuiton.org-thirdparty</id>
-      <url>https://nexus.nuiton.org/nexus/content/repositories/thirdparty</url>
-    </repository>-->
   </repositories>
+  -->
 
   <build>
     <finalName>${project.artifactId}-${project.version}</finalName>

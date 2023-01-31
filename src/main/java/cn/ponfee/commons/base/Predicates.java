@@ -6,7 +6,7 @@
 **                      \/          \/     \/                                   **
 \*                                                                              */
 
-package cn.ponfee.commons.model;
+package cn.ponfee.commons.base;
 
 /**
  * Representing a boolean status

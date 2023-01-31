@@ -148,7 +148,10 @@ public final class AsyncBatchProcessor<T> {
                                  int periodTimeMillis,
                                  int batchSize,
                                  int maximumPoolSize) {
-            Assert.isTrue(periodTimeMillis >= MINIMUM_PERIOD_TIME_MILLIS, "Period time millis must greater than " + MINIMUM_PERIOD_TIME_MILLIS + ", but actual " + periodTimeMillis);
+            Assert.isTrue(
+                periodTimeMillis >= MINIMUM_PERIOD_TIME_MILLIS,
+                () -> "Period time millis must greater than " + MINIMUM_PERIOD_TIME_MILLIS + ", but actual " + periodTimeMillis
+            );
             Assert.isTrue(batchSize > 0, "Batch size cannot negative number.");
             Assert.isTrue(maximumPoolSize > 0, "Maximum pool size cannot negative number.");
 
