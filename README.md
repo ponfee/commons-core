@@ -39,7 +39,7 @@ A commons java tool lib
 | export       | 数据导出为excel(支持复杂表头及切分多个文件)、html(支持复杂表头)、csv(支持切分多个文件)、console(类似SQL命令行查询结果)  |
 | extract      | xls/xlsx/csv格式文件导入，支持大文件导入                                                                      |
 | http         | HTTP工具类(轻量级，不依赖第三方jar包)                                                                         |
-| io           | IO操作工具类(如文件BOM处理、文件编码探测、文件编码转换及内容替换、数字格式化为KB/MB/GB/TB/PB、Gzip等)                 |
+| io           | IO操作工具类(如文件UTF编码BOM头处理、文件编码探测、文件编码转换及内容替换、数字格式化为KB/MB/GB/TB/PB、Gzip等)         |
 | jce          | 加解密工具(对称加解密、非对称加解密、签名/验签、数字信封、哈希算法、国密算法、根证创建与CA证书签发、密码处理等)            |
 | model        | 数据模型相关公用类(带类型的Map操作、定义返回结果的结构体、分页实体等)                                               |
 | reflect      | 反射工具类(泛型解析、实体与Map互转、实体字段拷贝、实体字段获取、方法调用、Unsafe工具等)                               |

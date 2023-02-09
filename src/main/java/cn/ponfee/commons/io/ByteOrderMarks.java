@@ -53,8 +53,6 @@ public enum ByteOrderMarks {
 
     UTF_32BE(Charset.forName("UTF-32BE"), (byte) 0x00, (byte) 0x00, (byte) 0xFE, (byte) 0xFF), //
 
-    //GB_18030(Charset.forName("GB18030") , (byte) 0x84, (byte) 0x31, (byte) 0x95, (byte) 0x33), //
-
     ;
 
     private static final Map<Charset, ByteOrderMarks> MAPPING = Enums.toMap(ByteOrderMarks.class, ByteOrderMarks::charset);
