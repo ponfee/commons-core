@@ -1,20 +1,20 @@
 package test.reflect;
 
+import cn.ponfee.commons.base.Predicates;
 import cn.ponfee.commons.base.PrimitiveTypes;
-import cn.ponfee.commons.base.tuple.Tuple;
-import cn.ponfee.commons.base.tuple.Tuple0;
-import cn.ponfee.commons.base.tuple.Tuple1;
-import cn.ponfee.commons.base.tuple.Tuple2;
-import cn.ponfee.commons.base.tuple.Tuple3;
+import cn.ponfee.commons.base.tuple.*;
 import cn.ponfee.commons.cache.Cache;
 import cn.ponfee.commons.cache.CacheBuilder;
 import cn.ponfee.commons.collect.ByteArrayWrapper;
 import cn.ponfee.commons.collect.Collects;
-import cn.ponfee.commons.base.Predicates;
+import cn.ponfee.commons.concurrent.ThreadPoolExecutors;
+import cn.ponfee.commons.json.Jsons;
 import cn.ponfee.commons.model.Result;
 import cn.ponfee.commons.reflect.ClassUtils;
 import cn.ponfee.commons.reflect.Fields;
 import cn.ponfee.commons.reflect.GenericUtils;
+import cn.ponfee.commons.spring.LocalizedMethodArgumentResolver;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openjdk.jol.vm.VM;
@@ -266,6 +266,15 @@ public class ClassUtilsTest {
         Assert.assertEquals(Fields.addressOf(new Byte[]{127, a, 21, 4}, 1), VM.current().addressOf(a));
 
     }
+
+    /*@Test
+    public void test() throws Exception {
+        Method method = ThreadPoolExecutors.class.getMethod("create", int.class, int.class, long.class);
+        LocalizedMethodArgumentResolver resolver = new LocalizedMethodArgumentResolver(new ObjectMapper());
+        String args = Jsons.toJson(new Object[]{1, 2, 10});
+        Object[] objects = resolver.parseRequestBody(method, args);
+        Arrays.stream(objects).forEach(e -> System.out.println(e + ":" + e.getClass()));
+    }*/
 
     public static Object[] toArray(Object... args) {
         return args;
