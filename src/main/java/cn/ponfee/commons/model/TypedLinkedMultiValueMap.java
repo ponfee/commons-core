@@ -19,7 +19,7 @@ import java.util.Map;
  * 
  * @author Ponfee
  */
-public class TypedLinkedMultiValueMap<K, V> extends LinkedMultiValueMap<K, V> implements TypedKeyValue<K, V> {
+public class TypedLinkedMultiValueMap<K, V> extends LinkedMultiValueMap<K, V> implements RemovableTypedKeyValue<K, V> {
 
     private static final long serialVersionUID = 4369022038293264189L;
 

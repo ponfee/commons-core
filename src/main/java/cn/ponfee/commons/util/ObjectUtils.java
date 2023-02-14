@@ -75,8 +75,10 @@ public final class ObjectUtils {
 
         if ((a instanceof Comparable) && (b instanceof Comparable)) {
             if (a.getClass().isInstance(b)) {
+                // a class is super class
                 return ((Comparable) a).compareTo(b);
             } else if (b.getClass().isInstance(a)) {
+                // b class is super class
                 return ((Comparable) b).compareTo(a);
             }
         }

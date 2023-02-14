@@ -8,8 +8,8 @@
 
 package cn.ponfee.commons.reflect;
 
-import cn.ponfee.commons.base.tuple.Tuple2;
 import cn.ponfee.commons.util.SynchronizedCaches;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.cglib.beans.BeanCopier;
 
 import java.util.HashMap;
@@ -24,11 +24,10 @@ import java.util.function.Supplier;
  */
 public class BeanCopiers {
 
-    private static final Map<Tuple2<Class<?>, Class<?>>, BeanCopier> COPIER_CACHES = new HashMap<>();
+    private static final Map<Pair<Class<?>, Class<?>>, BeanCopier> COPIER_CACHES = new HashMap<>();
 
     public static BeanCopier get(Class<?> sourceType, Class<?> targetType) {
-        //Long key = ((long) System.identityHashCode(sclass) << 32) | System.identityHashCode(tclass);
-        Tuple2<Class<?>, Class<?>> key = Tuple2.of(sourceType, targetType);
+        Pair<Class<?>, Class<?>> key = Pair.of(sourceType, targetType);
         return SynchronizedCaches.get(key, COPIER_CACHES, () -> BeanCopier.create(sourceType, targetType, false));
     }
 
@@ -51,6 +50,7 @@ public class BeanCopiers {
      * @see org.apache.commons.beanutils.PropertyUtils#copyProperties(Object, Object);
      * @see org.springframework.beans.BeanUtils#copyProperties(Object, Object)
      * @see org.springframework.cglib.beans.BeanCopier#create(Class, Class, boolean)
+     * @see mapstruct
      */
     public static void copy(Object source, Object target) {
         get(source.getClass(), target.getClass()).copy(source, target, null);

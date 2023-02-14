@@ -131,30 +131,40 @@ public class LocalizedMethodArgumentResolver implements HandlerMethodArgumentRes
         // 不推荐使用，因为需要额外依赖fastjson
         //return com.alibaba.fastjson.JSON.parseArray(body, method.getGenericParameterTypes()).toArray();
 
-        if (method.getParameterCount() == 0) {
-            // no arguments
+        Type[] genericArgumentTypes = method.getGenericParameterTypes();
+        int argumentCount = genericArgumentTypes.length;
+        if (/*method.getParameterCount()*/argumentCount == 0) {
             return null;
         }
 
-        Type[] genericParameterTypes = method.getGenericParameterTypes();
         JsonNode rootNode = objectMapper.readTree(body);
         if (rootNode.isArray()) {
-            // 在调用方，如果method只有一个参数且类型为数组，则序列化方式必须为：new Object[]{ single_array_arg }
             ArrayNode requestParameters = (ArrayNode) rootNode;
+
+            // 方法只有一个参数，但请求参数长度大于1
+            // ["a", "b"]     -> method(Object[] arg) -> arg=["a", "b"]
+            // [["a"], ["b"]] -> method(Object[] arg) -> arg=[["a"], ["b"]]
+            if (argumentCount == 1 && requestParameters.size() > 1) {
+                return new Object[]{parse(rootNode, genericArgumentTypes[0])};
+            }
+
+            // 其它情况，在调用方将参数(requestParameters)用数组包一层：new Object[]{ arg-1, arg-2, ..., arg-n }
+            // [["a", "b"]]   -> method(Object[] arg)                 -> arg =["a", "b"]
+            // [["a"], ["b"]] -> method(Object[] arg1, Object[] arg2) -> arg1=["a"], arg2=["b"]
+            // ["a", "b"]     -> method(Object[] arg1, Object[] arg2) -> arg1=["a"], arg2=["b"]  # ACCEPT_SINGLE_VALUE_AS_ARRAY作用：将字符串“a”转为数组arg1[]
             Assert.isTrue(
-                requestParameters.size() == genericParameterTypes.length,
-                () -> "Method arguments size: " + genericParameterTypes.length + ", but actual size: " + requestParameters.size()
+                argumentCount == requestParameters.size(),
+                () -> "Method arguments size: " + argumentCount + ", but actual size: " + requestParameters.size()
             );
 
-            int length = genericParameterTypes.length;
-            Object[] methodArguments = new Object[length];
-            for (int i = 0; i < length; i++) {
-                methodArguments[i] = parse(requestParameters.get(i), genericParameterTypes[i]);
+            Object[] methodArguments = new Object[argumentCount];
+            for (int i = 0; i < argumentCount; i++) {
+                methodArguments[i] = parse(requestParameters.get(i), genericArgumentTypes[i]);
             }
             return methodArguments;
         } else {
-            Assert.isTrue(genericParameterTypes.length == 1, "Single object request parameter not support multiple arguments method.");
-            return new Object[]{parse(rootNode, genericParameterTypes[0])};
+            Assert.isTrue(argumentCount == 1, "Single object request parameter not support multiple arguments method.");
+            return new Object[]{parse(rootNode, genericArgumentTypes[0])};
         }
     }
 

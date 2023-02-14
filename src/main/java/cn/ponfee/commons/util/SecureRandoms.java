@@ -13,6 +13,7 @@ import cn.ponfee.commons.reflect.Fields;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
+import java.util.UUID;
 
 /**
  * 安全随机数生成工具类
@@ -32,9 +33,11 @@ public final class SecureRandoms {
         buffer.putLong(Thread.currentThread().getId());
         buffer.putLong(Fields.addressOf(SecureRandoms.class));
         buffer.putLong(Fields.addressOf(buffer));
-        buffer.put(ObjectUtils.uuid());
+        UUID uuid = UUID.randomUUID();
+        buffer.putLong(uuid.getMostSignificantBits());
+        buffer.putLong(uuid.getLeastSignificantBits());
         buffer.flip();
-        SECURE_RANDOM = new SecureRandom(new SecureRandom(buffer.array()).generateSeed(32));
+        SECURE_RANDOM = new SecureRandom(new SecureRandom(buffer.array()).generateSeed(20));
     }
 
     /**
