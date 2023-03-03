@@ -7,6 +7,8 @@ import org.junit.Test;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
 
+import java.util.Arrays;
+
 /**
  * @author Ponfee
  */
@@ -37,10 +39,10 @@ public class ProxyTest {
         private String name;
         private String sex;
     }
-    
-    
-    
-    //-------
+
+
+    //---------------------------------------------------------------------------------------
+
     @Test
     public void test2() {
         TargetBean bean2 = (TargetBean) createProxyBean(new TargetBean());
@@ -55,27 +57,35 @@ public class ProxyTest {
      * @return 代理Bean
      */
     private Object createProxyBean(final Object targetBean) {
+        System.out.println("targetBean: " + System.identityHashCode(targetBean) + ", " + targetBean.getClass());
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(targetBean.getClass());
         enhancer.setUseCache(true);
         enhancer.setInterceptDuringConstruction(false);
-        enhancer.setCallback((MethodInterceptor) (bean1, method, args, methodProxy) -> {
-            System.out.println("bean1: " + System.identityHashCode(bean1) + ", " + bean1.getClass());
+        enhancer.setCallback((MethodInterceptor) (proxy, method, args, methodProxy) -> {
+            System.out.println("proxy: " + System.identityHashCode(proxy) + ", " + proxy.getClass());
+            System.out.println("method: " + method.toGenericString());
+            System.out.println("args: " + Arrays.toString(args));
+            System.out.println("methodProxy: " + System.identityHashCode(methodProxy) + ", " + methodProxy.getClass());
             System.err.println("代理前");
-            Object result = methodProxy.invokeSuper(bean1, args);
+            //System.out.println("method.invoke(bean1, args): " + method.invoke(bean1, args)); // bean1为代理类，此处会死循环
+            //System.out.println("method.invoke(targetBean, args): " + method.invoke(targetBean, args));
+            Object result = methodProxy.invokeSuper(proxy, args); // 调用父类方法
             System.err.println("代理后");
             return result;
         });
         Object targetProxyBean = enhancer.create();
         return targetProxyBean;
     }
-    public static  class TargetBean{
-        public TargetBean(){
-            
+
+    public static class TargetBean {
+        public TargetBean() {
+
         }
+
         public void say() {
             System.err.println("Hello");
         }
     }
-    
+
 }

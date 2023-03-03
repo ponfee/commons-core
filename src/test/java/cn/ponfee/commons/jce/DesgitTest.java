@@ -40,13 +40,13 @@ public class DesgitTest {
         md.update(data);
         System.out.println(Hex.encodeHexString(md.doFinal()));
     }
-    
+
     @Test
     public void test2() {
         System.out.println(Hex.encodeHexString(SHA1Digest.getInstance().doFinal()));
         System.out.println(DigestUtils.sha1Hex(new byte[] {}));
 
-        byte[] data = MavenProjects.getMainJavaFileAsByteArray(SHA1Digest.class);
+        byte[] data = MavenProjects.getMainJavaFileAsBytes(SHA1Digest.class);
 
         SHA1Digest sha1 = SHA1Digest.getInstance();
         System.out.println(Hex.encodeHexString(sha1.doFinal(data)));
@@ -67,7 +67,7 @@ public class DesgitTest {
         }
     }
     public static final int RSA_F4 = 65537;
-    
+
     @Test
     public void test3() {
         Stopwatch watch = Stopwatch.createStarted();
@@ -78,11 +78,11 @@ public class DesgitTest {
         RSAKey.generateKey(4096, RSA_F4);
         System.out.println("generateKey2: " + watch.stop());
     }
-    
+
     @Test
     public void test4() {
         byte[] key = "0123456789123456".getBytes();
-        byte[] data = MavenProjects.getMainJavaFileAsByteArray(RC4.class);
+        byte[] data = MavenProjects.getMainJavaFileAsBytes(RC4.class);
         RC4 rc4 = new RC4(key);
         byte[] encrypted1 = rc4.encrypt(data);
         byte[] encrypted2 = rc4.encrypt(data);
@@ -113,7 +113,7 @@ public class DesgitTest {
             //System.out.println(new String(rc4.decrypt(encrypted)));
         }
     }
-    
+
     @Test
     public void test5() throws Exception {
         System.out.println(DigestUtils.sha224Hex("1".getBytes()));
@@ -123,7 +123,7 @@ public class DesgitTest {
         System.out.println(DigestUtils.sha1Hex(new FileInputStream("E:\\tools\\develop\\linux\\CentOS-6.6-x86_64-bin-DVD1.iso")));
         System.out.println((System.currentTimeMillis() - start) / 1000);
     }
-    
+
     @Test
     public void test6() throws FileNotFoundException {
         byte[] key = SecureRandoms.nextBytes(16);

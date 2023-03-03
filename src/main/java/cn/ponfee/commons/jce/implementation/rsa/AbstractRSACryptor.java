@@ -23,7 +23,7 @@ import java.util.Arrays;
 
 /**
  * http://blog.51cto.com/xnuil/1698673
- * 
+ *
  * RSA Cryptor, Without padding
  * RSA私钥解密证明：费马小定理（欧拉定理特例）
  *  等同证明：c^d ≡ m (mod n)
@@ -34,7 +34,7 @@ import java.util.Arrays;
  *  由于：ed ≡ 1 (mod φ(n))
  *  所以：ed = hφ(n)+1
  *  得出：m^(hφ(n)+1) ≡ m (mod n)
- *  
+ *
  * @author Ponfee
  */
 public abstract class AbstractRSACryptor extends Cryptor {
@@ -220,9 +220,9 @@ public abstract class AbstractRSACryptor extends Cryptor {
     /**
      * When the BigInteger convert to byte array, if head more than two zero
      * then was automatic trim remain one zero, if head has not zreo then automatic
-     * add a zreo. So we should manual control handle it, recover the origin byte 
+     * add a zreo. So we should manual control handle it, recover the origin byte
      * array of this BigInteger.
-     * 
+     *
      * @param data        the data
      * @param fixedSize   the result of byte array length
      * @param out         the output stream
@@ -236,7 +236,7 @@ public abstract class AbstractRSACryptor extends Cryptor {
             // 当最前面有多个0时，此时会被舍去只留下一个0来充当符号位，所以要加前缀0来补全
             // 加前缀0补全到固定字节数：encryptedBlockSize
             for (int i = 0, heading = fixedSize - data.length; i < heading; i++) {
-                out.write(Numbers.BYTE_ZERO);
+                out.write(Numbers.ZERO_BYTE);
             }
             out.write(data, 0, data.length);
         } else {
@@ -248,7 +248,7 @@ public abstract class AbstractRSACryptor extends Cryptor {
     /**
      * 当最前面的位为1时，BigInteger会通过加一个byte 0来充当符号位，此时需要手动舍去
      * this method is unsafe, will be lose the prefix byte 0(one or more)
-     * 
+     *
      * @param data  the decrypted origin data
      * @param out   the output stream
      * @throws IOException if occur IOException
@@ -258,7 +258,7 @@ public abstract class AbstractRSACryptor extends Cryptor {
         throws IOException {
         int i = 0, len = data.length;
         for (; i < len; i++) {
-            if (data[i] != Numbers.BYTE_ZERO) {
+            if (data[i] != Numbers.ZERO_BYTE) {
                 break;
             }
         }
@@ -269,17 +269,17 @@ public abstract class AbstractRSACryptor extends Cryptor {
 
     /**
      * 原文进行编码填充
-     * 
+     *
      * EB = 00 || BT || PS || 00 || D
      * BT：公钥为0x02；私钥为0x00或0x01
      * PS：BT为0则PS全部为0x00；BT为0x01则全部为0xFF；BT为0x02则为随机数，但不能为0
-     * 
+     *
      * 对于BT为00的，数据D就不能以00字节开头，因为这时候PS填充的也是00，
      * 会分不清哪些是填充数据哪些是明文数据<p>
-     * 
+     *
      * 如果你使用私钥加密，建议你BT使用01，保证了安全性
      * 对于BT为02和01的，PS至少要有8个字节长
-     * 
+     *
      * @param input  数据
      * @param from   开始位置
      * @param to     结束位置
@@ -287,7 +287,7 @@ public abstract class AbstractRSACryptor extends Cryptor {
      * @param rsaKey 密钥
      * @return the encrypting block with pkcs1 padding
      */
-    private static byte[] encodeBlock(byte[] input, int from, int to, 
+    private static byte[] encodeBlock(byte[] input, int from, int to,
                                       int cipherBlockSize, RSAKey rsaKey) {
         int length = to - from;
         if (length > cipherBlockSize) {
@@ -297,7 +297,7 @@ public abstract class AbstractRSACryptor extends Cryptor {
         }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream(cipherBlockSize);
-        baos.write(Numbers.BYTE_ZERO); // 0x00
+        baos.write(Numbers.ZERO_BYTE); // 0x00
 
         if (rsaKey.secret) {
             // 私钥填充
@@ -312,12 +312,12 @@ public abstract class AbstractRSACryptor extends Cryptor {
             for (int i = 2, pLen = cipherBlockSize - length - 1; i < pLen; i++) {
                 do {
                     b = (byte) SecureRandoms.nextInt();
-                } while (b == Numbers.BYTE_ZERO);
+                } while (b == Numbers.ZERO_BYTE);
                 baos.write(b);
             }
         }
 
-        baos.write(Numbers.BYTE_ZERO); // 0x00
+        baos.write(Numbers.ZERO_BYTE); // 0x00
 
         baos.write(input, from, length); // D
         return baos.toByteArray();
@@ -331,14 +331,14 @@ public abstract class AbstractRSACryptor extends Cryptor {
      * @throws IOException if occur IOException
      * @see cn.ponfee.commons.util.Bytes#toBinary(byte...)
      */
-    private static void decodeBlock(byte[] input, int cipherBlockSize, OutputStream out) 
+    private static void decodeBlock(byte[] input, int cipherBlockSize, OutputStream out)
         throws IOException {
-        // BigInteger to byte array will be removed the prefix 0 (one or more) 
-        // or added one byte 0 
-        // 0x00 [0x01 | 0x02], so signum is definite on [0x01 | 0x02] then 
+        // BigInteger to byte array will be removed the prefix 0 (one or more)
+        // or added one byte 0
+        // 0x00 [0x01 | 0x02], so signum is definite on [0x01 | 0x02] then
         // was removed the first 0x00
         int removedZeroLen;
-        if (input[0] == Numbers.BYTE_ZERO) {
+        if (input[0] == Numbers.ZERO_BYTE) {
             removedZeroLen = 0;
         } else {
             removedZeroLen = 1;

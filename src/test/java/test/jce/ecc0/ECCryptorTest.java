@@ -15,7 +15,7 @@ import cn.ponfee.commons.util.MavenProjects;
 
 public class ECCryptorTest {
 
-    private static byte[] origin = MavenProjects.getMainJavaFileAsByteArray(IdcardResolver.class);
+    private static byte[] origin = MavenProjects.getMainJavaFileAsBytes(IdcardResolver.class);
 
     @Test
     public void testECCryptor() {

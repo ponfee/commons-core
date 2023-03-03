@@ -12,13 +12,17 @@ import cn.ponfee.commons.json.Jsons;
 
 /**
  * Override {@code Object#toString()} method, implemented to json string.
- * 
+ *
  * @author Ponfee
  */
 public abstract class ToJsonString {
 
+    public String toJson() {
+        return Jsons.toJson(this);
+    }
+
     @Override
     public String toString() {
-        return Jsons.toJson(this);
+        return toJson();
     }
 }

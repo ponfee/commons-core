@@ -8,6 +8,7 @@
 
 package cn.ponfee.commons.date;
 
+import cn.ponfee.commons.base.Symbol.Char;
 import com.google.common.base.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
@@ -124,7 +125,7 @@ public class JavaUtilDateFormat extends DateFormat {
         try {
             return parse(date);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid date format: " + source + ", " + pos.getIndex() + ", " + date);
+            throw e;
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid date format: " + source + ", " + pos.getIndex() + ", " + date, e);
         }
@@ -147,21 +148,21 @@ public class JavaUtilDateFormat extends DateFormat {
                 source = padding(source) + "Z";
             }
             if (hasTSeparator(source)) {
-                return (isCrossbar(source) ? PATTERN_63 : PATTERN_64).parse(source);
+                return (isHyphen(source) ? PATTERN_63 : PATTERN_64).parse(source);
             } else {
-                return (isCrossbar(source) ? PATTERN_61 : PATTERN_62).parse(source);
+                return (isHyphen(source) ? PATTERN_61 : PATTERN_62).parse(source);
             }
         }
 
         switch (length) {
             case  6: return PATTERN_11.parse(source);
-            case  7: return (isCrossbar(source) ? PATTERN_12 : PATTERN_13).parse(source);
+            case  7: return (isHyphen(source) ? PATTERN_12 : PATTERN_13).parse(source);
             case  8: return PATTERN_21.parse(source);
             case 10:
                 char separator = source.charAt(4);
-                if (separator == '-') {
+                if (separator == Char.HYPHEN) {
                     return PATTERN_22.parse(source);
-                } else if (separator == '/') {
+                } else if (separator == Char.SLASH) {
                     return PATTERN_23.parse(source);
                 } else if (DATE_TIMESTAMP_PATTERN.matcher(source).matches()) {
                     // long string(length 10) of unix timestamp(e.g. 1640966400)
@@ -177,25 +178,25 @@ public class JavaUtilDateFormat extends DateFormat {
             case 14: return PATTERN_31.parse(source);
             case 19:
                 if (hasTSeparator(source)) {
-                    return (isCrossbar(source) ? PATTERN_43 : PATTERN_44).parse(source);
+                    return (isHyphen(source) ? PATTERN_43 : PATTERN_44).parse(source);
                 } else {
-                    return (isCrossbar(source) ? PATTERN_41 : PATTERN_42).parse(source);
+                    return (isHyphen(source) ? PATTERN_41 : PATTERN_42).parse(source);
                 }
             case 17: return PATTERN_32.parse(source);
             case 23:
                 if (hasTSeparator(source)) {
-                    return (isCrossbar(source) ? PATTERN_53 : PATTERN_54).parse(source);
+                    return (isHyphen(source) ? PATTERN_53 : PATTERN_54).parse(source);
                 } else {
-                    return (isCrossbar(source) ? PATTERN_51 : PATTERN_52).parse(source);
+                    return (isHyphen(source) ? PATTERN_51 : PATTERN_52).parse(source);
                 }
-            case 26: 
+            case 26:
             case 29:
                 if (hasTSeparator(source)) {
                     // 2021-12-31T17:01:01.000+08、2021-12-31T17:01:01.000+08:00
-                    return (isCrossbar(source) ? PATTERN_73 : PATTERN_74).parse(source);
+                    return (isHyphen(source) ? PATTERN_73 : PATTERN_74).parse(source);
                 } else {
                     // 2021-12-31 17:01:01.000+08、2021-12-31 17:01:01.000+08:00
-                    return (isCrossbar(source) ? PATTERN_71 : PATTERN_72).parse(source);
+                    return (isHyphen(source) ? PATTERN_71 : PATTERN_72).parse(source);
                 }
             case 28:
                 if (isCST(source)) {
@@ -287,8 +288,8 @@ public class JavaUtilDateFormat extends DateFormat {
     }
 
     // ------------------------------------------------------------------------package methods
-    static boolean isCrossbar(String str) {
-        return str.charAt(4) == '-';
+    static boolean isHyphen(String str) {
+        return str.charAt(4) == Char.HYPHEN;
     }
 
     // 'T' literal is the date and time separator

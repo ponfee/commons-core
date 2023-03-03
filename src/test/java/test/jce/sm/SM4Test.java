@@ -1,6 +1,5 @@
 package test.jce.sm;
 
-import java.io.IOException;
 import java.util.Base64;
 
 import cn.ponfee.commons.jce.sm.SM4;
@@ -10,7 +9,7 @@ public class SM4Test {
 
     public static void main(String[] args) {
         //byte[] data = Files.toString(MavenProjects.getMainJavaFile(SM4.class)).replaceAll("\r|\n", "").getBytes();
-        byte[] data = MavenProjects.getMainJavaFileAsLineString(SM4.class).substring(0, 997).getBytes();
+        byte[] data = MavenProjects.getMainJavaFileAsString(SM4.class).substring(0, 997).getBytes();
         byte[] key = "1234567785465466".getBytes();
         byte[] iv = "1a345677b546d4de".getBytes();
         System.out.println(new String(SM4.decrypt( key, iv, Base64.getDecoder().decode("+31e6VuKcGDl4qG5rxfiYy35LFwmbS4VY4AF/t7lmeu2wjEUneKEVWTEPBnaSo3+lRKsqfBVp4khbD830Qiy8R66AdHm1/ato7OzepfCxAs=")))+"|");

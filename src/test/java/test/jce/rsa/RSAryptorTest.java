@@ -28,7 +28,7 @@ import cn.ponfee.commons.util.SecureRandoms;
 
 public class RSAryptorTest {
 
-    private static byte[] origin = MavenProjects.getMainJavaFileAsByteArray(IdcardResolver.class);
+    private static byte[] origin = MavenProjects.getMainJavaFileAsBytes(IdcardResolver.class);
     private static boolean isPrint = false;
 
     private static void print(String s) {
@@ -177,7 +177,7 @@ public class RSAryptorTest {
 
             // 1
             byte[] encrypted1 = cs.encrypt(data, ek);
-            byte[] decrypted1 = cs.decrypt(encrypted1, dk);                   // XXX DATA!=decrypted1    1% 
+            byte[] decrypted1 = cs.decrypt(encrypted1, dk);                   // XXX DATA!=decrypted1    1%
 
             // 2
             byte[] encrypted2 = encrypted1;
@@ -255,7 +255,7 @@ public class RSAryptorTest {
             }
         }
     }
-    
+
     @Test
     public void testRSAPKCS1InverseKey() {
         System.out.println("\n\ntestRSAPKCS1InverseKey======================================");

@@ -8,6 +8,8 @@
 
 package cn.ponfee.commons.date;
 
+import cn.ponfee.commons.base.Symbol.Char;
+
 import javax.annotation.concurrent.ThreadSafe;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -68,7 +70,7 @@ public class LocalDateTimeFormat {
 
         int length = source.length();
         if (length >= 20 && hasTSeparator(source) && source.endsWith("Z")) {
-            if (isCrossbar(source)) {
+            if (isHyphen(source)) {
                 // example: 2022-07-18T15:11:11Z, 2022-07-18T15:11:11.Z, 2022-07-18T15:11:11.1Z, 2022-07-18T15:11:11.13Z, 2022-07-18T15:11:11.133Z
                 // 解析会报错：DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
                 return LocalDateTime.ofInstant(Instant.parse(source), ZoneOffset.UTC);
@@ -85,10 +87,10 @@ public class LocalDateTimeFormat {
                 return LocalDateTime.parse(source + "000000", PATTERN_01);
             case 10:
                 char c = source.charAt(4);
-                if (c == '-') {
+                if (c == Char.HYPHEN) {
                     // yyyy-MM-dd
                     return LocalDateTime.parse(source + " 00:00:00", PATTERN_11);
-                } else if (c == '/') {
+                } else if (c == Char.SLASH) {
                     // yyyy/MM/dd
                     return LocalDateTime.parse(source + " 00:00:00", PATTERN_12);
                 } else if (JavaUtilDateFormat.DATE_TIMESTAMP_PATTERN.matcher(source).matches()) {
@@ -106,15 +108,15 @@ public class LocalDateTimeFormat {
                 return LocalDateTime.parse(source, PATTERN_01);
             case 19:
                 if (hasTSeparator(source)) {
-                    return LocalDateTime.parse(source, isCrossbar(source) ? PATTERN_13 : PATTERN_14);
+                    return LocalDateTime.parse(source, isHyphen(source) ? PATTERN_13 : PATTERN_14);
                 } else {
-                    return LocalDateTime.parse(source, isCrossbar(source) ? PATTERN_11 : PATTERN_12);
+                    return LocalDateTime.parse(source, isHyphen(source) ? PATTERN_11 : PATTERN_12);
                 }
             case 23:
                 if (hasTSeparator(source)) {
-                    return LocalDateTime.parse(source, isCrossbar(source) ? PATTERN_23 : PATTERN_24);
+                    return LocalDateTime.parse(source, isHyphen(source) ? PATTERN_23 : PATTERN_24);
                 } else {
-                    return LocalDateTime.parse(source, isCrossbar(source) ? PATTERN_21 : PATTERN_22);
+                    return LocalDateTime.parse(source, isHyphen(source) ? PATTERN_21 : PATTERN_22);
                 }
             default:
                 break;

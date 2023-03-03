@@ -18,7 +18,7 @@ public class SerializerTester {
 
     @Before
     public void setUp() {
-        text =  MavenProjects.getTestJavaFileAsLineString(this.getClass());
+        text =  MavenProjects.getTestJavaFileAsString(this.getClass());
     }
 
     @Test
@@ -231,7 +231,7 @@ public class SerializerTester {
         System.out.println("解压缩后数据：" + new String(data));
         System.out.println("compress end =======================================================耗时" + (System.currentTimeMillis() - start) + "\n");
     }
-    
+
 
     //@Test
     public void testDeserializer() throws IOException {
@@ -258,11 +258,11 @@ public class SerializerTester {
             }
             out.write(w1);
         }
-        
+
         byte[] bytes = out.toByteArray();
         System.out.println(Bytes.hexDump(bytes));
         System.out.println(b.toString());
-        
+
         JdkSerializer serializer = new JdkSerializer();
         System.out.println(serializer.deserialize(bytes, String.class, false));
     }

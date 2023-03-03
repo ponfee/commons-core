@@ -14,7 +14,7 @@ public class DHKeyExchangerTest {
         Providers.set(Providers.BC);
         Pair<DHPublicKey, DHPrivateKey> partA = DHKeyExchanger.initPartAKey(1024);
         Pair<DHPublicKey, DHPrivateKey> partB = DHKeyExchanger.initPartBKey(partA.getLeft());
-        byte[] data = MavenProjects.getMainJavaFileAsByteArray(DHKeyExchanger.class);
+        byte[] data = MavenProjects.getMainJavaFileAsBytes(DHKeyExchanger.class);
 
         // 乙方加密甲方解密
         byte[] encrypted = DHKeyExchanger.encrypt(data, DHKeyExchanger.genSecretKey(partB.getRight(), partA.getLeft()));

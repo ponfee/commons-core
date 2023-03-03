@@ -8,6 +8,7 @@
 
 package cn.ponfee.commons.serial;
 
+import cn.ponfee.commons.base.Symbol;
 import cn.ponfee.commons.collect.ByteArrayTrait;
 import cn.ponfee.commons.collect.ByteArrayWrapper;
 import cn.ponfee.commons.io.GzipProcessor;
@@ -45,12 +46,12 @@ public class WrappedSerializer extends Serializer {
 
     private static final Map<Class<?>, Object> PRIMITIVES = new Builder<Class<?>, Object>()
         .put(boolean.class, Boolean.FALSE)
-        .put(byte.class, Numbers.BYTE_ZERO)
-        .put(short.class, (short) 0)
-        .put(char.class, Numbers.CHAR_ZERO)
-        .put(int.class, Numbers.INT_ZERO)
-        .put(long.class, 0L)
-        .put(float.class, 0.0F)
+        .put(byte.class,    Numbers.ZERO_BYTE)
+        .put(short.class,  (short) 0)
+        .put(char.class,   Symbol.Char.ZERO)
+        .put(int.class,    Numbers.ZERO_INT)
+        .put(long.class,   0L)
+        .put(float.class,  0.0F)
         .put(double.class, 0.0D)
         .build();
 

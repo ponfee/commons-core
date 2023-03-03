@@ -36,11 +36,11 @@ import cn.ponfee.commons.date.Dates;
 import cn.ponfee.commons.util.MavenProjects;
 
 /**
- * 
+ *
  * @author Ponfee
  */
 public class Test1 {
-    
+
     public static void main(String[] args) throws InterruptedException, ExecutionException, JsonProcessingException {
         Money money = Money.of(CurrencyEnum.CNY.currency(), 100);
         String json = JSON.toJSONString(money);
@@ -50,7 +50,7 @@ public class Test1 {
         Money money2 = new ObjectMapper().readValue(json, Money.class);
         System.out.println(money1.equals(money2));
         System.out.println(new ObjectMapper().writeValueAsString(money1));
-        
+
 
 
         String nids = Arrays.stream(new Integer[]{1,2,3}).map(e -> String.valueOf(e)).collect(Collectors.joining(","));
@@ -66,9 +66,9 @@ public class Test1 {
         System.out.println(String.format("%02d", 1));
         Date d1 = Dates.toDate("2019-05-10 10:23:34");
         Date d2 = Dates.toDate("2019-05-11 08:23:34");
-        
+
         System.out.println(Dates.daysBetween(Dates.startOfDay(d1), Dates.endOfDay(d2)));
-        
+
         System.out.println(List.class.isInstance(null));
         Stopwatch watch = Stopwatch.createStarted();
         CompletableFuture<String> future1 = new CompletableFuture<>();
@@ -134,10 +134,10 @@ public class Test1 {
             }
         });
 
-        
+
         System.out.println(fu.get());
     }
-    
+
     @Test
     public void test2() throws InterruptedException {
         Stream.of(1,2,3,4,5).map(i -> CompletableFuture.runAsync(()-> {
@@ -167,35 +167,35 @@ public class Test1 {
         // this::instanceMethodName
         Lists.newArrayList(1,2,3).stream().filter(this::test).forEach(System.out::println);
     }
-    
-    
+
+
     public boolean test(Integer i) {
         return i > 2;
     }
     @Test
     public void test5() throws Exception {
-        byte[] data = MavenProjects.getTestJavaFileAsByteArray(this.getClass());
+        byte[] data = MavenProjects.getTestJavaFileAsBytes(this.getClass());
         System.out.println((data.length + 15) / 16);
         System.out.println(Integer.toHexString((data.length + 15) / 16));
         String lineNumberFormat = "%0" + Integer.toHexString((data.length + 15) / 16).length() + "x: ";
         System.out.println(lineNumberFormat);
         System.out.println(Bytes.hexDump(data));
-        
+
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         /*org.apache.commons.io.HexDump.dump(MavenProjects.getTestJavaFileAsByteArray(this.getClass()), 0, out, 0);
         System.out.println(new String(out.toByteArray()));*/
-        
+
         /*new sun.misc.HexDumpEncoder().encode(MavenProjects.getTestJavaFileAsByteArray(this.getClass()), out);
         System.out.println(new String(out.toByteArray()));*/
-        
-        
+
+
         //System.out.println(Bytes.hexDump(Bytes.fromChar(Numbers.CHAR_ZERO)));
     }
-    
+
     @Test
     public void test6() throws Exception {
         //System.out.println(IOUtils.toString(ResourceLoaderFacade.getResource("/gbkxxx.txt", CryptoProvider.class).getStream(), "GBK"));
         System.out.println(IOUtils.toString(ResourceLoaderFacade.getResource("cert/gbkyyy.txt", CryptoProvider.class).getStream(), "GBK"));
     }
-    
+
 }

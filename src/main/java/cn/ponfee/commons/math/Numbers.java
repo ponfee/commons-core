@@ -8,6 +8,7 @@
 
 package cn.ponfee.commons.math;
 
+import cn.ponfee.commons.base.Symbol;
 import cn.ponfee.commons.base.tuple.Tuple2;
 import com.google.common.base.Strings;
 import com.google.common.primitives.Chars;
@@ -30,28 +31,27 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 /**
  * <pre>
  * Number utility
- * 
+ *
  * 十进制：10
  * 二进制：0B10
  * 八进制：010
  * 十六进制：0X10
  * 小数点：1e-9
  * </pre>
- * 
+ *
  * @author Ponfee
  */
 public final class Numbers {
 
-    public static final int     INT_ZERO     = 0;
-    public static final Integer INTEGER_ZERO = INT_ZERO;
-    public static final byte    BYTE_ZERO    = 0x00;
-    public static final char    CHAR_ZERO    = '\u0000'; // equals '\0'
-    public static final double  DOUBLE_ZERO  = 0.0D;
-    public static final double  DOUBLE_ONE   = 1.0D;
+    public static final int     ZERO_INT     = 0;
+    public static final Integer ZERO_INTEGER = ZERO_INT;
+    public static final byte    ZERO_BYTE    = 0x00;
+    public static final double  ZERO_DOUBLE  = 0.0D;
+    public static final double  ONE_DOUBLE   = 1.0D;
 
     // --------------------------------------------------------------character convert
     public static char toChar(Object obj) {
-        return toChar(obj, CHAR_ZERO);
+        return toChar(obj, Symbol.Char.ZERO);
     }
 
     public static char toChar(Object obj, char defaultVal) {
@@ -92,7 +92,7 @@ public final class Numbers {
         } else if (obj instanceof Boolean) {
             return (Boolean) obj;
         } else if (obj instanceof Number) {
-            return ((Number) obj).byteValue() != BYTE_ZERO;
+            return ((Number) obj).byteValue() != ZERO_BYTE;
         } else {
             return Boolean.parseBoolean(obj.toString());
         }
@@ -364,7 +364,7 @@ public final class Numbers {
 
     /**
      * Returns a string value of double
-     * 
+     *
      * @param d      the double value
      * @param scale  the scale
      * @return a string
@@ -514,7 +514,7 @@ public final class Numbers {
 
     /**
      * Returns the Long object is equals the Integer object
-     * 
+     *
      * @param a the Long a
      * @param b the Integer b
      * @return if is equals then return {@code true}

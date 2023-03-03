@@ -21,12 +21,10 @@ import java.util.stream.IntStream;
 
 /**
  * 字符串工具类
- * 
+ *
  * @author Ponfee
  */
 public class Strings {
-
-    public static final char   BLANK_CHAR               = ' ';
 
     private static final char[] REGEX_SPECIALS = { '\\', '$', '(', ')', '*', '+', '.', '[', ']', '?', '^', '{', '}', '|' };
 
@@ -54,17 +52,17 @@ public class Strings {
     /**
      * 集合拼接为字符串<p>
      * join(Arrays.asList("a","b","c"), ",", "(", ")") -> (a),(b),(c)
-     * 
+     *
      * @param coll      集合对象
      * @param delimiter 分隔符
      * @param mapper    对象转String
      * @param open      每个元素添加的前缀
      * @param close     每个元素添加的后缀
      * @return a String with joined
-     * 
+     *
      * @see org.apache.commons.collections4.IteratorUtils#toString(Iterator, org.apache.commons.collections4.Transformer, String, String, String)
      * @see org.apache.commons.collections4.IterableUtils#toString(Iterable, org.apache.commons.collections4.Transformer, String, String, String)
-     * 
+     *
      * @see java.lang.String#join(CharSequence, CharSequence...)
      * @see java.util.stream.Collectors#joining(CharSequence, CharSequence, CharSequence)
      * @see org.apache.commons.lang3.StringUtils#join(List, String, int, int)
@@ -89,7 +87,7 @@ public class Strings {
 
     /**
      * Parse main method args, such as: [name1=value,name2=value2,...]
-     * 
+     *
      * @param args the args
      * @return a map object params
      */
@@ -173,7 +171,7 @@ public class Strings {
     /**
      * '?' Matches any single character.
      * '*' Matches any sequence of characters (including the empty sequence).
-     * 
+     *
      * isMatch("aa","a")       = false
      * isMatch("aa","aa")      = true
      * isMatch("aaa","aa")     = false
@@ -181,7 +179,7 @@ public class Strings {
      * isMatch("aa", "a*")     = true
      * isMatch("ab", "?*")     = true
      * isMatch("aab", "c*a*b") = false
-     * 
+     *
      * @param s characters
      * @param p pattern
      * @return match result: true|false
@@ -221,7 +219,7 @@ public class Strings {
 
     /**
      * Returns a safe file system path that forbid access parent dir
-     * 
+     *
      * @param path the path
      * @return a safe path
      */
@@ -235,9 +233,9 @@ public class Strings {
     /**
      * 文件路径规范化，如“path/..”内部的点号
      * 注意：windows的文件分隔符“\”会替换为“/”
-     * 
+     *
      * @param path 文件路径
-     * @return 规范的文件路径 
+     * @return 规范的文件路径
      */
     public static String cleanPath(String path) {
         if (path == null) {
@@ -295,10 +293,10 @@ public class Strings {
         return prefix + String.join(Files.UNIX_FOLDER_SEPARATOR, pathElements);
     }
 
-    /** 
-     * 驼峰转换为下划线 
+    /**
+     * 驼峰转换为下划线
      * CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, camelCaseName);
-     * 
+     *
      * @param camelCaseName 驼峰名
      * @return the underscore name
      * @see CaseFormat#to(CaseFormat, String)
@@ -323,15 +321,15 @@ public class Strings {
         return result.toString();
     }
 
-    /** 
-     * 下划线转换为驼峰 
+    /**
+     * 下划线转换为驼峰
      * CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, underscoreName);
      * 1  LOWER_HYPHEN       连字符的变量命名规范如lower-hyphen
      * 2  LOWER_UNDERSCORE   c++变量命名规范如lower_underscore
      * 3  LOWER_CAMEL        java变量命名规范如lowerCamel
      * 4  UPPER_CAMEL        java和c++类的命名规范如UpperCamel
      * 5  UPPER_UNDERSCORE   java和c++常量的命名规范如UPPER_UNDERSCORE
-     * 
+     *
      * @param underscoreName 下划线名
      * @return the camel case name
      * @see CaseFormat#to(CaseFormat, String)
@@ -374,7 +372,7 @@ public class Strings {
 
     /**
      * 如果为空则设置默认
-     * 
+     *
      * @param str
      * @param defaultStr
      * @return
@@ -394,7 +392,7 @@ public class Strings {
      * an SQL query.
      *
      * For example,
-     *  statement.executeQuery("SELECT * FROM MOVIES WHERE TITLE='" + 
+     *  statement.executeQuery("SELECT * FROM MOVIES WHERE TITLE='" +
      *  StringEscapeUtils.escapeSql("McHale's Navy") +  "'");
      *
      * At present, this method only turns single-quotes into doubled single-quotes
@@ -414,9 +412,9 @@ public class Strings {
         return StringUtils.replace(str, "'", "''");
     }
 
-    /** 
+    /**
      * Escape the regex characters: $()*+.[]?\^{},|
-     *  
+     *
      * @param text the text string
      * @return a new String, escaped for regex
      */
@@ -441,7 +439,7 @@ public class Strings {
     /**
     * Parse a CSV string using {@link #csvSplit(List,String, int, int)}
     * use in {@link cn.ponfee.commons.web.WebContext.WebContextFilter)
-    * 
+    *
     * @param s The string to parse
     * @return An array of parsed values.
     */
@@ -454,7 +452,7 @@ public class Strings {
 
     /**
      * Parse a CSV string using {@link #csvSplit(List, String, int, int)}
-     * 
+     *
      * @param s The string to parse
      * @param off The offset into the string to start parsing
      * @param len The len in characters to parse
@@ -478,13 +476,13 @@ public class Strings {
     }
 
     /** Split a quoted comma separated string to a list
-     * <p>Handle <a href="https://www.ietf.org/rfc/rfc4180.txt">rfc4180</a>-like 
+     * <p>Handle <a href="https://www.ietf.org/rfc/rfc4180.txt">rfc4180</a>-like
      * CSV strings, with the exceptions:<ul>
      * <li>quoted values may contain double quotes escaped with back-slash
      * <li>Non-quoted values are trimmed of leading trailing white space
      * <li>trailing commas are ignored
      * <li>double commas result in a empty string value
-     * </ul>  
+     * </ul>
      * @param list The Collection to split to (or null to get a new list)
      * @param s The string to parse
      * @param off The offset into the string to start parsing

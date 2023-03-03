@@ -15,20 +15,20 @@ public class SM2Test {
 
     @Test
     public void test1() {
-        byte[] data = MavenProjects.getMainJavaFileAsLineString(SM2.class).substring(0, 100).getBytes();
+        byte[] data = MavenProjects.getMainJavaFileAsString(SM2.class).substring(0, 100).getBytes();
         Map<String, byte[]> keyMap = SM2.generateKeyPair(ecParameter);
-        
+
         System.out.println(Base64.getUrlEncoder().encodeToString(SM2.getPublicKey(keyMap)));
         System.out.println(Base64.getUrlEncoder().encodeToString(SM2.getPrivateKey(keyMap)));
-        
-        
+
+
         byte[] encrypted = SM2.encrypt(ecParameter, SM2.getPublicKey(keyMap), data);
         System.out.println(Base64.getUrlEncoder().encodeToString(encrypted));
-        
+
         byte[] decrypted = SM2.decrypt(ecParameter, SM2.getPrivateKey(keyMap), encrypted);
         System.out.println(new String(decrypted));
     }
-    
+
     @Test
     public void test2() throws Exception {
         byte[] privateKey = Hex.decodeHex("19F4279987CACA6780592C2B330E932B7C6C27919ED56D63785E398A7C3B568F");
@@ -50,7 +50,7 @@ public class SM2Test {
         System.out.println(new String(SM2.decrypt(privateKey1, encrypted1)));
 
         for (int i = 0; i < 5; i++) {
-            byte[] data = MavenProjects.getMainJavaFileAsLineString(SM2.class).getBytes();
+            byte[] data = MavenProjects.getMainJavaFileAsString(SM2.class).getBytes();
             Map<String, byte[]> keyMap = SM2.generateKeyPair(ecParameter);
 
             System.out.println("\n=============================加密/解密============================");
@@ -67,7 +67,7 @@ public class SM2Test {
             System.out.println(SM2.verify(ecParameter, data, "IDA".getBytes(), signed, SM2.getPublicKey(keyMap)));
         }
 
-        byte[] data = MavenProjects.getMainJavaFileAsLineString(SM2.class).substring(0, 100).getBytes();
+        byte[] data = MavenProjects.getMainJavaFileAsString(SM2.class).substring(0, 100).getBytes();
         Map<String, byte[]> keyMap = SM2.generateKeyPair(ecParameter);
         System.out.println("\ncheckPublicKey: "+SM2.checkPublicKey(ecParameter, SM2.getPublicKey(keyMap)));
         for (int i = 0; i < 5; i++) {
@@ -82,16 +82,16 @@ public class SM2Test {
             System.out.println(SM2.verify(ecParameter, data, "IDA".getBytes(), signed, SM2.getPublicKey(keyMap)));
         }
     }
-    
+
     @Test
     public void test4() {
         byte[] publicKey1 = Base64.getDecoder().decode("BDky9CNygRTBGh7eGdzdbxP5eGRozk4wQfFmREncwEKnYHhNy1OoBvh0wY/RMH/3ikfYejClHxlI1T+jRa0m2wU=");
         byte[] privateKey1 = Base64.getDecoder().decode("AJaz6VNm1Wl9ba1YCEkYi36+m+8DDL4LDuLM172tg5Ao");
         byte[] encrypted1 = Base64.getDecoder().decode("BBdOqZ+7WMaYzyyEZui0b5tdfJqquXH0pMxyoSv04BzYCqKIaeXPcc/vIek8tcK4kCkp022OCZ2TW2bLgVgGvFxeMOzGUgliTQP521HmqbQaawS4FFHxGa1vy+lk9UrkOIaTiEqjIRFSB2SW4cOi3u1mwvqK8EuaYFb143K539HIuqu84Bo3RD2zIpssO+yZzduG4KDcn4iqOJ+NJ1RB5wlI1xEyyiKit6c0mVBfSnXbUkuAyml50dM=");
         System.out.println(new String(SM2.decrypt(privateKey1, encrypted1)));
-        
-        
-        byte[]   encrypted = SM2.encrypt(publicKey1, MavenProjects.getTestJavaFileAsByteArray(SM2Test.class));
+
+
+        byte[]   encrypted = SM2.encrypt(publicKey1, MavenProjects.getTestJavaFileAsBytes(SM2Test.class));
         System.out.println(Base64.getEncoder().encodeToString(encrypted));
     }
 }

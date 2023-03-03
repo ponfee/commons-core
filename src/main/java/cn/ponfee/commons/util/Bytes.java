@@ -27,7 +27,7 @@ import java.util.zip.CRC32;
  * <pre>
  * 转hex：new BigInteger(1, bytes).toString(16);
  * Padding4位：(4 - (length & 0x03)) & 0x03
- * 
+ *
  * 左移<<:      该数对应的二进制码整体左移，左边超出的部分舍弃，右边补0
  * 右移>>:      该数对应的二进制码整体右移，左边部分以原有标志位填充，右边超出的部分舍弃
  * 无符号右移>>>: 该数对应的二进制码整体右移，左边部分以0填充，右边超出的部分舍弃
@@ -42,10 +42,10 @@ public final class Bytes {
     private static final char[] HEX_UPPER_CODES = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
     /**
-     * Dump byte array, like as these 
-     * {@link org.apache.commons.io.HexDump#dump(byte[], long, java.io.OutputStream, int)}, 
+     * Dump byte array, like as these
+     * {@link org.apache.commons.io.HexDump#dump(byte[], long, java.io.OutputStream, int)},
      * {@link sun.misc.HexDumpEncoder#encode(byte[], java.io.OutputStream);}
-     * 
+     *
      * @param data   字节数组
      * @param chunk  每行块数
      * @param block  每块大小
@@ -104,7 +104,7 @@ public final class Bytes {
      *     0: 00000000
      *   127: 01111111
      *  -128: 10000000
-     * 
+     *
      * @param array
      * @return
      */
@@ -144,7 +144,7 @@ public final class Bytes {
     }
 
     /**
-     * encode the byte array the hex string 
+     * encode the byte array the hex string
      * @param bytes
      * @param lowercase
      * @return
@@ -165,7 +165,7 @@ public final class Bytes {
     }
 
     /**
-     * decode the hex string to byte array 
+     * decode the hex string to byte array
      * @param hex
      * @return
      */
@@ -189,7 +189,7 @@ public final class Bytes {
     // -----------------------------------------------------------------String
     /**
      * Converts byte array to String
-     * 
+     *
      * @param bytes the byte array
      * @return a string
      */
@@ -199,7 +199,7 @@ public final class Bytes {
 
     /**
      * Converts byte array to String
-     * 
+     *
      * @param bytes the byte array
      * @param charset the Charset
      * @return a string
@@ -210,7 +210,7 @@ public final class Bytes {
 
     /**
      * Converts String to byte array
-     * 
+     *
      * @param value the string value
      * @return a byte array
      */
@@ -220,7 +220,7 @@ public final class Bytes {
 
     /**
      * Converts string to byte array
-     * 
+     *
      * @param value the string value
      * @param charset the charset
      * @return a byte array
@@ -232,7 +232,7 @@ public final class Bytes {
     // -----------------------------------------------------------------char array
     /**
      * Converts byte array to char array
-     * 
+     *
      * @param bytes the byte array
      * @return a char array
      */
@@ -242,7 +242,7 @@ public final class Bytes {
 
     /**
      * Converts byte array to char array
-     * 
+     *
      * @param bytes the byte array
      * @param charset the charset
      * @return a char array
@@ -257,7 +257,7 @@ public final class Bytes {
 
     /**
      * Converts char array to byte array
-     * 
+     *
      * @param chars the char array
      * @return a byte array
      */
@@ -267,7 +267,7 @@ public final class Bytes {
 
     /**
      * Converts char array to byte array
-     * 
+     *
      * @param chars the char array
      * @param charset the charset
      * @return a byte array
@@ -294,8 +294,8 @@ public final class Bytes {
 
     public static short toShort(byte[] bytes, int fromIdx) {
         return (short) (
-              (bytes[  fromIdx]       ) << 8 
-            | (bytes[++fromIdx] & 0xFF) 
+              (bytes[  fromIdx]       ) << 8
+            | (bytes[++fromIdx] & 0xFF)
         );
         //return ByteBuffer.wrap(bytes, fromIdx, Short.BYTES).getShort();
         //ByteBuffer buffer = ByteBuffer.allocate(Short.BYTES);
@@ -456,7 +456,7 @@ public final class Bytes {
 
     /**
      * Puts a int number to byte array
-     * 
+     *
      * @param val    the int value
      * @param bytes  the byte array
      * @param offset the byte array start offset
@@ -503,7 +503,7 @@ public final class Bytes {
     // ---------------------------------------------------------BigInteger
     /**
      * Converts byte array to positive BigInteger
-     * 
+     *
      * @param bytes the byte array
      * @return a positive BigInteger number
      */
@@ -569,7 +569,7 @@ public final class Bytes {
      * 从尾部开始拷贝src到dest：
      *   若src数据不足则在dest前面补0
      *   若src数据有多则舍去src前面的数据
-     *   
+     *
      * @param src
      * @param srcFrom
      * @param srcLen
@@ -579,7 +579,7 @@ public final class Bytes {
      */
     public static void tailCopy(byte[] src, int srcFrom, int srcLen,
                                 byte[] dest, int destFrom, int destLen) {
-        tailCopy(src, srcFrom, srcLen, dest, destFrom, destLen, Numbers.BYTE_ZERO);
+        tailCopy(src, srcFrom, srcLen, dest, destFrom, destLen, Numbers.ZERO_BYTE);
     }
 
     /**
@@ -596,8 +596,8 @@ public final class Bytes {
      * @param destLen
      * @param heading
      */
-    public static void tailCopy(byte[] src, int srcFrom, int srcLen, 
-                                byte[] dest, int destFrom, int destLen, 
+    public static void tailCopy(byte[] src, int srcFrom, int srcLen,
+                                byte[] dest, int destFrom, int destLen,
                                 byte heading) {
         int srcTo = Math.min(src.length, srcFrom + srcLen),
            destTo = Math.min(dest.length, destFrom + destLen);
@@ -616,7 +616,7 @@ public final class Bytes {
      * @param dest
      */
     public static void headCopy(byte[] src, byte[] dest) {
-        headCopy(src, 0, src.length, dest, 0, dest.length, Numbers.BYTE_ZERO);
+        headCopy(src, 0, src.length, dest, 0, dest.length, Numbers.ZERO_BYTE);
     }
 
     public static void headCopy(byte[] src, int srcFrom, int srcLen,

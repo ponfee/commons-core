@@ -36,7 +36,7 @@ public class LazyLoader<T> implements Supplier<T> {
         return new LazyLoader<>(loader);
     }
 
-    public static <T, B extends T, C extends T> B of(Class<T> type, Supplier<C> loader) {
+    public static <T, R extends T> R of(Class<T> type, Supplier<R> loader) {
         return of(type, of(loader));
     }
 
@@ -44,7 +44,7 @@ public class LazyLoader<T> implements Supplier<T> {
         return new LazyLoader<>(() -> loader.apply(arg));
     }
 
-    public static <T, A, B extends T, C extends T> B of(Class<T> type, Function<A, C> loader, A arg) {
+    public static <T, A, R extends T> R of(Class<T> type, Function<A, R> loader, A arg) {
         return of(type, of(loader, arg));
     }
 
@@ -73,15 +73,15 @@ public class LazyLoader<T> implements Supplier<T> {
         return holder;
     }
 
-    private static <T, B extends T, C extends T> B of(Class<T> type, final LazyLoader<C> lazyLoader) {
+    private static <T, R extends T> R of(Class<T> type, final LazyLoader<R> lazyLoader) {
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(type);
         enhancer.setUseCache(true);
         enhancer.setInterceptDuringConstruction(false);
-        //enhancer.setCallback(Proxy.getInvocationHandler(lazyLoader.get())); // Error
-        //enhancer.setCallback((MethodInterceptor) (beanProxy, method, args, methodProxy) -> method.invoke(lazyLoader.get(), args));
+        //enhancer.setCallback(org.springframework.cglib.proxy.Proxy.getInvocationHandler(proxy)); // occur error
+        //enhancer.setCallback((org.springframework.cglib.proxy.MethodInterceptor) (beanProxy, method, args, methodProxy) -> method.invoke(lazyLoader.get(), args));
         enhancer.setCallback((InvocationHandler) (beanProxy, method, args) -> method.invoke(lazyLoader.get(), args));
-        return (B) enhancer.create();
+        return (R) enhancer.create();
     }
 
 }

@@ -14,14 +14,16 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * maven标准的项目文件工具类
- * only use in test case
- * 
- * new File("src/test/resources/test.txt");
- * new File("src/test/java/test/test1.java");
- * new File("src/main/resources/log4j2.xml");
- * new File("src/main/java/code/ponfee/commons/util/Asserts.java");
- * 
+ * <pre>
+ *  maven标准的项目文件工具类
+ *  only use in test case
+ *
+ *  new File("src/test/resources/test.txt");
+ *  new File("src/test/java/test/test1.java");
+ *  new File("src/main/resources/log4j2.xml");
+ *  new File("src/main/java/code/ponfee/commons/util/Asserts.java");
+ * </pre>
+ *
  * @author Ponfee
  */
 public class MavenProjects {
@@ -38,11 +40,11 @@ public class MavenProjects {
         return new File(getMainJavaPath("") + clazz.getCanonicalName().replace('.', '/') + ".java");
     }
 
-    public static byte[] getMainJavaFileAsByteArray(Class<?> clazz) {
+    public static byte[] getMainJavaFileAsBytes(Class<?> clazz) {
         return Files.toByteArray(MavenProjects.getMainJavaFile(clazz));
     }
 
-    public static String getMainJavaFileAsLineString(Class<?> clazz) {
+    public static String getMainJavaFileAsString(Class<?> clazz) {
         try {
             return Files.toString(MavenProjects.getMainJavaFile(clazz)).replaceAll(EXCLUSION_STRING, "");
         } catch (IOException e) {
@@ -54,11 +56,11 @@ public class MavenProjects {
         return new File(getTestJavaPath("") + clazz.getCanonicalName().replace('.', '/') + ".java");
     }
 
-    public static byte[] getTestJavaFileAsByteArray(Class<?> clazz) {
+    public static byte[] getTestJavaFileAsBytes(Class<?> clazz) {
         return Files.toByteArray(MavenProjects.getTestJavaFile(clazz));
     }
 
-    public static String getTestJavaFileAsLineString(Class<?> clazz) {
+    public static String getTestJavaFileAsString(Class<?> clazz) {
         try {
             return Files.toString(MavenProjects.getTestJavaFile(clazz)).replaceAll(EXCLUSION_STRING, "");
         } catch (IOException e) {
@@ -87,11 +89,11 @@ public class MavenProjects {
         return new File(getMainScalaPath("") + clazz.getCanonicalName().replace('.', '/') + ".scala");
     }
 
-    public static byte[] getMainScalaFileAsByteArray(Class<?> clazz) {
+    public static byte[] getMainScalaFileAsBytes(Class<?> clazz) {
         return Files.toByteArray(MavenProjects.getMainScalaFile(clazz));
     }
 
-    public static String getMainScalaFileAsLineString(Class<?> clazz) {
+    public static String getMainScalaFileAsString(Class<?> clazz) {
         try {
             return Files.toString(MavenProjects.getMainScalaFile(clazz)).replaceAll(EXCLUSION_STRING, "");
         } catch (IOException e) {
@@ -103,11 +105,11 @@ public class MavenProjects {
         return new File(getTestScalaPath("") + clazz.getCanonicalName().replace('.', '/') + ".scala");
     }
 
-    public static byte[] getTestScalaFileAsByteArray(Class<?> clazz) {
+    public static byte[] getTestScalaFileAsBytes(Class<?> clazz) {
         return Files.toByteArray(MavenProjects.getTestScalaFile(clazz));
     }
 
-    public static String getTestScalaFileAsLineString(Class<?> clazz) {
+    public static String getTestScalaFileAsString(Class<?> clazz) {
         try {
             return Files.toString(MavenProjects.getTestScalaFile(clazz)).replaceAll(EXCLUSION_STRING, "");
         } catch (IOException e) {

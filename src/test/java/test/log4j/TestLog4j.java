@@ -11,7 +11,7 @@ public class TestLog4j {
     public static void main(String[] args) {
         logger.trace("abcd");
         logger.info("abcd");
-        logger.info(MavenProjects.getTestJavaFileAsLineString(TestLog4j.class));
+        logger.info(MavenProjects.getTestJavaFileAsString(TestLog4j.class));
         logger.info("abcd");
         logger.info("abcd");
         logger.warn("abcd");

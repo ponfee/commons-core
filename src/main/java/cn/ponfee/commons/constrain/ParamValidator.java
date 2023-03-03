@@ -75,8 +75,7 @@ public abstract class ParamValidator extends FieldValidator {
                         try {
                             constrain(args[i]);
                         } catch (IllegalArgumentException e) {
-                            builder.append("[").append(argsName[i]).append("]")
-                                   .append(e.getMessage());
+                            builder.append("[").append(argsName[i]).append("]").append(e.getMessage());
                         }
                     }
                     if (builder.length() > MAX_MSG_SIZE) {
