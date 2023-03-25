@@ -14,12 +14,12 @@ import java.util.Objects;
 
 /**
  * Builds tree node as root node
- * 
+ *
  * @author Ponfee
  * @param <T> the node id type
  * @param <A> the attachment biz object type
  */
-public final class TreeNodeBuilder<T extends Serializable & Comparable<? super T>, A extends Serializable> {
+public final class TreeNodeBuilder<T extends Serializable & Comparable<? super T>, A> {
 
     private final T nid;
     private final Comparator<? super TreeNode<T, A>> siblingNodesComparator;
@@ -35,11 +35,11 @@ public final class TreeNodeBuilder<T extends Serializable & Comparable<? super T
         this.siblingNodesComparator = Objects.requireNonNull(siblingNodesComparator);
     }
 
-    public static <T extends Serializable & Comparable<? super T>, A extends Serializable> TreeNodeBuilder<T, A> newBuilder(T nid) {
+    public static <T extends Serializable & Comparable<? super T>, A> TreeNodeBuilder<T, A> newBuilder(T nid) {
         return newBuilder(nid, Comparator.comparing(TreeNode::getNid));
     }
 
-    public static <T extends Serializable & Comparable<? super T>, A extends Serializable> TreeNodeBuilder<T, A> newBuilder(T nid, Comparator<? super TreeNode<T, A>> siblingNodesComparator) {
+    public static <T extends Serializable & Comparable<? super T>, A> TreeNodeBuilder<T, A> newBuilder(T nid, Comparator<? super TreeNode<T, A>> siblingNodesComparator) {
         return new TreeNodeBuilder<>(nid, siblingNodesComparator);
     }
 

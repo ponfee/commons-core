@@ -230,11 +230,6 @@ public class ImmutableArrayList<E> extends ToJsonString
     }
 
     @Override
-    public String toString() {
-        return Arrays.toString(elements);
-    }
-
-    @Override
     public Object clone() {
         return this;
     }

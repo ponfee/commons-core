@@ -11,10 +11,10 @@ package cn.ponfee.commons.tree;
 import cn.ponfee.commons.collect.Collects;
 import cn.ponfee.commons.reflect.Fields;
 import cn.ponfee.commons.tree.print.MultiwayTreePrinter;
-import cn.ponfee.commons.util.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -49,8 +49,7 @@ import java.util.stream.Collectors;
  * @param <A> the attachment biz object type
  * @author Ponfee
  */
-public final class TreeNode<T extends Serializable & Comparable<? super T>, A extends Serializable>
-    extends BaseNode<T, A> {
+public final class TreeNode<T extends Serializable & Comparable<? super T>, A> extends BaseNode<T, A> {
     private static final long serialVersionUID = -9081626363752680404L;
 
     public static final String DEFAULT_ROOT_ID = "__ROOT__";
@@ -76,7 +75,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
      * @param buildPath              the if whether build path
      * @param doMount                the if whether do mount, if is inner new TreeNode then false else true
      */
-    TreeNode(T nid, T pid, boolean enabled, boolean available, A attach, 
+    TreeNode(T nid, T pid, boolean enabled, boolean available, A attach,
              Comparator<? super TreeNode<T, A>> siblingNodesComparator,
              boolean buildPath, boolean doMount) {
         super(nid, pid, enabled, available, attach);
@@ -100,7 +99,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
 
     /**
      * Mount a tree
-     * 
+     *
      * @param list         子节点列表
      * @param ignoreOrphan {@code true}忽略孤儿节点，{@code false}如果有孤儿节点则会抛异常
      */
@@ -144,7 +143,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
     /**
      * 深度优先搜索DFS(Depth-First Search)：使用前序遍历
      * <p>Should be invoking after {@link #mount(List)}
-     * 
+     *
      * @return a list nodes for DFS tree node
      */
     public List<FlatNode<T, A>> flatDFS() {
@@ -229,7 +228,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
             for (int i = queue.size(); i > 0; i--) {
                 TreeNode<T, A> node = queue.poll();
                 collect.add(new FlatNode<>(node));
-                node.ifChildrenPresent(cs -> cs.forEach(queue::offer));
+                node.forEachChild(queue::offer);
             }
         }
         return collect;
@@ -264,6 +263,12 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         }
     }
 
+    public void forEachChild(Consumer<TreeNode<T, A>> childProcessor) {
+        if (!children.isEmpty()) {
+            children.forEach(childProcessor);
+        }
+    }
+
     // -----------------------------------------------------------tree traverse
 
     /**
@@ -276,7 +281,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         while (!stack.isEmpty()) {
             TreeNode<T, A> node = stack.pop();
             action.accept(node);
-            node.ifChildrenPresent(cs -> cs.forEach(stack::push));
+            node.forEachChild(stack::push);
         }
     }
 
@@ -286,7 +291,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         return convert(convert, true);
     }
 
-    public <E extends TreeTrait<T, A, E>> E convert(Function<TreeNode<T, A>, E> convert, 
+    public <E extends TreeTrait<T, A, E>> E convert(Function<TreeNode<T, A>, E> convert,
                                                     boolean containsUnavailable) {
         if (!available && !containsUnavailable) {
             // not contains unavailable node
@@ -340,19 +345,19 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         return list;
     }
 
-    private <E extends BaseNode<T, A>> void mount0(List<T> parentPath, List<E> nodes, 
+    private <E extends BaseNode<T, A>> void mount0(List<T> parentPath, List<E> nodes,
                                                    boolean ignoreOrphan, T mountPidIfNull) {
         // current "this" is parent: AbstractNode parent = this;
 
         // 当前节点路径=父节点路径+当前节点
         // the "super" means defined in super class BaseNode's field, is not parent node
-        super.path = buildPath(parentPath, super.nid); 
+        super.path = buildPath(parentPath, super.nid);
 
         // find child nodes for the current node
         for (Iterator<E> iter = nodes.iterator(); iter.hasNext();) {
             BaseNode<T, A> node = iter.next();
 
-            if (!ignoreOrphan && Strings.isBlank(node.pid)) { // effect condition that pid is null
+            if (!ignoreOrphan && ObjectUtils.isEmpty(node.pid)) { // effect condition that pid is null
                 // 不忽略孤儿节点且节点的父节点为空，则其父节点视为根节点（将其挂载到根节点下）
                 Fields.put(node, "pid", mountPidIfNull); // pid is final modify
             }
@@ -360,13 +365,13 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
             if (super.nid.equals(node.pid)) {
                 // found a child node
                 TreeNode<T, A> child = new TreeNode<>(
-                    node.nid, 
-                    node.pid, 
-                    node.enabled, 
+                    node.nid,
+                    node.pid,
+                    node.enabled,
                     super.available && node.enabled, // recompute the child node is available
-                    node.attach, 
+                    node.attach,
                     this.siblingNodesComparator,
-                    this.buildPath, 
+                    this.buildPath,
                     false
                 );
 
@@ -435,7 +440,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
 
     /**
      * Returns a immutable list for current node path
-     * 
+     *
      * @param parentPath the parent node path
      * @param nid        the current node id
      * @return a immutable list appended current node id
@@ -462,7 +467,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A ex
         return builder.add(nid).build();
     }
 
-    private <E extends TreeTrait<T, A, E>> void convert(Function<TreeNode<T, A>, E> convert, 
+    private <E extends TreeTrait<T, A, E>> void convert(Function<TreeNode<T, A>, E> convert,
                                                         E parent, boolean containsUnavailable) {
         if (children.isEmpty()) {
             parent.setChildren(null);

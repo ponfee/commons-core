@@ -9,6 +9,7 @@
 package cn.ponfee.commons.spring;
 
 import cn.ponfee.commons.model.TypedMap;
+import cn.ponfee.commons.util.PropertiesUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 
@@ -35,6 +36,10 @@ public class YamlProperties extends Properties implements TypedMap<Object, Objec
 
     public YamlProperties(String content) {
         loadYaml(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    public <T> T extract(Class<T> beanType, String prefix, char... separators) {
+        return PropertiesUtils.extract(this, beanType, prefix, separators);
     }
 
     private void loadYaml(InputStream inputStream) {

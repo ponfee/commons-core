@@ -8,7 +8,7 @@
 
 package cn.ponfee.commons.util;
 
-import cn.ponfee.commons.base.Comparators;
+import cn.ponfee.commons.collect.Comparators;
 import cn.ponfee.commons.reflect.GenericUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONType;

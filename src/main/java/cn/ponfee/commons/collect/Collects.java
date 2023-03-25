@@ -70,32 +70,43 @@ public final class Collects {
     }
 
     /**
-     * Gets the first element for list
+     * Gets the first element for values
      *
-     * @param list the list
-     * @param <T>  the list element type
-     * @return first element of list
+     * @param values the values
+     * @param <T>    the values element type
+     * @return first element of values
      */
-    public static <T> T getFirst(List<T> list) {
-        if (list == null || list.isEmpty()) {
+    public static <T> T getFirst(Collection<T> values) {
+        if (values == null || values.isEmpty()) {
             return null;
         }
-        return (list instanceof Deque) ? ((Deque<T>) list).getFirst() : list.get(0);
+        if (values instanceof Deque) {
+            return ((Deque<T>) values).getFirst();
+        }
+        if (values instanceof List) {
+            return ((List<T>) values).get(0);
+        }
+        return values.iterator().next();
     }
 
     /**
-     * Gets the last element for list
+     * Gets the last element for values
      *
-     * @param list the list
-     * @param <T>  the list element type
-     * @return last element of list
+     * @param values the values
+     * @param <T>    the values element type
+     * @return last element of values
      */
-    public static <T> T getLast(List<T> list) {
-        if (list == null || list.isEmpty()) {
+    public static <T> T getLast(Collection<T> values) {
+        if (values == null || values.isEmpty()) {
             return null;
         }
-        //return list.stream().reduce((a, b) -> b).orElse(null);
-        return (list instanceof Deque) ? ((Deque<T>) list).getLast() : list.get(list.size() - 1);
+        if (values instanceof Deque) {
+            return ((Deque<T>) values).getLast();
+        }
+        if (values instanceof List) {
+            return ((List<T>) values).get(values.size() - 1);
+        }
+        return values.stream().reduce((a, b) -> b).orElse(null);
     }
 
     public static <T> T get(T[] array, int index) {
@@ -116,7 +127,7 @@ public final class Collects {
     /**
      * two Collection intersect
      * intersect([1,2,3], [2,3,4]) = [2,3]
-     * 
+     *
      * @param coll1 the collection 1
      * @param coll2 the collection 2
      * @return a list of the two collection intersect result
@@ -144,7 +155,7 @@ public final class Collects {
 
     /**
      * two Collection union result
-     * 
+     *
      * @param coll1
      * @param coll2
      * @return
@@ -179,7 +190,7 @@ public final class Collects {
 
     /**
      * The two set different elements
-     * 
+     *
      * @param set1
      * @param set2
      * @return
@@ -193,7 +204,7 @@ public final class Collects {
 
     /**
      * map差集
-     * 
+     *
      * @param map1
      * @param map2
      * @return
@@ -218,7 +229,7 @@ public final class Collects {
 
     /**
      * Returns the duplicates elements for list
-     * 
+     *
      * @param list the list
      * @return a set of duplicates elements for list
      */
@@ -239,7 +250,7 @@ public final class Collects {
 
     /**
      * Returns a new array for merged the generic array generator
-     * 
+     *
      * @see org.apache.commons.lang3.ArrayUtils#addAll(T[] array1, T... array2)
      * @param generator the generic array generator
      * @param arrays the multiple generic object array
@@ -266,7 +277,7 @@ public final class Collects {
 
     /**
      * Puts the element to list specified index
-     * 
+     *
      * @param list a list
      * @param index spec index
      * @param obj the element
@@ -293,7 +304,7 @@ public final class Collects {
     }
 
     /**
-     * Returns consecutive sub array of an array, 
+     * Returns consecutive sub array of an array,
      * each of the same size (the final list may be smaller).
      *
      * <pre>
@@ -353,9 +364,9 @@ public final class Collects {
 
     /**
      * Rotate list array data
-     * 
+     *
      * [[a,b,c,d],[1,2,3,4]] -> [[a,1],[b,2],[c,3],[d,4]]
-     * 
+     *
      * @param list the list
      * @return a list array result
      */
@@ -396,7 +407,7 @@ public final class Collects {
     /**
      * Checks that the specified array reference is not null and not empty,
      * throws a customized {@link IllegalStateException} if it is.
-     * 
+     *
      * @param array the array
      * @param <T> the type of the array element
      * @return {@code array} if not null and not empty

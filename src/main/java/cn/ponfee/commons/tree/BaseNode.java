@@ -8,9 +8,9 @@
 
 package cn.ponfee.commons.tree;
 
-import cn.ponfee.commons.util.Strings;
-import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.SerializationUtils;
+import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.util.List;
@@ -22,8 +22,7 @@ import java.util.List;
  * @param <A> the attachment biz object type
  * @author Ponfee
  */
-public abstract class BaseNode<T extends Serializable & Comparable<? super T>, A extends Serializable>
-    implements Serializable, Cloneable {
+public abstract class BaseNode<T extends Serializable & Comparable<? super T>, A> implements Serializable, Cloneable {
     private static final long serialVersionUID = -4116799955526185765L;
 
     // -------------------------------------------------------------------基础信息
@@ -59,7 +58,7 @@ public abstract class BaseNode<T extends Serializable & Comparable<? super T>, A
     }
 
     public BaseNode(T nid, T pid, boolean enabled, boolean available, A attach) {
-        Preconditions.checkArgument(!Strings.isBlank(nid), "Node id cannot be empty.");
+        Assert.isTrue(ObjectUtils.isNotEmpty(nid), "Node id cannot be empty.");
         this.nid = nid;
         this.pid = pid;
         this.enabled = enabled;

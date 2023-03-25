@@ -8,6 +8,12 @@
 
 package cn.ponfee.commons.util;
 
+import cn.ponfee.commons.reflect.ClassUtils;
+import cn.ponfee.commons.reflect.Fields;
+
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -27,6 +33,21 @@ public final class PropertiesUtils {
             }
         });
         return properties;
+    }
+
+    public static <T> T extract(Properties props, Class<T> beanType, String prefix, char... separators) {
+        T bean = ClassUtils.newInstance(beanType);
+        List<Field> fields = Objects.requireNonNull(ClassUtils.listFields(beanType));
+        for (Field field : fields) {
+            for (char separator : separators) {
+                String name = prefix + Strings.toSeparatedName(field.getName(), separator);
+                if (props.containsKey(name)) {
+                    Fields.put(bean, field, ObjectUtils.cast(props.get(name), field.getType()));
+                    break;
+                }
+            }
+        }
+        return bean;
     }
 
 }

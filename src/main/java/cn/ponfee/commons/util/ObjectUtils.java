@@ -24,7 +24,7 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.function.Predicate;
 
-import static cn.ponfee.commons.base.Comparators.*;
+import static cn.ponfee.commons.collect.Comparators.*;
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 
 /**
@@ -34,12 +34,12 @@ import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToStrin
  */
 public final class ObjectUtils {
 
-    private static final char[] URL_SAFE_BASE64_CODES = 
+    private static final char[] URL_SAFE_BASE64_CODES =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_".toCharArray();
 
     /**
      * Returns object toString
-     * 
+     *
      * @param obj the target object
      * @return the string of object
      */
@@ -48,8 +48,8 @@ public final class ObjectUtils {
     }
 
     public static String toString(Object obj, String defaultStr) {
-        return (obj == null) 
-               ? defaultStr 
+        return (obj == null)
+               ? defaultStr
                : reflectionToString(obj, ToStringStyle.JSON_STYLE);
     }
 
@@ -99,7 +99,7 @@ public final class ObjectUtils {
 
     /**
      * 判断对象是否为空
-     * 
+     *
      * @param o the object
      * @return {@code true} is empty
      */
@@ -127,7 +127,7 @@ public final class ObjectUtils {
 
     /**
      * Gets the target's name value
-     * 
+     *
      * @param obj  the object
      * @param name the field name
      * @return a value
@@ -147,7 +147,7 @@ public final class ObjectUtils {
 
     /**
      * Returns target type value from origin value cast
-     * 
+     *
      * @param value source object
      * @param type  target object type
      * @return target type object
@@ -199,7 +199,7 @@ public final class ObjectUtils {
      */
     public static byte[] uuid() {
         UUID uuid = UUID.randomUUID();
-        long most  = uuid.getMostSignificantBits(), 
+        long most  = uuid.getMostSignificantBits(),
              least = uuid.getLeastSignificantBits();
        return new byte[] {
            (byte) (most  >>> 56), (byte) (most  >>> 48),
@@ -266,7 +266,7 @@ public final class ObjectUtils {
 
     /**
      * Copies source fields value to target fields
-     * 
+     *
      * @param source the source
      * @param target the target
      * @param fields the fields of String array
@@ -280,7 +280,7 @@ public final class ObjectUtils {
 
     /**
      * Returns a new instance of copy from spec fields
-     * 
+     *
      * @param source the source
      * @param fields the fields
      * @return
@@ -295,7 +295,7 @@ public final class ObjectUtils {
 
     /**
      * Returns a new instance of type
-     * 
+     *
      * @param type the type class
      * @return a new instance
      */
@@ -323,7 +323,7 @@ public final class ObjectUtils {
 
     /**
      * Returns the type is not a bean type
-     * 
+     *
      * @param type the type class
      * @return {@code true} assert is not a bean type
      */

@@ -125,7 +125,6 @@ public final class Networks {
      */
     public static boolean isAvailablePort(int port) {
         try (ServerSocket ss = new ServerSocket(port)) {
-            ss.bind(null);
             return true;
         } catch (IOException ignored) {
             return false;

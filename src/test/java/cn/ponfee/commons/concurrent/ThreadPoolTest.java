@@ -17,7 +17,7 @@ public class ThreadPoolTest {
         System.out.println("main-thread: " + Thread.currentThread().getName());
         //BLOCK_PRODUCER();
         //CALLER_RUN();
-        
+
         deadlock(32, () -> { // XXX 33以上会出现死循环
             /*try {
                 Thread.sleep(1000);
@@ -26,26 +26,6 @@ public class ThreadPoolTest {
             }*/
             //System.out.println("=============thread: "+ Thread.currentThread().getName());
         }, 2);
-    }
-
-    private static void BLOCK_PRODUCER() throws InterruptedException {
-        ThreadPoolExecutor executor = ThreadPoolExecutors.create(1, 2, 300, 10, "ThreadPoolTest", ThreadPoolExecutors.CALLER_BLOCKS);
-
-        for (int i = 0; i < 100; i++) {
-            Thread.sleep(1000 + ThreadLocalRandom.current().nextInt(6000));
-            System.out.println("product:=======" + Dates.format(new Date()) + "=========" + i + ", thread:" + Thread.currentThread().getName());
-            executor.submit(new Comsumer(i));
-        }
-    }
-
-    private static void CALLER_RUN() throws InterruptedException {
-        ThreadPoolExecutor executor = ThreadPoolExecutors.create(1, 2, 300, 10, "ThreadPoolTest", ThreadPoolExecutors.CALLER_RUNS);
-
-        for (int i = 0; i < 100; i++) {
-            Thread.sleep(1000 + ThreadLocalRandom.current().nextInt(6000));
-            System.out.println("product:=======" + Dates.format(new Date()) + "=========" + i + ", thread:" + Thread.currentThread().getName());
-            executor.submit(new Comsumer(i));
-        }
     }
 
     private static void deadlock(int threadNumber, Runnable command, int execSeconds) {

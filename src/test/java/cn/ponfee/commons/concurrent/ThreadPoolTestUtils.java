@@ -6,10 +6,10 @@ import java.util.concurrent.*;
 
 /**
  * Thread pool executor utility
- * 
+ *
  * https://blog.csdn.net/Holmofy/article/details/73237153
  * https://blog.csdn.net/holmofy/article/details/77411854
- * 
+ *
  * @author Ponfee
  */
 public final class ThreadPoolTestUtils {
@@ -41,7 +41,7 @@ public final class ThreadPoolTestUtils {
                                                                             RejectedExecutionHandler handler) {
             // maximumPoolSize=Integer.MAX_VALUE, DelayedWorkQueue, keepAliveTime=0
             ScheduledThreadPoolExecutor delegate = new ScheduledThreadPoolExecutor(
-                    1, new NamedThreadFactory(threadName), handler
+                    1, NamedThreadFactory.builder().prefix(threadName).build(), handler
             );
 
             //delegate.allowCoreThreadTimeOut(true); // Error: Core threads must have nonzero keep alive times
@@ -98,7 +98,7 @@ public final class ThreadPoolTestUtils {
             // create ThreadPoolExecutor instance
             ThreadPoolExecutor delegate = new ThreadPoolExecutor(
                     corePoolSize, maximumPoolSize, 120, TimeUnit.SECONDS,
-                    workQueue, new NamedThreadFactory(threadName), handler
+                    workQueue, NamedThreadFactory.builder().prefix(threadName).build(), handler
             );
             delegate.allowCoreThreadTimeOut(true); // 设置允许核心线程超时关闭
             return delegate;

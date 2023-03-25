@@ -8,7 +8,7 @@
 
 package cn.ponfee.commons.base.tuple;
 
-import cn.ponfee.commons.base.Comparators;
+import cn.ponfee.commons.collect.Comparators;
 import cn.ponfee.commons.collect.DelegatedIntSpliterator;
 import cn.ponfee.commons.collect.ImmutableArrayList;
 import cn.ponfee.commons.util.ObjectUtils;

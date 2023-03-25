@@ -1,6 +1,8 @@
 package test.extract;
 
 import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -16,7 +18,7 @@ import cn.ponfee.commons.extract.streaming.xls.HSSFStreamingWorkbook;
 
 public class TestHSSFStreaming {
 
-    static ThreadPoolExecutor exec = ThreadPoolExecutors.create(1, 8, 60);
+    static ExecutorService exec = Executors.newFixedThreadPool(4);
 
     @Test
     public void test1() throws InterruptedException {

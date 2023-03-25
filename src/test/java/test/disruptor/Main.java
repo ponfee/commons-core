@@ -18,23 +18,23 @@ import cn.ponfee.commons.concurrent.NamedThreadFactory;
 public class Main {
     private static final int COUNT = 50;
     private static final int RING_BUFFER_SIZE = 1;
-    
+
     public static void main(String[] args) throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(COUNT);
 
         //构造缓冲区与事件生成
-        Disruptor<InParkingDataEvent> disruptor = new Disruptor<>(() -> new InParkingDataEvent(), RING_BUFFER_SIZE, 
-                                                                  new NamedThreadFactory("disruptor"), 
+        Disruptor<InParkingDataEvent> disruptor = new Disruptor<>(() -> new InParkingDataEvent(), RING_BUFFER_SIZE,
+                                                                  NamedThreadFactory.builder().prefix("disruptor").build(),
                                                                   ProducerType.SINGLE, new YieldingWaitStrategy());
 
-        //使用disruptor创建消费者组C1,C2  
-        EventHandlerGroup<InParkingDataEvent> handlerGroup = disruptor.handleEventsWith(new ParkingDataToKafkaHandler(), 
+        //使用disruptor创建消费者组C1,C2
+        EventHandlerGroup<InParkingDataEvent> handlerGroup = disruptor.handleEventsWith(new ParkingDataToKafkaHandler(),
                                                                                         new ParkingDataInDbHandler());
 
-        //声明在C1,C2完事之后执行SMS消息发送操作 也就是流程走到C3  
+        //声明在C1,C2完事之后执行SMS消息发送操作 也就是流程走到C3
         handlerGroup.then(new ParkingDataSmsHandler(latch));
 
-        //启动  
+        //启动
         disruptor.start();
 
         long beginTime = System.currentTimeMillis();
@@ -49,7 +49,7 @@ public class Main {
             }*/
             disruptor.publishEvent((inParkingEvent, sequence) -> {
                 inParkingEvent.setCarLicense("[粤B·" + RandomStringUtils.randomAlphanumeric(5).toUpperCase() + "]");
-                System.out.println("["+Thread.currentThread().getId() + ", " + 
+                System.out.println("["+Thread.currentThread().getId() + ", " +
                                    Thread.currentThread().getName() + "] in parking " + inParkingEvent.getCarLicense());
             });
         }

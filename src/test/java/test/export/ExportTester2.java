@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
@@ -21,9 +22,12 @@ import cn.ponfee.commons.export.SplitExcelExporter;
 import cn.ponfee.commons.export.Table;
 
 public class ExportTester2 {
-    static final ExecutorService EXECUTOR = ThreadPoolExecutors.create(
-       4, 16, 120, 0, "test"
-    );
+    static final ExecutorService EXECUTOR = ThreadPoolExecutors.builder()
+        .corePoolSize(4)
+        .maximumPoolSize(16)
+        .workQueue(new SynchronousQueue<>())
+        .keepAliveTimeSeconds(120)
+        .build();
 
     @Test // 19.5
     public void testExcel1() throws IOException {
@@ -55,7 +59,7 @@ public class ExportTester2 {
         System.out.println(watch.stop());
     }
 
-    
+
     @Test // 18.5
     public void testExcel2() throws IOException {
         AbstractDataExporter excel = new ExcelExporter();
@@ -110,7 +114,7 @@ public class ExportTester2 {
         excel.close();
         System.out.println(watch.stop());
     }
-    
+
     @Test // 1.485 min
     public void testSplitExcel() throws IOException {
         Table table = new Table("a,b,c,d,e".split(","));
@@ -128,7 +132,7 @@ public class ExportTester2 {
                 }
             });
         }
-        
+
         SplitExcelExporter excel = new SplitExcelExporter(65537,ExportTester.baseDir+"test_excel_", EXECUTOR);
         excel.setName("21321");
         System.out.println("================"+watch.stop());
@@ -137,7 +141,7 @@ public class ExportTester2 {
         excel.close();
         System.out.println(watch.stop());
     }
-    
+
     @Test // 1.485 min
     public void testSplitCsv() throws IOException {
         Table table = new Table("中国,人,c,d,e".split(","));
@@ -155,7 +159,7 @@ public class ExportTester2 {
                 }
             });
         }
-        
+
         SplitCsvFileExporter csv = new SplitCsvFileExporter(65537,ExportTester.baseDir+"test_csv_", true, EXECUTOR);
         System.out.println("================"+watch.stop());
         watch.reset().start();

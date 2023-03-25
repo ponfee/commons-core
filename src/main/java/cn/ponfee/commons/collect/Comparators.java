@@ -12,10 +12,14 @@ import java.util.Comparator;
 
 /**
  * For collection order
- * 
+ *
  * @author Ponfee
  */
 public final class Comparators {
+
+    public static final int EQ =  0;
+    public static final int GT =  1;
+    public static final int LT = -1;
 
     public static <T extends Comparable<? super T>> Comparator<T> asc() {
         return Comparator.naturalOrder();

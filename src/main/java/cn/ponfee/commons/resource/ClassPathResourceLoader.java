@@ -32,7 +32,7 @@ import static org.apache.commons.lang3.StringUtils.join;
 
 /**
  * 类资源加载器
- * 
+ *
  * @author Ponfee
  */
 final class ClassPathResourceLoader {
@@ -63,7 +63,7 @@ final class ClassPathResourceLoader {
             }
 
             while (urls.hasMoreElements()) {
-                URL url = urls.nextElement(); // 获取下一个元素
+                URL url = urls.nextElement();
                 switch (url.getProtocol()) {
                     case URL_PROTOCOL_FILE:
                         String path = URLDecoder.decode(url.getFile(), encoding);
@@ -73,14 +73,15 @@ final class ClassPathResourceLoader {
                         }
                         return new Resource(path, new File(path).getName(), new FileInputStream(path));
                     case URL_PROTOCOL_JAR:
-                        jar = ((JarURLConnection) url.openConnection()).getJarFile(); // 获取jar
+                        jar = ((JarURLConnection) url.openConnection()).getJarFile();
                         // 判断是否是指定类所在Jar包中的文件
                         if (checkWithoutClass(contextClass, jar.getName(), encoding)) {
                             continue;
                         }
-                        Enumeration<JarEntry> entries = jar.entries(); // 从此jar包 得到一个枚举类
-                        while (entries.hasMoreElements()) { // 进行循环迭代
-                            JarEntry entry = entries.nextElement(); // 获取jar里的一个实体：可以是目录或其他如META-INF等文件
+                        Enumeration<JarEntry> entries = jar.entries();
+                        while (entries.hasMoreElements()) {
+                            // 获取jar里的一个实体：可以是目录或其他如META-INF等文件
+                            JarEntry entry = entries.nextElement();
                             if (!filePath.equals(entry.getName())) {
                                 continue;
                             }
@@ -89,7 +90,7 @@ final class ClassPathResourceLoader {
                             if (fileName.contains("/")) {
                                 fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
                             }
-                            return new Resource(URLDecoder.decode(url.getFile(), encoding), 
+                            return new Resource(URLDecoder.decode(url.getFile(), encoding),
                                                 fileName, transform(jar.getInputStream(entry)));
                         }
                         jar.close();
@@ -124,7 +125,7 @@ final class ClassPathResourceLoader {
                                 fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
                             }
                             return new Resource(
-                                URLDecoder.decode(url.getFile(), encoding), 
+                                URLDecoder.decode(url.getFile(), encoding),
                                 fileName, transform(zip.getInputStream(entry))
                             );
                         }
@@ -145,7 +146,7 @@ final class ClassPathResourceLoader {
         }
     }
 
-    List<Resource> listResources(String directory, String[] extensions, boolean recursive, 
+    List<Resource> listResources(String directory, String[] extensions, boolean recursive,
                                  Class<?> contextClass, String encoding) {
         List<Resource> list = new ArrayList<>();
         JarFile jar = null;
@@ -175,12 +176,12 @@ final class ClassPathResourceLoader {
                         }
                         break;
                     case URL_PROTOCOL_JAR:
-                        jar = ((JarURLConnection) url.openConnection()).getJarFile(); // 读取Jar包
+                        jar = ((JarURLConnection) url.openConnection()).getJarFile();
                         // 判断是否是指定类所在Jar包中的文件
                         if (checkWithoutClass(contextClass, jar.getName(), encoding)) {
                             continue;
                         }
-                        Enumeration<JarEntry> entries = jar.entries(); // 从此jar包 得到一个枚举类
+                        Enumeration<JarEntry> entries = jar.entries();
                         while (entries.hasMoreElements()) {
                             JarEntry entry = entries.nextElement();
                             if (entry.isDirectory()) {
@@ -191,13 +192,13 @@ final class ClassPathResourceLoader {
                             // 1、全目录匹配 或 当可递归时子目录
                             // 2、匹配后缀
                             int idx = name.lastIndexOf('/');
-                            boolean isDir = (idx != -1 && name.substring(0, idx).equals(directory)) 
+                            boolean isDir = (idx != -1 && name.substring(0, idx).equals(directory))
                                             || (recursive && name.startsWith(directory));
-                            boolean isSufx = isEmpty(extensions) 
+                            boolean isSufx = isEmpty(extensions)
                                              || name.toLowerCase().matches("^(.+\\.)(" + join(extensions, "|") + ")$");
                             if (isDir && isSufx) {
-                                list.add(new Resource(URLDecoder.decode(url.getFile(), encoding), 
-                                                      entry.getName(), 
+                                list.add(new Resource(URLDecoder.decode(url.getFile(), encoding),
+                                                      entry.getName(),
                                                       transform(jar.getInputStream(entry))));
                             }
                         }
@@ -226,13 +227,13 @@ final class ClassPathResourceLoader {
                             int idx = name.lastIndexOf('/');
                             // 1、全目录匹配 或 当可递归时子目录
                             // 2、匹配后缀
-                            boolean isDir = (idx != -1 && name.substring(0, idx).equals(directory)) 
+                            boolean isDir = (idx != -1 && name.substring(0, idx).equals(directory))
                                             || (recursive && name.startsWith(directory));
-                            boolean isSuffix = isEmpty(extensions) 
+                            boolean isSuffix = isEmpty(extensions)
                                             || name.toLowerCase().matches("^(.+\\.)(" + join(extensions, "|") + ")$");
                             if (isDir && isSuffix) {
                                 list.add(new Resource(
-                                    URLDecoder.decode(url.getFile(), encoding), 
+                                    URLDecoder.decode(url.getFile(), encoding),
                                     entry.getName(), transform(zip.getInputStream(entry))
                                 ));
                             }

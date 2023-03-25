@@ -209,11 +209,14 @@ public final class AsyncBatchProcessor<T> {
                 long currentTimeMillis = System.currentTimeMillis();
                 if (left == 0 || (!list.isEmpty() && (stopped.get() || currentTimeMillis >= nextRefreshTimeMillis))) {
                     if (asyncExecutor == null && left == 0 && queue.size() > asyncExecuteThreshold) {
-                        asyncExecutor = ThreadPoolExecutors.create(
-                            1, maximumPoolSize, 300, 2,
-                            "async-batch-processor-worker",
-                            ThreadPoolExecutors.ALWAYS_CALLER_RUNS
-                        );
+                        asyncExecutor = ThreadPoolExecutors.builder()
+                            .corePoolSize(1)
+                            .maximumPoolSize(maximumPoolSize)
+                            .workQueue(new LinkedBlockingQueue<>(2))
+                            .keepAliveTimeSeconds(300)
+                            .threadFactory(NamedThreadFactory.builder().prefix("async-batch-processor-worker").build())
+                            .rejectedHandler(ThreadPoolExecutors.CALLER_RUNS)
+                            .build();
                         LOG.info("Asnyc batch processor created thread pool executor: {}", new ThreadPoolMonitor(asyncExecutor));
                     }
 
