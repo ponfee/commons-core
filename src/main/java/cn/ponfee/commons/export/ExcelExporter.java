@@ -14,7 +14,7 @@ import cn.ponfee.commons.math.Numbers;
 import cn.ponfee.commons.tree.FlatNode;
 import cn.ponfee.commons.util.Colors;
 import cn.ponfee.commons.util.ImageUtils;
-import cn.ponfee.commons.util.Strings;
+import cn.ponfee.commons.util.ObjectUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -37,9 +37,9 @@ import java.util.function.Consumer;
  * excel导出
  *
  * SXSSFWorkbook（size>65536），XSSFWorkbook（.xlsx），HSSFWorkbook（.xls）
- * 
+ *
  * @see <a href="https://blog.csdn.net/zl_momomo/article/details/80703533">poi</a>
- * 
+ *
  * |------------|----------------------------------------------------------|--------------|
  * |    model   |                         description                      | Read & Write |
  * |------------|----------------------------------------------------------|--------------|
@@ -49,7 +49,7 @@ import java.util.function.Consumer;
  * |------------|----------------------------------------------------------|--------------|
  * | usermodel  | tradition model, need more cpu and memory                |     R & W    |
  * |------------|----------------------------------------------------------|--------------|
- * 
+ *
  * @author Ponfee
  */
 public class ExcelExporter extends AbstractDataExporter<byte[]> {
@@ -464,7 +464,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
      * @param cursorRow
      * @param columnLen
      */
-    private void createBlankRow(String text, SXSSFSheet sheet, XSSFCellStyle style, 
+    private void createBlankRow(String text, SXSSFSheet sheet, XSSFCellStyle style,
                                 CursorRowNumber cursorRow, int columnLen) {
         SXSSFRow row = sheet.createRow(cursorRow.get());
         row.setHeight(DEFAULT_HEIGHT);
@@ -495,7 +495,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
      * @param tbodyColIdx
      * @param options
      */
-    private void createCell(SXSSFRow row, int colIndex, XSSFCellStyle style, Tmeta tmeta, Object value, 
+    private void createCell(SXSSFRow row, int colIndex, XSSFCellStyle style, Tmeta tmeta, Object value,
                             int tbodyRowIdx, int tbodyColIdx, Map<CellStyleOptions, Object> options) {
 
         SXSSFCell cell = row.createCell(colIndex);
@@ -505,7 +505,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
         if (tmeta == null) {
             setCellString(cell, value);
         } else if (tmeta.getType() == Type.NUMERIC) {
-            if (Strings.isBlank(value)) {
+            if (ObjectUtils.isEmpty(value)) {
                 cell.setCellType(CellType.NUMERIC);
                 cell.setCellValue(new XSSFRichTextString());
             } else if (value instanceof String && ((String) value).endsWith("%")) {
@@ -547,7 +547,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
      * @param options
      */
     @SuppressWarnings("unchecked")
-    private void processOptions(SXSSFCell cell, int tbodyRowIdx, int tbodyColIdx, 
+    private void processOptions(SXSSFCell cell, int tbodyRowIdx, int tbodyColIdx,
                                 Map<CellStyleOptions, Object> options) {
         if (MapUtils.isEmpty(options)) {
             return;

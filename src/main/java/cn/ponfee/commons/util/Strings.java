@@ -11,6 +11,7 @@ package cn.ponfee.commons.util;
 import cn.ponfee.commons.io.Files;
 import cn.ponfee.commons.math.Numbers;
 import com.google.common.base.CaseFormat;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -354,21 +355,6 @@ public class Strings {
     }
 
     /**
-     * 判断是否为空字符串
-     * @param value
-     * @return
-     */
-    public static boolean isEmpty(Object value) {
-        return value == null
-            || (value instanceof CharSequence && StringUtils.isEmpty((CharSequence) value));
-    }
-
-    public static boolean isBlank(Object value) {
-        return value == null
-            || (value instanceof CharSequence && StringUtils.isBlank((CharSequence) value));
-    }
-
-    /**
      * 如果为空则设置默认
      *
      * @param str
@@ -431,6 +417,18 @@ public class Strings {
             escaped.append(c);
         }
         return escaped.toString();
+    }
+
+    public static boolean containsAny(String str, List<String> searches) {
+        if (StringUtils.isEmpty(str) || CollectionUtils.isEmpty(searches)) {
+            return false;
+        }
+        for (String search : searches) {
+            if (StringUtils.contains(str, search)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // ---------------------------------------------------------------------------csv split

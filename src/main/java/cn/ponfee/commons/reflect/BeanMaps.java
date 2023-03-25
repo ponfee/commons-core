@@ -9,7 +9,6 @@
 package cn.ponfee.commons.reflect;
 
 import cn.ponfee.commons.util.ObjectUtils;
-import cn.ponfee.commons.util.Strings;
 import cn.ponfee.commons.util.SynchronizedCaches;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.collections4.CollectionUtils;
@@ -28,7 +27,7 @@ import static com.google.common.base.CaseFormat.*;
 
 /**
  * Utility of Java Bean and Map mutual conversion
- * 
+ *
  * @author Ponfee
  */
 public enum BeanMaps {
@@ -130,7 +129,7 @@ public enum BeanMaps {
                     }
 
                     value = sourceMap.get(name);
-                    if ((type = prop.getPropertyType()).isPrimitive() && Strings.isBlank(value)) {
+                    if ((type = prop.getPropertyType()).isPrimitive() && ObjectUtils.isEmpty(value)) {
                         continue; // 基本类型时：value为null或为空字符串时跳过
                     }
 
@@ -145,7 +144,7 @@ public enum BeanMaps {
 
     /**
      * Returns a map from bean field-value
-     * 
+     *
      * @param bean the bean object
      * @return a map
      */
@@ -162,7 +161,7 @@ public enum BeanMaps {
     /**
      * Returns a bean object of specified Class<T> instance,
      * and copy map key-value to bean object field-value
-     * 
+     *
      * @param map      the map
      * @param beanType the type, must be has no args default constructor
      * @return a bean object of specified Class<T> instance
@@ -174,8 +173,8 @@ public enum BeanMaps {
     }
 
     /**
-     * Copies bean object field-value to map key-value 
-     * 
+     * Copies bean object field-value to map key-value
+     *
      * @param sourceBean the source bean
      * @param targetMap  the target map
      */

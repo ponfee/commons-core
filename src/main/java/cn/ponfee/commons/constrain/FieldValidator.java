@@ -16,7 +16,6 @@ import cn.ponfee.commons.reflect.Fields;
 import cn.ponfee.commons.reflect.GenericUtils;
 import cn.ponfee.commons.util.ObjectUtils;
 import cn.ponfee.commons.util.RegexUtils;
-import cn.ponfee.commons.util.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.apache.commons.lang3.ArrayUtils;
@@ -43,11 +42,11 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  *   校验bean实体中含@Constraint注解的属性
  *   e.g.：FieldValidator.newInstance().constrain(bean);
  * </pre>
- * 
+ *
  * GAV: net.sf.oval:oval:1.90
- * 
+ *
  * 字段校验
- * 
+ *
  * @author Ponfee
  */
 public class FieldValidator {
@@ -108,7 +107,7 @@ public class FieldValidator {
         String errMsg = errorMsgBuilder.toString();
         if (LOG.isInfoEnabled()) {
             LOG.info(
-                "[args check not pass]-[{}]-{}-[{}]", 
+                "[args check not pass]-[{}]-{}-[{}]",
                 method.toGenericString(), ObjectUtils.toString(args), errMsg
             );
         }
@@ -124,7 +123,7 @@ public class FieldValidator {
         }
     }
 
-    protected final String constrain(GenericDeclaration classOrMethod, String field, 
+    protected final String constrain(GenericDeclaration classOrMethod, String field,
                                      Object value, Constraint cst, Class<?> type) {
         Tuple2<?, ?> key = Tuple2.of(classOrMethod, field);
         Pair<Boolean, String> result = META_CFG_CACHE.getIfPresent(key);
@@ -163,7 +162,7 @@ public class FieldValidator {
      * @param type
      * @return the constrain result, if empty string means success
      */
-    protected final String constrain(String name, Object value, 
+    protected final String constrain(String name, Object value,
                                      Constraint cst, Class<?> type) {
         // 配置验证
         verifyMeta(name, cst, type);
@@ -319,9 +318,9 @@ public class FieldValidator {
             return n + "{" + v + "}：不能小于" + c.decimalMin() + ";";
         }
 
-        // 时间格式 
+        // 时间格式
         Date date = null;
-        if (isNotBlank(c.datePattern()) && !(!c.notNull() && (v == null||Strings.isEmpty(v)))) {
+        if (isNotBlank(c.datePattern()) && !(!c.notNull() && (v == null || ObjectUtils.isEmpty(v)))) {
             try {
                 date = DateUtils.parseDateStrictly((String) v, c.datePattern());
                 //date = FastDateFormat.getInstance(c.datePattern()).parse((String) v);
