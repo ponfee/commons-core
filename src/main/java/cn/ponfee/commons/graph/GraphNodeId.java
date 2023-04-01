@@ -8,56 +8,57 @@
 
 package cn.ponfee.commons.graph;
 
-import cn.ponfee.scheduler.common.base.Symbol.Str;
 import org.springframework.util.Assert;
 
 import java.beans.Transient;
 import java.util.Objects;
+
+import static cn.ponfee.commons.base.Symbol.Str.COLON;
 
 /**
  * Graph node id
  *
  * @author Ponfee
  */
-public class GraphNodeId {
+public final class GraphNodeId {
 
-    public static final GraphNodeId HEAD = new GraphNodeId(0, 0, "HEAD");
-    public static final GraphNodeId TAIL = new GraphNodeId(0, 0, "TAIL");
-
-    /**
-     * Flow
-     */
-    public final int section;
+    public static final GraphNodeId START = new GraphNodeId(0, 0, "Start");
+    public static final GraphNodeId END = new GraphNodeId(0, 0, "End");
 
     /**
-     * Serial
+     * Section
      */
-    public final int serial;
+    private final int section;
+
+    /**
+     * Ordinal
+     */
+    private final int ordinal;
 
     /**
      * Name
      */
-    public final String name;
+    private final String name;
 
-    private GraphNodeId(int section, int serial, String name) {
+    private GraphNodeId(int section, int ordinal, String name) {
         this.section = section;
-        this.serial = serial;
+        this.ordinal = ordinal;
         this.name = name;
     }
 
-    public static GraphNodeId of(int section, int serial, String name) {
-        Assert.isTrue(section > 0, "Invalid graph node section: " + section);
-        Assert.isTrue(serial > 0, "Invalid graph node serial: " + serial);
-        Assert.hasText(name, "Invalid graph node name: " + name);
-        return new GraphNodeId(section, serial, name);
+    public static GraphNodeId of(int section, int ordinal, String name) {
+        Assert.isTrue(section > 0, () -> "Graph node section must be greater than 0: " + section);
+        Assert.isTrue(ordinal > 0, () -> "Graph node ordinal must be greater than 0: " + ordinal);
+        Assert.hasText(name, () -> "Graph node name cannot be blank: " + name);
+        return new GraphNodeId(section, ordinal, name);
     }
 
     public int getSection() {
         return section;
     }
 
-    public int getSerial() {
-        return serial;
+    public int getOrdinal() {
+        return ordinal;
     }
 
     public String getName() {
@@ -65,35 +66,57 @@ public class GraphNodeId {
     }
 
     @Transient
-    public boolean isHead() {
-        return this.equals(HEAD);
+    public boolean isStart() {
+        return this.equals(START);
     }
 
     @Transient
-    public boolean isTail() {
-        return this.equals(TAIL);
+    public boolean isEnd() {
+        return this.equals(END);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(section, serial, name);
+        return Objects.hash(section, ordinal, name);
     }
 
     @Override
     public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
         if (!(obj instanceof GraphNodeId)) {
             return false;
         }
-
         GraphNodeId other = (GraphNodeId) obj;
         return this.section == other.section
-            && this.serial == other.serial
+            && this.ordinal == other.ordinal
             && this.name.equals(other.name);
+    }
+
+    public boolean equals(int section, int ordinal, String name) {
+        return this.section == section
+            && this.ordinal == ordinal
+            && this.name.equals(name);
     }
 
     @Override
     public String toString() {
-        return section + Str.COLON + serial + Str.COLON + name;
+        return section + COLON + ordinal + COLON + name;
+    }
+
+    public static GraphNodeId fromString(String str) {
+        int pos = -1;
+        int section = Integer.parseInt(str.substring(pos += 1, pos = str.indexOf(COLON, pos)));
+        int ordinal = Integer.parseInt(str.substring(pos += 1, pos = str.indexOf(COLON, pos)));
+        String name = str.substring(pos + 1);
+        if (START.equals(section, ordinal, name)) {
+            return START;
+        }
+        if (END.equals(section, ordinal, name)) {
+            return END;
+        }
+        return GraphNodeId.of(section, ordinal, name);
     }
 
 }
