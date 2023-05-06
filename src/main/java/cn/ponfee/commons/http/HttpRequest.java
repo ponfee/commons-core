@@ -18,7 +18,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
- * 
+ *
  * <dependency>
  *   <groupId>com.github.kevinsawicki</groupId>
  *   <artifactId>http-request</artifactId>
@@ -61,10 +61,10 @@ import static java.net.Proxy.Type.HTTP;
  * <p>
  * Each instance supports making a single request and cannot be reused for
  * further requests.
- * 
+ *
  * @author Kevin Sawicki, Ponfee
  *
- * Reference from internet and with optimization 
+ * Reference from internet and with optimization
  * https://github.com/kevinsawicki/http-request
  */
 public class HttpRequest {
@@ -217,7 +217,7 @@ public class HttpRequest {
     private static final SSLSocketFactory TRUSTED_FACTORY;
     static {
         try {
-            SSLContext context = Providers.getSSLContext("TLS");
+            SSLContext context = SSLContext.getInstance("TLSv1.3");
 
             context.init(null, new TrustManager[] {
                 new X509TrustManager() {
@@ -666,7 +666,7 @@ public class HttpRequest {
      *
      * @param baseUrl
      * @param encode true to encode the full URL
-     * @param params the name/value query parameter pairs to 
+     * @param params the name/value query parameter pairs to
      *               include as part of the baseUrl
      *
      * @see #append(CharSequence, Object...)
@@ -723,7 +723,7 @@ public class HttpRequest {
      *
      * @param baseUrl
      * @param encode  true to encode the full URL
-     * @param params  the name/value query parameter pairs to 
+     * @param params  the name/value query parameter pairs to
      *                include as part of the baseUrl
      *
      * @see #append(CharSequence, Object...)
@@ -780,7 +780,7 @@ public class HttpRequest {
      *
      * @param baseUrl
      * @param encode true to encode the full URL
-     * @param params the name/value query parameter pairs to 
+     * @param params the name/value query parameter pairs to
      *               include as part of the baseUrl
      *
      * @see #append(CharSequence, Object...)
@@ -837,7 +837,7 @@ public class HttpRequest {
      *
      * @param baseUrl
      * @param encode  true to encode the full URL
-     * @param params  the name/value query parameter pairs to 
+     * @param params  the name/value query parameter pairs to
      *                include as part of the baseUrl
      *
      * @see #append(CharSequence, Object...)
@@ -892,7 +892,7 @@ public class HttpRequest {
      *
      * @param baseUrl
      * @param encode true to encode the full URL
-     * @param params the name/value query parameter pairs to include 
+     * @param params the name/value query parameter pairs to include
      *               as part of the baseUrl
      * @see #append(CharSequence, Object...)
      * @see #encode(CharSequence)
@@ -1258,7 +1258,7 @@ public class HttpRequest {
 
     /**
      * Gets the response status enum
-     * 
+     *
      * @return a enum for response http status
      */
     public HttpStatus status() {
@@ -1406,7 +1406,7 @@ public class HttpRequest {
      * @return this request
      * @throws HttpException
      */
-    public HttpRequest body(AtomicReference<String> output) 
+    public HttpRequest body(AtomicReference<String> output)
         throws HttpException {
         output.set(body());
         return this;
@@ -1421,7 +1421,7 @@ public class HttpRequest {
      * @return this request
      * @throws HttpException
      */
-    public HttpRequest body(AtomicReference<String> output, String charset) 
+    public HttpRequest body(AtomicReference<String> output, String charset)
         throws HttpException {
         output.set(body(charset));
         return this;
@@ -1785,7 +1785,7 @@ public class HttpRequest {
      *         fails
      * @throws HttpException
      */
-    public int intHeader(String name, int defaultValue) 
+    public int intHeader(String name, int defaultValue)
         throws HttpException {
         closeOutputQuietly();
         return getConnection().getHeaderFieldInt(name, defaultValue);
@@ -1866,7 +1866,7 @@ public class HttpRequest {
                     String value = header.substring(nameEnd + 1, end).trim();
                     int length = value.length();
                     if (length != 0) {
-                        if (length > 2 && '"' == value.charAt(0) 
+                        if (length > 2 && '"' == value.charAt(0)
                             && '"' == value.charAt(length - 1)) {
                             params.put(name, value.substring(1, length - 1));
                         } else {
@@ -2432,7 +2432,7 @@ public class HttpRequest {
      * @return this request
      * @throws HttpException
      */
-    public HttpRequest part(String name, String filename, String part) 
+    public HttpRequest part(String name, String filename, String part)
         throws HttpException {
         return part(name, filename, null, part);
     }
@@ -2447,7 +2447,7 @@ public class HttpRequest {
      * @return this request
      * @throws HttpException
      */
-    public HttpRequest part(String name, String filename, String contentType, String part) 
+    public HttpRequest part(String name, String filename, String contentType, String part)
         throws HttpException {
         try {
             startPart();
@@ -2506,7 +2506,7 @@ public class HttpRequest {
      * @return this request
      * @throws HttpException
      */
-    public HttpRequest part(String name, String filename, File part) 
+    public HttpRequest part(String name, String filename, File part)
         throws HttpException {
         return part(name, filename, null, part);
     }
@@ -2521,7 +2521,7 @@ public class HttpRequest {
      * @return this request
      * @throws HttpException
      */
-    public HttpRequest part(String name, String filename, String contentType, File part) 
+    public HttpRequest part(String name, String filename, String contentType, File part)
         throws HttpException {
         InputStream stream;
         try {

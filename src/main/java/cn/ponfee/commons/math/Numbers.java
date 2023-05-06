@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
@@ -476,22 +476,22 @@ public final class Numbers {
      * @param value the coupon amount value
      * @return split result
      */
-    public static int[] split(int[] bills, int value) {
-        int total = IntStream.of(bills).sum();
+    public static long[] split(long[] bills, long value) {
+        long total = LongStream.of(bills).sum();
         if (total < value) {
             throw new IllegalArgumentException("Total bill amount[" + total + "] cannot less than coupon amount[" + value + "]");
         }
 
-        int[] result = new int[bills.length];
+        long[] result = new long[bills.length];
         if (bills.length == 0 || value == 0) {
             return result;
         }
 
-        float rate;
+        double rate;
         int i = 0, n = bills.length - 1;
         for (; i < n; i++) {
             // rate <= 1.0
-            rate = value / (float) total;
+            rate = value / (double) total;
 
             // 不能用Math.round：面值为748分钱的券 去平摊账单 [249, 249, 249, 3]，最后金额为3分钱的账单项要平摊掉4分钱
             //result[i] = Math.min(Math.round(bills[i] * rate), value);
