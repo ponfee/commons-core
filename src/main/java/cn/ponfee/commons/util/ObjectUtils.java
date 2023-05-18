@@ -98,6 +98,22 @@ public final class ObjectUtils {
     }
 
     /**
+     * Returns <tt>true</tt> if this object value is complex json type(Object or Array)
+     *
+     * @param value the value
+     * @return {@code true} if the value is complex json type
+     */
+    public static boolean isComplexType(Object value) {
+        if (value == null) {
+            return false;
+        }
+
+        return value instanceof Map        // Object
+            || value instanceof List       // List
+            || value.getClass().isArray(); // Array
+    }
+
+    /**
      * 判断对象是否为空
      *
      * @param o the object

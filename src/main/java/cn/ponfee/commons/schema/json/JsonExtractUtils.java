@@ -10,7 +10,6 @@ package cn.ponfee.commons.schema.json;
 
 import cn.ponfee.commons.collect.Collects;
 import cn.ponfee.commons.collect.Maps;
-import cn.ponfee.commons.json.JsonUtils;
 import cn.ponfee.commons.json.Jsons;
 import cn.ponfee.commons.model.Null;
 import cn.ponfee.commons.schema.*;
@@ -18,6 +17,7 @@ import cn.ponfee.commons.tree.NodePath;
 import cn.ponfee.commons.tree.PlainNode;
 import cn.ponfee.commons.tree.TreeNode;
 import cn.ponfee.commons.tree.TreeNodeBuilder;
+import cn.ponfee.commons.util.ObjectUtils;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 /**
  * The utility class for extract json schema and data
- * 
+ *
  * @author Ponfee
  */
 public final class JsonExtractUtils {
@@ -57,18 +57,18 @@ public final class JsonExtractUtils {
     private static final String ROOT = "Root";
 
     public static TreeNode<JsonId, Null> extractSchema(String text) throws ParseException {
-        // com.fasterxml.jackson.databind.ObjectMapper#readTree(String) 
+        // com.fasterxml.jackson.databind.ObjectMapper#readTree(String)
         return extractSchema(JSON.parse(text));
     }
 
     /**
      * Returns a tree data of extracted the json data structure schema
-     * 
+     *
      * @param obj the object of use {@link JSON#parse(String)} parsed
      * @return a tree node of json data schema
      */
     public static TreeNode<JsonId, Null> extractSchema(Object obj) throws ParseException {
-        if (!JsonUtils.isComplexType(obj)) {
+        if (!ObjectUtils.isComplexType(obj)) {
             throw new ParseException("The basic type data cannot extract schema: " + obj, 0);
         }
 
@@ -87,7 +87,7 @@ public final class JsonExtractUtils {
             return new PlainStructure(original);
         }
 
-        if (!JsonUtils.isComplexType(obj)) {
+        if (!ObjectUtils.isComplexType(obj)) {
             return new PlainStructure(original);
         }
 
@@ -96,7 +96,7 @@ public final class JsonExtractUtils {
 
     /**
      * Returns a DataStructure object by user specified json columns in tree
-     * 
+     *
      * @param object the object of use {@link JSON#parse(String)} parsed
      * @param tree the json tree
      * @return a DataStructure object
@@ -307,7 +307,7 @@ public final class JsonExtractUtils {
 
     /**
      * Detect the array inner emelent type(the first non null value)
-     * 
+     *
      * @param list the array
      * @return a type
      */
@@ -381,7 +381,7 @@ public final class JsonExtractUtils {
         }
 
         // if not complex type then determine it's a string type
-        return JsonUtils.isComplexType(value) ? null : DataType.STRING;
+        return ObjectUtils.isComplexType(value) ? null : DataType.STRING;
     }
 
     private static Object getValue(Object value, DataType dataType) {
@@ -421,9 +421,9 @@ public final class JsonExtractUtils {
     // ------------------------------------------------------------append table
     /**
      * Appends the sub dataset after dataset last row, as new row
-     * 
+     *
      * [[1,2], [3,4]]  append  [["a","b"], ["c","d"]]  =>  [[1,2], [3,4], ["a","b"], ["c","d"]]
-     * 
+     *
      * @param dataset the dataset
      * @param subset  the sub dataset
      */
@@ -462,10 +462,10 @@ public final class JsonExtractUtils {
     // ------------------------------------------------------------join table
     /**
      * Concats the sub dataset after dataset last column, as new column
-     * 
+     *
      * [[1,2], [3,4]]  concat  "a"  =>  [[1,2,"a"], [3,4,"a"]]
-     * 
-     * @param dataset the dataset 
+     *
+     * @param dataset the dataset
      * @param value   the new column vlaue
      */
     public static void concat(List<List<Object>> dataset, Object value) {
@@ -482,10 +482,10 @@ public final class JsonExtractUtils {
 
     /**
      * Concats the sub dataset after dataset last column, as new column
-     * 
+     *
      * [[1,2], [3,4]]  concat  [["a","b"], ["c","d"]]  =>  [[1,2,"a","b"], [3,4,"c","d"]]
-     * 
-     * @param dataset the dataset 
+     *
+     * @param dataset the dataset
      * @param subset  the sub dataset
      */
     public static void concat(List<List<Object>> dataset, List<List<Object>> subset) {
