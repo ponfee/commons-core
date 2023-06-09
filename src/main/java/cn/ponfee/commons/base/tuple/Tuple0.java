@@ -8,8 +8,6 @@
 
 package cn.ponfee.commons.base.tuple;
 
-import cn.ponfee.commons.collect.ImmutableArrayList;
-
 import java.util.*;
 
 /**
@@ -36,26 +34,6 @@ public final class Tuple0 extends Tuple {
     @Override
     public <T> void set(T value, int index) {
         throw new IndexOutOfBoundsException("Index: " + index);
-    }
-
-    @Override
-    public Object[] toArray() {
-        return ImmutableArrayList.EMPTY_OBJECT_ARRAY;
-    }
-
-    @Override
-    public String toString() {
-        return "()";
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Tuple0;
-    }
-
-    @Override
-    public int hashCode() {
-        return 0;
     }
 
     @Override

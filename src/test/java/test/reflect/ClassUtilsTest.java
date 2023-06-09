@@ -171,7 +171,6 @@ public class ClassUtilsTest {
         Assert.assertEquals(31, Fields.get(Tuple.class, "HASH_FACTOR"));
         Fields.put(Tuple.class, "HASH_FACTOR", 311); // final可以修改
         Assert.assertEquals(311, Fields.get(Tuple.class, "HASH_FACTOR"));
-        Assert.assertEquals(31, Tuple.HASH_FACTOR); // 编译时已经是直接引用
         System.out.println(B.INTF_1);
 
         Assert.assertNull(Fields.get(A.class, "static_2"));

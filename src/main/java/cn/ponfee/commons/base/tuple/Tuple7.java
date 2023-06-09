@@ -8,8 +8,6 @@
 
 package cn.ponfee.commons.base.tuple;
 
-import java.util.Objects;
-
 /**
  * Tuple7 consisting of seven elements.
  *
@@ -66,51 +64,6 @@ public final class Tuple7<A, B, C, D, E, F, G> extends Tuple {
             case  6: g = (G) value; break;
             default: throw new IndexOutOfBoundsException("Index: " + index);
         }
-    }
-
-    @Override
-    public Object[] toArray() {
-        return new Object[]{a, b, c, d, e, f, g};
-    }
-
-    @Override
-    public String toString() {
-        return "(" + a + ", " + b + ", " + c + ", " + d + ", " + e + ", " + f + ", " + g + ")";
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!(obj instanceof Tuple7)) {
-            return false;
-        }
-
-        Tuple7<?, ?, ?, ?, ?, ?, ?> o = (Tuple7<?, ?, ?, ?, ?, ?, ?>) obj;
-        return eq(o.a, o.b, o.c, o.d, o.e, o.f, o.g);
-    }
-
-    public boolean eq(Object a, Object b, Object c, Object d, Object e, Object f, Object g) {
-        return Objects.equals(this.a, a)
-            && Objects.equals(this.b, b)
-            && Objects.equals(this.c, c)
-            && Objects.equals(this.d, d)
-            && Objects.equals(this.e, e)
-            && Objects.equals(this.f, f)
-            && Objects.equals(this.g, g);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = a != null ? a.hashCode() : 0;
-        result = HASH_FACTOR * result + (b != null ? b.hashCode() : 0);
-        result = HASH_FACTOR * result + (c != null ? c.hashCode() : 0);
-        result = HASH_FACTOR * result + (d != null ? d.hashCode() : 0);
-        result = HASH_FACTOR * result + (e != null ? e.hashCode() : 0);
-        result = HASH_FACTOR * result + (f != null ? f.hashCode() : 0);
-        result = HASH_FACTOR * result + (g != null ? g.hashCode() : 0);
-        return result;
     }
 
     @Override
