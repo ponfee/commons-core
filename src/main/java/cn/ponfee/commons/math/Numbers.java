@@ -406,6 +406,14 @@ public final class Numbers {
         return defaultIfNull(a, 0.0D) + defaultIfNull(b, 0.0D);
     }
 
+    public static boolean isNullOrZero(Long value) {
+        return value == null || value == 0L;
+    }
+
+    public static boolean isNullOrZero(Integer value) {
+        return value == null || value == 0;
+    }
+
     /**
      * 分片
      *

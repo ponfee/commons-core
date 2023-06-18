@@ -323,7 +323,7 @@ public class Strings {
     }
 
     /**
-     * 带分隔符名字转驼峰，如下划线转换为驼峰：aseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, underscoreName);
+     * 带分隔符名字转驼峰，如下划线转换为驼峰：CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, underscoreName);
      * 1  LOWER_HYPHEN       连字符的变量命名规范如lower-hyphen
      * 2  LOWER_UNDERSCORE   c++变量命名规范如lower_underscore
      * 3  LOWER_CAMEL        java变量命名规范如lowerCamel
