@@ -17,6 +17,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
 /**
+ * LocalDateTimeFormatTest
+ *
  * @author Ponfee
  */
 public class LocalDateTimeFormatTest {
@@ -39,7 +41,7 @@ public class LocalDateTimeFormatTest {
         assertEquals("1970-01-01 08:00:00", Dates.format(Dates.zoneConvert(originDate, ZoneId.of("UTC+0"), ZoneId.of("UTC+8"))));
         assertEquals("1969-12-31 16:00:00", Dates.format(Dates.zoneConvert(originDate, ZoneId.of("UTC+8"), ZoneId.of("UTC+0"))));
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Dates.DEFAULT_DATE_FORMAT);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Dates.DATETIME_PATTERN);
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone(ZoneId.of("UTC+0")));
         assertEquals("1969-12-31 16:00:00", simpleDateFormat.format(originDate));
 

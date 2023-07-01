@@ -32,7 +32,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * 
+ *
  * @author Ponfee
  */
 public class Test2 {
@@ -56,11 +56,11 @@ public class Test2 {
         System.out.println(map);
         TreeMap<String, Integer> tree = ValueSortedMap.nullsFirst(map, Comparator.comparing(v->v));
         System.out.println(tree);
-        
+
         TreeMap<String, Integer> tree2 = new TreeMap<>(Comparator.comparing(k -> map.get(k)));
         tree2.putAll(map);
         System.out.println(tree2);
-        
+
     }
 
     @SuppressWarnings("rawtypes")
@@ -81,21 +81,21 @@ public class Test2 {
         System.out.println(Integer.toBinaryString((b & 0xFF) | 0x100));
         System.out.println(Integer.toBinaryString((b & 0xFF) + 0x100));
     }
-    
+
     @Test
     public void test4() {
-        System.out.println(Dates.format(Dates.ofSeconds(-2000000000)));
+        System.out.println(Dates.format(Dates.ofUnixTimestamp(-2000000000)));
     }
 
     @Test @Ignore
     public void test5() throws IOException {
         Files.delete(Paths.get("D:\\test\\framework"));
     }
-    
+
     @Test
     public void test6() throws IOException {
         System.out.println(ObjenesisHelper.newInstance(HashMap.class));
-        
+
         System.out.println(Double.isFinite(Math.PI));
         System.out.println(Double.isInfinite(Double.POSITIVE_INFINITY));
         System.out.println(Double.isNaN(0.0/0.0));
@@ -129,7 +129,7 @@ public class Test2 {
         System.out.println(f);
         System.out.println("move cost: " + watch.stop());
     }
-    
+
     @Test
     public void test13() throws IOException {
         System.out.println(HumanReadables.BINARY.parse("-1,023.56 GiB"));
@@ -184,7 +184,7 @@ public class Test2 {
         System.out.println(HumanReadables.BINARY.parse("888.13PB"));
         //System.out.println(HumanReadables.BINARY.parse("888.13PB", true));
     }
-    
+
     @Test
     public void test16() throws IOException {
         System.out.println(HumanReadables.BINARY.parse("888.13PiB", true));
@@ -222,7 +222,7 @@ public class Test2 {
         System.out.println(HumanReadables.BINARY.parse("888.13P", false));
         //System.out.println(HumanReadables.BINARY.parse("888.13P", true));
     }
-    
+
     @Test
     public void test21() throws IOException {
         System.out.println(HumanReadables.SI.parse("888.13", false));
@@ -240,12 +240,12 @@ public class Test2 {
         System.out.println(HumanReadables.SI.parse("888.13P", false));
         System.out.println(HumanReadables.SI.parse("888.13P", true));
     }
-    
+
     @Test
     public void test22() throws IOException {
         System.out.println(HumanReadables.BINARY.parse("888.13", false));
         System.out.println(HumanReadables.BINARY.parse("888.13", true));
-        
+
         System.out.println(HumanReadables.BINARY.parse("888.13B", false));
         System.out.println(HumanReadables.BINARY.parse("888.13B", true));
 
@@ -258,7 +258,7 @@ public class Test2 {
         System.out.println(HumanReadables.BINARY.parse("888.13P", false));
         //System.out.println(HumanReadables.BINARY.parse("888.13P", true));
     }
-    
+
     @Test
     public void test23() throws IOException {
         //System.out.println(HumanReadables.BINARY.parse("888.13AB", false));
@@ -268,7 +268,7 @@ public class Test2 {
         //System.out.println(HumanReadables.SI.parse("888.13BA", true));
 
     }
-    
+
     @Test
     public void test24() throws IOException {
         System.out.println(FileUtils.byteCountToDisplaySize(1047552));
@@ -281,7 +281,7 @@ public class Test2 {
         System.out.println(FileUtils.byteCountToDisplaySize(-5));
         System.out.println(FileUtils.byteCountToDisplaySize(98745612));
     }
-    
+
     @Test
     public void test25() throws IOException {
         System.out.println(HumanReadables.BINARY.human(1099382778757L));
@@ -317,7 +317,7 @@ public class Test2 {
         System.out.println("63 -> " + Maths.bitsMask(63) + " -> " + Bytes.toBinary(Bytes.toBytes(Maths.bitsMask(63))));
         System.out.println("64 -> " + Maths.bitsMask(64) + " -> " + Bytes.toBinary(Bytes.toBytes(Maths.bitsMask(64))));
         System.out.println("====\n");
-        
+
         System.out.println(Dates.format(new Date(17592186044415L), format));
 
         int bits = 41;

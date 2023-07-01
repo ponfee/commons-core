@@ -523,7 +523,7 @@ public class ExcelExporter extends AbstractDataExporter<byte[]> {
                 cell.setCellValue((Calendar) value);
             } else {
                 String str = value.toString();
-                String format = Optional.ofNullable(tmeta.getFormat()).orElse(Dates.DEFAULT_DATE_FORMAT);
+                String format = Optional.ofNullable(tmeta.getFormat()).orElse(Dates.DATETIME_PATTERN);
                 try {
                     cell.setCellValue(DateUtils.parseDateStrictly(str, format));
                     //cell.setCellValue(FastDateFormat.getInstance(format).parse(str));

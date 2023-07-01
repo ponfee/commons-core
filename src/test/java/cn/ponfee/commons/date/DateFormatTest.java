@@ -1,26 +1,17 @@
 package cn.ponfee.commons.date;
 
+import com.google.common.collect.Lists;
+import org.apache.commons.lang3.time.DateUtils;
+import org.junit.Assert;
+import org.junit.Test;
+
 import java.text.ParseException;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.util.Date;
 import java.util.Locale;
-
-import cn.ponfee.commons.date.Dates;
-import cn.ponfee.commons.date.JavaUtilDateFormat;
-import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Assert;
-import org.junit.Test;
-
-import com.google.common.collect.Lists;
 
 public class DateFormatTest {
 
@@ -32,13 +23,13 @@ public class DateFormatTest {
 
         LocalDate date1 = LocalDate.parse("20140318", DateTimeFormatter.BASIC_ISO_DATE);
         LocalDate date2 = LocalDate.parse("2014-03-18", DateTimeFormatter.ISO_LOCAL_DATE);
-        
-        
+
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         date1 = LocalDate.of(2014, 3, 18);
         String formattedDate = date1.format(formatter);
         date2 = LocalDate.parse(formattedDate, formatter);
-        
+
         DateTimeFormatter italianFormatter = new DateTimeFormatterBuilder()
             .appendText(ChronoField.DAY_OF_MONTH)
             .appendLiteral(". ")
@@ -47,7 +38,7 @@ public class DateFormatTest {
             .appendText(ChronoField.YEAR)
             .parseCaseInsensitive()
             .toFormatter(Locale.ITALIAN);
-        
+
         ZoneId romeZone = ZoneId.of("Europe/Rome");
         date = LocalDate.of(2014, Month.MARCH, 18);
         ZonedDateTime zdt1 = date.atStartOfDay(romeZone);
@@ -57,14 +48,14 @@ public class DateFormatTest {
         ZonedDateTime zdt3 = instant.atZone(romeZone);
         System.out.println(zdt3);
     }
-    
+
     @Test
     public void test2() {
         LocalDateTime dateTime = LocalDateTime.of(2014, Month.MARCH, 18, 13, 45);
         Instant instantFromDateTime = dateTime.toInstant(ZoneOffset.UTC);
         System.out.println(instantFromDateTime);
     }
-    
+
     @Test
     public void test3() {
         System.out.println(Runtime.getRuntime().availableProcessors());
@@ -77,7 +68,7 @@ public class DateFormatTest {
         Date zero = JavaUtilDateFormat.PATTERN_41.parse(Dates.ZERO_DATE_TIME);
         Assert.assertEquals(-62170185600000L, zero.getTime());
         Assert.assertEquals(zero, JavaUtilDateFormat.DEFAULT.parse(Dates.ZERO_DATE_TIME));
-        Assert.assertEquals(zero, DateUtils.parseDate(Dates.ZERO_DATE_TIME, Dates.DEFAULT_DATE_FORMAT));
+        Assert.assertEquals(zero, DateUtils.parseDate(Dates.ZERO_DATE_TIME, Dates.DATETIME_PATTERN));
 
     }
 }

@@ -337,7 +337,7 @@ public class FieldValidator {
 
             String pattern = c.datePattern();
             if (isBlank(pattern)) {
-                pattern = Dates.DEFAULT_DATE_FORMAT;
+                pattern = Dates.DATETIME_PATTERN;
             }
             if (date == null) {
                 return n + "{null}：日期不能为空;";

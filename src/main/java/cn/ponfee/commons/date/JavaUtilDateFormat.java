@@ -52,18 +52,18 @@ public class JavaUtilDateFormat extends DateFormat {
     static final FastDateFormat PATTERN_13 = FastDateFormat.getInstance("yyyy/MM");
 
     static final FastDateFormat PATTERN_21 = FastDateFormat.getInstance("yyyyMMdd");
-    static final FastDateFormat PATTERN_22 = FastDateFormat.getInstance("yyyy-MM-dd");
+    static final FastDateFormat PATTERN_22 = FastDateFormat.getInstance(Dates.DATE_PATTERN);
     static final FastDateFormat PATTERN_23 = FastDateFormat.getInstance("yyyy/MM/dd");
 
     static final FastDateFormat PATTERN_31 = FastDateFormat.getInstance("yyyyMMddHHmmss");
     static final FastDateFormat PATTERN_32 = FastDateFormat.getInstance("yyyyMMddHHmmssSSS");
 
-    static final FastDateFormat PATTERN_41 = FastDateFormat.getInstance(Dates.DEFAULT_DATE_FORMAT);
+    static final FastDateFormat PATTERN_41 = FastDateFormat.getInstance(Dates.DATETIME_PATTERN);
     static final FastDateFormat PATTERN_42 = FastDateFormat.getInstance("yyyy/MM/dd HH:mm:ss");
     static final FastDateFormat PATTERN_43 = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss");
     static final FastDateFormat PATTERN_44 = FastDateFormat.getInstance("yyyy/MM/dd'T'HH:mm:ss");
 
-    static final FastDateFormat PATTERN_51 = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss.SSS");
+    static final FastDateFormat PATTERN_51 = FastDateFormat.getInstance(Dates.DATEFULL_PATTERN);
     static final FastDateFormat PATTERN_52 = FastDateFormat.getInstance("yyyy/MM/dd HH:mm:ss.SSS");
     static final FastDateFormat PATTERN_53 = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS");
     static final FastDateFormat PATTERN_54 = FastDateFormat.getInstance("yyyy/MM/dd'T'HH:mm:ss.SSS");
@@ -81,7 +81,7 @@ public class JavaUtilDateFormat extends DateFormat {
     /**
      * The default date format with yyyy-MM-dd HH:mm:ss
      */
-    public static final JavaUtilDateFormat DEFAULT = new JavaUtilDateFormat(Dates.DEFAULT_DATE_FORMAT);
+    public static final JavaUtilDateFormat DEFAULT = new JavaUtilDateFormat(Dates.DATETIME_PATTERN);
 
     /**
      * 兜底解析器
@@ -125,15 +125,10 @@ public class JavaUtilDateFormat extends DateFormat {
         try {
             return parse(date);
         } catch (IllegalArgumentException e) {
-            throw e;
+            throw new IllegalArgumentException("Invalid date format: " + source + ", " + pos.getIndex() + ", " + date);
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid date format: " + source + ", " + pos.getIndex() + ", " + date, e);
         }
-    }
-
-    public LocalDateTime parseToLocalDateTime(String source, ParsePosition pos) {
-        Date date = parse(source, pos);
-        return date == null ? null : Dates.toLocalDateTime(date);
     }
 
     @Override
@@ -148,15 +143,15 @@ public class JavaUtilDateFormat extends DateFormat {
                 source = padding(source) + "Z";
             }
             if (hasTSeparator(source)) {
-                return (isHyphen(source) ? PATTERN_63 : PATTERN_64).parse(source);
+                return (isCrossbar(source) ? PATTERN_63 : PATTERN_64).parse(source);
             } else {
-                return (isHyphen(source) ? PATTERN_61 : PATTERN_62).parse(source);
+                return (isCrossbar(source) ? PATTERN_61 : PATTERN_62).parse(source);
             }
         }
 
         switch (length) {
             case  6: return PATTERN_11.parse(source);
-            case  7: return (isHyphen(source) ? PATTERN_12 : PATTERN_13).parse(source);
+            case  7: return (isCrossbar(source) ? PATTERN_12 : PATTERN_13).parse(source);
             case  8: return PATTERN_21.parse(source);
             case 10:
                 char separator = source.charAt(4);
@@ -178,25 +173,25 @@ public class JavaUtilDateFormat extends DateFormat {
             case 14: return PATTERN_31.parse(source);
             case 19:
                 if (hasTSeparator(source)) {
-                    return (isHyphen(source) ? PATTERN_43 : PATTERN_44).parse(source);
+                    return (isCrossbar(source) ? PATTERN_43 : PATTERN_44).parse(source);
                 } else {
-                    return (isHyphen(source) ? PATTERN_41 : PATTERN_42).parse(source);
+                    return (isCrossbar(source) ? PATTERN_41 : PATTERN_42).parse(source);
                 }
             case 17: return PATTERN_32.parse(source);
             case 23:
                 if (hasTSeparator(source)) {
-                    return (isHyphen(source) ? PATTERN_53 : PATTERN_54).parse(source);
+                    return (isCrossbar(source) ? PATTERN_53 : PATTERN_54).parse(source);
                 } else {
-                    return (isHyphen(source) ? PATTERN_51 : PATTERN_52).parse(source);
+                    return (isCrossbar(source) ? PATTERN_51 : PATTERN_52).parse(source);
                 }
             case 26:
             case 29:
                 if (hasTSeparator(source)) {
                     // 2021-12-31T17:01:01.000+08、2021-12-31T17:01:01.000+08:00
-                    return (isHyphen(source) ? PATTERN_73 : PATTERN_74).parse(source);
+                    return (isCrossbar(source) ? PATTERN_73 : PATTERN_74).parse(source);
                 } else {
                     // 2021-12-31 17:01:01.000+08、2021-12-31 17:01:01.000+08:00
-                    return (isHyphen(source) ? PATTERN_71 : PATTERN_72).parse(source);
+                    return (isCrossbar(source) ? PATTERN_71 : PATTERN_72).parse(source);
                 }
             case 28:
                 if (isCST(source)) {
@@ -215,6 +210,11 @@ public class JavaUtilDateFormat extends DateFormat {
 
     public LocalDateTime parseToLocalDateTime(String source) throws ParseException {
         Date date = parse(source);
+        return date == null ? null : Dates.toLocalDateTime(date);
+    }
+
+    public LocalDateTime parseToLocalDateTime(String source, ParsePosition pos) {
+        Date date = parse(source, pos);
         return date == null ? null : Dates.toLocalDateTime(date);
     }
 
@@ -288,8 +288,8 @@ public class JavaUtilDateFormat extends DateFormat {
     }
 
     // ------------------------------------------------------------------------package methods
-    static boolean isHyphen(String str) {
-        return str.charAt(4) == Char.HYPHEN;
+    static boolean isCrossbar(String str) {
+        return str.charAt(4) == '-';
     }
 
     // 'T' literal is the date and time separator

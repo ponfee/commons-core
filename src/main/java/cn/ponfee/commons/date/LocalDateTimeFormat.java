@@ -33,12 +33,12 @@ public class LocalDateTimeFormat {
 
     static final DateTimeFormatter PATTERN_01 = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
-    public static final DateTimeFormatter PATTERN_11 = DateTimeFormatter.ofPattern(Dates.DEFAULT_DATE_FORMAT);
+    public static final DateTimeFormatter PATTERN_11 = DateTimeFormatter.ofPattern(Dates.DATETIME_PATTERN);
     static final DateTimeFormatter PATTERN_12 = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     static final DateTimeFormatter PATTERN_13 = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     static final DateTimeFormatter PATTERN_14 = DateTimeFormatter.ofPattern("yyyy/MM/dd'T'HH:mm:ss");
 
-    static final DateTimeFormatter PATTERN_21 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+    static final DateTimeFormatter PATTERN_21 = DateTimeFormatter.ofPattern(Dates.DATEFULL_PATTERN);
     static final DateTimeFormatter PATTERN_22 = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSS");
     static final DateTimeFormatter PATTERN_23 = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
     static final DateTimeFormatter PATTERN_24 = DateTimeFormatter.ofPattern("yyyy/MM/dd'T'HH:mm:ss.SSS");
@@ -46,7 +46,7 @@ public class LocalDateTimeFormat {
     /**
      * The default date format with yyyy-MM-dd HH:mm:ss
      */
-    public static final LocalDateTimeFormat DEFAULT = new LocalDateTimeFormat(Dates.DEFAULT_DATE_FORMAT);
+    public static final LocalDateTimeFormat DEFAULT = new LocalDateTimeFormat(Dates.DATETIME_PATTERN);
 
     /**
      * 兜底解析器
@@ -70,7 +70,7 @@ public class LocalDateTimeFormat {
 
         int length = source.length();
         if (length >= 20 && hasTSeparator(source) && source.endsWith("Z")) {
-            if (isHyphen(source)) {
+            if (isCrossbar(source)) {
                 // example: 2022-07-18T15:11:11Z, 2022-07-18T15:11:11.Z, 2022-07-18T15:11:11.1Z, 2022-07-18T15:11:11.13Z, 2022-07-18T15:11:11.133Z
                 // 解析会报错：DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
                 return LocalDateTime.ofInstant(Instant.parse(source), ZoneOffset.UTC);
@@ -108,15 +108,15 @@ public class LocalDateTimeFormat {
                 return LocalDateTime.parse(source, PATTERN_01);
             case 19:
                 if (hasTSeparator(source)) {
-                    return LocalDateTime.parse(source, isHyphen(source) ? PATTERN_13 : PATTERN_14);
+                    return LocalDateTime.parse(source, isCrossbar(source) ? PATTERN_13 : PATTERN_14);
                 } else {
-                    return LocalDateTime.parse(source, isHyphen(source) ? PATTERN_11 : PATTERN_12);
+                    return LocalDateTime.parse(source, isCrossbar(source) ? PATTERN_11 : PATTERN_12);
                 }
             case 23:
                 if (hasTSeparator(source)) {
-                    return LocalDateTime.parse(source, isHyphen(source) ? PATTERN_23 : PATTERN_24);
+                    return LocalDateTime.parse(source, isCrossbar(source) ? PATTERN_23 : PATTERN_24);
                 } else {
-                    return LocalDateTime.parse(source, isHyphen(source) ? PATTERN_21 : PATTERN_22);
+                    return LocalDateTime.parse(source, isCrossbar(source) ? PATTERN_21 : PATTERN_22);
                 }
             default:
                 break;

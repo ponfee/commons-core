@@ -31,7 +31,7 @@ public class CustomLocalDateTimeDeserializer extends JSR310DateTimeDeserializerB
     private final LocalDateTimeFormat wrappedFormatter;
 
     protected CustomLocalDateTimeDeserializer() {
-        this(Dates.DEFAULT_DATE_FORMAT);
+        this(Dates.DATETIME_PATTERN);
     }
 
     public CustomLocalDateTimeDeserializer(String pattern) {

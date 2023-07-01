@@ -18,6 +18,8 @@ import java.util.TimeZone;
 import static org.junit.Assert.assertEquals;
 
 /**
+ * JavaUtilDateFormatTest
+ *
  * @author Ponfee
  */
 public class JavaUtilDateFormatTest {
@@ -174,7 +176,7 @@ public class JavaUtilDateFormatTest {
         assertEquals("2022-07-19 21:44:27.800", fastDateFormat.format(format.parse("2022-07-19T21:44:27.8Z")));
         assertEquals("2022-07-19 21:44:27.870", fastDateFormat.format(format.parse("2022-07-19T21:44:27.87Z")));
         assertEquals("2022-07-19 21:44:27.873", fastDateFormat.format(format.parse("2022-07-19T21:44:27.873Z")));
-        
+
         assertEquals("2022-07-19 21:44:27.000", fastDateFormat.format(format.parse("2022/07/19T21:44:27Z")));
         assertEquals("2022-07-19 21:44:27.000", fastDateFormat.format(format.parse("2022/07/19T21:44:27.Z")));
         assertEquals("2022-07-19 21:44:27.300", fastDateFormat.format(format.parse("2022/07/19T21:44:27.3Z")));
@@ -194,7 +196,7 @@ public class JavaUtilDateFormatTest {
         assertEquals("2022-07-19 21:44:27.300", fastDateFormat.format(format.parse("2022/07/19 21:44:27.3Z")));
         assertEquals("2022-07-19 21:44:27.730", fastDateFormat.format(format.parse("2022/07/19 21:44:27.73Z")));
         assertEquals("2022-07-19 21:44:27.873", fastDateFormat.format(format.parse("2022/07/19 21:44:27.873Z")));
-        
+
 
         assertEquals("2022-07-19 21:44:27.873", fastDateFormat.format(format.parse("2022-07-19T21:44:27.873+08")));
         assertEquals("2022-07-19 21:44:27.873", fastDateFormat.format(format.parse("2022/07/19T21:44:27.873+08")));
