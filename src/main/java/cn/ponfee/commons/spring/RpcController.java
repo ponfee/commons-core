@@ -6,19 +6,16 @@
 **                      \/          \/     \/                                   **
 \*                                                                              */
 
-package cn.ponfee.commons.model;
+package cn.ponfee.commons.spring;
 
-import cn.ponfee.commons.json.Jsons;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Override {@code Object#toString()} method, implemented to json string.
+ * Mark this subclass is a spring web controller and with rpc({@code LocalizedMethodArguments}) trait
  *
  * @author Ponfee
  */
-public abstract class ToJsonString {
-
-    @Override
-    public String toString() {
-        return Jsons.toJson(this);
-    }
+@RestController
+@LocalizedMethodArguments
+public interface RpcController {
 }

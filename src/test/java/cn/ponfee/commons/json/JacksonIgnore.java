@@ -18,7 +18,7 @@ public class JacksonIgnore {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setFilterProvider(filterProvider).addMixIn(Map.class, FieldFilterMixIn.class);
 
-        System.out.println(mapper.writeValueAsString(Result.SUCCESS));
+        System.out.println(mapper.writeValueAsString(Result.success()));
     }
 
     @JsonFilter("fieldFilter")

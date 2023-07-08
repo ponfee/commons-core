@@ -15,6 +15,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -88,6 +89,10 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A> e
             // as root node if new instance at external(TreeNodeBuilder) or of(TreeNode)
             mount(null);
         }
+    }
+
+    public static <T extends Serializable & Comparable<? super T>, A> TreeNodeBuilder<T, A> builder(T nid) {
+        return new TreeNodeBuilder<>(nid);
     }
 
     // ------------------------------------------------------mount children nodes
@@ -314,7 +319,7 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A> e
         try {
             return print(e -> String.valueOf(e.getNid()));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return ExceptionUtils.rethrow(e);
         }
     }
 
@@ -404,8 +409,10 @@ public final class TreeNode<T extends Serializable & Comparable<? super T>, A> e
         }
 
         // 非叶子节点
-        int maxChildTreeDepth        = 0, maxChildTreeMaxDegree    = 0,
-            sumChildrenTreeLeafCount = 0, sumChildrenTreeNodeCount = 0;
+        int maxChildTreeDepth        = 0,
+            maxChildTreeMaxDegree    = 0,
+            sumChildrenTreeLeafCount = 0,
+            sumChildrenTreeNodeCount = 0;
         TreeNode<T, A> child;
         for (int i = 0; i < children.size(); i++) {
             child = children.get(i);

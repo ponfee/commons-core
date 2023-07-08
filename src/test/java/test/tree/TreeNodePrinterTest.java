@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * 
+ *
  * @author Ponfee
  */
 public class TreeNodePrinterTest {
@@ -44,9 +44,11 @@ public class TreeNodePrinterTest {
         list.add(new PlainNode<>("400000", null, true, "nid400000"));
 
         // do mount first
-        TreeNode<String, String> subtree = TreeNodeBuilder.<String, String> newBuilder(
-            "400010", Comparator.comparing(node -> ThreadLocalRandom.current().nextInt(10))
-        ).pid("400000").enabled(true).build();
+        TreeNode<String, String> subtree = TreeNode.<String, String>builder("400010")
+            .siblingNodesComparator(Comparator.comparing(node -> ThreadLocalRandom.current().nextInt(10)))
+            .pid("400000")
+            .enabled(true)
+            .build();
 
         // do mount second
         subtree.mount(Arrays.asList(
@@ -60,7 +62,7 @@ public class TreeNodePrinterTest {
         list.add(new PlainNode<>("500011", "500010", true, "nid500011"));
 
         // do mount third
-        TreeNode<String, String> root = TreeNodeBuilder.<String, String> newBuilder(TreeNode.DEFAULT_ROOT_ID).build();
+        TreeNode<String, String> root = TreeNode.<String, String> builder(TreeNode.DEFAULT_ROOT_ID).build();
         System.out.println("unmount: "+Jsons.toJson(root));
 
         // do mount fouth
@@ -117,7 +119,7 @@ public class TreeNodePrinterTest {
         list.add(new PlainNode<>(34, 12,new Thead("月指标(万)")));
         list.add(new PlainNode<>(35, 12,new Thead("指标完成率")));
 
-        System.out.println(TreeNodeBuilder.<Integer, Thead>newBuilder(0).build().mount(list).print(e -> Optional.ofNullable(e.getAttach()).map(Thead::getName).orElse(null)));
+        System.out.println(TreeNode.<Integer, Thead>builder(0).build().mount(list).print(e -> Optional.ofNullable(e.getAttach()).map(Thead::getName).orElse(null)));
     }
 
     @Test

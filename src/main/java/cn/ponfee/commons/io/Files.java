@@ -10,7 +10,6 @@ package cn.ponfee.commons.io;
 
 import cn.ponfee.commons.tree.PlainNode;
 import cn.ponfee.commons.tree.TreeNode;
-import cn.ponfee.commons.tree.TreeNodeBuilder;
 import cn.ponfee.commons.tree.print.MultiwayTreePrinter;
 import org.apache.commons.io.output.StringBuilderWriter;
 
@@ -89,7 +88,7 @@ public final class Files {
 
     /**
      * 创建目录
-     * 
+     *
      * @param file
      * @return
      */
@@ -144,7 +143,7 @@ public final class Files {
     public static String toString(File file, Charset charset) throws IOException {
         ByteOrderMarks bom = ByteOrderMarks.of(charset, file);
 
-        try (FileInputStream input = new FileInputStream(file); 
+        try (FileInputStream input = new FileInputStream(file);
              FileChannel channel = input.getChannel()
         ) {
             //FileLock lock = channel.lock();
@@ -163,12 +162,12 @@ public final class Files {
 
     /**
      * Reads file to byte array
-     * 
+     *
      * @param file
      * @return
      */
     public static byte[] toByteArray(File file) {
-        try (FileInputStream in = new FileInputStream(file); 
+        try (FileInputStream in = new FileInputStream(file);
              FileChannel channel = in.getChannel()
         ) {
             ByteBuffer buffer = channel.map(MapMode.READ_ONLY, 0, channel.size());
@@ -198,7 +197,7 @@ public final class Files {
         while (index < count && (n = input.read(bytes, index, count - index)) != EOF) {
             index += n;
         }
- 
+
         return (index == count) ? bytes : Arrays.copyOf(bytes, index);
     }
 
@@ -228,7 +227,7 @@ public final class Files {
             }
         }
 
-        return TreeNodeBuilder.<Integer, File>newBuilder(dummyRootPid).build().mount(files).getChildren().get(0);
+        return TreeNode.<Integer, File>builder(dummyRootPid).build().mount(files).getChildren().get(0);
     }
 
     public static String tree(String filePath) throws IOException {

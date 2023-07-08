@@ -45,8 +45,8 @@ public class LocalDateTimeFormatTest {
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone(ZoneId.of("UTC+0")));
         assertEquals("1969-12-31 16:00:00", simpleDateFormat.format(originDate));
 
-        assertEquals("1970-01-01 08:00:00", Dates.zoneConvert("1970-01-01 00:00:00", ZoneId.of("UTC+0"), ZoneId.of("UTC+8")));
-        assertEquals("1970-01-01 00:00:00", Dates.zoneConvert("1970-01-01 08:00:00", ZoneId.of("UTC+8"), ZoneId.of("UTC+0")));
+        assertEquals("1970-01-01 08:00:00", Dates.zoneConvert(Dates.toDate("1970-01-01 00:00:00"), ZoneId.of("UTC+0"), ZoneId.of("UTC+8")));
+        assertEquals("1970-01-01 00:00:00", Dates.zoneConvert(Dates.toDate("1970-01-01 08:00:00"), ZoneId.of("UTC+8"), ZoneId.of("UTC+0")));
     }
 
     @Test

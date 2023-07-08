@@ -36,7 +36,7 @@ import cn.ponfee.commons.tree.BaseNode;
 import cn.ponfee.commons.util.Captchas;
 
 public class ExportTester {
-    
+
     public static final String baseDir = MavenProjects.getProjectBaseDir()+"/test/";
     static {
         try {
@@ -55,7 +55,7 @@ public class ExportTester {
 
         list.add(new PlainNode<>(1, 0, new Thead("区域")));
         list.add(new PlainNode<>(2, 0, new Thead("分公司")));
-        
+
         list.add(new PlainNode<>(3, 0, new Thead("昨天")));
         list.add(new PlainNode<>(4, 3, new Thead("项目数")));
         list.add(new PlainNode<>(5, 3, new Thead("项目应收(元)")));
@@ -130,7 +130,7 @@ public class ExportTester {
         table.setCaption("123");
         table.toEnd();
         html.build(table);
-        
+
         table = new Table(list);
         table.toEnd();
         table.setCaption("bnm");
@@ -161,7 +161,7 @@ public class ExportTester {
 
         list.add(new PlainNode<>(1, 0, new Thead("区域")));
         list.add(new PlainNode<>(2, 0, new Thead("分公司")));
-        
+
         list.add(new PlainNode<>(3, 0, new Thead("昨天")));
         list.add(new PlainNode<>(4, 3, new Thead("项目数")));
         list.add(new PlainNode<>(5, 3, new Thead("项目应收(元)")));
@@ -195,21 +195,21 @@ public class ExportTester {
         list.add(new PlainNode<>(33, 12, new Thead("线上项目成交套数")));
         list.add(new PlainNode<>(34, 12, new Thead("月指标(万)")));
         list.add(new PlainNode<>(35, 12, new Thead("指标完成率")));
-        
+
         List<Object[]> data1 = new ArrayList<>();
         for (int i = 0; i < 2*multiple; i++) {
             data1.add(new Object[] { "1234563.918%", "2017-02-03", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd",
                 "abd", "abd",
                 "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "1" });
         }
-        
+
         List<Object[]> data2 = new ArrayList<>();
         for (int i = 0; i < 5*multiple; i++) {
             data2.add(new Object[] { "1234563.918%", "2017-02-03", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd",
                 "abd", "abd",
                 "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "1" });
         }
-        
+
         List<Object[]> data3 = new ArrayList<>();
         for (int i = 0; i < 3*multiple; i++) {
             data3.add(new Object[] { "1234563.918%", "2017-02-03", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd", "abd",
@@ -273,7 +273,7 @@ public class ExportTester {
         ByteOrderMarks.add(new File(baseDir+"testExcel.csv"));
         csv.close();
         System.out.println("========================================csv: " + (System.currentTimeMillis() - start));
-        
+
         start = System.currentTimeMillis();
         HtmlExporter html = new HtmlExporter();
         table1 = new Table(list);
@@ -303,17 +303,17 @@ public class ExportTester {
         IOUtils.write((byte[]) excel.export(), new FileOutputStream(baseDir+"testExcel2.xlsx"));
         excel.close();
     }
-    
+
     @Test
     public void testExcel5() throws IOException {
         AbstractDataExporter<byte[]> excel = new ExcelExporter();
 
         Table<Result<Void>> table = new Table<>(
-            "a,b".split(","), 
+            "a,b".split(","),
             o -> new Object[] { o.getCode(), o.getMsg() }
         );
         table.setCaption("title");
-        table.addRow(Result.SUCCESS);
+        table.addRow(Result.success());
         table.addRow(Result.failure(ResultCode.BAD_REQUEST));
         table.toEnd();
 
@@ -322,8 +322,8 @@ public class ExportTester {
         IOUtils.write((byte[]) excel.export(), new FileOutputStream(baseDir+"11111xxxx.xlsx"));
         excel.close();
     }
-    
-    
+
+
     @Test
     public void testExcel3() throws IOException {
         XSSFWorkbook wb = new XSSFWorkbook();

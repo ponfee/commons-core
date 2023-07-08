@@ -6,51 +6,58 @@
 **                      \/          \/     \/                                   **
 \*                                                                              */
 
-package cn.ponfee.commons.graph;
+package cn.ponfee.commons.dag;
 
 import org.springframework.util.Assert;
 
 import java.beans.Transient;
+import java.io.Serializable;
 import java.util.Objects;
 
 import static cn.ponfee.commons.base.Symbol.Str.COLON;
 
 /**
- * Graph node id
+ * DAG Node
  *
  * @author Ponfee
  */
-public final class GraphNodeId {
+public final class DAGNode implements Serializable {
+    private static final long serialVersionUID = 7413110685194391605L;
 
-    public static final GraphNodeId START = new GraphNodeId(0, 0, "Start");
-    public static final GraphNodeId END = new GraphNodeId(0, 0, "End");
+    public static final DAGNode START = new DAGNode(0, 0, "Start");
+    public static final DAGNode END = new DAGNode(0, 0, "End");
 
     /**
-     * Section
+     * <pre>
+     *  任务链的编号，用来区分不同的任务链
+     *  如[Start -> A -> B -> End; Start -> C -> D -> End]，表达式用“;”分隔成两个不同的任务链
+     *  1  Start -> A -> B -> End
+     *  2  Start -> C -> D -> End
+     * </pre>
      */
     private final int section;
 
     /**
-     * Ordinal
+     * 名称相同时通过顺序来区分，如[Start -> A -> B -> A -> End]，两个A不一样的
      */
     private final int ordinal;
 
     /**
-     * Name
+     * 名称
      */
     private final String name;
 
-    private GraphNodeId(int section, int ordinal, String name) {
+    private DAGNode(int section, int ordinal, String name) {
         this.section = section;
         this.ordinal = ordinal;
         this.name = name;
     }
 
-    public static GraphNodeId of(int section, int ordinal, String name) {
+    public static DAGNode of(int section, int ordinal, String name) {
         Assert.isTrue(section > 0, () -> "Graph node section must be greater than 0: " + section);
         Assert.isTrue(ordinal > 0, () -> "Graph node ordinal must be greater than 0: " + ordinal);
         Assert.hasText(name, () -> "Graph node name cannot be blank: " + name);
-        return new GraphNodeId(section, ordinal, name);
+        return new DAGNode(section, ordinal, name);
     }
 
     public int getSection() {
@@ -85,10 +92,10 @@ public final class GraphNodeId {
         if (obj == this) {
             return true;
         }
-        if (!(obj instanceof GraphNodeId)) {
+        if (!(obj instanceof DAGNode)) {
             return false;
         }
-        GraphNodeId other = (GraphNodeId) obj;
+        DAGNode other = (DAGNode) obj;
         return this.section == other.section
             && this.ordinal == other.ordinal
             && this.name.equals(other.name);
@@ -105,7 +112,7 @@ public final class GraphNodeId {
         return section + COLON + ordinal + COLON + name;
     }
 
-    public static GraphNodeId fromString(String str) {
+    public static DAGNode fromString(String str) {
         int pos = -1;
         int section = Integer.parseInt(str.substring(pos += 1, pos = str.indexOf(COLON, pos)));
         int ordinal = Integer.parseInt(str.substring(pos += 1, pos = str.indexOf(COLON, pos)));
@@ -116,7 +123,7 @@ public final class GraphNodeId {
         if (END.equals(section, ordinal, name)) {
             return END;
         }
-        return GraphNodeId.of(section, ordinal, name);
+        return DAGNode.of(section, ordinal, name);
     }
 
 }

@@ -16,7 +16,7 @@ import java.util.Objects;
 
 /**
  * Base node id
- * 
+ *
  * @author Ponfee
  * @param <T> the NodeId implementation sub class
  */

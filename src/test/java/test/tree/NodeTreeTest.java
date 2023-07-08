@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * 
+ *
  * @author Ponfee
  */
 public class NodeTreeTest {
@@ -35,9 +35,9 @@ public class NodeTreeTest {
         list.add(new PlainNode<>("400000", null, true, "nid400000"));
 
         // do mount first
-        TreeNode<String, String> subtree = TreeNodeBuilder.<String, String> newBuilder(
-            "400010", Comparator.comparing(node -> ThreadLocalRandom.current().nextInt(10))
-        ).pid("400000").enabled(true).build();
+        TreeNode<String, String> subtree = TreeNode.<String, String>builder("400010")
+            .siblingNodesComparator(Comparator.comparing(node -> ThreadLocalRandom.current().nextInt(10)))
+            .pid("400000").enabled(true).build();
 
         // do mount second
         subtree.mount(Arrays.asList(
@@ -53,10 +53,9 @@ public class NodeTreeTest {
         // do mount third
         SiblingNodesComparator.comparing(e -> e.getChildren().size(), false, true).thenComparing(TreeNode::getNid, false, true).get();
 
-        TreeNode<String, String> root = TreeNodeBuilder.<String, String>newBuilder(
-            TreeNode.DEFAULT_ROOT_ID, 
-            SiblingNodesComparator.comparing(e -> e.getChildren().size(),false, false).thenComparing(TreeNode::getNid, false, false).get()
-        ).build();
+        TreeNode<String, String> root = TreeNode.builder(TreeNode.DEFAULT_ROOT_ID)
+            .siblingNodesComparator(SiblingNodesComparator.comparing(e -> e.getChildren().size(),false, false).thenComparing(TreeNode::getNid, false, false).get())
+            .build();
 
         // do mount fourth
         root.mount(list); // mount
@@ -84,7 +83,7 @@ public class NodeTreeTest {
         list.add(new PlainNode<>("a", "b", true, "")); // 节点循环依赖
         list.add(new PlainNode<>("b", "a", true, ""));
 
-        TreeNode<String, String> root = TreeNodeBuilder.<String, String> newBuilder(TreeNode.DEFAULT_ROOT_ID).build();
+        TreeNode<String, String> root = TreeNode.<String, String> builder(TreeNode.DEFAULT_ROOT_ID).build();
         Assert.assertThrows(RuntimeException.class, ()->root.mount(list)) ;
         System.out.println(Jsons.toJson(root));
     }
@@ -94,7 +93,7 @@ public class NodeTreeTest {
         List<BaseNode<String, String>> list = new ArrayList<>();
         list.add(new PlainNode<>("100001", null, true, "nid100010"));
         Assert.assertThrows(IllegalArgumentException.class, () -> list.add(new PlainNode<>(null, "100001", true, "nid100010")));// 节点编号不能为空
-        TreeNode<String, String> root = TreeNodeBuilder.<String, String> newBuilder(TreeNode.DEFAULT_ROOT_ID).build();
+        TreeNode<String, String> root = TreeNode.<String, String> builder(TreeNode.DEFAULT_ROOT_ID).build();
         root.mount(list);
         System.out.println(Jsons.toJson(root));
     }
@@ -105,7 +104,7 @@ public class NodeTreeTest {
         list.add(new PlainNode<>("100000", "notfound", true, "nid100000")); // 无效的孤儿节点
         list.add(new PlainNode<>("200000", "notfound", true, "nid200000")); // 无效的孤儿节点
 
-        Assert.assertThrows(RuntimeException.class, () -> TreeNodeBuilder.<String, String>newBuilder(TreeNode.DEFAULT_ROOT_ID).build().mount(list));
+        Assert.assertThrows(RuntimeException.class, () -> TreeNode.<String, String>builder(TreeNode.DEFAULT_ROOT_ID).build().mount(list));
     }
 
     @Test
@@ -126,7 +125,7 @@ public class NodeTreeTest {
         list.add(new PlainNode<>("400000", null, true, random()));
 
         // do mount first
-        TreeNode<String, String> subtree = TreeNodeBuilder.<String, String> newBuilder("400010").pid("400000").build();
+        TreeNode<String, String> subtree = TreeNode.<String, String> builder("400010").pid("400000").build();
 
         // do mount second
         subtree.mount(Arrays.asList(
@@ -140,7 +139,7 @@ public class NodeTreeTest {
         list.add(new PlainNode<>("500011", "500010", true, random()));
 
         // do mount third
-        TreeNode<String, String> root = TreeNodeBuilder.<String, String>newBuilder(TreeNode.DEFAULT_ROOT_ID).build();
+        TreeNode<String, String> root = TreeNode.<String, String>builder(TreeNode.DEFAULT_ROOT_ID).build();
         System.out.println(Jsons.toJson(root));
 
         // do mount fouth
@@ -149,7 +148,7 @@ public class NodeTreeTest {
         System.out.println(Jsons.toJson(root.flatDFS()));
         System.out.println(Jsons.toJson(root.flatCFS()));
     }
-    
+
     private String random() {
         String[] s = new String[] { "a", null, "b", null, "c", "d", null };
         return s[ThreadLocalRandom.current().nextInt(s.length)];

@@ -16,7 +16,6 @@ import cn.ponfee.commons.schema.*;
 import cn.ponfee.commons.tree.NodePath;
 import cn.ponfee.commons.tree.PlainNode;
 import cn.ponfee.commons.tree.TreeNode;
-import cn.ponfee.commons.tree.TreeNodeBuilder;
 import cn.ponfee.commons.util.ObjectUtils;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.collections4.CollectionUtils;
@@ -179,7 +178,7 @@ public final class JsonExtractUtils {
             return null;
         }
 
-        TreeNode<JsonId, Null> root = TreeNodeBuilder.<JsonId, Null> newBuilder(
+        TreeNode<JsonId, Null> root = TreeNode.<JsonId, Null> builder(
             new JsonId(null, ROOT, null, 0)
         ).build();
 

@@ -6,7 +6,7 @@
 **                      \/          \/     \/                                   **
 \*                                                                              */
 
-package cn.ponfee.commons.graph;
+package cn.ponfee.commons.dag;
 
 import cn.ponfee.commons.base.Symbol.Char;
 import cn.ponfee.commons.base.Symbol.Str;
@@ -15,7 +15,6 @@ import cn.ponfee.commons.collect.Collects;
 import cn.ponfee.commons.tree.BaseNode;
 import cn.ponfee.commons.tree.PlainNode;
 import cn.ponfee.commons.tree.TreeNode;
-import cn.ponfee.commons.tree.TreeNodeBuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.graph.Graph;
 import com.google.common.graph.GraphBuilder;
@@ -35,9 +34,9 @@ import java.util.stream.Stream;
  * Parse DAG expression to graph
  *
  * <pre>
- * new DAGParser("(A->((B->C->D),(A->F))->(G,H,X)->J);(A->Y)").parse();
- *
- * (A->((B->C->D),(A->F))->(G,H,X)->J)
+ * 解析：new DAGParser("A->((B->C->D),(A->F))->(G,H,X)->J; A->Y").parse();
+ * 结果：
+ * [ A->((B->C->D),(A->F))->(G,H,X)->J ]
  *   <0:0:Start -> 1:1:A>
  *   <1:1:A -> 1:1:B>
  *   <1:1:A -> 1:2:A>
@@ -55,10 +54,21 @@ import java.util.stream.Stream;
  *   <1:1:X -> 1:1:J>
  *   <1:1:J -> 0:0:End>
  *
- * (A->Y)
+ * [ A->Y ]
  *   <0:0:Start -> 2:3:A>
  *   <2:3:A -> 2:1:Y>
  *   <2:1:Y -> 0:0:End>
+ *
+ * 无法用表达式来描述的场景：[Start->A, Start->B, A->C, A->D, B->D, B->E, C->End, D->End, E->End]
+ * ┌─────────────────────────────────┐
+ * │               ┌─────>C──┐       │
+ * │        ┌──>A──┤         │       │
+ * │        │      └──┐      │       │
+ * │ Start──┤         ├──>D──┼──>End │
+ * │        │      ┌──┘      │       │
+ * │        └──>B──┤         │       │
+ * │               └─────>E──┘       │
+ * └─────────────────────────────────┘
  * </pre>
  *
  * @author Ponfee
@@ -94,28 +104,28 @@ public class DAGExpressionParser {
         this.expression = text.trim();
     }
 
-    public Graph<GraphNodeId> parse() {
+    public Graph<DAGNode> parse() {
         List<String> sections = Stream.of(expression.split(";")).filter(StringUtils::isNotBlank).map(String::trim).collect(Collectors.toList());
         Assert.notEmpty(sections, () -> "Invalid split with ';' expression: " + expression);
 
-        ImmutableGraph.Builder<GraphNodeId> graphBuilder = GraphBuilder.directed().allowsSelfLoops(false).immutable();
+        ImmutableGraph.Builder<DAGNode> graphBuilder = GraphBuilder.directed().allowsSelfLoops(false).immutable();
         for (int i = 0, n = sections.size(); i < n; i++) {
             String section = sections.get(i);
             Assert.isTrue(checkParenthesis(section), () -> "Invalid expression parenthesis: " + section);
             String expr = completeParenthesis(section);
-            buildGraph(i + 1, Collections.singletonList(expr), graphBuilder, GraphNodeId.START, GraphNodeId.END);
+            buildGraph(i + 1, Collections.singletonList(expr), graphBuilder, DAGNode.START, DAGNode.END);
         }
 
-        ImmutableGraph<GraphNodeId> graph = graphBuilder.build();
+        ImmutableGraph<DAGNode> graph = graphBuilder.build();
         Assert.state(graph.nodes().size() > 2, () -> "Expression not any name: " + expression);
-        Assert.state(graph.successors(GraphNodeId.START).stream().noneMatch(GraphNodeId::isEnd), () -> "Expression name cannot direct end: " + expression);
-        Assert.state(graph.predecessors(GraphNodeId.END).stream().noneMatch(GraphNodeId::isStart), () -> "Expression name cannot direct start: " + expression);
+        Assert.state(graph.successors(DAGNode.START).stream().noneMatch(DAGNode::isEnd), () -> "Expression name cannot direct end: " + expression);
+        Assert.state(graph.predecessors(DAGNode.END).stream().noneMatch(DAGNode::isStart), () -> "Expression name cannot direct start: " + expression);
         Assert.state(!Graphs.hasCycle(graph), () -> "Expression name section has cycle: " + expression);
         return graph;
     }
 
     private void buildGraph(int section, List<String> expressions,
-                            ImmutableGraph.Builder<GraphNodeId> graphBuilder, GraphNodeId prev, GraphNodeId next) {
+                            ImmutableGraph.Builder<DAGNode> graphBuilder, DAGNode prev, DAGNode next) {
         // 划分第一个stage
         Tuple2<List<String>, List<String>> tuple = divideFirstStage(expressions);
         if (tuple == null) {
@@ -128,7 +138,7 @@ public class DAGExpressionParser {
             Assert.notEmpty(list, () -> "Invalid expression: " + String.join("", expressions));
             if (list.size() == 1) {
                 String name = list.get(0);
-                GraphNodeId node = GraphNodeId.of(section, increment(name), name);
+                DAGNode node = DAGNode.of(section, increment(name), name);
                 graphBuilder.putEdge(prev, node);
                 if (remains == null) {
                     graphBuilder.putEdge(node, next);
@@ -240,7 +250,7 @@ public class DAGExpressionParser {
         buildTree(groups, TreeNodeId.ROOT_ID, 1, 0, nodes);
 
         // create a dummy root node
-        TreeNode<TreeNodeId, Object> dummyRoot = TreeNodeBuilder.newBuilder(TreeNodeId.ROOT_ID).build();
+        TreeNode<TreeNodeId, Object> dummyRoot = TreeNode.builder(TreeNodeId.ROOT_ID).build();
 
         // mount nodes
         dummyRoot.mount(nodes);
@@ -442,9 +452,9 @@ public class DAGExpressionParser {
         private final int close;
 
         private PartitionIdentityKey(String expr, int open, int close) {
-            Assert.hasText(expr, "Partition expression cannot be blank: " + expr);
-            Assert.isTrue(open > -1, "Partition key open must be greater than -1: " + open);
-            Assert.isTrue(close > 0, "Partition key close must be greater than 0: " + close);
+            Assert.hasText(expr, () -> "Partition expression cannot be blank: " + expr);
+            Assert.isTrue(open > -1, () -> "Partition key open must be greater than -1: " + open);
+            Assert.isTrue(close > 0, () -> "Partition key close must be greater than 0: " + close);
             this.expr = expr;
             this.open = open;
             this.close = close;

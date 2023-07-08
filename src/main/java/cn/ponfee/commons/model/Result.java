@@ -13,16 +13,15 @@ import java.util.function.Function;
 
 /**
  * Representing the result-data structure
- * 
+ *
  * @see org.springframework.http.ResponseEntity#status(org.springframework.http.HttpStatus)
- * 
+ *
  * @param <T> the data type
  * @author Ponfee
  */
 public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializable {
 
     private static final long serialVersionUID = -2804195259517755050L;
-    public static final Result<Void> SUCCESS = new Success();
 
     private Integer    code; // 状态码
     private boolean success; // 是否成功
@@ -61,16 +60,16 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
 
     /**
      * Returns success 200 code
-     * 
+     *
      * @return Result success object
      */
     public static Result<Void> success() {
-        return SUCCESS;
+        return Success.INSTANCE;
     }
 
     /**
      * Returns success 200 code
-     * 
+     *
      * @param data the data
      * @param <T>  the data type
      * @return Result success object
@@ -121,11 +120,11 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
     }
 
     public static <T> Result<T> assertAffectedRows(int actualAffectedRows, int exceptAffectedRows) {
-        return actualAffectedRows == exceptAffectedRows ? (Result<T>) SUCCESS : failure(ResultCode.OPS_CONFLICT);
+        return actualAffectedRows == exceptAffectedRows ? (Result<T>) Success.INSTANCE : failure(ResultCode.OPS_CONFLICT);
     }
 
     public static <T> Result<T> assertOperatedState(boolean state) {
-        return state ? (Result<T>) SUCCESS : failure(ResultCode.OPS_CONFLICT);
+        return state ? (Result<T>) Success.INSTANCE : failure(ResultCode.OPS_CONFLICT);
     }
 
     // -----------------------------------------------getter/setter
@@ -179,6 +178,7 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
         private static final long serialVersionUID = 6740650053476768729L;
         private static final int CODE = ResultCode.OK.getCode();
         private static final String MSG = "OK";
+        private static final Result<Void> INSTANCE = new Success();
 
         private Success() {
             super(CODE, true, MSG, null);
@@ -200,7 +200,7 @@ public class Result<T> extends ToJsonString implements CodeMsg, java.io.Serializ
         }
 
         private Object readResolve() {
-            return SUCCESS;
+            return INSTANCE;
         }
     }
 

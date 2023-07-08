@@ -65,7 +65,7 @@ public class BinaryTreePrinterBuilder<T> {
 
     public BinaryTreePrinter<T> build() {
         return new BinaryTreePrinter<>(
-            output, nodeLabel, leftChild, rightChild, 
+            output, nodeLabel, leftChild, rightChild,
             branch, directed, nodeSpace, treeSpace
         );
     }

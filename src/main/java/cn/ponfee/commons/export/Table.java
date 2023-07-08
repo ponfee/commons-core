@@ -10,7 +10,7 @@ package cn.ponfee.commons.export;
 
 import cn.ponfee.commons.tree.FlatNode;
 import cn.ponfee.commons.tree.PlainNode;
-import cn.ponfee.commons.tree.TreeNodeBuilder;
+import cn.ponfee.commons.tree.TreeNode;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.Serializable;
@@ -23,7 +23,7 @@ import java.util.function.Function;
 
 /**
  * 表格
- * 
+ *
  * @author Ponfee
  */
 public class Table<E> implements Serializable {
@@ -42,9 +42,9 @@ public class Table<E> implements Serializable {
     private volatile boolean empty = true;
     private volatile boolean end = false;
 
-    public Table(List<FlatNode<Integer, Thead>> thead, 
+    public Table(List<FlatNode<Integer, Thead>> thead,
                  Function<E, Object[]> converter,
-                 String caption, Object[] tfoot, String comment, 
+                 String caption, Object[] tfoot, String comment,
                  Map<CellStyleOptions, Object> options) {
         this.thead = thead;
         this.converter = converter;
@@ -60,7 +60,7 @@ public class Table<E> implements Serializable {
 
     public Table(List<PlainNode<Integer, Thead>> list,
                  Function<E, Object[]> converter) {
-        this.thead = TreeNodeBuilder.<Integer, Thead> newBuilder(ROOT_PID).build().mount(list).flatCFS();
+        this.thead = TreeNode.<Integer, Thead> builder(ROOT_PID).build().mount(list).flatCFS();
         this.converter = converter;
     }
 
@@ -73,7 +73,7 @@ public class Table<E> implements Serializable {
         for (int i = 0; i < names.length; i++) {
             list.add(new PlainNode<>(i + 1, ROOT_PID, new Thead(names[i])));
         }
-        this.thead = TreeNodeBuilder.<Integer, Thead> newBuilder(ROOT_PID).build().mount(list).flatCFS();
+        this.thead = TreeNode.<Integer, Thead> builder(ROOT_PID).build().mount(list).flatCFS();
         this.converter = converter;
     }
 
