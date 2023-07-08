@@ -46,8 +46,8 @@ public class DatesTest {
         Assert.assertTrue(isValidDate(str, DATETIME_PATTERN));
         Assert.assertFalse(isValidDate("2020-xx-00 00:00:00", DATETIME_PATTERN));
 
-        Assert.assertTrue(isZeroDate(toDate(ZERO_DATE_TIME)));
-        Assert.assertTrue(isZeroDate(toDate(ZERO_DATE_TIME, DATETIME_PATTERN)));
+        Assert.assertTrue(isZeroDate(toDate(ZERO_DATETIME)));
+        Assert.assertTrue(isZeroDate(toDate(ZERO_DATETIME, DATETIME_PATTERN)));
         Assert.assertEquals(19, now(DATETIME_PATTERN).length());
         Assert.assertEquals(str, format(toDate(str), DATEFULL_PATTERN));
         Assert.assertEquals(str, format(toDate(str, DATEFULL_PATTERN), DATEFULL_PATTERN));
@@ -116,7 +116,7 @@ public class DatesTest {
 
     @Test
     public void testDateFormat() throws ParseException {
-        String json = "{\"createTime\":\"" + Dates.ZERO_DATE_TIME + "\"}";
+        String json = "{\"createTime\":\"" + Dates.ZERO_DATETIME + "\"}";
        DateEntity dateEntity = Jsons.fromJson(json,DateEntity.class);
 
 
@@ -136,8 +136,8 @@ public class DatesTest {
         Date zeroDate = new Date(time);
         Assert.assertEquals(zeroDate, dateEntity.getCreateTime());
         Assert.assertEquals(zeroDate, new Date(zeroDate.getTime()));
-        Assert.assertEquals(zeroDate, DateUtils.parseDate(Dates.ZERO_DATE_TIME, Dates.DATETIME_PATTERN));
-        Assert.assertEquals(zeroDate, DATE_FORMAT.parse(Dates.ZERO_DATE_TIME));
+        Assert.assertEquals(zeroDate, DateUtils.parseDate(Dates.ZERO_DATETIME, Dates.DATETIME_PATTERN));
+        Assert.assertEquals(zeroDate, DATE_FORMAT.parse(Dates.ZERO_DATETIME));
         //Assert.assertEquals(time, Dates.toDate(zeroDateStr, Dates.DEFAULT_DATETIME_FORMAT).getTime()); error
     }
 
