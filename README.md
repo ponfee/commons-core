@@ -38,7 +38,7 @@ A commons java tool lib
 | exception    | 异常工具类                                                                                                 |
 | export       | 数据导出为Excel(支持复杂表头及切分多个文件)、HTML(支持复杂表头)、CSV(支持切分多个文件)、Console(类似SQL命令行查询结果)  |
 | extract      | 数据文件导入：支持XLS/XLSX/CSV格式的文件，支持大文件                                                            |
-| http         | HTTP工具类(轻量级，不依赖第三方jar包)                                                                         |
+| http         | HTTP工具类(轻量级，不依赖第三方库)                                                                            |
 | io           | IO操作工具类(如文件UTF编码BOM头处理、文件编码探测、文件编码转换及内容替换、数字格式化为KB/MB/GB/TB/PB、Gzip等)         |
 | jce          | 加解密工具(对称加解密、非对称加解密、签名/验签、数字信封、ECC算法、哈希算法、国密算法、根证创建与CA证书签发、密码处理等)    |
 | model        | 数据模型相关公用类(带类型的Map操作、定义返回结果的结构体、分页实体等)                                               |

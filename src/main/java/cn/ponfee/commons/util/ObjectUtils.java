@@ -22,7 +22,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.util.*;
-import java.util.function.Predicate;
 
 import static cn.ponfee.commons.collect.Comparators.*;
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
@@ -91,10 +90,6 @@ public final class ObjectUtils {
     @SuppressWarnings("unchecked")
     public static <T> Class<T> typeOf(T obj) {
         return obj != null ? (Class<T>) obj.getClass() : null;
-    }
-
-    public static <T> Predicate<T> not(Predicate<T> target) {
-        return target.negate();
     }
 
     /**

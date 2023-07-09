@@ -8,6 +8,8 @@
 
 package cn.ponfee.commons.base;
 
+import java.util.function.Predicate;
+
 /**
  * Representing a boolean status
  *
@@ -196,4 +198,7 @@ public enum Predicates {
         return Y.equals(state) ? Y : N;
     }
 
+    public static <T> Predicate<T> not(Predicate<T> target) {
+        return target.negate();
+    }
 }

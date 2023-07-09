@@ -8,8 +8,8 @@
 
 package cn.ponfee.commons.collect;
 
+import cn.ponfee.commons.base.Predicates;
 import cn.ponfee.commons.math.Numbers;
-import cn.ponfee.commons.util.ObjectUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.util.Assert;
@@ -169,7 +169,7 @@ public final class Collects {
         }
         List<T> res = new ArrayList<>(max + (min >> 1));
         res.addAll(coll1);
-        coll2.stream().filter(ObjectUtils.not(coll1::contains)).forEach(res::add);
+        coll2.stream().filter(Predicates.not(coll1::contains)).forEach(res::add);
         return res;
     }
 
@@ -183,8 +183,8 @@ public final class Collects {
      */
     public static <T> List<T> different(List<T> list1, List<T> list2) {
         List<T> res = new ArrayList<>();
-        list1.stream().filter(ObjectUtils.not(list2::contains)).forEach(res::add);
-        list2.stream().filter(ObjectUtils.not(list1::contains)).forEach(res::add);
+        list1.stream().filter(Predicates.not(list2::contains)).forEach(res::add);
+        list2.stream().filter(Predicates.not(list1::contains)).forEach(res::add);
         return res;
     }
 
@@ -197,8 +197,8 @@ public final class Collects {
      */
     public static <T> Set<T> different(Set<T> set1, Set<T> set2) {
         Set<T> res = new HashSet<>();
-        set1.stream().filter(ObjectUtils.not(set2::contains)).forEach(res::add);
-        set2.stream().filter(ObjectUtils.not(set1::contains)).forEach(res::add);
+        set1.stream().filter(Predicates.not(set2::contains)).forEach(res::add);
+        set2.stream().filter(Predicates.not(set1::contains)).forEach(res::add);
         return res;
     }
 
