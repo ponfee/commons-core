@@ -38,7 +38,7 @@ import java.util.Objects;
 // hashCode()/equals() extends ImmutableArrayList
 @JSONType(mappingTo = NodePath.FastjsonDeserializeMarker.class) // fastjson
 @JsonDeserialize(using = NodePath.JacksonDeserializer.class)    // jackson
-public final class NodePath<T extends Serializable & Comparable<? super T>>
+public final class NodePath<T extends Serializable & Comparable<T>>
     extends ImmutableArrayList<T> implements Comparable<NodePath<T>> {
 
     private static final long serialVersionUID = 9090552044337950223L;
@@ -109,7 +109,7 @@ public final class NodePath<T extends Serializable & Comparable<? super T>>
      *
      * @param <T>
      */
-    public static class FastjsonDeserializer<T extends Serializable & Comparable<? super T>> implements ObjectDeserializer {
+    public static class FastjsonDeserializer<T extends Serializable & Comparable<T>> implements ObjectDeserializer {
         @Override
         @SuppressWarnings("unchecked")
         public NodePath<T> deserialze(DefaultJSONParser parser, Type type, Object fieldName) {
@@ -128,7 +128,7 @@ public final class NodePath<T extends Serializable & Comparable<? super T>>
 
     // -----------------------------------------------------custom jackson deserialize
 
-    public static class JacksonDeserializer<T extends Serializable & Comparable<? super T>> extends JsonDeserializer<NodePath<T>> {
+    public static class JacksonDeserializer<T extends Serializable & Comparable<T>> extends JsonDeserializer<NodePath<T>> {
         @Override
         @SuppressWarnings("unchecked")
         public NodePath<T> deserialize(JsonParser p, DeserializationContext ctx) throws IOException {

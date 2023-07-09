@@ -192,10 +192,10 @@ public class NodePathTest {
         }
     }
 
-    public static class NodePathBean2<T extends Serializable & Comparable<? super T>> implements java.io.Serializable {
+    public static class NodePathBean2<T extends Serializable & Comparable<T>> implements java.io.Serializable {
         private static final long serialVersionUID = 1L;
         private int id;
-        private NodePath<T> path; // 
+        private NodePath<T> path; //
 
         public int getId() {
             return id;
