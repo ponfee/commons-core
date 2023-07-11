@@ -8,7 +8,7 @@
 
 package cn.ponfee.commons.concurrent;
 
-import cn.ponfee.commons.exception.Throwables;
+import cn.ponfee.commons.exception.Throwables.ThrowingRunnable;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -40,7 +40,7 @@ public class SingleThreadShutdownHook {
         @Override
         public void run() {
             synchronized (LOCK) {
-                hooks.forEach(Throwables::caught);
+                hooks.forEach(e -> ThrowingRunnable.caught(e::run));
             }
         }
     }

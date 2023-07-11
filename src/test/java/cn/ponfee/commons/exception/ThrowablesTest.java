@@ -1,5 +1,9 @@
 package cn.ponfee.commons.exception;
 
+import cn.ponfee.commons.exception.Throwables.ThrowingConsumer;
+import cn.ponfee.commons.exception.Throwables.ThrowingFunction;
+import cn.ponfee.commons.exception.Throwables.ThrowingRunnable;
+import cn.ponfee.commons.exception.Throwables.ThrowingSupplier;
 import cn.ponfee.commons.util.ImageUtils;
 import org.junit.Test;
 
@@ -12,19 +16,19 @@ public class ThrowablesTest {
 
     @Test
     public void test() {
-        Throwables.caught(ThrowablesTest::get0);
+        ThrowingRunnable.caught(ThrowablesTest::get0);
         System.out.println("---------------\n");
 
-        CheckedThrowing.caught(ThrowablesTest::get1);
+        ThrowingRunnable.caught(ThrowablesTest::get1);
         System.out.println("---------------\n");
 
-        String caught = CheckedThrowing.caught(ThrowablesTest::get2);
+        String caught = ThrowingSupplier.caught(ThrowablesTest::get2);
         System.out.println("---------------" + caught + "\n");
 
-        CheckedThrowing.caught(ThrowablesTest::get3, "xxx");
+        ThrowingConsumer.caught(ThrowablesTest::get3, "xxx");
         System.out.println("---------------\n");
 
-        String yyy = CheckedThrowing.caught(ThrowablesTest::get4, "yyy");
+        String yyy = ThrowingFunction.caught(ThrowablesTest::get4, "yyy");
         System.out.println("---------------" + yyy + "\n");
     }
 

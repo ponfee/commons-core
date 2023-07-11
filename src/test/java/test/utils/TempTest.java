@@ -1,20 +1,5 @@
 package test.utils;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.util.Calendar;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
-
-import org.apache.commons.codec.binary.Hex;
-import org.joda.time.DateTime;
-import org.junit.Assert;
-
-import com.google.common.base.Stopwatch;
-
 import cn.ponfee.commons.jce.digest.DigestUtils;
 import cn.ponfee.commons.reflect.ClassUtils;
 import cn.ponfee.commons.reflect.Fields;
@@ -23,6 +8,19 @@ import cn.ponfee.commons.resource.ResourceScanner;
 import cn.ponfee.commons.util.Bytes;
 import cn.ponfee.commons.util.ObjectUtils;
 import cn.ponfee.commons.util.SecureRandoms;
+import com.google.common.base.Stopwatch;
+import org.apache.commons.codec.binary.Hex;
+import org.joda.time.DateTime;
+import org.junit.Assert;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.util.Calendar;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class TempTest {
 
@@ -35,7 +33,7 @@ public class TempTest {
         com.google.common.io.Files.touch(new File("d:/12345.xlsx"));
         com.google.common.io.Files.touch(new File("d:/xampp"));
     }
-    
+
     @org.junit.Test
     public void test2() {
         System.out.println(DigestUtils.sha256Hex(DigestUtils.sha256("cn.ponfee.commons.jce.hash.HashUtils".getBytes())));
@@ -51,10 +49,10 @@ public class TempTest {
         chars[0] = '1';
         System.out.println(str2);
     }
-    
+
     @org.junit.Test
     public void test4() {
-        for (Class<?> clazz : new ResourceScanner("code/ponfee/commons/").scan4class()) {
+        for (Class<?> clazz : new ResourceScanner("/cn/ponfee/commons/base/**/*.class").scan4class()) {
             for (Method method : clazz.getMethods()) {
                 try {
                     Class<?> c = GenericUtils.getActualArgTypeArgument(method, 0);
@@ -66,14 +64,49 @@ public class TempTest {
             }
         }
     }
-    
+
+    @org.junit.Test
+    public void test41() {
+        //new ResourceScanner("/**/rmid_fr.properties").scan4text().forEach((k, v) -> System.out.println(k + " -> " + v));
+        //new ResourceScanner("log4j2.xml.template").scan4text().forEach((k, v) -> System.out.println(k + " -> " + v));
+        //new ResourceScanner("/cn/ponfee/commons/jce/*.class").scan4binary().forEach((k, v) -> System.out.println(k + " -> " + v));
+        //new ResourceScanner("/cn/ponfee/commons/jce/**/*.class").scan4binary().forEach((k, v) -> System.out.println(k + " -> " + v));
+        //new ResourceScanner("/*.template").scan4text().forEach((k, v) -> System.out.println(k + " -> " + v));
+        //new ResourceScanner("/log4j2.xml.template").scan4text().forEach((k, v) -> System.out.println(k + " -> " + v));
+        //new ResourceScanner("log4j2.xml.template").scan4text().forEach((k, v) -> System.out.println(k + " -> " + v));
+        //new ResourceScanner("/**/*.xml").scan4text().forEach((k, v) -> System.out.println(k + " -> " + v));
+        //new ResourceScanner("/cn/ponfee/commons/base/**/*.class").scan4class().forEach(System.out::println);
+        //new ResourceScanner("/cn/ponfee/commons/**/*.class").scan4class(null, new Class[] {Service.class}).forEach(System.out::println);
+        //new ResourceScanner("/cn/ponfee/commons/**/*.class").scan4class(null, new Class[] {Component.class}).forEach(System.out::println);
+        //new ResourceScanner("/cn/ponfee/commons/**/*.class").scan4class(new Class[]{Tuple.class}, null).forEach(System.out::println);
+
+
+
+        //new ResourceScanner("/*.template").scan4text().forEach((k, v) -> System.out.println(k + " -> " + v));
+        //new ResourceScanner("/log4j2.xml.template").scan4text().forEach((k, v) -> System.out.println(k + " -> " + v));
+        //new ResourceScanner("log4j2.xml.template").scan4text().forEach((k, v) -> System.out.println(k + " -> " + v));
+        //new ResourceScanner("/**/tika*.xml").scan4text().forEach((k, v) -> System.out.println(k + " -> " + v));
+        //new ResourceScanner("/cn/ponfee/commons/jce/*.class").scan4binary().forEach((k, v) -> System.out.println(k + " -> " + v));
+        //new ResourceScanner("/cn/ponfee/commons/jce/**/*.class").scan4binary().forEach((k, v) -> System.out.println(k + " -> " + v));
+
+        //new ResourceScanner("/cn/ponfee/commons/base/**/*.class").scan4class().forEach(System.out::println);
+        //new ResourceScanner("/cn/ponfee/commons/**/*.class").scan4class(null, new Class[] {Service.class}).forEach(System.out::println);
+        //new ResourceScanner("/cn/ponfee/commons/**/*.class").scan4class(null, new Class[] {Component.class}).forEach(System.out::println);
+        //new ResourceScanner("/cn/ponfee/commons/**/*.class").scan4class(new Class[]{Tuple.class}, null).forEach(System.out::println);
+
+        //new ResourceScanner("*").scan4binary().entrySet().stream().filter(e -> e.getKey().endsWith(".xml")).forEach(e -> System.out.println(e.getKey() + " -> " + e.getValue()));
+        //new ResourceScanner("/*.xml").scan4binary().entrySet().stream().filter(e -> e.getKey().endsWith(".xml")).forEach(e -> System.out.println(e.getKey() + " -> " + e.getValue()));
+        //new ResourceScanner("**/*.xml").scan4binary().entrySet().stream().filter(e -> e.getKey().endsWith(".xml")).forEach(e -> System.out.println(e.getKey() + " -> " + e.getValue()));
+        new ResourceScanner("/**/*.xml").scan4binary().entrySet().stream().filter(e -> e.getKey().endsWith(".xml")).forEach(e -> System.out.println(e.getKey() + " -> " + e.getValue()));
+    }
+
     @org.junit.Test
     public void test5() {
         for (Method method : ClassUtils.class.getMethods()) {
             System.out.println(ClassUtils.getMethodSignature(method) + " --> "+method.toGenericString());
         }
     }
-    
+
     @org.junit.Test
     public void test6() {
         byte[] bytes = SecureRandoms.nextBytes(32);
@@ -95,12 +128,12 @@ public class TempTest {
         }
         System.out.println(System.currentTimeMillis()-start);
     }
-    
+
     @org.junit.Test
     public void test8() {
         System.out.println(new DateTime().millisOfDay().withMinimumValue());
         System.out.println(new DateTime().withTimeAtStartOfDay());
-        
+
         Calendar calendar = Calendar.getInstance();
         DateTime dateTime = new DateTime(2000, 1, 1, 0, 0, 0, 0);
         System.out.println(dateTime.plusDays(45).plusMonths(1).dayOfWeek()
@@ -200,7 +233,7 @@ public class TempTest {
                (byte) (most  >>> 40), (byte) (most  >>> 32),
                (byte) (most  >>> 24), (byte) (most  >>> 16),
                (byte) (most  >>>  8), (byte) (most        ),
-    
+
                (byte) (least >>> 56), (byte) (least >>> 48),
                (byte) (least >>> 40), (byte) (least >>> 32),
                (byte) (least >>> 24), (byte) (least >>> 16),
@@ -209,7 +242,7 @@ public class TempTest {
         }
         System.out.println("uuid32: " + watch.stop());
     }
-    
+
     @org.junit.Test
     public void test11() {
         int value = tableSizeFor(ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE));
@@ -221,7 +254,7 @@ public class TempTest {
         System.out.println(Bytes.toBinary(Bytes.toBytes(MAXIMUM_CAPACITY)));
         System.out.println(Bytes.toBinary(Bytes.toBytes(Integer.MAX_VALUE)));
     }
-    
+
     static final int MAXIMUM_CAPACITY = 1 << 30;
     static final int tableSizeFor(int cap) {
         int n = cap - 1;
@@ -232,8 +265,8 @@ public class TempTest {
         n |= n >>> 16;
         return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
     }
-    
-    
+
+
     public static byte[] fromShort(short value) {
         return ByteBuffer.allocate(Short.BYTES).putShort(value).array();
     }

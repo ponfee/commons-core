@@ -9,7 +9,7 @@
 package cn.ponfee.commons.data;
 
 import cn.ponfee.commons.data.lookup.MultipleDataSourceContext;
-import cn.ponfee.commons.exception.CheckedThrowing.ThrowingCallable;
+import cn.ponfee.commons.exception.Throwables.ThrowingCallable;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +24,7 @@ import java.util.concurrent.Callable;
 
 /**
  * 多数据源切换，用于Spring XML配置文件形式的切面拦截多数据源切换处理
- * 
+ *
  * @author Ponfee
  */
 public class MultipleDataSourceAdvisor implements MethodInterceptor {
@@ -33,7 +33,7 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
 
     /**
      * 基于Spring XML &lt;aop:aspect /&gt;的配置方式
-     * 
+     *
      * <pre>
      * {@code
      *   <!-- aop:advisor必须在aop:aspect前面 -->
@@ -46,26 +46,26 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
      *     </aop:aspect>
      *   </aop:config>
      * }
-     * 
+     *
      *  1、transaction-xml：<aop:config proxy-target-class="true">
      *    MultipleDataSourceAdvisor.doAround：数据源切换正常，事务正常√
-     *  
+     *
      *  2、transaction-xml：<aop:config proxy-target-class="false">
      *    MultipleDataSourceAdvisor.doAround：数据源切换无效，事务正常×
-     *  
+     *
      *  3、<tx:annotation-driven proxy-target-class="true">，<aop:config proxy-target-class="true">
      *    MultipleDataSourceAdvisor.doAround：数据源切换正常，事务正常√
-     *  
+     *
      *  4、<tx:annotation-driven proxy-target-class="true">，<aop:config proxy-target-class="false">
      *    MultipleDataSourceAdvisor.doAround：数据源切换正常，事务正常√
-     *  
+     *
      *  5、<tx:annotation-driven proxy-target-class="false">，<aop:config proxy-target-class="true">
      *    MultipleDataSourceAdvisor.doAround：数据源切换正常，事务正常√
-     *  
+     *
      *  6、<tx:annotation-driven proxy-target-class="false">，<aop:config proxy-target-class="false">
      *    MultipleDataSourceAdvisor.doAround：数据源切换无效，事务正常×
      * </pre>
-     * 
+     *
      * @param pjp the ProceedingJoinPoint
      * @return target method return result
      * @throws Throwable if occur error
@@ -79,8 +79,8 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
         System.out.println(pjp.getTarget().getClass().getMethod(ms.getName(), ms.getParameterTypes()));*/
 
         return around(
-            ((MethodSignature) pjp.getSignature()).getMethod(), 
-            pjp.getArgs(), 
+            ((MethodSignature) pjp.getSignature()).getMethod(),
+            pjp.getArgs(),
             ThrowingCallable.checked(pjp::proceed)
         );
     }
@@ -115,11 +115,11 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
      *  6、<tx:annotation-driven proxy-target-class="false">，<aop:config proxy-target-class="false">
      *    MultipleDataSourceAdvisor.invoke  ：数据源切换无效，事务无效×
      * </pre>
-     * 
+     *
      * @param invocation the MethodInvocation
      * @return target method return result
      * @throws Throwable if occur error
-     * 
+     *
      * @deprecated 此方式事务失效（去掉此数据源切面，则事务正常）
      */
     @Override @Deprecated
@@ -133,7 +133,7 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
         return around(method, args, method.getAnnotation(DataSourceNaming.class), call);
     }
 
-    static Object around(Method method, Object[] args, DataSourceNaming dsn, 
+    static Object around(Method method, Object[] args, DataSourceNaming dsn,
                          Callable<Object> call) throws Throwable {
         String name = null;
         if (dsn != null && StringUtils.isNotBlank(dsn.value())) {

@@ -18,7 +18,7 @@ import org.springframework.util.Assert;
 
 import java.util.function.Consumer;
 
-import static cn.ponfee.commons.exception.CheckedThrowing.ThrowingSupplier;
+import static cn.ponfee.commons.exception.Throwables.ThrowingSupplier;
 
 /**
  * Spring transaction utility.

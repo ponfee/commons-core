@@ -23,9 +23,9 @@ import java.util.regex.Pattern;
 /**
  * 资源文件加载门面类
  * <pre>
- *  Class.getResourceAsStream(path)：以'/'开头表示classpath根路径（内部还是由ClassLoader获取），不以'/'开头表示相对此类的路径
- *  ClassLoader.getResourceAsStream(path)：从classpath根路径下获取（path不能以'/'开头）
- *  ServletContext.getResourceAsStream(path)：从WebAPP根目录下取资源，'/'开头和不以'/'开头情况一样
+ *  {@link Class#getResourceAsStream(String)           } ：path不以“/”开头则从此类所在的jar包下获取，以“/”开头则从classpath根下获取(内部还是由ClassLoader获取资源)
+ *  {@link ClassLoader#getResourceAsStream(String)     } ：从classpath根下获取(path不能以“/”开头，否则报错)
+ *  {@link ServletContext#getResourceAsStream(String)  } ：从WebAPP根目录下取资源，'/'开头和不以'/'开头情况一样
  * </pre>
  *
  * <ul>
@@ -108,7 +108,7 @@ public final class ResourceLoaderFacade {
 
     /**
      * 路径默认为空串
-     * 
+     *
      * @param extensions
      * @param contextClass
      * @return
