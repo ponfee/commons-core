@@ -69,8 +69,8 @@ public class TempTest {
     public void test41() {
         //new ResourceScanner("/**/rmid_fr.properties").scan4text().forEach((k, v) -> System.out.println(k + " -> " + v));
         //new ResourceScanner("log4j2.xml.template").scan4text().forEach((k, v) -> System.out.println(k + " -> " + v));
-        //new ResourceScanner("/cn/ponfee/commons/jce/*.class").scan4binary().forEach((k, v) -> System.out.println(k + " -> " + v));
-        //new ResourceScanner("/cn/ponfee/commons/jce/**/*.class").scan4binary().forEach((k, v) -> System.out.println(k + " -> " + v));
+        //new ResourceScanner("/cn/ponfee/commons/jce/*.class").scan4bytes().forEach((k, v) -> System.out.println(k + " -> " + v));
+        //new ResourceScanner("/cn/ponfee/commons/jce/**/*.class").scan4bytes().forEach((k, v) -> System.out.println(k + " -> " + v));
         //new ResourceScanner("/*.template").scan4text().forEach((k, v) -> System.out.println(k + " -> " + v));
         //new ResourceScanner("/log4j2.xml.template").scan4text().forEach((k, v) -> System.out.println(k + " -> " + v));
         //new ResourceScanner("log4j2.xml.template").scan4text().forEach((k, v) -> System.out.println(k + " -> " + v));
@@ -80,24 +80,22 @@ public class TempTest {
         //new ResourceScanner("/cn/ponfee/commons/**/*.class").scan4class(null, new Class[] {Component.class}).forEach(System.out::println);
         //new ResourceScanner("/cn/ponfee/commons/**/*.class").scan4class(new Class[]{Tuple.class}, null).forEach(System.out::println);
 
-
-
         //new ResourceScanner("/*.template").scan4text().forEach((k, v) -> System.out.println(k + " -> " + v));
         //new ResourceScanner("/log4j2.xml.template").scan4text().forEach((k, v) -> System.out.println(k + " -> " + v));
         //new ResourceScanner("log4j2.xml.template").scan4text().forEach((k, v) -> System.out.println(k + " -> " + v));
         //new ResourceScanner("/**/tika*.xml").scan4text().forEach((k, v) -> System.out.println(k + " -> " + v));
-        //new ResourceScanner("/cn/ponfee/commons/jce/*.class").scan4binary().forEach((k, v) -> System.out.println(k + " -> " + v));
-        //new ResourceScanner("/cn/ponfee/commons/jce/**/*.class").scan4binary().forEach((k, v) -> System.out.println(k + " -> " + v));
+        //new ResourceScanner("/cn/ponfee/commons/jce/*.class").scan4bytes().forEach((k, v) -> System.out.println(k + " -> " + v));
+        //new ResourceScanner("/cn/ponfee/commons/jce/**/*.class").scan4bytes().forEach((k, v) -> System.out.println(k + " -> " + v));
 
         //new ResourceScanner("/cn/ponfee/commons/base/**/*.class").scan4class().forEach(System.out::println);
         //new ResourceScanner("/cn/ponfee/commons/**/*.class").scan4class(null, new Class[] {Service.class}).forEach(System.out::println);
         //new ResourceScanner("/cn/ponfee/commons/**/*.class").scan4class(null, new Class[] {Component.class}).forEach(System.out::println);
         //new ResourceScanner("/cn/ponfee/commons/**/*.class").scan4class(new Class[]{Tuple.class}, null).forEach(System.out::println);
 
-        //new ResourceScanner("*").scan4binary().entrySet().stream().filter(e -> e.getKey().endsWith(".xml")).forEach(e -> System.out.println(e.getKey() + " -> " + e.getValue()));
-        //new ResourceScanner("/*.xml").scan4binary().entrySet().stream().filter(e -> e.getKey().endsWith(".xml")).forEach(e -> System.out.println(e.getKey() + " -> " + e.getValue()));
-        //new ResourceScanner("**/*.xml").scan4binary().entrySet().stream().filter(e -> e.getKey().endsWith(".xml")).forEach(e -> System.out.println(e.getKey() + " -> " + e.getValue()));
-        new ResourceScanner("/**/*.xml").scan4binary().entrySet().stream().filter(e -> e.getKey().endsWith(".xml")).forEach(e -> System.out.println(e.getKey() + " -> " + e.getValue()));
+        //new ResourceScanner("*").scan4bytes().entrySet().stream().filter(e -> e.getKey().endsWith(".xml")).forEach(e -> System.out.println(e.getKey() + " -> " + e.getValue()));
+        //new ResourceScanner("/*.xml").scan4bytes().entrySet().stream().filter(e -> e.getKey().endsWith(".xml")).forEach(e -> System.out.println(e.getKey() + " -> " + e.getValue()));
+        //new ResourceScanner("**/*.xml").scan4bytes().entrySet().stream().filter(e -> e.getKey().endsWith(".xml")).forEach(e -> System.out.println(e.getKey() + " -> " + e.getValue()));
+        new ResourceScanner("/**/*.xml").scan4bytes().entrySet().stream().filter(e -> e.getKey().endsWith(".xml")).forEach(e -> System.out.println(e.getKey() + " -> " + e.getValue()));
     }
 
     @org.junit.Test
