@@ -72,7 +72,6 @@ public final class Base64 {
     * @param destOffset
     *          the index where output will be put
     * @return the <var>destination</var> array
-    * @since 1.3
     */
     private static byte[] encode3to4(byte[] source, int srcOffset, int numSigBytes,
         byte[] destination, int destOffset) {

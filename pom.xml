@@ -6,7 +6,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>cn.ponfee</groupId>
   <artifactId>commons-core</artifactId>
-  <version>1.4</version>
+  <version>1.5-SNAPSHOT</version>
 
   <!-- Maven:
     > deploy: mvn -Drevision=_ versions:set -DnewVersion=1.4-SNAPSHOT && mvn clean deploy -Prelease -DskipTests -Dcheckstyle.skip=true -U
