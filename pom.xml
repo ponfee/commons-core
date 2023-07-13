@@ -6,7 +6,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>cn.ponfee</groupId>
   <artifactId>commons-core</artifactId>
-  <version>1.4-SNAPSHOT</version>
+  <version>1.4</version>
 
   <!-- Maven:
     > deploy: mvn -Drevision=_ versions:set -DnewVersion=1.4-SNAPSHOT && mvn clean deploy -Prelease -DskipTests -Dcheckstyle.skip=true -U
@@ -779,7 +779,7 @@
         </configuration>
       </plugin>
 
-      <!-- 
+      <!--
         http://wvengen.github.io/proguard-maven-plugin
         https://github.com/wvengen/proguard-maven-plugin
         https://blog.csdn.net/xiao190128/article/details/81777912
@@ -872,7 +872,7 @@
         </executions>
       </plugin> -->
 
-      <!-- 
+      <!--
         https://blog.csdn.net/u011499747/article/details/83045928
         http://maven.apache.org/plugins/maven-shade-plugin/shade-mojo.html
           maven-jar-plugin:
@@ -977,7 +977,7 @@
           <warSourceExcludes>page/**,js/**,css/**,imgs/**</warSourceExcludes> ——>
           <warSourceIncludes>WEB-INF/lib/**,WEB-INF/web.xml,WEB-INF/mvc-config.xml,WEB-INF/jetty-web.xml</warSourceIncludes>
 
-          <!—— packagingExcludes在warSourceExcludes后面执行：排除src/main/resources或从远程仓库pull下来的 
+          <!—— packagingExcludes在warSourceExcludes后面执行：排除src/main/resources或从远程仓库pull下来的
           <packagingExcludes>WEB-INF/classes/logback.xml,WEB-INF/lib/commons-logging-*.jar,%regex[WEB-INF/lib/log4j-(?!over-slf4j).*.jar]</packagingExcludes>
           <packagingIncludes></packagingIncludes> ——>
           <failOnMissingWebXml>true</failOnMissingWebXml>
