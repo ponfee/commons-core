@@ -10,8 +10,6 @@ A commons java tool lib
 
 ## ⬇️ [Download From Maven Central](https://central.sonatype.com/artifact/cn.ponfee/commons-core/1.4)
 
-> **注意**: 最近 [aliyun](https://developer.aliyun.com/mvn/search) 那边的镜像仓受Maven中央仓库网络限制，部分依赖可能会从中央仓库同步文件失败，如果依赖查找不到(即无法下载)请在`settings.xml`文件中删除aliyun mirror的配置(不建议使用aliyun maven mirror)
-
 ```xml
 <dependency>
   <groupId>cn.ponfee</groupId>
