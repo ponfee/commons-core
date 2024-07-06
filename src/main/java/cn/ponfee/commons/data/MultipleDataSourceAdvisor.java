@@ -81,7 +81,7 @@ public class MultipleDataSourceAdvisor implements MethodInterceptor {
         return around(
             ((MethodSignature) pjp.getSignature()).getMethod(),
             pjp.getArgs(),
-            ThrowingCallable.checked(pjp::proceed)
+            ThrowingCallable.toChecked(pjp::proceed)
         );
     }
 

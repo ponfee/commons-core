@@ -205,45 +205,6 @@ public final class ObjectUtils {
     }
 
     /**
-     * uuid byte array
-     * @return
-     */
-    public static byte[] uuid() {
-        UUID uuid = UUID.randomUUID();
-        long most  = uuid.getMostSignificantBits(),
-             least = uuid.getLeastSignificantBits();
-       return new byte[] {
-           (byte) (most  >>> 56), (byte) (most  >>> 48),
-           (byte) (most  >>> 40), (byte) (most  >>> 32),
-           (byte) (most  >>> 24), (byte) (most  >>> 16),
-           (byte) (most  >>>  8), (byte) (most        ),
-
-           (byte) (least >>> 56), (byte) (least >>> 48),
-           (byte) (least >>> 40), (byte) (least >>> 32),
-           (byte) (least >>> 24), (byte) (least >>> 16),
-           (byte) (least >>>  8), (byte) (least       )
-       };
-    }
-
-    /**
-     * uuid 32 string
-     * @return
-     */
-    public static String uuid32() {
-        UUID uuid = UUID.randomUUID();
-        return Bytes.toHex(uuid.getMostSignificantBits())
-             + Bytes.toHex(uuid.getLeastSignificantBits());
-    }
-
-    /**
-     * 22位uuid
-     * @return
-     */
-    public static String uuid22() {
-        return Base64UrlSafe.encode(uuid());
-    }
-
-    /**
      * 获取堆栈信息
      *
      * @param deepPath the deep path

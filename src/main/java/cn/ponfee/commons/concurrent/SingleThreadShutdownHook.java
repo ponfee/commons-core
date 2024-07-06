@@ -40,7 +40,7 @@ public class SingleThreadShutdownHook {
         @Override
         public void run() {
             synchronized (LOCK) {
-                hooks.forEach(e -> ThrowingRunnable.caught(e::run));
+                hooks.forEach(e -> ThrowingRunnable.doCaught(e::run));
             }
         }
     }

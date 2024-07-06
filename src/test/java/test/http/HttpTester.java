@@ -152,7 +152,7 @@ public class HttpTester {
         //System.out.println(http.getStatus());
         
         Http http = Http.get("http://www.stockstar.com");
-        System.out.println(Bytes.hexDump(http.download()));
+        System.out.println(Bytes.dumpHex(http.download()));
         System.out.println(http.getRespHeaders());
         System.out.println(http.getStatus());
         

@@ -43,7 +43,7 @@ public class FailRetryTemplate {
                 if (i < failRetryCount) {
                     // not the last loop
                     if (logMsg == null) {
-                        logMsg = ObjectUtils.uuid32() + " - " + message.get();
+                        logMsg = UuidUtils.uuid32() + " - " + message.get();
                     }
                     int count = i + 1;
                     LOG.error("Execute failed, will retrying - " + count + " - " + logMsg, e);

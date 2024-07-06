@@ -179,7 +179,7 @@ public class Test1 {
         System.out.println(Integer.toHexString((data.length + 15) / 16));
         String lineNumberFormat = "%0" + Integer.toHexString((data.length + 15) / 16).length() + "x: ";
         System.out.println(lineNumberFormat);
-        System.out.println(Bytes.hexDump(data));
+        System.out.println(Bytes.dumpHex(data));
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         /*org.apache.commons.io.HexDump.dump(MavenProjects.getTestJavaFileAsByteArray(this.getClass()), 0, out, 0);

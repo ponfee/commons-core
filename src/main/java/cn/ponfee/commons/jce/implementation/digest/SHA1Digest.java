@@ -206,11 +206,11 @@ public class SHA1Digest {
         this.digestBlock(this.block);
 
         byte[] digest = new byte[DIGEST_SIZE];
-        Bytes.putInt(this.H0, digest,  0);
-        Bytes.putInt(this.H1, digest,  4);
-        Bytes.putInt(this.H2, digest,  8);
-        Bytes.putInt(this.H3, digest, 12);
-        Bytes.putInt(this.H4, digest, 16);
+        Bytes.put(this.H0, digest,  0);
+        Bytes.put(this.H1, digest,  4);
+        Bytes.put(this.H2, digest,  8);
+        Bytes.put(this.H3, digest, 12);
+        Bytes.put(this.H4, digest, 16);
 
         this.reset();
 

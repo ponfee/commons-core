@@ -8,6 +8,7 @@ import cn.ponfee.commons.resource.ResourceScanner;
 import cn.ponfee.commons.util.Bytes;
 import cn.ponfee.commons.util.ObjectUtils;
 import cn.ponfee.commons.util.SecureRandoms;
+import cn.ponfee.commons.util.UuidUtils;
 import com.google.common.base.Stopwatch;
 import org.apache.commons.codec.binary.Hex;
 import org.joda.time.DateTime;
@@ -206,7 +207,7 @@ public class TempTest {
 
     @org.junit.Test
     public void test100() {
-        System.out.println(ObjectUtils.uuid32());
+        System.out.println(UuidUtils.uuid32());
         UUID uuid = UUID.randomUUID();
         long most = uuid.getMostSignificantBits();
         long least = uuid.getLeastSignificantBits();
@@ -220,13 +221,13 @@ public class TempTest {
 
         watch.reset().start();
         for (long i = 0; i < round; i++) {
-            s = Bytes.hexEncode(Bytes.toBytes(most))+Bytes.hexEncode(Bytes.toBytes(least));
+            s = Bytes.encodeHex(Bytes.toBytes(most))+Bytes.encodeHex(Bytes.toBytes(least));
         }
         System.out.println("Bytes.hexEncode: " + watch.stop());
 
         watch.reset().start();
         for (long i = 0; i < round; i++) {
-            s = Bytes.hexEncode(new byte[] {
+            s = Bytes.encodeHex(new byte[] {
                (byte) (most  >>> 56), (byte) (most  >>> 48),
                (byte) (most  >>> 40), (byte) (most  >>> 32),
                (byte) (most  >>> 24), (byte) (most  >>> 16),

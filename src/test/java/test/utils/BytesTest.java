@@ -3,6 +3,7 @@ package test.utils;
 import cn.ponfee.commons.util.Bytes;
 import cn.ponfee.commons.util.ObjectUtils;
 import cn.ponfee.commons.util.SecureRandoms;
+import cn.ponfee.commons.util.UuidUtils;
 import com.google.common.base.Stopwatch;
 import org.apache.commons.codec.binary.Hex;
 import org.junit.Assert;
@@ -32,7 +33,7 @@ public class BytesTest {
 
         watch.reset().start();
         for (int i = 0; i < n; i++) {
-            Bytes.hexEncode(data);
+            Bytes.encodeHex(data);
         }
         System.out.println("hexEncode " + watch.stop());
 
@@ -58,13 +59,13 @@ public class BytesTest {
         for (int i = 0; i < 100000; i++) {
             byte[] data = SecureRandoms.nextBytes(ThreadLocalRandom.current().nextInt(999));
             String hex = Hex.encodeHexString(data);
-            Assert.assertArrayEquals(data, Bytes.hexDecode(hex));
+            Assert.assertArrayEquals(data, Bytes.decodeHex(hex));
         }
     }
 
     @Test
     public void test4() {
-        byte[] uuid = ObjectUtils.uuid();
+        byte[] uuid = UuidUtils.uuid();
         long a = System.nanoTime();
         long b = Thread.currentThread().getId();
         long c = System.identityHashCode(SecureRandoms.class);
@@ -75,7 +76,7 @@ public class BytesTest {
         buffer.putLong(b);
         buffer.putLong(c);
         buffer.flip();
-        Assert.assertEquals(Bytes.hexEncode(buffer.array()), Bytes.hexEncode(uuid) + Bytes.hexEncode(Bytes.toBytes(a)) + Bytes.hexEncode(Bytes.toBytes(b)) + Bytes.hexEncode(Bytes.toBytes(c)));
+        Assert.assertEquals(Bytes.encodeHex(buffer.array()), Bytes.encodeHex(uuid) + Bytes.encodeHex(Bytes.toBytes(a)) + Bytes.encodeHex(Bytes.toBytes(b)) + Bytes.encodeHex(Bytes.toBytes(c)));
     }
 
 }

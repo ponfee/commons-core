@@ -8,14 +8,14 @@
 
 package cn.ponfee.commons.export;
 
-import cn.ponfee.commons.concurrent.MultithreadExecutors;
 import cn.ponfee.commons.util.Holder;
 import com.google.common.base.Preconditions;
 
 import java.io.IOException;
-import java.util.concurrent.CompletionService;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
@@ -42,7 +42,7 @@ public abstract class AbstractSplitExporter extends AbstractDataExporter<Void> {
 
     @Override
     public final <E> void build(Table<E> table) {
-        CompletionService<Boolean> service = new ExecutorCompletionService<>(executor);
+        List<CompletableFuture<Void>> futures = new LinkedList<>();
         AtomicInteger count = new AtomicInteger(0);
         AtomicInteger split = new AtomicInteger(0);
         Holder<Table<Object[]>> subTable = Holder.of(table.copyOfWithoutTbody(Function.identity()));
@@ -52,18 +52,18 @@ public abstract class AbstractSplitExporter extends AbstractDataExporter<Void> {
                 // sets a new table and return the last
                 Table<Object[]> last = subTable.set(table.copyOfWithoutTbody(Function.identity()));
                 String path = buildFilePath(split.incrementAndGet());
-                service.submit(splitExporter(last, path), Boolean.TRUE);
+                futures.add(CompletableFuture.runAsync(splitExporter(last, path), executor));
                 count.set(0); // reset count and sub table
             }
         });
         if (!subTable.get().isEmptyTbody()) {
             String path = buildFilePath(split.incrementAndGet());
-            service.submit(splitExporter(subTable.get(), path), Boolean.TRUE);
+            futures.add(CompletableFuture.runAsync(splitExporter(subTable.get(), path), executor));
         }
 
-        if (split.get() > 0) {
+        if (!futures.isEmpty()) {
             super.nonEmpty();
-            MultithreadExecutors.joinDiscard(service, split.get());
+            futures.forEach(CompletableFuture::join);
         }
     }
 

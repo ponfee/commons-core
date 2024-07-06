@@ -470,10 +470,10 @@ public final class Collects {
         return result;
     }
 
-    public static <T> T[] newArray(Class<? extends T[]> newType, int length) {
-        return ((Object) newType == (Object) Object[].class)
+    public static <T> T[] newArray(Class<? extends T[]> arrayType, int length) {
+        return arrayType.equals(Object[].class)
             ? (T[]) new Object[length]
-            : (T[]) Array.newInstance(newType.getComponentType(), length);
+            : (T[]) Array.newInstance(arrayType.getComponentType(), length);
     }
 
     public static <E> Stream<E> stream(Collection<E> collection) {

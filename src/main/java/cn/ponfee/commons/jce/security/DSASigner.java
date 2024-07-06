@@ -10,6 +10,7 @@ package cn.ponfee.commons.jce.security;
 
 import cn.ponfee.commons.jce.Providers;
 import cn.ponfee.commons.util.ObjectUtils;
+import cn.ponfee.commons.util.UuidUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -36,7 +37,7 @@ public final class DSASigner {
      * @return 密钥对象
      */
     public static Pair<DSAPublicKey, DSAPrivateKey> initKey() {
-        return initKey(ObjectUtils.uuid32(), 1024);
+        return initKey(UuidUtils.uuid32(), 1024);
     }
 
     /**

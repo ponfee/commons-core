@@ -51,7 +51,7 @@ public final class Bytes {
      * @param block  每块大小
      * @return Dump the byte array as hex string
      */
-    public static String hexDump(byte[] data, int chunk, int block) {
+    public static String dumpHex(byte[] data, int chunk, int block) {
         Formatter fmt = new Formatter(), text;
 
         String lineNumberFormat = "%0" + (Integer.toHexString((data.length + 15) / 16).length() + 1) + "x: ";
@@ -93,8 +93,8 @@ public final class Bytes {
         }
     }
 
-    public static String hexDump(byte[] data) {
-        return hexDump(data, 2, 8);
+    public static String dumpHex(byte[] data) {
+        return dumpHex(data, 2, 8);
     }
 
     /**
@@ -127,20 +127,21 @@ public final class Bytes {
     }
 
     // -----------------------------------------------------------------hexEncode/hexDecode
-    public static void hexEncode(char[] charArray, int i, byte b) {
+
+    public static void encodeHex(char[] charArray, int i, byte b) {
         charArray[  i] = HEX_LOWER_CODES[(0xF0 & b) >>> 4];
         charArray[++i] = HEX_LOWER_CODES[ 0x0F & b       ];
     }
 
-    public static String hexEncode(byte b, boolean lowercase) {
+    public static String encodeHex(byte b, boolean lowercase) {
         char[] codes = lowercase ? HEX_LOWER_CODES : HEX_UPPER_CODES;
         return new String(new char[] {
             codes[(0xF0 & b) >>> 4], codes[0x0F & b]
         });
     }
 
-    public static String hexEncode(byte[] bytes) {
-        return hexEncode(bytes, true);
+    public static String encodeHex(byte[] bytes) {
+        return encodeHex(bytes, true);
     }
 
     /**
@@ -149,7 +150,7 @@ public final class Bytes {
      * @param lowercase
      * @return
      */
-    public static String hexEncode(byte[] bytes, boolean lowercase) {
+    public static String encodeHex(byte[] bytes, boolean lowercase) {
         //new BigInteger(1, bytes).toString(16);
         int len = bytes.length;
         char[] out = new char[len << 1];
@@ -165,28 +166,28 @@ public final class Bytes {
     }
 
     /**
-     * decode the hex string to byte array
-     * @param hex
-     * @return
+     * Decode hex string to byte array
+     *
+     * @param hex the hex string
+     * @return byte array
      */
-    public static byte[] hexDecode(String hex) {
-        char[] data = hex.toCharArray();
-        int len = data.length;
+    public static byte[] decodeHex(String hex) {
+        int len = hex.length();
         if ((len & 0x01) == 1) {
-            throw new IllegalArgumentException("Invalid hex string.");
+            throw new IllegalArgumentException("Hex string must be twice length.");
         }
 
         byte[] out = new byte[len >> 1];
-
         // two char -> one byte
         for (int i = 0, j = 0; j < len; i++, j += 2) {
-            out[i] = (byte) (  Character.digit(data[j    ], 16) << 4
-                             | Character.digit(data[j + 1], 16)     );
+            char c1 = hex.charAt(j), c2 = hex.charAt(j + 1);
+            out[i] = (byte) (Character.digit(c1, 16) << 4 | Character.digit(c2, 16));
         }
         return out;
     }
 
     // -----------------------------------------------------------------String
+
     /**
      * Converts byte array to String
      *
@@ -194,7 +195,7 @@ public final class Bytes {
      * @return a string
      */
     public static String toString(byte[] bytes) {
-        return new String(bytes);
+        return bytes == null ? null : new String(bytes);
     }
 
     /**
@@ -205,7 +206,7 @@ public final class Bytes {
      * @return a string
      */
     public static String toString(byte[] bytes, Charset charset) {
-        return new String(bytes, charset);
+        return bytes == null ? null : new String(bytes, charset);
     }
 
     /**
@@ -215,7 +216,7 @@ public final class Bytes {
      * @return a byte array
      */
     public static byte[] toBytes(String value) {
-        return value.getBytes();
+        return value == null ? null : value.getBytes();
     }
 
     /**
@@ -226,10 +227,11 @@ public final class Bytes {
      * @return a byte array
      */
     public static byte[] toBytes(String value, Charset charset) {
-        return value.getBytes(charset);
+        return value == null ? null : value.getBytes(charset);
     }
 
     // -----------------------------------------------------------------char array
+
     /**
      * Converts byte array to char array
      *
@@ -281,6 +283,7 @@ public final class Bytes {
     }
 
     // -----------------------------------------------------------------short
+
     public static byte[] toBytes(short value) {
         return new byte[] {
             (byte) (value >>> 8), (byte) value
@@ -304,6 +307,7 @@ public final class Bytes {
     }
 
     // -----------------------------------------------------------------char
+
     public static byte[] toBytes(char value) {
         return new byte[] {
             (byte) (value >>> 8), (byte) value
@@ -322,6 +326,7 @@ public final class Bytes {
     }
 
     // -----------------------------------------------------------------int
+
     public static byte[] toBytes(int value) {
         return new byte[] {
             (byte) (value >>> 24), (byte) (value >>> 16),
@@ -341,6 +346,7 @@ public final class Bytes {
     }
 
     // -----------------------------------------------------------------long
+
     /**
      * convert long value to byte array
      * @param value the long number
@@ -414,6 +420,7 @@ public final class Bytes {
     }
 
     // -----------------------------------------------------------------float
+
     public static byte[] toBytes(float value) {
         return toBytes(Float.floatToIntBits(value));
     }
@@ -427,6 +434,7 @@ public final class Bytes {
     }
 
     // -----------------------------------------------------------------double
+
     public static byte[] toBytes(double value) {
         return toBytes(Double.doubleToLongBits(value));
     }
@@ -440,34 +448,38 @@ public final class Bytes {
     }
 
     // ---------------------------------------------------------BigDecimal
+
     /**
      * Convert a BigDecimal value to a byte array
      *
-     * @param val
+     * @param val the BigDecimal value
      * @return the byte array
      */
     public static byte[] toBytes(BigDecimal val) {
         byte[] valueBytes = val.unscaledValue().toByteArray();
         byte[] result = new byte[valueBytes.length + Integer.BYTES];
-        int offset = putInt(val.scale(), result, 0);
-        System.arraycopy(valueBytes, 0, result, offset, valueBytes.length);
+        put(val.scale(), result, 0);
+        System.arraycopy(valueBytes, 0, result, 4, valueBytes.length);
         return result;
     }
 
     /**
-     * Puts a int number to byte array
+     * Puts int number to byte array
      *
      * @param val    the int value
      * @param bytes  the byte array
      * @param offset the byte array start offset
-     * @return a int of next offset
      */
-    public static int putInt(int val, byte[] bytes, int offset) {
-        bytes[  offset] = (byte) (val >>> 24);
-        bytes[++offset] = (byte) (val >>> 16);
-        bytes[++offset] = (byte) (val >>>  8);
-        bytes[++offset] = (byte) (val       );
-        return ++offset;
+    public static void put(int val, byte[] bytes, int offset) {
+        for (int i = 3; i >= 0; i--, offset++) {
+            bytes[offset] = (byte) (val >>> (i << 3));
+        }
+    }
+
+    public static void put(long val, byte[] bytes, int offset) {
+        for (int i = 7; i >= 0; i--, offset++) {
+            bytes[offset] = (byte) (val >>> (i << 3));
+        }
     }
 
     /**
@@ -501,6 +513,7 @@ public final class Bytes {
     }
 
     // ---------------------------------------------------------BigInteger
+
     /**
      * Converts byte array to positive BigInteger
      *
@@ -515,6 +528,7 @@ public final class Bytes {
     }
 
     // ----------------------------------------------------------others
+
     /**
      * merge byte arrays
      * @param first  first byte array of args

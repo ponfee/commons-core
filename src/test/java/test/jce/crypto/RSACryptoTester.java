@@ -187,22 +187,22 @@ public class RSACryptoTester {
         System.out.println("=============================加密测试==============================");
         long i = System.currentTimeMillis();
         System.out.println("原文：");
-        System.out.println(Bytes.hexDump(ArrayUtils.subarray(data, 0, 100)));
+        System.out.println(Bytes.dumpHex(ArrayUtils.subarray(data, 0, 100)));
         byte[] encodedData = RSACryptor.encrypt(data, publicKey);
         System.out.println("密文：");
-        System.out.println(Bytes.hexDump(ArrayUtils.subarray(encodedData, 0, 100)));
+        System.out.println(Bytes.dumpHex(ArrayUtils.subarray(encodedData, 0, 100)));
         System.out.println("解密：");
-        System.out.println(Bytes.hexDump(ArrayUtils.subarray(RSACryptor.decrypt(encodedData, privateKey), 0, 100)));
+        System.out.println(Bytes.dumpHex(ArrayUtils.subarray(RSACryptor.decrypt(encodedData, privateKey), 0, 100)));
         
         System.out.println("=============================加密测试==============================");
         i = System.currentTimeMillis();
         System.out.println("原文：");
-        System.out.println(Bytes.hexDump(ArrayUtils.subarray(data, 0, 100)));
+        System.out.println(Bytes.dumpHex(ArrayUtils.subarray(data, 0, 100)));
         encodedData = RSACryptor.encrypt(data, privateKey);
         System.out.println("密文：");
-        System.out.println(Bytes.hexDump(ArrayUtils.subarray(encodedData, 0, 100)));
+        System.out.println(Bytes.dumpHex(ArrayUtils.subarray(encodedData, 0, 100)));
         System.out.println("解密：");
-        System.out.println(Bytes.hexDump(ArrayUtils.subarray(RSACryptor.decrypt(encodedData, publicKey), 0, 100)));
+        System.out.println(Bytes.dumpHex(ArrayUtils.subarray(RSACryptor.decrypt(encodedData, publicKey), 0, 100)));
 
         System.out.println("===========================签名测试=========================");
         data = Base64.getDecoder().decode("");

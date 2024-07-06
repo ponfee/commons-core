@@ -3,6 +3,7 @@ package test.http;
 import java.util.Map;
 import java.util.Random;
 
+import cn.ponfee.commons.util.UuidUtils;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
@@ -25,7 +26,7 @@ public class TestOpenApi {
         //String username = "d_OWfBL99lSVQC13OmhNA4H5G65brRYIDXatGnNOkIfAnHmZl-qDP8nf-8twOtaDw3ctnH1hO3CiIW85HxTn3M_CmRmYXmjKkLR-Vcrx8RbsoMuJvACliIwbzo5F8xZGHk4-yk-UP9e_NvbJaE1UZBN5jiY5RyHgNvLuy8MvAeQ";
         //String passowrd = "LRDCcDwnzMWKQMqoEza2V4aFa5TPmFACcDeJiDfR3BBjiEGGWfCaMgbi_rE3hPM5kWs2iJdPxK-CrLkWozhcLsyB8S0Seg9r0ybJL5VJ0iVRi2dVqN4rUrj7i2x9lSdTFsyrGqCNLz57dK1TuY02QVw8iEgi6m9wwFgGpbnhoME";
 
-        Object data = ImmutableMap.of("head", ImmutableMap.of("app_id", "FQ", "trans_id", ObjectUtils.uuid22()), 
+        Object data = ImmutableMap.of("head", ImmutableMap.of("app_id", "FQ", "trans_id", UuidUtils.uuid22()),
                                       "body", ImmutableMap.of("username", username, 
                                                               "password", passowrd));
 
@@ -39,7 +40,7 @@ public class TestOpenApi {
 
     @Test
     public void test2() {
-        Object data = ImmutableMap.of("head", ImmutableMap.of("app_id", "FQ", "trans_id", ObjectUtils.uuid22()), 
+        Object data = ImmutableMap.of("head", ImmutableMap.of("app_id", "FQ", "trans_id", UuidUtils.uuid22()),
                                       "body", ImmutableMap.of("username", "rnT2s9YMKGHkannrr-kNFSZYk-XOLBRKIIjnY62szVR0E31j8SQx50cym_KVXT5m1yjzcHUHh-M8g24q-oHnPa-MgaNaKR8IK-TUa9I9S9Vo8Xseg25EjgrvONK2X4ahKbSBHqrJfyIrPmE7rO70XHnhhma5HtLLXVukhY7eVJk"));
 
         Map<String, Object> resp = Http.post(host+"/open/api/userinfo")

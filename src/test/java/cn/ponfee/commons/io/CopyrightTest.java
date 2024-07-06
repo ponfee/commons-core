@@ -32,14 +32,14 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class CopyrightTest {
 
     private static final String baseDir = MavenProjects.getMainJavaPath("");
-    private static final String copyright = ThrowingSupplier.get(
+    private static final String copyright = ThrowingSupplier.doChecked(
         () -> IOUtils.resourceToString("copy-right.txt", UTF_8, CopyrightTest.class.getClassLoader())
     );
 
     @Test
     public void upsertCopyright() {
         handleFile(file -> {
-            String text = ThrowingSupplier.get(() -> IOUtils.toString(file.toURI(), UTF_8));
+            String text = ThrowingSupplier.doChecked(() -> IOUtils.toString(file.toURI(), UTF_8));
             if (!isOwnerCode(text)) {
                 return;
             }
@@ -70,7 +70,7 @@ public class CopyrightTest {
     @Test
     public void checkCopyright() {
         handleFile(file -> {
-            String text = ThrowingSupplier.get(() -> IOUtils.toString(file.toURI(), UTF_8));
+            String text = ThrowingSupplier.doChecked(() -> IOUtils.toString(file.toURI(), UTF_8));
             if (Strings.count(text, " @author ") == 0) {
                 System.out.println(file.getName());
             } else if (isOwnerCode(text)) {
@@ -90,7 +90,7 @@ public class CopyrightTest {
     private static void handleFile(Consumer<File> consumer) {
         FileUtils
             .listFiles(new File(baseDir).getParentFile(), new String[]{"java"}, true)
-            .forEach(e -> ThrowingRunnable.run(() -> consumer.accept(e)));
+            .forEach(e -> ThrowingRunnable.doChecked(() -> consumer.accept(e)));
     }
 
     private boolean isOwnerCode(String sourceCode) {

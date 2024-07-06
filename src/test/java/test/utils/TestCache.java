@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import cn.ponfee.commons.cache.Cache;
 import cn.ponfee.commons.cache.CacheBuilder;
 import cn.ponfee.commons.util.ObjectUtils;
+import cn.ponfee.commons.util.UuidUtils;
 
 public class TestCache {
 
@@ -21,7 +22,7 @@ public class TestCache {
             threads[i] = new Thread(() -> {
                 while (flag.get()) {
                     if (cache.isDestroy()) break;
-                    cache.put(ObjectUtils.uuid32(), null, new Date().getTime() + random.nextInt(1000));
+                    cache.put(UuidUtils.uuid32(), null, new Date().getTime() + random.nextInt(1000));
                 }
             });
         }

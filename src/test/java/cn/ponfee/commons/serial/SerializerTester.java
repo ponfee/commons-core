@@ -260,7 +260,7 @@ public class SerializerTester {
         }
 
         byte[] bytes = out.toByteArray();
-        System.out.println(Bytes.hexDump(bytes));
+        System.out.println(Bytes.dumpHex(bytes));
         System.out.println(b.toString());
 
         JdkSerializer serializer = new JdkSerializer();

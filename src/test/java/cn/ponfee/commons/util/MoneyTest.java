@@ -1,7 +1,6 @@
 package cn.ponfee.commons.util;
 
 import cn.ponfee.commons.serial.JdkSerializer;
-import cn.ponfee.commons.serial.KryoSerializer;
 import cn.ponfee.commons.serial.Serializer;
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,7 +24,7 @@ public class MoneyTest {
     @Test
     public void test0() {
         System.out.println(Arrays.toString(Strings.hexadecimal(CurrencyEnum.CZK.currencySymbol())));
-        System.out.println(Bytes.hexEncode(CurrencyEnum.CZK.currencySymbol().substring(1,2).getBytes(StandardCharsets.UTF_8)));
+        System.out.println(Bytes.encodeHex(CurrencyEnum.CZK.currencySymbol().substring(1,2).getBytes(StandardCharsets.UTF_8)));
         System.out.println();
         for (char x = 'A'; x <= 'Z'; x++) {
             for (char y = 'A'; y <= 'Z'; y++) {

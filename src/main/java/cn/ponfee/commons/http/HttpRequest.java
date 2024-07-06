@@ -31,6 +31,7 @@ import cn.ponfee.commons.collect.Collects;
 import cn.ponfee.commons.io.Files;
 import cn.ponfee.commons.jce.Providers;
 import cn.ponfee.commons.util.ObjectUtils;
+import cn.ponfee.commons.util.UuidUtils;
 
 import javax.net.ssl.*;
 import java.io.*;
@@ -236,7 +237,7 @@ public class HttpRequest {
                         // Intentionally left blank
                     }
                 }
-            }, new SecureRandom(new SecureRandom(ObjectUtils.uuid()).generateSeed(20)));
+            }, new SecureRandom(new SecureRandom(UuidUtils.uuid()).generateSeed(20)));
 
             TRUSTED_FACTORY = context.getSocketFactory();
 

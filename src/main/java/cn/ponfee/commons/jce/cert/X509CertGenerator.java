@@ -11,6 +11,7 @@ package cn.ponfee.commons.jce.cert;
 import cn.ponfee.commons.jce.Providers;
 import cn.ponfee.commons.jce.RSASignAlgorithms;
 import cn.ponfee.commons.util.ObjectUtils;
+import cn.ponfee.commons.util.UuidUtils;
 import org.bouncycastle.operator.jcajce.JcaContentVerifierProviderBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import sun.security.pkcs10.PKCS10;
@@ -191,7 +192,7 @@ public class X509CertGenerator {
                                                Date notAfter, CertificateExtensions extensions) {
         if (sn == null) {
             //sn = BigInteger.valueOf(ThreadLocalRandom.current().nextLong() & Long.MAX_VALUE);
-            sn = new BigInteger(1, ObjectUtils.uuid());
+            sn = new BigInteger(1, UuidUtils.uuid());
         }
         try {
             // 验证pkcs10

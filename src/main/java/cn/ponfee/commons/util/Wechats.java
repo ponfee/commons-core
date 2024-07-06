@@ -277,7 +277,7 @@ public class Wechats {
     public static Map<String, String> shareUrl(String jsapiTicket, String appid, String url) {
         Map<String, String> map = new HashMap<>();
         map.put("jsapi_ticket", jsapiTicket);
-        map.put("noncestr", ObjectUtils.uuid22());
+        map.put("noncestr", UuidUtils.uuid22());
         map.put("timestamp", Long.toString(System.currentTimeMillis() / 1000));
         map.put("url", !url.contains("#") ? url : url.substring(0, url.indexOf("#")));
 

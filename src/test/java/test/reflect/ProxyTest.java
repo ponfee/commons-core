@@ -29,7 +29,7 @@ public class ProxyTest {
         byte[] classBytes = sun.misc.ProxyGenerator.generateProxyClass("ProxyClass", proxy.getClass().getInterfaces());
 
         // 打印字节码
-        System.out.println(Bytes.hexDump(classBytes));
+        System.out.println(Bytes.dumpHex(classBytes));
 
         // 导出到文件
         IOUtils.write(classBytes, new FileOutputStream(new File("d:/ProxyClass.class"))); // TODO 用jd-gui反编译ProxyClass.class文件

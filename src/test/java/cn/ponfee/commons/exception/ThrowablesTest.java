@@ -16,19 +16,19 @@ public class ThrowablesTest {
 
     @Test
     public void test() {
-        ThrowingRunnable.caught(ThrowablesTest::get0);
+        ThrowingRunnable.doCaught(ThrowablesTest::get0);
         System.out.println("---------------\n");
 
-        ThrowingRunnable.caught(ThrowablesTest::get1);
+        ThrowingRunnable.doCaught(ThrowablesTest::get1);
         System.out.println("---------------\n");
 
-        String caught = ThrowingSupplier.caught(ThrowablesTest::get2);
+        String caught = ThrowingSupplier.doCaught(ThrowablesTest::get2);
         System.out.println("---------------" + caught + "\n");
 
-        ThrowingConsumer.caught(ThrowablesTest::get3, "xxx");
+        ThrowingConsumer.doCaught(ThrowablesTest::get3, "xxx");
         System.out.println("---------------\n");
 
-        String yyy = ThrowingFunction.caught(ThrowablesTest::get4, "yyy");
+        String yyy = ThrowingFunction.doCaught(ThrowablesTest::get4, "yyy");
         System.out.println("---------------" + yyy + "\n");
     }
 

@@ -3,6 +3,7 @@ package cn.ponfee.commons;
 import java.util.HashSet;
 import java.util.Set;
 
+import cn.ponfee.commons.util.UuidUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -44,7 +45,7 @@ public abstract class WebServiceJaxTest<T> {
     private final String localPart;    // name="TestService"
 
     protected WebServiceJaxTest(String namespaceURI, String localPart) {
-        this("http://localhost:" + Networks.findAvailablePort(8000) + "/testws/" + ObjectUtils.uuid32(), namespaceURI, localPart);
+        this("http://localhost:" + Networks.findAvailablePort(8000) + "/testws/" + UuidUtils.uuid32(), namespaceURI, localPart);
     }
 
     protected WebServiceJaxTest(String url, String namespaceURI, String localPart) {

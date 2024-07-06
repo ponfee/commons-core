@@ -3,11 +3,15 @@ package cn.ponfee.commons.util;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.IntStream;
 
 import cn.ponfee.commons.concurrent.ThreadPoolTestUtils;
+import com.google.common.base.Stopwatch;
 import org.junit.Test;
 
-import cn.ponfee.commons.concurrent.MultithreadExecutors;
 import cn.ponfee.commons.model.Result;
 import cn.ponfee.commons.reflect.ClassUtils;
 import org.openjdk.jol.info.ClassLayout;
@@ -76,7 +80,7 @@ public class ObjectUtilsTest {
     @Test
     public void test6() {
         // XXX: if Executor is CALLER_RUN_EXECUTOR and threadNumber>=33 then will be dead loop
-        MultithreadExecutors.execute(32, () -> {
+        execute(32, () -> {
             get("123");
         }, 5, ThreadPoolTestUtils.CALLER_RUN_SCHEDULER);
     }
@@ -84,7 +88,7 @@ public class ObjectUtilsTest {
     @Test
     public void test7() {
         // XXX: if Executor is CALLER_RUN_EXECUTOR and threadNumber>=33 then will be dead loop
-        MultithreadExecutors.execute(32, () -> {
+        execute(32, () -> {
             Singleton.getInstance();
         }, 5, ThreadPoolTestUtils.CALLER_RUN_SCHEDULER);
     }
@@ -145,4 +149,46 @@ public class ObjectUtilsTest {
             perThreadInstance.set(perThreadInstance);
         }
     }
+
+
+    /**
+     * Exec async, usual use in test case
+     *
+     * @param parallelism the parallelism
+     * @param command     the command
+     * @param execSeconds the execSeconds
+     * @param executor    the executor
+     */
+    public static void execute(int parallelism, Runnable command,
+                               int execSeconds, Executor executor) {
+        Stopwatch watch = Stopwatch.createStarted();
+        AtomicBoolean flag = new AtomicBoolean(true);
+
+        // CALLER_RUNS: caller run will be dead loop
+        // caller thread will be loop exec command, can't to run the after code{flag.set(false)}
+        // threadNumber > 32
+        CompletableFuture<?>[] futures = IntStream
+            .range(0, parallelism)
+            .mapToObj(i -> (Runnable) () -> {
+                while (flag.get() && !Thread.currentThread().isInterrupted()) {
+                    command.run();
+                }
+            })
+            .map(runnable -> CompletableFuture.runAsync(runnable, executor))
+            .toArray(CompletableFuture[]::new);
+
+        try {
+            // parent thread sleep
+            Thread.sleep(execSeconds * 1000L);
+            flag.set(false);
+            CompletableFuture.allOf(futures).join();
+        } catch (InterruptedException e) {
+            flag.set(false);
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } finally {
+            System.out.println("multi thread exec async duration: " + watch.stop());
+        }
+    }
+
 }

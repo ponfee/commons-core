@@ -12,6 +12,7 @@ import cn.ponfee.commons.collect.Maps;
 import cn.ponfee.commons.io.Files;
 import cn.ponfee.commons.util.ObjectUtils;
 import cn.ponfee.commons.util.URLCodes;
+import cn.ponfee.commons.util.UuidUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -184,7 +185,7 @@ public class HttpParams {
      */
     public static String buildForm(String url, Map<String, ?> params) {
         StringBuilder form = new StringBuilder(256);
-        String formName = ObjectUtils.uuid32();
+        String formName = UuidUtils.uuid32();
         form.append("<form action=\"")
             .append(url)
             .append("\" name=\"")

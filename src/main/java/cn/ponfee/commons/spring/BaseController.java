@@ -9,7 +9,6 @@
 package cn.ponfee.commons.spring;
 
 import cn.ponfee.commons.date.JavaUtilDateFormat;
-import cn.ponfee.commons.date.LocalDateFormat;
 import cn.ponfee.commons.date.LocalDateTimeFormat;
 import cn.ponfee.commons.model.TypedKeyValue;
 import org.slf4j.Logger;
@@ -60,7 +59,8 @@ public abstract class BaseController implements TypedKeyValue<String, String> {
         binder.registerCustomEditor(LocalDate.class, new PropertyEditorSupport() {
             @Override
             public void setAsText(String text) {
-                super.setValue(LocalDateFormat.DEFAULT.parse(text));
+                LocalDateTime dateTime = LocalDateTimeFormat.DEFAULT.parse(text);
+                super.setValue(dateTime == null ? null : dateTime.toLocalDate());
             }
         });
         binder.registerCustomEditor(LocalTime.class, new PropertyEditorSupport() {

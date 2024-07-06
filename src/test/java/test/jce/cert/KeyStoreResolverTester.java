@@ -138,12 +138,12 @@ public class KeyStoreResolverTester {
             //byte[] data = "加解密测试".getBytes();
             byte[] data = IOUtils.toByteArray(ResourceLoaderFacade.getResource("2.png").getStream());
             System.out.println("加密前：");
-            System.out.println(Bytes.hexDump(ArrayUtils.subarray(data, 0, 100)));
+            System.out.println(Bytes.dumpHex(ArrayUtils.subarray(data, 0, 100)));
             byte[] encodedData = RSACryptor.encrypt(data, publicKey);
             System.out.println("加密后：");
-            System.out.println(Bytes.hexDump(ArrayUtils.subarray(encodedData, 0, 100)));
+            System.out.println(Bytes.dumpHex(ArrayUtils.subarray(encodedData, 0, 100)));
             System.out.println("解密后：");
-            System.out.println(Bytes.hexDump(ArrayUtils.subarray(RSACryptor.decrypt(encodedData, privateKey), 0, 100)));
+            System.out.println(Bytes.dumpHex(ArrayUtils.subarray(RSACryptor.decrypt(encodedData, privateKey), 0, 100)));
 
             System.out.println("\n\n===========================签名测试=========================");
             data = Base64.getDecoder().decode("");

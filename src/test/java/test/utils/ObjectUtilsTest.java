@@ -17,23 +17,23 @@ public class ObjectUtilsTest {
     @Test
     public void test1() {
         char[] chars = new char[32];
-        Bytes.hexEncode(chars, 0, (byte) (most >>> 56));
-        Bytes.hexEncode(chars, 2, (byte) (most >>> 48));
-        Bytes.hexEncode(chars, 4, (byte) (most >>> 40));
-        Bytes.hexEncode(chars, 6, (byte) (most >>> 32));
-        Bytes.hexEncode(chars, 8, (byte) (most >>> 24));
-        Bytes.hexEncode(chars, 10, (byte) (most >>> 16));
-        Bytes.hexEncode(chars, 12, (byte) (most >>> 8));
-        Bytes.hexEncode(chars, 14, (byte) (most));
+        Bytes.encodeHex(chars, 0, (byte) (most >>> 56));
+        Bytes.encodeHex(chars, 2, (byte) (most >>> 48));
+        Bytes.encodeHex(chars, 4, (byte) (most >>> 40));
+        Bytes.encodeHex(chars, 6, (byte) (most >>> 32));
+        Bytes.encodeHex(chars, 8, (byte) (most >>> 24));
+        Bytes.encodeHex(chars, 10, (byte) (most >>> 16));
+        Bytes.encodeHex(chars, 12, (byte) (most >>> 8));
+        Bytes.encodeHex(chars, 14, (byte) (most));
 
-        Bytes.hexEncode(chars, 16, (byte) (least >>> 56));
-        Bytes.hexEncode(chars, 18, (byte) (least >>> 48));
-        Bytes.hexEncode(chars, 20, (byte) (least >>> 40));
-        Bytes.hexEncode(chars, 22, (byte) (least >>> 32));
-        Bytes.hexEncode(chars, 24, (byte) (least >>> 24));
-        Bytes.hexEncode(chars, 26, (byte) (least >>> 16));
-        Bytes.hexEncode(chars, 28, (byte) (least >>> 8));
-        Bytes.hexEncode(chars, 30, (byte) (least));
+        Bytes.encodeHex(chars, 16, (byte) (least >>> 56));
+        Bytes.encodeHex(chars, 18, (byte) (least >>> 48));
+        Bytes.encodeHex(chars, 20, (byte) (least >>> 40));
+        Bytes.encodeHex(chars, 22, (byte) (least >>> 32));
+        Bytes.encodeHex(chars, 24, (byte) (least >>> 24));
+        Bytes.encodeHex(chars, 26, (byte) (least >>> 16));
+        Bytes.encodeHex(chars, 28, (byte) (least >>> 8));
+        Bytes.encodeHex(chars, 30, (byte) (least));
         String s1 = new String(chars);
 
         System.out.println(s1);
@@ -48,7 +48,7 @@ public class ObjectUtilsTest {
             (byte) (least >>> 24), (byte) (least >>> 16),
             (byte) (least >>> 8), (byte) (least)
         };
-        String s2 = Bytes.hexEncode(bytes);
+        String s2 = Bytes.encodeHex(bytes);
         System.out.println(s2);
 
         Assert.assertEquals(s1, s2);
@@ -58,23 +58,23 @@ public class ObjectUtilsTest {
     public  void test2() {
         for (int i= 0; i < n; i++) {
             char[] chars = new char[32];
-            Bytes.hexEncode(chars,  0, (byte) (most  >>> 56));
-            Bytes.hexEncode(chars,  2, (byte) (most  >>> 48));
-            Bytes.hexEncode(chars,  4, (byte) (most  >>> 40));
-            Bytes.hexEncode(chars,  6, (byte) (most  >>> 32));
-            Bytes.hexEncode(chars,  8, (byte) (most  >>> 24));
-            Bytes.hexEncode(chars, 10, (byte) (most  >>> 16));
-            Bytes.hexEncode(chars, 12, (byte) (most  >>>  8));
-            Bytes.hexEncode(chars, 14, (byte) (most        ));
+            Bytes.encodeHex(chars,  0, (byte) (most  >>> 56));
+            Bytes.encodeHex(chars,  2, (byte) (most  >>> 48));
+            Bytes.encodeHex(chars,  4, (byte) (most  >>> 40));
+            Bytes.encodeHex(chars,  6, (byte) (most  >>> 32));
+            Bytes.encodeHex(chars,  8, (byte) (most  >>> 24));
+            Bytes.encodeHex(chars, 10, (byte) (most  >>> 16));
+            Bytes.encodeHex(chars, 12, (byte) (most  >>>  8));
+            Bytes.encodeHex(chars, 14, (byte) (most        ));
 
-            Bytes.hexEncode(chars, 16, (byte) (least >>> 56));
-            Bytes.hexEncode(chars, 18, (byte) (least >>> 48));
-            Bytes.hexEncode(chars, 20, (byte) (least >>> 40));
-            Bytes.hexEncode(chars, 22, (byte) (least >>> 32));
-            Bytes.hexEncode(chars, 24, (byte) (least >>> 24));
-            Bytes.hexEncode(chars, 26, (byte) (least >>> 16));
-            Bytes.hexEncode(chars, 28, (byte) (least >>>  8));
-            Bytes.hexEncode(chars, 30, (byte) (least       ));
+            Bytes.encodeHex(chars, 16, (byte) (least >>> 56));
+            Bytes.encodeHex(chars, 18, (byte) (least >>> 48));
+            Bytes.encodeHex(chars, 20, (byte) (least >>> 40));
+            Bytes.encodeHex(chars, 22, (byte) (least >>> 32));
+            Bytes.encodeHex(chars, 24, (byte) (least >>> 24));
+            Bytes.encodeHex(chars, 26, (byte) (least >>> 16));
+            Bytes.encodeHex(chars, 28, (byte) (least >>>  8));
+            Bytes.encodeHex(chars, 30, (byte) (least       ));
             new String(chars);
         }
     }
@@ -94,7 +94,7 @@ public class ObjectUtilsTest {
                 (byte) (least >>> 24), (byte) (least >>> 16),
                 (byte) (least >>>  8), (byte) (least       )
             };
-            Bytes.hexEncode(bytes);
+            Bytes.encodeHex(bytes);
         }
     }
 }
