@@ -215,24 +215,24 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.version}</version>
+      <version>1.7.36</version>
     </dependency>
 
     <!-- adapter to slf4j-api -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
-      <version>${slf4j.version}</version>
+      <version>1.7.36</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jul-to-slf4j</artifactId>
-      <version>${slf4j.version}</version>
+      <version>1.7.36</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>log4j-over-slf4j</artifactId>
-      <version>${slf4j.version}</version>
+      <version>1.7.36</version>
     </dependency>
     <!-- log4j2：当使用log4j2为日志实现时，需注释此依赖项 -->
     <!-- <dependency>
@@ -264,13 +264,13 @@
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
-      <version>${log4j2.version}</version>
+      <version>2.19.0</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-web</artifactId>
-      <version>${log4j2.version}</version>
+      <version>2.19.0</version>
       <scope>runtime</scope>
     </dependency>
     <!-- <context-param> web.xml自定义配置文件的位置
@@ -409,7 +409,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
-      <version>${spring-framework.version}</version>
+      <version>5.3.24</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -420,29 +420,29 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context-support</artifactId>
-      <version>${spring-framework.version}</version>
+      <version>5.3.24</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
-      <version>${spring-framework.version}</version>
+      <version>5.3.24</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-aspects</artifactId>
-      <version>${spring-framework.version}</version>
+      <version>5.3.24</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-jdbc</artifactId>
-      <version>${spring-framework.version}</version>
+      <version>5.3.24</version>
     </dependency>
 
     <!-- ====================excel poi==================== -->
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi-ooxml</artifactId>
-      <version>5.2.3</version>
+      <version>5.4.0</version>
       <exclusions>
         <exclusion>
           <groupId>org.apache.logging.log4j</groupId>
@@ -479,12 +479,12 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>${jackson.version}</version>
+      <version>2.14.1</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
-      <version>${jackson.version}</version>
+      <version>2.14.1</version>
     </dependency>
     <dependency>
       <groupId>com.caucho</groupId>
@@ -549,22 +549,22 @@
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcmail-jdk18on</artifactId>
-      <version>${bouncycastle.version}</version>
+      <version>1.72</version>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcpg-jdk18on</artifactId>
-      <version>${bouncycastle.version}</version>
+      <version>1.78.1</version>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bctls-jdk18on</artifactId>
-      <version>${bouncycastle.version}</version>
+      <version>1.72</version>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-ext-jdk18on</artifactId>
-      <version>${bouncycastle.version}</version>
+      <version>1.74</version>
     </dependency>
     <dependency>
       <groupId>commons-codec</groupId>
@@ -582,7 +582,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
-      <version>${spring-framework.version}</version>
+      <version>5.3.24</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -631,13 +631,13 @@
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
-      <version>3.11.4</version>
+      <version>3.25.5</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.alibaba</groupId>
       <artifactId>transmittable-thread-local</artifactId>
-      <version>2.11.4</version>
+      <version>2.8.1</version>
       <scope>test</scope>
     </dependency>
     <!-- 密码哈希处理 -->
